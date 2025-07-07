@@ -7,7 +7,7 @@ import { country } from "../../countries/models/country";
 export interface company {
   _id: string;
   name: string;
-  country: country;
+  countryId: country;
   address: string;
   active: boolean;
 }
@@ -17,7 +17,7 @@ const companySchema = new Schema({
     type: String,
     required: true,
   },
-  country: {
+  countryId: {
     type: Schema.Types.ObjectId,
     ref: "Country",
     required: true,
