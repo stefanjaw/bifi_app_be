@@ -21,7 +21,7 @@ export class BaseService<T> {
     const newSession = await this.startSession(session);
 
     try {
-      if (session) newSession.startTransaction();
+      if (!session) newSession.startTransaction();
 
       let records;
 
@@ -36,13 +36,13 @@ export class BaseService<T> {
         records = await this.model.find(searchParams);
       }
 
-      if (session) await newSession.commitTransaction();
+      if (!session) await newSession.commitTransaction();
       return records;
     } catch (error) {
-      if (session) await newSession.abortTransaction();
+      if (!session) await newSession.abortTransaction();
       throw error;
     } finally {
-      if (session) await newSession.endSession();
+      if (!session) await newSession.endSession();
     }
   }
 
@@ -53,19 +53,19 @@ export class BaseService<T> {
     const newSession = await this.startSession(session);
 
     try {
-      if (session) newSession.startTransaction();
+      if (!session) newSession.startTransaction();
 
       const record = (
         await this.model.create([data], { session: newSession })
       )[0];
 
-      if (session) await newSession.commitTransaction();
+      if (!session) await newSession.commitTransaction();
       return record;
     } catch (error) {
-      if (session) await newSession.abortTransaction();
+      if (!session) await newSession.abortTransaction();
       throw error;
     } finally {
-      if (session) await newSession.endSession();
+      if (!session) await newSession.endSession();
     }
   }
 
@@ -76,10 +76,9 @@ export class BaseService<T> {
     const newSession = await this.startSession(session);
 
     try {
-      if (session) newSession.startTransaction();
+      if (!session) newSession.startTransaction();
 
       // check _id and get it
-      if (!data._id) throw new Error("_id is required for update");
       const _id = data._id;
       delete data._id;
 
@@ -88,13 +87,13 @@ export class BaseService<T> {
         new: true,
       });
 
-      if (session) await newSession.commitTransaction();
+      if (!session) await newSession.commitTransaction();
       return record as any;
     } catch (error) {
-      if (session) await newSession.abortTransaction();
+      if (!session) await newSession.abortTransaction();
       throw error;
     } finally {
-      if (session) await newSession.endSession();
+      if (!session) await newSession.endSession();
     }
   }
 
@@ -105,10 +104,7 @@ export class BaseService<T> {
     const newSession = await this.startSession(session);
 
     try {
-      if (session) newSession.startTransaction();
-
-      // check _id and get it
-      if (!_id) throw new Error("_id is required for deletion");
+      if (!session) newSession.startTransaction();
 
       const record = await this.model.findByIdAndUpdate(
         _id,
@@ -120,19 +116,19 @@ export class BaseService<T> {
         }
       );
 
-      if (session) await newSession.commitTransaction();
+      if (!session) await newSession.commitTransaction();
 
       // if active is set as true, then false for deleted and viceversa
       return (record as any)?.active ? false : true;
     } catch (error) {
-      if (session) await newSession.abortTransaction();
+      if (!session) await newSession.abortTransaction();
       throw error;
     } finally {
-      if (session) await newSession.endSession();
+      if (!session) await newSession.endSession();
     }
   }
 
-  private async startSession(session: ClientSession | undefined) {
+  async startSession(session: ClientSession | undefined) {
     return session ? session : await mongoose.startSession();
   }
 }
