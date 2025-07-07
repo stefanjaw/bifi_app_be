@@ -3,20 +3,35 @@ import { Request, Response } from "express";
 
 export class BaseController<T> {
   private service: BaseService<T>;
+  private parsingFields: {
+    key: string;
+    type: "object" | "array" | "string" | "number" | "boolean";
+  }[] = [];
 
   constructor(pService: BaseService<T>) {
     this.service = pService;
   }
 
+  set setParsingFields(
+    fields: {
+      key: string;
+      type: "object" | "array" | "string" | "number" | "boolean";
+    }[]
+  ) {
+    this.parsingFields = fields;
+  }
+
   get = async (req: Request, res: Response) => {
     try {
       // get elements
-      const searchParams = req.query.searchParams
-        ? JSON.parse(req.query.searchParams.toString())
-        : {};
-      const paginationOptions = req.query.paginationOptions
-        ? JSON.parse(req.query.paginationOptions.toString())
-        : {};
+      const searchParams = this.parseFields(
+        req.query.searchParams || "{}",
+        "object"
+      );
+      const paginationOptions = this.parseFields(
+        req.query.paginationOptions || "{}",
+        "object"
+      );
 
       const records = await this.service.get(searchParams, paginationOptions);
 
@@ -28,7 +43,18 @@ export class BaseController<T> {
 
   create = async (req: Request, res: Response) => {
     try {
-      const record = await this.service.create(req.body);
+      const body = { ...req.body };
+
+      // parse fields that need to be parsed
+      Object.keys(body).forEach((key) => {
+        // find the field in parsingFields
+        const field = this.parsingFields.find((field) => field.key === key);
+
+        // if the field is not found, use it as a string
+        body[key] = this.parseFields(body[key], field?.type || "string");
+      });
+
+      const record = await this.service.create(body);
 
       res.status(200).json(record);
     } catch (error: any) {
@@ -38,7 +64,20 @@ export class BaseController<T> {
 
   update = async (req: Request, res: Response) => {
     try {
-      const record = await this.service.update(req.body);
+      const body = { ...req.body };
+
+      if (!body._id) throw new Error("_id is required for update");
+
+      // parse fields that need to be parsed
+      Object.keys(body).forEach((key) => {
+        // find the field in parsingFields
+        const field = this.parsingFields.find((field) => field.key === key);
+
+        // if the field is not found, use it as a string
+        body[key] = this.parseFields(body[key], field?.type || "string");
+      });
+
+      const record = await this.service.update(body);
 
       res.status(200).json(record);
     } catch (error: any) {
@@ -48,6 +87,8 @@ export class BaseController<T> {
 
   delete = async (req: Request, res: Response) => {
     try {
+      if (!req.params._id) throw new Error("_id is required for deletion");
+
       const result = await this.service.delete(req.params._id);
 
       res.status(200).json(result);
@@ -55,4 +96,25 @@ export class BaseController<T> {
       res.status(401).json({ error: error.message });
     }
   };
+
+  private parseFields(
+    value: any,
+    type: "object" | "array" | "string" | "number" | "boolean"
+  ): any {
+    try {
+      if (type === "object") {
+        return typeof value === "string" ? JSON.parse(value) : value;
+      } else if (type === "array") {
+        return Array.isArray(value) ? value : JSON.parse(value);
+      } else if (type === "string") {
+        return String(value);
+      } else if (type === "number") {
+        return Number(value);
+      } else if (type === "boolean") {
+        return Boolean(value);
+      }
+    } catch (error) {
+      throw new Error(`Error parsing field: ${value}. Expected type: ${type}`);
+    }
+  }
 }
