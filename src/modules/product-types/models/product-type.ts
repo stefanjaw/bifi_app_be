@@ -1,9 +1,9 @@
-import mongoose, { PaginateModel } from "mongoose";
+import mongoose, { PaginateModel, Types } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 
 export interface productType {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
   description?: string;
   active: boolean;

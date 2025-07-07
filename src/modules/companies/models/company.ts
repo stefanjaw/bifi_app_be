@@ -1,11 +1,11 @@
-import mongoose, { PaginateModel } from "mongoose";
+import mongoose, { PaginateModel, Types } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { country } from "../../countries/models/country";
 
 export interface company {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
   countryId: country;
   address: string;

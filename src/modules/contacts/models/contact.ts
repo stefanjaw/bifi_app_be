@@ -1,10 +1,10 @@
-import mongoose, { PaginateModel } from "mongoose";
+import mongoose, { PaginateModel, Types } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 
 export interface contact {
-  _id: string;
+  _id: Types.ObjectId;
   name: string;
   lastName: string;
   phoneNumber?: string; // Optional field
