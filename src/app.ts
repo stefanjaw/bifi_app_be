@@ -1,12 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { companyRouter, countryRouter } from "./modules";
+import { companyRouter, contactRouter, countryRouter } from "./modules";
 
 // load .env variables
 dotenv.config();
 const PORT = process.env.PORT || 8000;
-const MONGO_DB_URL = process.env.MONGO_DB_URL || "";
+const MONGO_DB_URL =
+  process.env.MONGO_DB_URL || "mongodb://localhost:27017/bifi_app_db"; // default MongoDB URL for local development
 
 // create app
 const app = express();
@@ -14,6 +15,7 @@ const app = express();
 // routes will be here
 app.use(countryRouter);
 app.use(companyRouter);
+app.use(contactRouter);
 
 // start function
 const start = async () => {
