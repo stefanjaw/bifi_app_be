@@ -5,6 +5,7 @@ import {
   companyRouter,
   contactRouter,
   countryRouter,
+  maintenanceWindowRouter,
   productTypeRouter,
 } from "./modules";
 
@@ -22,6 +23,7 @@ app.use(countryRouter);
 app.use(companyRouter);
 app.use(contactRouter);
 app.use(productTypeRouter);
+app.use(maintenanceWindowRouter);
 
 // start function
 const start = async () => {
