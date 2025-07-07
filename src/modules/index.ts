@@ -5,3 +5,4 @@ export { productTypeRouter } from "./product-types/routes/product-type-routes";
 export { maintenanceWindowRouter } from "./maintenance-windows/routes/maintenance-window-routes";
 export { facilityRouter } from "./facilities/routes/facility-routes";
 export { roomRouter } from "./facilities/routes/room-routes";
+export { productRouter } from "./products/routes/product-routes";
