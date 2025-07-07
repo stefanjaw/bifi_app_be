@@ -5,8 +5,10 @@ import {
   companyRouter,
   contactRouter,
   countryRouter,
+  facilityRouter,
   maintenanceWindowRouter,
   productTypeRouter,
+  roomRouter,
 } from "./modules";
 
 // load .env variables
@@ -24,6 +26,8 @@ app.use(companyRouter);
 app.use(contactRouter);
 app.use(productTypeRouter);
 app.use(maintenanceWindowRouter);
+app.use(facilityRouter);
+app.use(roomRouter);
 
 // start function
 const start = async () => {
