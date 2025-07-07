@@ -1,0 +1,8 @@
+import { BaseService } from "../../../utils";
+import { productType, productTypeModel } from "../models/product-type";
+
+export class ProductTypeService extends BaseService<productType> {
+  constructor() {
+    super(productTypeModel);
+  }
+}

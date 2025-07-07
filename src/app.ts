@@ -1,7 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-import { companyRouter, contactRouter, countryRouter } from "./modules";
+import {
+  companyRouter,
+  contactRouter,
+  countryRouter,
+  productTypeRouter,
+} from "./modules";
 
 // load .env variables
 dotenv.config();
@@ -16,6 +21,7 @@ const app = express();
 app.use(countryRouter);
 app.use(companyRouter);
 app.use(contactRouter);
+app.use(productTypeRouter);
 
 // start function
 const start = async () => {
