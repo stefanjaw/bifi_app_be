@@ -6,9 +6,14 @@ import mongoose, {
 
 export class BaseService<T> {
   private model: PaginateModel<T>;
+  private populatingFields: string[] = [];
 
   constructor(pModel: PaginateModel<T>) {
     this.model = pModel as PaginateModel<T>;
+  }
+
+  set setPopulatingFields(fields: string[]) {
+    this.populatingFields = fields;
   }
 
   async get(
@@ -31,9 +36,20 @@ export class BaseService<T> {
           page: paginationOptions.page,
           limit: paginationOptions.limit,
         });
+
+        if (this.populatingFields.length > 0) {
+          await this.model.populate(
+            records.docs,
+            this.populatingFields.join(" ")
+          );
+        }
       } else {
         // non paginated
         records = await this.model.find(searchParams);
+
+        if (this.populatingFields.length > 0) {
+          await this.model.populate(records, this.populatingFields.join(" "));
+        }
       }
 
       if (!session) await newSession.commitTransaction();

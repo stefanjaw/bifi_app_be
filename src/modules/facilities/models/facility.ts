@@ -12,27 +12,40 @@ export interface facility {
   active: boolean;
 }
 
-const facilitySchema = new Schema({
-  mainPlace: {
-    type: Schema.Types.ObjectId,
-    ref: "Contact",
-    required: true,
-    // depth must be of one level
-    autopopulate: {
-      select: "name lastName email", // Fields to select from the parent contact
-      maxDepth: 1, // Limit depth to one level
+const facilitySchema = new Schema(
+  {
+    mainPlace: {
+      type: Schema.Types.ObjectId,
+      ref: "Contact",
+      required: true,
+      // depth must be of one level
+      autopopulate: {
+        select: "name lastName email", // Fields to select from the parent contact
+        maxDepth: 1, // Limit depth to one level
+      },
+    },
+    active: {
+      type: Boolean,
+      default: true,
     },
   },
-  rooms: {
-    type: [Schema.Types.ObjectId],
-    ref: "Room",
-    autopopulate: true,
-    default: [],
+  {
+    toObject: { virtuals: true }, // Include virtuals in toObject output
+    toJSON: { virtuals: true }, // Include virtuals in toJSON output
+  }
+);
+
+// add virtual field for rooms
+facilitySchema.virtual("rooms", {
+  ref: "Room",
+  localField: "_id",
+  foreignField: "facilityId",
+  autopopulate: {
+    select: "name code address active", // Fields to select from the rooms
+    maxDepth: 1, // Limit depth to one level
   },
-  active: {
-    type: Boolean,
-    default: true,
-  },
+  // only active ones
+  match: { active: true },
 });
 
 facilitySchema.plugin(paginate);
