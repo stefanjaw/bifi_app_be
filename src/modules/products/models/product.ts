@@ -74,8 +74,8 @@ const productSchema = new Schema({
     default: [],
   },
   photo: {
-    type: String,
-    default: "",
+    type: Schema.Types.ObjectId,
+    autopopulate: true,
   },
   locationId: {
     type: Schema.Types.ObjectId,
