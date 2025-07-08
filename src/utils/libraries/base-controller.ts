@@ -21,7 +21,8 @@ export class BaseController<T> {
     this.parsingFields = fields;
   }
 
-  private getHandler = async (req: Request, res: Response) => {
+  //#region Protected Methods to Handle Requests and can be overridden
+  protected async getHandler(req: Request, res: Response) {
     try {
       // get elements
       const searchParams = this.parseFields(
@@ -39,13 +40,9 @@ export class BaseController<T> {
     } catch (error: any) {
       res.status(401).json({ error: error.message });
     }
-  };
-
-  async get(req: Request, res: Response) {
-    await this.getHandler(req, res);
   }
 
-  private createHandler = async (req: Request, res: Response) => {
+  protected async createHandler(req: Request, res: Response) {
     try {
       const body = { ...req.body };
 
@@ -54,8 +51,12 @@ export class BaseController<T> {
         // find the field in parsingFields
         const field = this.parsingFields.find((field) => field.key === key);
 
+        // field check, if not, based on current type of body[key]
+        const type =
+          field?.type || typeof body[key] === "object" ? "object" : "string";
+
         // if the field is not found, use it as a string
-        body[key] = this.parseFields(body[key], field?.type || "string");
+        body[key] = this.parseFields(body[key], type);
       });
 
       const record = await this.service.create(body);
@@ -64,13 +65,9 @@ export class BaseController<T> {
     } catch (error: any) {
       res.status(401).json({ error: error.message });
     }
-  };
-
-  async create(req: Request, res: Response) {
-    await this.createHandler(req, res);
   }
 
-  private updateHandler = async (req: Request, res: Response) => {
+  protected async updateHandler(req: Request, res: Response) {
     try {
       const body = { ...req.body };
 
@@ -81,8 +78,12 @@ export class BaseController<T> {
         // find the field in parsingFields
         const field = this.parsingFields.find((field) => field.key === key);
 
+        // field check, if not, based on current type of body[key]
+        const type =
+          field?.type || typeof body[key] === "object" ? "object" : "string";
+
         // if the field is not found, use it as a string
-        body[key] = this.parseFields(body[key], field?.type || "string");
+        body[key] = this.parseFields(body[key], type);
       });
 
       const record = await this.service.update(body);
@@ -91,13 +92,9 @@ export class BaseController<T> {
     } catch (error: any) {
       res.status(401).json({ error: error.message });
     }
-  };
-
-  async update(req: Request, res: Response) {
-    await this.updateHandler(req, res);
   }
 
-  private deleteHandler = async (req: Request, res: Response) => {
+  protected async deleteHandler(req: Request, res: Response) {
     try {
       if (!req.params._id) throw new Error("_id is required for deletion");
 
@@ -107,11 +104,26 @@ export class BaseController<T> {
     } catch (error: any) {
       res.status(401).json({ error: error.message });
     }
+  }
+  //#endregion
+
+  //#region Public Methods That Express Will Use
+  get = async (req: Request, res: Response) => {
+    await this.getHandler(req, res);
   };
 
-  async delete(req: Request, res: Response) {
+  create = async (req: Request, res: Response) => {
+    await this.createHandler(req, res);
+  };
+
+  update = async (req: Request, res: Response) => {
+    await this.updateHandler(req, res);
+  };
+
+  delete = async (req: Request, res: Response) => {
     await this.deleteHandler(req, res);
-  }
+  };
+  //#endregion
 
   private parseFields(
     value: any,
