@@ -21,7 +21,7 @@ export class BaseController<T> {
     this.parsingFields = fields;
   }
 
-  get = async (req: Request, res: Response) => {
+  private getHandler = async (req: Request, res: Response) => {
     try {
       // get elements
       const searchParams = this.parseFields(
@@ -41,7 +41,11 @@ export class BaseController<T> {
     }
   };
 
-  create = async (req: Request, res: Response) => {
+  async get(req: Request, res: Response) {
+    await this.getHandler(req, res);
+  }
+
+  private createHandler = async (req: Request, res: Response) => {
     try {
       const body = { ...req.body };
 
@@ -62,7 +66,11 @@ export class BaseController<T> {
     }
   };
 
-  update = async (req: Request, res: Response) => {
+  async create(req: Request, res: Response) {
+    await this.createHandler(req, res);
+  }
+
+  private updateHandler = async (req: Request, res: Response) => {
     try {
       const body = { ...req.body };
 
@@ -85,7 +93,11 @@ export class BaseController<T> {
     }
   };
 
-  delete = async (req: Request, res: Response) => {
+  async update(req: Request, res: Response) {
+    await this.updateHandler(req, res);
+  }
+
+  private deleteHandler = async (req: Request, res: Response) => {
     try {
       if (!req.params._id) throw new Error("_id is required for deletion");
 
@@ -96,6 +108,10 @@ export class BaseController<T> {
       res.status(401).json({ error: error.message });
     }
   };
+
+  async delete(req: Request, res: Response) {
+    await this.deleteHandler(req, res);
+  }
 
   private parseFields(
     value: any,
