@@ -8,7 +8,7 @@ export class FacilityService extends BaseService<facility> {
 
   constructor() {
     super(facilityModel);
-    super.setPopulatingFields = ["rooms"];
+    // super.setPopulatingFields = ["rooms"];
   }
 
   override async create(
