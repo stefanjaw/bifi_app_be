@@ -18,66 +18,46 @@ export class BaseService<T> {
       | undefined,
     session: ClientSession | undefined = undefined
   ): Promise<PaginateResult<T> | T[]> {
-    const newSession = await this.startSession(session);
+    return await this.runTransaction<PaginateResult<T> | T[]>(
+      session,
+      async (newSession) => {
+        let records;
 
-    try {
-      if (!session) newSession.startTransaction();
+        if (paginationOptions && paginationOptions?.paginate) {
+          // if paginated
+          records = await this.model.paginate(searchParams, {
+            page: paginationOptions.page,
+            limit: paginationOptions.limit,
+            session: newSession,
+          });
+        } else {
+          // non paginated
+          records = await this.model.find(searchParams).session(newSession);
+        }
 
-      let records;
-
-      if (paginationOptions && paginationOptions?.paginate) {
-        // if paginated
-        records = await this.model.paginate(searchParams, {
-          page: paginationOptions.page,
-          limit: paginationOptions.limit,
-        });
-      } else {
-        // non paginated
-        records = await this.model.find(searchParams);
+        return records as PaginateResult<T> | T[];
       }
-
-      if (!session) await newSession.commitTransaction();
-      return records;
-    } catch (error) {
-      if (!session) await newSession.abortTransaction();
-      throw error;
-    } finally {
-      if (!session) await newSession.endSession();
-    }
+    );
   }
 
   async create(
     data: Record<string, any>,
     session: ClientSession | undefined = undefined
   ): Promise<T> {
-    const newSession = await this.startSession(session);
-
-    try {
-      if (!session) newSession.startTransaction();
-
+    return await this.runTransaction<T>(session, async (newSession) => {
       const record = (
         await this.model.create([data], { session: newSession })
       )[0];
 
-      if (!session) await newSession.commitTransaction();
-      return record;
-    } catch (error) {
-      if (!session) await newSession.abortTransaction();
-      throw error;
-    } finally {
-      if (!session) await newSession.endSession();
-    }
+      return record as T;
+    });
   }
 
   async update(
     data: Record<string, any>,
     session: ClientSession | undefined = undefined
   ): Promise<T> {
-    const newSession = await this.startSession(session);
-
-    try {
-      if (!session) newSession.startTransaction();
-
+    return await this.runTransaction<T>(session, async (newSession) => {
       // check _id and get it
       const _id = data._id;
       delete data._id;
@@ -87,25 +67,15 @@ export class BaseService<T> {
         new: true,
       });
 
-      if (!session) await newSession.commitTransaction();
-      return record as any;
-    } catch (error) {
-      if (!session) await newSession.abortTransaction();
-      throw error;
-    } finally {
-      if (!session) await newSession.endSession();
-    }
+      return record as T;
+    });
   }
 
   async delete(
     _id: string,
     session: ClientSession | undefined = undefined
   ): Promise<boolean> {
-    const newSession = await this.startSession(session);
-
-    try {
-      if (!session) newSession.startTransaction();
-
+    return await this.runTransaction<boolean>(session, async (newSession) => {
       const record = await this.model.findByIdAndUpdate(
         _id,
         {
@@ -119,16 +89,29 @@ export class BaseService<T> {
       if (!session) await newSession.commitTransaction();
 
       // if active is set as true, then false for deleted and viceversa
-      return (record as any)?.active ? false : true;
+      return ((record as any)?.active ? false : true) as boolean;
+    });
+  }
+
+  async runTransaction<T>(
+    session: ClientSession | undefined,
+    callback: (newSession: ClientSession) => Promise<T>
+  ): Promise<T> {
+    const newSession = session ? session : await mongoose.startSession();
+
+    try {
+      if (!session) newSession.startTransaction();
+
+      // run the callback function
+      const result = await callback(newSession);
+
+      if (!session) await newSession.commitTransaction();
+      return result as T;
     } catch (error) {
       if (!session) await newSession.abortTransaction();
       throw error;
     } finally {
       if (!session) await newSession.endSession();
     }
-  }
-
-  async startSession(session: ClientSession | undefined) {
-    return session ? session : await mongoose.startSession();
   }
 }

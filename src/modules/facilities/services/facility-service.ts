@@ -15,11 +15,7 @@ export class FacilityService extends BaseService<facility> {
     data: Record<string, any>,
     session?: ClientSession | undefined
   ): Promise<facility> {
-    const newSession = await super.startSession(session);
-
-    try {
-      if (!session) newSession.startTransaction();
-
+    return super.runTransaction<facility>(session, async (newSession) => {
       // create facility first
       const facility = await super.create(data, newSession);
 
@@ -35,25 +31,15 @@ export class FacilityService extends BaseService<facility> {
         }
       }
 
-      if (!session) await newSession.commitTransaction();
       return facility;
-    } catch (error) {
-      if (!session) await newSession.abortTransaction();
-      throw error;
-    } finally {
-      if (!session) await newSession.endSession();
-    }
+    });
   }
 
   override async update(
     data: Record<string, any>,
     session?: ClientSession | undefined
   ): Promise<facility> {
-    const newSession = await super.startSession(session);
-
-    try {
-      if (!session) newSession.startTransaction();
-
+    return super.runTransaction<facility>(session, async (newSession) => {
       // create, update rooms if they exist in the data
       if (data.rooms && data.rooms.length > 0) {
         // Ensure each room has the facilityId set to the current facility's _id
@@ -73,14 +59,7 @@ export class FacilityService extends BaseService<facility> {
       }
 
       const facility = await super.update(data, newSession);
-
-      if (!session) await newSession.commitTransaction();
       return facility;
-    } catch (error) {
-      if (!session) await newSession.abortTransaction();
-      throw error;
-    } finally {
-      if (!session) await newSession.endSession();
-    }
+    });
   }
 }
