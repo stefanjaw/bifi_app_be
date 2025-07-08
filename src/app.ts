@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import morgan from "morgan";
 import {
   companyRouter,
   contactRouter,
@@ -11,6 +12,7 @@ import {
   productTypeRouter,
   roomRouter,
 } from "./modules";
+import { GridFSBucketService } from "./utils/libraries/grid-fs-bucket";
 
 // load .env variables
 dotenv.config();
@@ -20,6 +22,7 @@ const MONGO_DB_URL =
 
 // create app
 const app = express();
+app.use(morgan("dev"));
 
 // routes will be here
 app.use(countryRouter);
@@ -36,6 +39,10 @@ const start = async () => {
   try {
     // init mongoose
     await mongoose.connect(MONGO_DB_URL);
+
+    // create bucket to save images
+    if (mongoose.connection.db)
+      GridFSBucketService.initiate(mongoose.connection.db);
 
     // init app
     app.listen(PORT, () => {
