@@ -80,7 +80,10 @@ const productSchema = new Schema({
   locationId: {
     type: Schema.Types.ObjectId,
     ref: "Room",
-    autopopulate: true,
+    autopopulate: {
+      select: "name code address active", // Fields to select from the room
+      maxDepth: 1, // Limit depth to one level
+    },
     required: true,
   },
   warrantyDate: {
