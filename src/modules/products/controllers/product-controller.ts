@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
-import { BaseController } from "../../../utils";
+import { BaseController, Validator } from "../../../utils";
 import { product } from "../models/product";
 import { ProductService } from "../services/product-service";
 
 const productService = new ProductService();
 
 export class ProductController extends BaseController<product> {
+  validator = new Validator();
+
   constructor() {
     super(productService);
     super.setParsingFields = [
@@ -23,19 +25,7 @@ export class ProductController extends BaseController<product> {
     const file = (req.files as Express.Multer.File[])[0]; // Assuming the first file is the photo
 
     if (file) {
-      // Assuming the first file is the photo
-      if (!file.mimetype.startsWith("image/")) {
-        res.status(400).json({ error: "Uploaded file is not a valid image" });
-        return;
-      }
-
-      // check size of the file
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
-        res.status(400).json({ error: "File size exceeds the limit of 5MB" });
-        return;
-      }
-
+      this.validator.validateImageFile(file);
       req.body.photo = file;
     }
 
@@ -49,19 +39,7 @@ export class ProductController extends BaseController<product> {
     const file = (req.files as Express.Multer.File[])[0]; // Assuming the first file is the photo
 
     if (file) {
-      // Assuming the first file is the photo
-      if (!file.mimetype.startsWith("image/")) {
-        res.status(400).json({ error: "Uploaded file is not a valid image" });
-        return;
-      }
-
-      // check size of the file
-      if (file.size > 5 * 1024 * 1024) {
-        // 5MB limit
-        res.status(400).json({ error: "File size exceeds the limit of 5MB" });
-        return;
-      }
-
+      this.validator.validateImageFile(file);
       req.body.photo = file;
     }
 
