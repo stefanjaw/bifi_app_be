@@ -8,6 +8,7 @@ import {
   countryRouter,
   facilityRouter,
   maintenanceWindowRouter,
+  productComissioningRouter,
   productRouter,
   productTypeRouter,
   roomRouter,
@@ -33,6 +34,7 @@ app.use(maintenanceWindowRouter);
 app.use(facilityRouter);
 app.use(roomRouter);
 app.use(productRouter);
+app.use(productComissioningRouter);
 
 // start function
 const start = async () => {

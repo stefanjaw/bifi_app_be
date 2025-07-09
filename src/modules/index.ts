@@ -6,3 +6,4 @@ export { maintenanceWindowRouter } from "./maintenance-windows/routes/maintenanc
 export { facilityRouter } from "./facilities/routes/facility-routes";
 export { roomRouter } from "./facilities/routes/room-routes";
 export { productRouter } from "./products/routes/product-routes";
+export { productComissioningRouter } from "./product-comissioning/routes/product-comissioning-routes";
