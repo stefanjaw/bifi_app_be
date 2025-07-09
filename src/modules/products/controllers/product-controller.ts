@@ -25,7 +25,13 @@ export class ProductController extends BaseController<product> {
     const file = (req.files as Express.Multer.File[])[0]; // Assuming the first file is the photo
 
     if (file) {
-      this.validator.validateImageFile(file);
+      try {
+        this.validator.validateImageFile(file);
+      } catch (error: any) {
+        super.sendError(res, 401, error.message);
+        return;
+      }
+
       req.body.photo = file;
     }
 
@@ -39,7 +45,13 @@ export class ProductController extends BaseController<product> {
     const file = (req.files as Express.Multer.File[])[0]; // Assuming the first file is the photo
 
     if (file) {
-      this.validator.validateImageFile(file);
+      try {
+        this.validator.validateImageFile(file);
+      } catch (error: any) {
+        super.sendError(res, 401, error.message);
+        return;
+      }
+
       req.body.photo = file;
     }
 
