@@ -53,7 +53,11 @@ export class BaseController<T> {
 
         // field check, if not, based on current type of body[key]
         const type =
-          field?.type || typeof body[key] === "object" ? "object" : "string";
+          field?.type || typeof body[key] === "object"
+            ? "object"
+            : Array.isArray(body[key])
+            ? "array"
+            : "string";
 
         // if the field is not found, use it as a string
         body[key] = this.parseFields(body[key], type);
@@ -80,7 +84,11 @@ export class BaseController<T> {
 
         // field check, if not, based on current type of body[key]
         const type =
-          field?.type || typeof body[key] === "object" ? "object" : "string";
+          field?.type || typeof body[key] === "object"
+            ? "object"
+            : Array.isArray(body[key])
+            ? "array"
+            : "string";
 
         // if the field is not found, use it as a string
         body[key] = this.parseFields(body[key], type);
