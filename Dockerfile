@@ -1,4 +1,4 @@
-FROM node:22 as build
+FROM node:22 AS build
 
 WORKDIR /app
 
@@ -10,8 +10,6 @@ RUN npm install --verbose
 
 RUN npm run build
 
-cd dist
-
-node index.js
+CMD ["node", "dist/index.js"]
 
 
