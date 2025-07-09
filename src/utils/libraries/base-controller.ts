@@ -36,9 +36,9 @@ export class BaseController<T> {
 
       const records = await this.service.get(searchParams, paginationOptions);
 
-      res.status(200).json(records);
+      this.sendData(res, records);
     } catch (error: any) {
-      res.status(401).json({ error: error.message });
+      this.sendError(res, 401, error.message);
     }
   }
 
@@ -65,9 +65,9 @@ export class BaseController<T> {
 
       const record = await this.service.create(body);
 
-      res.status(200).json(record);
+      this.sendData(res, record);
     } catch (error: any) {
-      res.status(401).json({ error: error.message });
+      this.sendError(res, 401, error.message);
     }
   }
 
@@ -96,9 +96,9 @@ export class BaseController<T> {
 
       const record = await this.service.update(body);
 
-      res.status(200).json(record);
+      this.sendData(res, record);
     } catch (error: any) {
-      res.status(401).json({ error: error.message });
+      this.sendError(res, 401, error.message);
     }
   }
 
@@ -108,9 +108,9 @@ export class BaseController<T> {
 
       const result = await this.service.delete(req.params._id);
 
-      res.status(200).json(result);
+      this.sendData(res, result);
     } catch (error: any) {
-      res.status(401).json({ error: error.message });
+      this.sendError(res, 401, error.message);
     }
   }
   //#endregion
@@ -133,7 +133,7 @@ export class BaseController<T> {
   };
   //#endregion
 
-  private parseFields(
+  protected parseFields(
     value: any,
     type: "object" | "array" | "string" | "number" | "boolean"
   ): any {
@@ -152,5 +152,13 @@ export class BaseController<T> {
     } catch (error) {
       throw new Error(`Error parsing field: ${value}. Expected type: ${type}`);
     }
+  }
+
+  sendError(res: Response, status: number, error: string) {
+    res.status(status).json({ error });
+  }
+
+  sendData(res: Response, data: any) {
+    res.status(200).json(data);
   }
 }
