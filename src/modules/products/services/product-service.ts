@@ -1,6 +1,5 @@
 import { ClientSession } from "mongoose";
-import { BaseService } from "../../../utils";
-import { GridFSBucketService } from "../../../utils/libraries/grid-fs-bucket";
+import { BaseService, GridFSBucketService } from "../../../utils";
 import { product, productModel } from "../models/product";
 
 export class ProductService extends BaseService<product> {

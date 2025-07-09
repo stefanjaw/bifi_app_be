@@ -12,7 +12,7 @@ import {
   productTypeRouter,
   roomRouter,
 } from "./modules";
-import { GridFSBucketService } from "./utils/libraries/grid-fs-bucket";
+import { GridFSBucketService } from "./utils";
 
 // load .env variables
 dotenv.config();
