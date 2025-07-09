@@ -17,7 +17,7 @@ import { GridFSBucketService } from "./utils";
 
 // load .env variables
 dotenv.config();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.SERVER_PORT || 8080;
 const MONGO_DB_URL =
   process.env.MONGO_DB_URL || "mongodb://localhost:27017/bifi_app_db"; // default MongoDB URL for local development
 
@@ -25,16 +25,23 @@ const MONGO_DB_URL =
 const app = express();
 app.use(morgan("dev"));
 
-// routes will be here
-app.use(countryRouter);
-app.use(companyRouter);
-app.use(contactRouter);
-app.use(productTypeRouter);
-app.use(maintenanceWindowRouter);
-app.use(facilityRouter);
-app.use(roomRouter);
-app.use(productRouter);
-app.use(productComissioningRouter);
+// routes will be here, main route inits with /api and then it uses the routers
+app.use("/api", countryRouter);
+app.use("/api", companyRouter);
+app.use("/api", contactRouter);
+app.use("/api", productTypeRouter);
+app.use("/api", maintenanceWindowRouter);
+app.use("/api", facilityRouter);
+app.use("/api", roomRouter);
+app.use("/api", productRouter);
+app.use("/api", productComissioningRouter);
+
+// default route
+app.get("/", (req, res) => {
+  res
+    .status(200)
+    .json({ message: "Welcome to the BIFI App Backend API", version: "1.0.0" });
+});
 
 // start function
 const start = async () => {
@@ -45,16 +52,19 @@ const start = async () => {
       timeoutMS: 10000, // 10 seconds timeout
     });
 
+    console.log("Connected to MongoDB successfully!");
+
     // create bucket to save images
     if (mongoose.connection.db)
       GridFSBucketService.initiate(mongoose.connection.db);
 
     // init app
     app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+      //  get current url
+      console.log(`Server running successfully on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.log("Error starting the server:", error);
+    console.error("Error starting the server:", error);
     start(); // retry connection
   }
 };
