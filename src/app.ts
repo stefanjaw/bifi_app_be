@@ -40,7 +40,10 @@ app.use(productComissioningRouter);
 const start = async () => {
   try {
     // init mongoose
-    await mongoose.connect(MONGO_DB_URL);
+    console.log("Connecting to MongoDB...");
+    await mongoose.connect(MONGO_DB_URL, {
+      timeoutMS: 10000, // 10 seconds timeout
+    });
 
     // create bucket to save images
     if (mongoose.connection.db)
@@ -51,8 +54,8 @@ const start = async () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.log(error);
-    process.exit(1);
+    console.log("Error starting the server:", error);
+    start(); // retry connection
   }
 };
 
