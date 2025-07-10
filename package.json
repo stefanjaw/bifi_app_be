@@ -21,6 +21,8 @@
     "prestart": "npm run build"
   },
   "dependencies": {
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
     "mongodb": "^6.17.0",
@@ -28,7 +30,8 @@
     "mongoose-autopopulate": "^1.1.0",
     "mongoose-paginate-v2": "^1.9.1",
     "morgan": "^1.10.0",
-    "multer": "^2.0.1"
+    "multer": "^2.0.1",
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@types/dotenv": "^6.1.1",
