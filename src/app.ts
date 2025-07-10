@@ -14,7 +14,7 @@ import {
   productTypeRouter,
   roomRouter,
 } from "./modules";
-import { GridFSBucketService } from "./utils";
+import { catchExceptionMiddleware, GridFSBucketService } from "./utils";
 
 // load .env variables
 dotenv.config();
@@ -34,8 +34,11 @@ app.use("/api", productTypeRouter);
 app.use("/api", maintenanceWindowRouter);
 app.use("/api", facilityRouter);
 app.use("/api", roomRouter);
-app.use("/api", productRouter);
+app.use("/api", new productRouter().getRouter);
 app.use("/api", productComissioningRouter);
+
+// middlewares
+app.use(catchExceptionMiddleware);
 
 // default route
 app.get("/", (req, res) => {

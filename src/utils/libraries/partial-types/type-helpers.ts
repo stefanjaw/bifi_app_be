@@ -1,4 +1,4 @@
-import { Type } from "./type";
+import { Type } from "./type.type";
 
 export function applyIsOptionalDecorator(
   targetClass: Function,

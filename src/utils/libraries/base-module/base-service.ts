@@ -3,12 +3,13 @@ import mongoose, {
   PaginateModel,
   PaginateResult,
 } from "mongoose";
+import { BadRequestException, MongoException } from "../exceptions";
 
 export class BaseService<T> {
-  private model: PaginateModel<T>;
+  model!: PaginateModel<T>;
 
-  constructor(pModel: PaginateModel<T>) {
-    this.model = pModel as PaginateModel<T>;
+  constructor(params: Pick<BaseService<T>, "model">) {
+    Object.assign(this, params);
   }
 
   async get(

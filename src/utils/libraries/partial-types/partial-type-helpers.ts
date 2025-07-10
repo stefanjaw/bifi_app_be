@@ -1,5 +1,5 @@
-import { Type } from "./type";
-import { MappedType } from "./mapped-type";
+import { Type } from "./type.type";
+import { MappedType } from "./mapped-type.type";
 import {
   applyIsOptionalDecorator,
   applyValidateIfDefinedDecorator,
@@ -7,7 +7,7 @@ import {
   inheritTransformationMetadata,
   inheritValidationMetadata,
 } from "./type-helpers";
-import { RemoveFieldsWithType } from "./remove-fields-with-type";
+import { RemoveFieldsWithType } from "./remove-fields-with-type.type";
 
 export function PartialType<T>(
   classRef: Type<T>,
