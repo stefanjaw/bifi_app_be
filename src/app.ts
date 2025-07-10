@@ -14,7 +14,7 @@ import {
   productTypeRouter,
   roomRouter,
 } from "./modules";
-import { catchExceptionMiddleware, GridFSBucketService } from "./utils";
+import { catchExceptionMiddleware, GridFSBucketService } from "./system";
 
 // load .env variables
 dotenv.config();
