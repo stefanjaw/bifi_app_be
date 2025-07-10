@@ -1,4 +1,4 @@
-import { BaseService } from "../../../utils";
+import { BaseService } from "../../../system";
 import {
   maintenanceWindow,
   maintenanceWindowModel,
@@ -6,6 +6,6 @@ import {
 
 export class MaintenanceWindowsService extends BaseService<maintenanceWindow> {
   constructor() {
-    super(maintenanceWindowModel);
+    super({ model: maintenanceWindowModel });
   }
 }

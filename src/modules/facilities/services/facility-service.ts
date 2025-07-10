@@ -1,5 +1,5 @@
 import { ClientSession } from "mongoose";
-import { BaseService } from "../../../utils";
+import { BaseService } from "../../../system";
 import { facility, facilityModel } from "../models/facility";
 import { RoomService } from "./room-service";
 
@@ -7,7 +7,7 @@ export class FacilityService extends BaseService<facility> {
   private roomService: RoomService = new RoomService();
 
   constructor() {
-    super(facilityModel);
+    super({ model: facilityModel });
     // super.setPopulatingFields = ["rooms"];
   }
 

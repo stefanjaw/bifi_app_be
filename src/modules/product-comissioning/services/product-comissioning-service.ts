@@ -1,5 +1,5 @@
 import { ClientSession } from "mongoose";
-import { BaseService, GridFSBucketService } from "../../../utils";
+import { BaseService, GridFSBucketService } from "../../../system";
 import {
   productComissioning,
   productComissioningModel,
@@ -7,7 +7,7 @@ import {
 
 export class ProductComissioningService extends BaseService<productComissioning> {
   constructor() {
-    super(productComissioningModel);
+    super({ model: productComissioningModel });
   }
 
   private get gridFSBucket() {

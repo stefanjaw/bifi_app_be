@@ -1,8 +1,8 @@
-import { BaseService } from "../../../utils";
+import { BaseService } from "../../../system";
 import { contact, contactModel } from "../models/contact";
 
 export class ContactService extends BaseService<contact> {
   constructor() {
-    super(contactModel);
+    super({ model: contactModel });
   }
 }

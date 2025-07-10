@@ -1,4 +1,4 @@
-import { BaseController } from "../../../utils";
+import { BaseController } from "../../../system";
 import { contact } from "../models/contact";
 import { ContactService } from "../services/contact-service";
 
@@ -6,6 +6,6 @@ const contactService = new ContactService();
 
 export class ContactController extends BaseController<contact> {
   constructor() {
-    super(contactService);
+    super({ service: contactService });
   }
 }

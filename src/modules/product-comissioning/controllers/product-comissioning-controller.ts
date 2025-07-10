@@ -1,12 +1,12 @@
-import { Request, Response } from "express";
-import { BaseController, Validator } from "../../../utils";
+import { NextFunction, Request, Response } from "express";
+import { BaseController, FileValidatorService } from "../../../system";
 import { productComissioning } from "../models/product-comissioning";
 import { ProductComissioningService } from "../services/product-comissioning-service";
 
 const productComissioningService = new ProductComissioningService();
 
 export class ProductComissioningController extends BaseController<productComissioning> {
-  private validator = new Validator();
+  private fileValidator = new FileValidatorService();
   private acceptedAttarchmentTypes = [
     "image/jpeg",
     "image/png",
@@ -21,19 +21,23 @@ export class ProductComissioningController extends BaseController<productComissi
   ];
 
   constructor() {
-    super(productComissioningService);
+    super({ service: productComissioningService });
   }
 
   protected override async createHandler(
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
     if (files && files.length > 0) {
       try {
         for (const file of files) {
-          this.validator.validateFileType(file, this.acceptedAttarchmentTypes);
+          this.fileValidator.validateFileType(
+            file,
+            this.acceptedAttarchmentTypes
+          );
         }
       } catch (error: any) {
         super.sendError(res, 401, error.message);
@@ -43,19 +47,23 @@ export class ProductComissioningController extends BaseController<productComissi
       req.body.attachments = files;
     }
 
-    await super.createHandler(req, res);
+    await super.createHandler(req, res, next);
   }
 
   protected override async updateHandler(
     req: Request,
-    res: Response
+    res: Response,
+    next: NextFunction
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
     if (files && files.length > 0) {
       try {
         for (const file of files) {
-          this.validator.validateFileType(file, this.acceptedAttarchmentTypes);
+          this.fileValidator.validateFileType(
+            file,
+            this.acceptedAttarchmentTypes
+          );
         }
       } catch (error: any) {
         super.sendError(res, 401, error.message);
@@ -65,6 +73,6 @@ export class ProductComissioningController extends BaseController<productComissi
       req.body.attachments = files;
     }
 
-    await super.updateHandler(req, res);
+    await super.updateHandler(req, res, next);
   }
 }
