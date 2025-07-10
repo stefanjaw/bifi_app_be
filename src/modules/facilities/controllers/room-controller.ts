@@ -1,5 +1,5 @@
 import { BaseController } from "../../../system";
-import { room } from "../models/room";
+import { room } from "../models/room.model";
 import { RoomService } from "../services/room-service";
 
 const roomService = new RoomService();

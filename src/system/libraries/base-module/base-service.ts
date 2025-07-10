@@ -3,7 +3,6 @@ import mongoose, {
   PaginateModel,
   PaginateResult,
 } from "mongoose";
-import { BadRequestException, MongoException } from "../exceptions";
 
 export class BaseService<T> {
   model!: PaginateModel<T>;

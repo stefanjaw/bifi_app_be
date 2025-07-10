@@ -1,29 +1,8 @@
-import { maintenanceWindow } from "./../../maintenance-windows/models/maintenance-window";
 import mongoose, { PaginateModel, Types } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { productType } from "../../product-types/models/product-type";
-import { contact } from "../../contacts/models/contact";
-import { room } from "../../facilities/models/room";
-
-export interface product {
-  _id: Types.ObjectId;
-  productTypeIds: productType[];
-  vendorIds: contact[];
-  productModel: string;
-  serialNumber: string;
-  acquiredDate: Date;
-  acquiredPrice: number;
-  currentPrice: number;
-  condition: "excellent" | "good" | "fair" | "poor";
-  maintenanceWindowIds: maintenanceWindow[];
-  photo?: Types.ObjectId;
-  locationId: room;
-  warrantyDate: Date;
-  remarks?: string;
-  active: boolean;
-}
+import { ProductDocument } from "../../../types/mongoose.gen";
 
 const productSchema = new Schema(
   {
@@ -121,9 +100,9 @@ productSchema.virtual("productComission", {
 productSchema.plugin(paginate);
 productSchema.plugin(autopopulate);
 
-const productModel = mongoose.model<product, PaginateModel<product>>(
-  "Product",
-  productSchema
-);
+const productModel = mongoose.model<
+  ProductDocument,
+  PaginateModel<ProductDocument>
+>("Product", productSchema);
 
 export { productModel };

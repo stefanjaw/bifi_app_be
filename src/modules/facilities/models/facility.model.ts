@@ -2,8 +2,8 @@ import mongoose, { PaginateModel, Types } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { contact } from "../../contacts/models/contact";
-import { room } from "./room";
+import { contact } from "../../contacts/models/contact.model";
+import { room } from "./room.model";
 
 export interface facility {
   _id: Types.ObjectId;

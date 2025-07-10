@@ -1,6 +1,6 @@
 import { ClientSession } from "mongoose";
 import { BaseService } from "../../../system";
-import { facility, facilityModel } from "../models/facility";
+import { facility, facilityModel } from "../models/facility.model";
 import { RoomService } from "./room-service";
 
 export class FacilityService extends BaseService<facility> {

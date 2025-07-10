@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { BaseController, FileValidatorService } from "../../../system";
-import { productComissioning } from "../models/product-comissioning";
+import { productComissioning } from "../models/product-comissioning.model";
 import { ProductComissioningService } from "../services/product-comissioning-service";
 
 const productComissioningService = new ProductComissioningService();

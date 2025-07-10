@@ -1,5 +1,5 @@
 import { BaseController } from "../../../system";
-import { contact } from "../models/contact";
+import { contact } from "../models/contact.model";
 import { ContactService } from "../services/contact-service";
 
 const contactService = new ContactService();

@@ -1,0 +1,83 @@
+import { Types } from "mongoose";
+import {
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsDate,
+  IsIn,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+} from "class-validator";
+import { Transform, Type } from "class-transformer";
+import { PartialType } from "../../../system";
+
+export class ProductDTO {
+  @IsArray()
+  @ArrayMinSize(1)
+  @Transform(({ value }) => JSON.parse(value))
+  productTypeIds!: string[];
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @Transform(({ value }) => JSON.parse(value))
+  vendorIds!: string[];
+
+  @IsString()
+  @IsNotEmpty()
+  productModel!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  serialNumber!: string;
+
+  @IsDate()
+  @Type(() => Date)
+  acquiredDate!: Date;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  acquiredPrice!: number;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  currentPrice!: number;
+
+  @IsIn(["excellent", "good", "fair", "poor"])
+  condition!: string;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsOptional()
+  maintenanceWindowIds?: string[];
+
+  @IsOptional()
+  photo?: Types.ObjectId | undefined;
+
+  @IsString()
+  @IsNotEmpty()
+  locationId!: string;
+
+  @IsDate()
+  @Type(() => Date)
+  warrantyDate!: Date;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  remarks?: string | undefined;
+
+  @IsBoolean()
+  @IsOptional()
+  active!: boolean;
+}
+
+export class UpdateProductDTO extends PartialType(ProductDTO) {
+  @IsMongoId()
+  _id!: string;
+}

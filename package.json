@@ -18,7 +18,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "nodemon --exec ts-node src/index.ts",
-    "prestart": "npm run build"
+    "prestart": "npm run build",
+    "generate:types": "mtgen \"src/modules/**/*.model.ts\" -o src/types/mongoose.gen.ts -p tsconfig.json"
   },
   "dependencies": {
     "class-transformer": "^0.5.1",
@@ -41,6 +42,7 @@
     "@types/morgan": "^1.9.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.10",
+    "mongoose-tsgen": "^9.5.3",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"

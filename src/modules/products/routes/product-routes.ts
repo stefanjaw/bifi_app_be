@@ -1,15 +1,17 @@
-import { Router } from "express";
-import multer from "multer";
+import { BaseRoutes } from "../../../system";
 import { ProductController } from "../controllers/product-controller";
+import { Product } from "../models/product.model";
+import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
 
-const upload = multer();
 const productController = new ProductController();
 
-const productRouter = Router();
-
-productRouter.get("/products", productController.get);
-productRouter.post("/products", upload.any(), productController.create);
-productRouter.put("/products", upload.any(), productController.update);
-productRouter.delete("/products", productController.delete);
-
-export { productRouter };
+export class productRouter extends BaseRoutes<Product> {
+  constructor() {
+    super({
+      controller: productController,
+      endpoint: "/products",
+      dtoCreateClass: ProductDTO,
+      dtoUpdateClass: UpdateProductDTO,
+    });
+  }
+}

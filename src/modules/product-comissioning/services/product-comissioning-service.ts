@@ -3,7 +3,7 @@ import { BaseService, GridFSBucketService } from "../../../system";
 import {
   productComissioning,
   productComissioningModel,
-} from "../models/product-comissioning";
+} from "../models/product-comissioning.model";
 
 export class ProductComissioningService extends BaseService<productComissioning> {
   constructor() {
