@@ -1,11 +1,11 @@
 import { BaseRoutes } from "../../../system";
+import { ProductDocument } from "../../../types/mongoose.gen";
 import { ProductController } from "../controllers/product-controller";
-import { Product } from "../models/product.model";
 import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
 
 const productController = new ProductController();
 
-export class productRouter extends BaseRoutes<Product> {
+export class productRouter extends BaseRoutes<ProductDocument> {
   constructor() {
     super({
       controller: productController,

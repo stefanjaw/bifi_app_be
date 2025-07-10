@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { BaseController, FileValidatorService } from "../../../system";
 import { ProductService } from "../services/product-service";
-import { Product } from "../models/product.model";
+import { ProductDocument } from "../../../types/mongoose.gen";
 
 const productService = new ProductService();
 
-export class ProductController extends BaseController<Product> {
+export class ProductController extends BaseController<ProductDocument> {
   fileValidator = new FileValidatorService();
 
   constructor() {
