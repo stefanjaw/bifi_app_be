@@ -325,6 +325,7 @@ export type CountryDocument = mongoose.Document<
  * ```
  */
 export type Facility = {
+  name: string;
   mainPlace: Contact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -411,6 +412,7 @@ export type FacilityDocument = mongoose.Document<
   FacilityQueries
 > &
   FacilityMethods & {
+    name: string;
     mainPlace: ContactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;

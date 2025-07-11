@@ -40,6 +40,10 @@ export class FacilityRoomDTO {
 }
 
 export class FacilityDTO {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
   @IsMongoId()
   mainPlace!: string;
 

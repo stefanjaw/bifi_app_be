@@ -6,6 +6,10 @@ import { FacilityDocument } from "../../../types/mongoose.gen";
 
 const facilitySchema = new Schema(
   {
+    name: {
+      type: String,
+      required: true,
+    },
     mainPlace: {
       type: Schema.Types.ObjectId,
       ref: "Contact",
