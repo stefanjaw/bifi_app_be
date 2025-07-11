@@ -1,7 +1,7 @@
 import { BaseController } from "./base-controller";
 import { Router } from "express";
 import multer from "multer";
-import { validateBody } from "../../middlewares";
+import { validateBodyMiddleware } from "../../middlewares";
 
 export class BaseRoutes<T> {
   controller!: BaseController<T>;
@@ -39,7 +39,7 @@ export class BaseRoutes<T> {
     this.router.post(
       this.endpoint,
       this.upload.any(),
-      validateBody(this.dtoCreateClass),
+      validateBodyMiddleware(this.dtoCreateClass),
       this.controller.create
     );
   }
@@ -48,7 +48,7 @@ export class BaseRoutes<T> {
     this.router.put(
       this.endpoint,
       this.upload.any(),
-      validateBody(this.dtoUpdateClass),
+      validateBodyMiddleware(this.dtoUpdateClass),
       this.controller.update
     );
   }
