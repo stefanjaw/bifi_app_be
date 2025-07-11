@@ -3,6 +3,8 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import morgan from "morgan";
+import cors from "cors";
+import { catchExceptionMiddleware, GridFSBucketService } from "./system";
 import {
   companyRouter,
   contactRouter,
@@ -14,7 +16,6 @@ import {
   ProductTypeRouter,
   RoomRouter,
 } from "./modules";
-import { catchExceptionMiddleware, GridFSBucketService } from "./system";
 
 // load .env variables
 dotenv.config();
@@ -25,6 +26,12 @@ const MONGO_DB_URL =
 // create app
 const app = express();
 app.use(morgan("dev"));
+app.use(
+  cors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  })
+);
 
 // routes will be here, main route inits with /api and then it uses the routers
 app.use("/api", countryRouter);
