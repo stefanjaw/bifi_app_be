@@ -1,2 +1,2 @@
-export { validateBodyMiddleware } from "./validate-body";
-export { catchExceptionMiddleware } from "./catch-exception";
+export { validateBodyMiddleware } from "./validate-body-middleware";
+export { catchExceptionMiddleware } from "./catch-exception-middleware";
