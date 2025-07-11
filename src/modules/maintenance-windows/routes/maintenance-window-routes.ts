@@ -1,29 +1,20 @@
-import { Router } from "express";
-import multer from "multer";
+import { BaseRoutes } from "../../../system";
+import { MaintenanceWindowDocument } from "../../../types/mongoose.gen";
 import { MaintenanceWindowController } from "../controllers/maintenance-window-controller";
+import {
+  MaintenanceWindowDTO,
+  UpdateMaintenanceWindowDTO,
+} from "../models/maintenance-window.dto";
 
-const upload = multer();
 const maintenanceWindowController = new MaintenanceWindowController();
 
-const maintenanceWindowRouter = Router();
-
-maintenanceWindowRouter.get(
-  "/maintenance-windows",
-  maintenanceWindowController.get
-);
-maintenanceWindowRouter.post(
-  "/maintenance-windows",
-  upload.any(),
-  maintenanceWindowController.create
-);
-maintenanceWindowRouter.put(
-  "/maintenance-windows",
-  upload.any(),
-  maintenanceWindowController.update
-);
-maintenanceWindowRouter.delete(
-  "/maintenance-windows",
-  maintenanceWindowController.delete
-);
-
-export { maintenanceWindowRouter };
+export class MaintenanceWindowRouter extends BaseRoutes<MaintenanceWindowDocument> {
+  constructor() {
+    super({
+      controller: maintenanceWindowController,
+      endpoint: "/maintenance-windows",
+      dtoCreateClass: MaintenanceWindowDTO,
+      dtoUpdateClass: UpdateMaintenanceWindowDTO,
+    });
+  }
+}

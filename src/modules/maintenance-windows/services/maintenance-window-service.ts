@@ -1,10 +1,8 @@
 import { BaseService } from "../../../system";
-import {
-  maintenanceWindow,
-  maintenanceWindowModel,
-} from "../models/maintenance-window.model";
+import { MaintenanceWindowDocument } from "../../../types/mongoose.gen";
+import { maintenanceWindowModel } from "../models/maintenance-window.model";
 
-export class MaintenanceWindowsService extends BaseService<maintenanceWindow> {
+export class MaintenanceWindowsService extends BaseService<MaintenanceWindowDocument> {
   constructor() {
     super({ model: maintenanceWindowModel });
   }

@@ -1,22 +1,8 @@
-import mongoose, { PaginateModel, Types } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-
-export interface maintenanceWindow {
-  _id: Types.ObjectId;
-  name: string;
-  daysBefore: number;
-  daysAfter: number;
-  recurrency:
-    | "daily"
-    | "weekly"
-    | "monthly"
-    | "quarterly"
-    | "semi-anually"
-    | "annually";
-  active: boolean;
-}
+import { MaintenanceWindowDocument } from "../../../types/mongoose.gen";
 
 const maintenanceWindowSchema = new Schema({
   name: {
@@ -53,8 +39,8 @@ maintenanceWindowSchema.plugin(paginate);
 maintenanceWindowSchema.plugin(autopopulate);
 
 const maintenanceWindowModel = mongoose.model<
-  maintenanceWindow,
-  PaginateModel<maintenanceWindow>
+  MaintenanceWindowDocument,
+  PaginateModel<MaintenanceWindowDocument>
 >("MaintenanceWindow", maintenanceWindowSchema);
 
 export { maintenanceWindowModel };
