@@ -1,4 +1,3 @@
-import { Types } from "mongoose";
 import {
   ArrayMinSize,
   IsArray,
@@ -18,11 +17,13 @@ import { PartialType } from "../../../system";
 export class ProductDTO {
   @IsArray()
   @ArrayMinSize(1)
+  @IsMongoId({ each: true })
   @Transform(({ value }) => JSON.parse(value))
   productTypeIds!: string[];
 
   @IsArray()
   @ArrayMinSize(1)
+  @IsMongoId({ each: true })
   @Transform(({ value }) => JSON.parse(value))
   vendorIds!: string[];
 
@@ -53,14 +54,14 @@ export class ProductDTO {
 
   @IsArray()
   @ArrayMinSize(1)
+  @IsMongoId({ each: true })
   @IsOptional()
   maintenanceWindowIds?: string[];
 
   @IsOptional()
-  photo?: Types.ObjectId | undefined;
+  photo?: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsMongoId()
   locationId!: string;
 
   @IsDate()
@@ -74,7 +75,8 @@ export class ProductDTO {
 
   @IsBoolean()
   @IsOptional()
-  active!: boolean;
+  @Type(() => Boolean)
+  active?: boolean;
 }
 
 export class UpdateProductDTO extends PartialType(ProductDTO) {
