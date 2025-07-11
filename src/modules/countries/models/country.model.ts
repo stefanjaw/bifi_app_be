@@ -1,12 +1,7 @@
-import mongoose, { PaginateModel, Types } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
-
-export interface country {
-  _id: Types.ObjectId;
-  name: string;
-  active: boolean;
-}
+import { CountryDocument } from "../../../types/mongoose.gen";
 
 const countrySchema = new Schema({
   name: {
@@ -21,9 +16,9 @@ const countrySchema = new Schema({
 
 countrySchema.plugin(paginate);
 
-const countryModel = mongoose.model<country, PaginateModel<country>>(
-  "Country",
-  countrySchema
-);
+const countryModel = mongoose.model<
+  CountryDocument,
+  PaginateModel<CountryDocument>
+>("Country", countrySchema);
 
 export { countryModel };

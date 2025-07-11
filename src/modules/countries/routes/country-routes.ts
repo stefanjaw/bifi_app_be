@@ -1,15 +1,17 @@
-import { Router } from "express";
+import { BaseRoutes } from "../../../system";
+import { CountryDocument } from "../../../types/mongoose.gen";
 import { CountryController } from "../controllers/country-controller";
-import multer from "multer";
+import { CountryDTO, UpdateCountryDTO } from "../models/country.dto";
 
-const upload = multer();
 const countryController = new CountryController();
 
-const countryRouter = Router();
-
-countryRouter.get("/countries", countryController.get);
-countryRouter.post("/countries", upload.any(), countryController.create);
-countryRouter.put("/countries", upload.any(), countryController.update);
-countryRouter.delete("/countries", countryController.delete);
-
-export { countryRouter };
+export class CountryRouter extends BaseRoutes<CountryDocument> {
+  constructor() {
+    super({
+      controller: countryController,
+      endpoint: "/countries",
+      dtoCreateClass: CountryDTO,
+      dtoUpdateClass: UpdateCountryDTO,
+    });
+  }
+}

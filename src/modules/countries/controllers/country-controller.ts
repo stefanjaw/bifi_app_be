@@ -1,10 +1,10 @@
 import { BaseController } from "../../../system";
-import { country } from "../models/country.model";
+import { CountryDocument } from "../../../types/mongoose.gen";
 import { CountryService } from "../services/country-service";
 
 const countryService = new CountryService();
 
-export class CountryController extends BaseController<country> {
+export class CountryController extends BaseController<CountryDocument> {
   constructor() {
     super({ service: countryService });
   }
