@@ -1,15 +1,17 @@
-import { Router } from "express";
+import { BaseRoutes } from "../../../system";
+import { CompanyDocument } from "../../../types/mongoose.gen";
 import { CompanyController } from "../controllers/company-controller";
-import multer from "multer";
+import { CompanyDTO, UpdateCompanyDTO } from "../models/company.dto";
 
-const upload = multer();
 const companyController = new CompanyController();
 
-const companyRouter = Router();
-
-companyRouter.get("/companies", companyController.get);
-companyRouter.post("/companies", upload.any(), companyController.create);
-companyRouter.put("/companies", upload.any(), companyController.update);
-companyRouter.delete("/companies", companyController.delete);
-
-export { companyRouter };
+export class CompanyRouter extends BaseRoutes<CompanyDocument> {
+  constructor() {
+    super({
+      controller: companyController,
+      endpoint: "/companies",
+      dtoCreateClass: CompanyDTO,
+      dtoUpdateClass: UpdateCompanyDTO,
+    });
+  }
+}

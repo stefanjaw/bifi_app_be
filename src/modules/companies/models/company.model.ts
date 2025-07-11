@@ -1,16 +1,8 @@
-import mongoose, { PaginateModel, Types } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { country } from "../../countries/models/country.model";
-
-export interface company {
-  _id: Types.ObjectId;
-  name: string;
-  countryId: country;
-  address: string;
-  active: boolean;
-}
+import { CompanyDocument } from "../../../types/mongoose.gen";
 
 const companySchema = new Schema({
   name: {
@@ -36,9 +28,9 @@ const companySchema = new Schema({
 companySchema.plugin(paginate);
 companySchema.plugin(autopopulate);
 
-const companyModel = mongoose.model<company, PaginateModel<company>>(
-  "Company",
-  companySchema
-);
+const companyModel = mongoose.model<
+  CompanyDocument,
+  PaginateModel<CompanyDocument>
+>("Company", companySchema);
 
 export { companyModel };

@@ -1,7 +1,8 @@
 import { BaseService } from "../../../system";
-import { company, companyModel } from "../models/company.model";
+import { CompanyDocument } from "../../../types/mongoose.gen";
+import { companyModel } from "../models/company.model";
 
-export class CompanyService extends BaseService<company> {
+export class CompanyService extends BaseService<CompanyDocument> {
   constructor() {
     super({ model: companyModel });
   }

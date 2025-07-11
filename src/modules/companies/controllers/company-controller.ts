@@ -1,10 +1,10 @@
 import { BaseController } from "../../../system";
-import { company } from "../models/company.model";
+import { CompanyDocument } from "../../../types/mongoose.gen";
 import { CompanyService } from "../services/company-service";
 
 const companyService = new CompanyService();
 
-export class CompanyController extends BaseController<company> {
+export class CompanyController extends BaseController<CompanyDocument> {
   constructor() {
     super({ service: companyService });
   }
