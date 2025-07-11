@@ -19,7 +19,7 @@ export class ContactDTO {
   @IsNotEmpty()
   lastName!: string;
 
-  @IsPhoneNumber("CR")
+  @IsPhoneNumber("BM")
   phoneNumber!: string;
 
   @IsEmail()
