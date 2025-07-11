@@ -1,7 +1,8 @@
 import { BaseService } from "../../../system";
-import { room, roomModel } from "../models/room.model";
+import { RoomDocument } from "../../../types/mongoose.gen";
+import { roomModel } from "../models/room.model";
 
-export class RoomService extends BaseService<room> {
+export class RoomService extends BaseService<RoomDocument> {
   constructor() {
     super({ model: roomModel });
   }

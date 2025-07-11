@@ -1,15 +1,17 @@
-import { Router } from "express";
-import multer from "multer";
+import { BaseRoutes } from "../../../system";
+import { RoomDocument } from "../../../types/mongoose.gen";
 import { RoomController } from "../controllers/room-controller";
+import { RoomDTO, UpdateRoomDTO } from "../models/room.dto";
 
-const upload = multer();
 const roomController = new RoomController();
 
-const roomRouter = Router();
-
-roomRouter.get("/rooms", roomController.get);
-roomRouter.post("/rooms", upload.any(), roomController.create);
-roomRouter.put("/rooms", upload.any(), roomController.update);
-roomRouter.delete("/rooms", roomController.delete);
-
-export { roomRouter };
+export class RoomRouter extends BaseRoutes<RoomDocument> {
+  constructor() {
+    super({
+      controller: roomController,
+      endpoint: "/rooms",
+      dtoCreateClass: RoomDTO,
+      dtoUpdateClass: UpdateRoomDTO,
+    });
+  }
+}

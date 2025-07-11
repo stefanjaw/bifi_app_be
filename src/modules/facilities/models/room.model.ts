@@ -1,17 +1,8 @@
-import mongoose, { PaginateModel, Types } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { facility } from "./facility.model";
-
-export interface room {
-  _id: Types.ObjectId;
-  name: string;
-  code: string;
-  address: string;
-  facilityId: facility;
-  active: boolean;
-}
+import { RoomDocument } from "../../../types/mongoose.gen";
 
 const roomSchema = new Schema({
   name: {
@@ -44,6 +35,9 @@ const roomSchema = new Schema({
 roomSchema.plugin(paginate);
 roomSchema.plugin(autopopulate);
 
-const roomModel = mongoose.model<room, PaginateModel<room>>("Room", roomSchema);
+const roomModel = mongoose.model<RoomDocument, PaginateModel<RoomDocument>>(
+  "Room",
+  roomSchema
+);
 
 export { roomModel };

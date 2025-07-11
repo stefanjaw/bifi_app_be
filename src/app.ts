@@ -7,12 +7,12 @@ import {
   companyRouter,
   contactRouter,
   countryRouter,
-  facilityRouter,
+  FacilityRouter,
   maintenanceWindowRouter,
-  productComissioningRouter,
+  ProductComissioningRouter,
   ProductRouter,
   ProductTypeRouter,
-  roomRouter,
+  RoomRouter,
 } from "./modules";
 import { catchExceptionMiddleware, GridFSBucketService } from "./system";
 
@@ -32,10 +32,10 @@ app.use("/api", companyRouter);
 app.use("/api", contactRouter);
 app.use("/api", new ProductTypeRouter().getRouter);
 app.use("/api", maintenanceWindowRouter);
-app.use("/api", facilityRouter);
-app.use("/api", roomRouter);
+app.use("/api", new FacilityRouter().getRouter);
+app.use("/api", new RoomRouter().getRouter);
 app.use("/api", new ProductRouter().getRouter);
-app.use("/api", productComissioningRouter);
+app.use("/api", new ProductComissioningRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);

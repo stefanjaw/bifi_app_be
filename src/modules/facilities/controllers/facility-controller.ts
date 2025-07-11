@@ -1,10 +1,10 @@
 import { BaseController } from "../../../system";
-import { facility } from "../models/facility.model";
+import { FacilityDocument } from "../../../types/mongoose.gen";
 import { FacilityService } from "../services/facility-service";
 
 const facilityService = new FacilityService();
 
-export class FacilityController extends BaseController<facility> {
+export class FacilityController extends BaseController<FacilityDocument> {
   constructor() {
     super({ service: facilityService });
   }

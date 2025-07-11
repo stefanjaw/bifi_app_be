@@ -1,15 +1,17 @@
-import { Router } from "express";
-import multer from "multer";
+import { BaseRoutes } from "../../../system";
+import { FacilityDocument } from "../../../types/mongoose.gen";
 import { FacilityController } from "../controllers/facility-controller";
+import { FacilityDTO, UpdateFacilityDTO } from "../models/facility.dto";
 
-const upload = multer();
 const facilityController = new FacilityController();
 
-const facilityRouter = Router();
-
-facilityRouter.get("/facilities", facilityController.get);
-facilityRouter.post("/facilities", upload.any(), facilityController.create);
-facilityRouter.put("/facilities", upload.any(), facilityController.update);
-facilityRouter.delete("/facilities", facilityController.delete);
-
-export { facilityRouter };
+export class FacilityRouter extends BaseRoutes<FacilityDocument> {
+  constructor() {
+    super({
+      controller: facilityController,
+      endpoint: "/facilities",
+      dtoCreateClass: FacilityDTO,
+      dtoUpdateClass: UpdateFacilityDTO,
+    });
+  }
+}
