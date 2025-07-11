@@ -1,8 +1,8 @@
 export { ProductTypeRouter } from "./product-types/routes/product-type-routes";
-export { countryRouter } from "./countries/routes/country-routes";
-export { companyRouter } from "./companies/routes/company-routes";
-export { contactRouter } from "./contacts/routes/contact-routes";
-export { maintenanceWindowRouter } from "./maintenance-windows/routes/maintenance-window-routes";
+export { CountryRouter } from "./countries/routes/country-routes";
+export { CompanyRouter } from "./companies/routes/company-routes";
+export { ContactRouter } from "./contacts/routes/contact-routes";
+export { MaintenanceWindowRouter } from "./maintenance-windows/routes/maintenance-window-routes";
 export { FacilityRouter } from "./facilities/routes/facility-routes";
 export { RoomRouter } from "./facilities/routes/room-routes";
 export { ProductRouter } from "./products/routes/product-routes";

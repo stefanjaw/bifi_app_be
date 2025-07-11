@@ -6,11 +6,11 @@ import morgan from "morgan";
 import cors from "cors";
 import { catchExceptionMiddleware, GridFSBucketService } from "./system";
 import {
-  companyRouter,
-  contactRouter,
-  countryRouter,
+  CompanyRouter,
+  ContactRouter,
+  CountryRouter,
   FacilityRouter,
-  maintenanceWindowRouter,
+  MaintenanceWindowRouter,
   ProductComissioningRouter,
   ProductRouter,
   ProductTypeRouter,
@@ -34,11 +34,11 @@ app.use(
 );
 
 // routes will be here, main route inits with /api and then it uses the routers
-app.use("/api", countryRouter);
-app.use("/api", companyRouter);
-app.use("/api", contactRouter);
+app.use("/api", new CountryRouter().getRouter);
+app.use("/api", new CompanyRouter().getRouter);
+app.use("/api", new ContactRouter().getRouter);
 app.use("/api", new ProductTypeRouter().getRouter);
-app.use("/api", maintenanceWindowRouter);
+app.use("/api", new MaintenanceWindowRouter().getRouter);
 app.use("/api", new FacilityRouter().getRouter);
 app.use("/api", new RoomRouter().getRouter);
 app.use("/api", new ProductRouter().getRouter);
