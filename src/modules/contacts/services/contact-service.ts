@@ -1,7 +1,8 @@
 import { BaseService } from "../../../system";
-import { contact, contactModel } from "../models/contact.model";
+import { ContactDocument } from "../../../types/mongoose.gen";
+import { contactModel } from "../models/contact.model";
 
-export class ContactService extends BaseService<contact> {
+export class ContactService extends BaseService<ContactDocument> {
   constructor() {
     super({ model: contactModel });
   }

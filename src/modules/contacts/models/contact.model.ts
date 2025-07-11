@@ -1,17 +1,8 @@
-import mongoose, { PaginateModel, Types } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-
-export interface contact {
-  _id: Types.ObjectId;
-  name: string;
-  lastName: string;
-  phoneNumber?: string; // Optional field
-  email: string;
-  parentId?: string;
-  active: boolean;
-}
+import { ContactDocument } from "../../../types/mongoose.gen";
 
 const contactSchema = new Schema({
   name: {
@@ -49,9 +40,9 @@ const contactSchema = new Schema({
 contactSchema.plugin(paginate);
 contactSchema.plugin(autopopulate);
 
-const contactModel = mongoose.model<contact, PaginateModel<contact>>(
-  "Contact",
-  contactSchema
-);
+const contactModel = mongoose.model<
+  ContactDocument,
+  PaginateModel<ContactDocument>
+>("Contact", contactSchema);
 
 export { contactModel };

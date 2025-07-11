@@ -1,15 +1,17 @@
-import { Router } from "express";
-import multer from "multer";
+import { BaseRoutes } from "../../../system";
+import { ContactDocument } from "../../../types/mongoose.gen";
 import { ContactController } from "../controllers/contact-controller";
+import { ContactDTO, UpdateContactDTO } from "../models/contact.dto";
 
-const upload = multer();
 const contactController = new ContactController();
 
-const contactRouter = Router();
-
-contactRouter.get("/contacts", contactController.get);
-contactRouter.post("/contacts", upload.any(), contactController.create);
-contactRouter.put("/contacts", upload.any(), contactController.update);
-contactRouter.delete("/contacts", contactController.delete);
-
-export { contactRouter };
+export class ContactRouter extends BaseRoutes<ContactDocument> {
+  constructor() {
+    super({
+      controller: contactController,
+      endpoint: "/contacts",
+      dtoCreateClass: ContactDTO,
+      dtoUpdateClass: UpdateContactDTO,
+    });
+  }
+}
