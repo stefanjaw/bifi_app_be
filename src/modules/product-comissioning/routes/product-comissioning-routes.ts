@@ -1,29 +1,20 @@
-import { Router } from "express";
-import multer from "multer";
+import { BaseRoutes } from "../../../system";
+import { ProductComissioningDocument } from "../../../types/mongoose.gen";
 import { ProductComissioningController } from "../controllers/product-comissioning-controller";
+import {
+  ProductComissioningDTO,
+  UpdateProductComissioningDTO,
+} from "../models/product-comissioning.dto";
 
-const upload = multer();
 const productComissioningController = new ProductComissioningController();
 
-const productComissioningRouter = Router();
-
-productComissioningRouter.get(
-  "/product-comissioning",
-  productComissioningController.get
-);
-productComissioningRouter.post(
-  "/product-comissioning",
-  upload.any(),
-  productComissioningController.create
-);
-productComissioningRouter.put(
-  "/product-comissioning",
-  upload.any(),
-  productComissioningController.update
-);
-productComissioningRouter.delete(
-  "/product-comissioning",
-  productComissioningController.delete
-);
-
-export { productComissioningRouter };
+export class ProductComissioningRouter extends BaseRoutes<ProductComissioningDocument> {
+  constructor() {
+    super({
+      controller: productComissioningController,
+      endpoint: "/product-comissioning",
+      dtoCreateClass: ProductComissioningDTO,
+      dtoUpdateClass: UpdateProductComissioningDTO,
+    });
+  }
+}

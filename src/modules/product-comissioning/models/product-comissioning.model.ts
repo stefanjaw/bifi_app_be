@@ -1,15 +1,8 @@
-import mongoose, { PaginateModel, Types } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-
-export interface productComissioning {
-  _id: Types.ObjectId;
-  outcome: "fail" | "pass";
-  details?: string;
-  attachments: Types.ObjectId[];
-  active: boolean;
-}
+import { ProductComissioningDocument } from "../../../types/mongoose.gen";
 
 const productComissioningSchema = new Schema({
   outcome: {
@@ -46,8 +39,8 @@ productComissioningSchema.plugin(paginate);
 productComissioningSchema.plugin(autopopulate);
 
 const productComissioningModel = mongoose.model<
-  productComissioning,
-  PaginateModel<productComissioning>
+  ProductComissioningDocument,
+  PaginateModel<ProductComissioningDocument>
 >("ProductComissioning", productComissioningSchema);
 
 export { productComissioningModel };

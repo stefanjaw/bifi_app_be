@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { BaseController, FileValidatorService } from "../../../system";
-import { productComissioning } from "../models/product-comissioning.model";
 import { ProductComissioningService } from "../services/product-comissioning-service";
+import { ProductComissioningDocument } from "../../../types/mongoose.gen";
 
 const productComissioningService = new ProductComissioningService();
 
-export class ProductComissioningController extends BaseController<productComissioning> {
+export class ProductComissioningController extends BaseController<ProductComissioningDocument> {
   private fileValidator = new FileValidatorService();
   private acceptedAttarchmentTypes = [
     "image/jpeg",

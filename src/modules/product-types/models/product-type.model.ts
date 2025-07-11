@@ -1,4 +1,4 @@
-import mongoose, { PaginateModel, Types } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import { ProductTypeDocument } from "../../../types/mongoose.gen";

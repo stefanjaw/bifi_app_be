@@ -1,11 +1,13 @@
 import { ClientSession } from "mongoose";
-import { BaseService, GridFSBucketService } from "../../../system";
 import {
-  productComissioning,
-  productComissioningModel,
-} from "../models/product-comissioning.model";
+  BaseService,
+  GridFSBucketService,
+  ValidationException,
+} from "../../../system";
+import { productComissioningModel } from "../models/product-comissioning.model";
+import { ProductComissioningDocument } from "../../../types/mongoose.gen";
 
-export class ProductComissioningService extends BaseService<productComissioning> {
+export class ProductComissioningService extends BaseService<ProductComissioningDocument> {
   constructor() {
     super({ model: productComissioningModel });
   }
@@ -17,8 +19,8 @@ export class ProductComissioningService extends BaseService<productComissioning>
   override async create(
     data: Record<string, any>,
     session?: ClientSession | undefined
-  ): Promise<productComissioning> {
-    return super.runTransaction<productComissioning>(
+  ): Promise<ProductComissioningDocument> {
+    return super.runTransaction<ProductComissioningDocument>(
       session,
       async (newSession) => {
         // CHECK THAT NO OTHER COMISSION AWAS ISSUED FOR THE PRODUCT
@@ -29,7 +31,9 @@ export class ProductComissioningService extends BaseService<productComissioning>
         );
 
         if (Array.isArray(existingComission) && existingComission.length > 0) {
-          throw new Error("A commissioning already exists for this product.");
+          throw new ValidationException(
+            "A commissioning already exists for this product."
+          );
         }
 
         if (data.attachments && Array.isArray(data.attachments)) {
@@ -59,8 +63,8 @@ export class ProductComissioningService extends BaseService<productComissioning>
   override async update(
     data: Record<string, any>,
     session?: ClientSession | undefined
-  ): Promise<productComissioning> {
-    return super.runTransaction<productComissioning>(
+  ): Promise<ProductComissioningDocument> {
+    return super.runTransaction<ProductComissioningDocument>(
       session,
       async (newSession) => {
         // CHECK THAT NO OTHER COMISSION AWAS ISSUED FOR THE PRODUCT
@@ -71,7 +75,9 @@ export class ProductComissioningService extends BaseService<productComissioning>
         );
 
         if (Array.isArray(existingComission) && existingComission.length > 0) {
-          throw new Error("A commissioning already exists for this product.");
+          throw new ValidationException(
+            "A commissioning already exists for this product."
+          );
         }
 
         if (data.attachments && Array.isArray(data.attachments)) {

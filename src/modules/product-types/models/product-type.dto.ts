@@ -6,6 +6,7 @@ import {
   IsString,
 } from "class-validator";
 import { PartialType } from "../../../system";
+import { Type } from "class-transformer";
 
 export class ProductTypeDTO {
   @IsString()
@@ -15,11 +16,12 @@ export class ProductTypeDTO {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  description!: string;
+  description?: string;
 
   @IsBoolean()
   @IsOptional()
-  active!: boolean;
+  @Type(() => Boolean)
+  active?: boolean;
 }
 
 export class UpdateProductTypeDTO extends PartialType(ProductTypeDTO) {
