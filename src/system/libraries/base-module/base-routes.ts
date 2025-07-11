@@ -1,7 +1,7 @@
 import { BaseController } from "./base-controller";
-import { validateBody } from "../../middlewares/validate-body";
 import { Router } from "express";
 import multer from "multer";
+import { validateBody } from "../../middlewares";
 
 export class BaseRoutes<T> {
   controller!: BaseController<T>;

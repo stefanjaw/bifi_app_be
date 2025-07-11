@@ -1,10 +1,10 @@
 import { BaseController } from "../../../system";
-import { productType } from "../models/product-type.model";
+import { ProductTypeDocument } from "../../../types/mongoose.gen";
 import { ProductTypeService } from "../services/product-type-service";
 
 const productTypeService = new ProductTypeService();
 
-export class ProductTypeController extends BaseController<productType> {
+export class ProductTypeController extends BaseController<ProductTypeDocument> {
   constructor() {
     super({ service: productTypeService });
   }

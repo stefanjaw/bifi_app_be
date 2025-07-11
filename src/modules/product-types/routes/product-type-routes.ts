@@ -1,23 +1,20 @@
-import { Router } from "express";
-import multer from "multer";
+import { BaseRoutes } from "../../../system";
+import { ProductTypeDocument } from "../../../types/mongoose.gen";
 import { ProductTypeController } from "../controllers/product-type-controller";
+import {
+  ProductTypeDTO,
+  UpdateProductTypeDTO,
+} from "../models/product-type.dto";
 
-const upload = multer();
 const productTypeController = new ProductTypeController();
 
-const productTypeRouter = Router();
-
-productTypeRouter.get("/product-types", productTypeController.get);
-productTypeRouter.post(
-  "/product-types",
-  upload.any(),
-  productTypeController.create
-);
-productTypeRouter.put(
-  "/product-types",
-  upload.any(),
-  productTypeController.update
-);
-productTypeRouter.delete("/product-types", productTypeController.delete);
-
-export { productTypeRouter };
+export class ProductTypeRouter extends BaseRoutes<ProductTypeDocument> {
+  constructor() {
+    super({
+      controller: productTypeController,
+      endpoint: "/product-types",
+      dtoCreateClass: ProductTypeDTO,
+      dtoUpdateClass: UpdateProductTypeDTO,
+    });
+  }
+}

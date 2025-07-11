@@ -1,13 +1,7 @@
 import mongoose, { PaginateModel, Types } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
-
-export interface productType {
-  _id: Types.ObjectId;
-  name: string;
-  description?: string;
-  active: boolean;
-}
+import { ProductTypeDocument } from "../../../types/mongoose.gen";
 
 const productTypeSchema = new Schema({
   name: {
@@ -27,8 +21,8 @@ const productTypeSchema = new Schema({
 productTypeSchema.plugin(paginate);
 
 const productTypeModel = mongoose.model<
-  productType,
-  PaginateModel<productType>
+  ProductTypeDocument,
+  PaginateModel<ProductTypeDocument>
 >("ProductType", productTypeSchema);
 
 export { productTypeModel };

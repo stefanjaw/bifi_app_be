@@ -5,7 +5,7 @@ import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
 
 const productController = new ProductController();
 
-export class productRouter extends BaseRoutes<ProductDocument> {
+export class ProductRouter extends BaseRoutes<ProductDocument> {
   constructor() {
     super({
       controller: productController,
