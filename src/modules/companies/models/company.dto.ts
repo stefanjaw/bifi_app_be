@@ -2,11 +2,9 @@ import { Type } from "class-transformer";
 import {
   IsString,
   IsNotEmpty,
-  IsEmail,
   IsMongoId,
   IsOptional,
   IsBoolean,
-  IsPhoneNumber,
 } from "class-validator";
 import { PartialType } from "../../../system";
 
