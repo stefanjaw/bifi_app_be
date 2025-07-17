@@ -2,7 +2,7 @@ import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { ContactDocument } from "../../../types/mongoose.gen";
+import { ContactDocument } from "@mongodb-types";
 
 const contactSchema = new Schema({
   name: {

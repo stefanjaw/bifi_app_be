@@ -18,8 +18,8 @@ export class ProductComissioningDTO {
   @IsOptional()
   details?: string;
 
-  @IsOptional()
-  attachments?: string | undefined;
+  // @IsOptional()
+  // attachments?: string | undefined;
 
   @IsMongoId()
   productId!: string;

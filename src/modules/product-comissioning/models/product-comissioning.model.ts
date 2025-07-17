@@ -2,7 +2,7 @@ import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { ProductComissioningDocument } from "../../../types/mongoose.gen";
+import { ProductComissioningDocument } from "@mongodb-types";
 
 const productComissioningSchema = new Schema({
   outcome: {

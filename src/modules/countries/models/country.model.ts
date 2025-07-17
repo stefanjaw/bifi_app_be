@@ -1,7 +1,7 @@
+import { CountryDocument } from "@mongodb-types";
 import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
-import { CountryDocument } from "../../../types/mongoose.gen";
 
 const countrySchema = new Schema({
   name: {

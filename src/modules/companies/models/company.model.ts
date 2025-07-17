@@ -2,7 +2,7 @@ import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { CompanyDocument } from "../../../types/mongoose.gen";
+import { CompanyDocument } from "@mongodb-types";
 
 const companySchema = new Schema({
   name: {

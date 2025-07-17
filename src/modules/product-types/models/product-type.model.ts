@@ -1,7 +1,7 @@
+import { ProductTypeDocument } from "@mongodb-types";
 import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
-import { ProductTypeDocument } from "../../../types/mongoose.gen";
 
 const productTypeSchema = new Schema({
   name: {

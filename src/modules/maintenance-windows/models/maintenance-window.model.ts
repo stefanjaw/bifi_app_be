@@ -2,7 +2,7 @@ import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { MaintenanceWindowDocument } from "../../../types/mongoose.gen";
+import { MaintenanceWindowDocument } from "@mongodb-types";
 
 const maintenanceWindowSchema = new Schema({
   name: {

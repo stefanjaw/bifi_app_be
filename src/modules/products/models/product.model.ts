@@ -1,8 +1,9 @@
-import mongoose, { PaginateModel, Types } from "mongoose";
+import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { ProductDocument } from "../../../types/mongoose.gen";
+import dayjs from "dayjs";
+import { ProductComissioningDocument, ProductDocument } from "@mongodb-types";
 
 const productSchema = new Schema(
   {
@@ -13,6 +14,16 @@ const productSchema = new Schema(
       required: true,
     },
     vendorIds: {
+      type: [Schema.Types.ObjectId],
+      ref: "Contact",
+      required: true,
+      // depth must be of one level
+      autopopulate: {
+        select: "name lastName email", // Fields to select from the parent contact
+        maxDepth: 1, // Limit depth to one level
+      },
+    },
+    makeIds: {
       type: [Schema.Types.ObjectId],
       ref: "Contact",
       required: true,
@@ -95,6 +106,32 @@ productSchema.virtual("productComission", {
     maxDepth: 1, // Limit depth to one level
   },
   match: { active: true }, // Only populate active commissions
+});
+
+productSchema.virtual("status").get(function (this: ProductDocument) {
+  let status: "active" | "awaiting-comissioning" | "under-service";
+
+  const productComission = this
+    .productComission as ProductComissioningDocument | null;
+
+  // TODO: LOGIC TO DETERMINE IF PRODUCT IS UNDER SERVICE
+  if (!productComission) status = "awaiting-comissioning";
+  else if (productComission.outcome === "pass") status = "active";
+  else status = "awaiting-comissioning";
+
+  return status;
+});
+
+productSchema.virtual("pmDue").get(function (this: ProductDocument) {
+  let pmDue: "pm-not-set" | "in-pm" | "pm-due" | "pm-overdue";
+  const window = this.maintenanceWindowIds[0];
+  const acquiredDate = dayjs(this.acquiredDate);
+
+  // TODO: LOGIC TO DETERMINE PM DUE
+  if (!window) pmDue = "pm-not-set";
+  else pmDue = "pm-due";
+
+  return pmDue;
 });
 
 productSchema.plugin(paginate);

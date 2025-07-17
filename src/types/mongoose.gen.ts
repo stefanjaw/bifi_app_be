@@ -754,6 +754,117 @@ export type ProductComissioningDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ProductMaintenanceDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProductMaintenanceDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductMaintenanceObject`.
+ * ```
+ * const productmaintenanceObject = productmaintenance.toObject();
+ * ```
+ */
+export type ProductMaintenance = {
+  name: string;
+  description?: string;
+  attachments: mongoose.Types.ObjectId[];
+  productId: Product;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ProductMaintenanceDocument (type alias of `ProductMaintenance`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ProductMaintenance } from "../models"
+ * import { ProductMaintenanceObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const productmaintenanceObject: ProductMaintenanceObject = productmaintenance.toObject();
+ * ```
+ */
+export type ProductMaintenanceObject = ProductMaintenance;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProductMaintenanceQuery = mongoose.Query<
+  any,
+  ProductMaintenanceDocument,
+  ProductMaintenanceQueries
+> &
+  ProductMaintenanceQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ProductMaintenanceSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProductMaintenanceQueries = {
+  paginate: (
+    this: ProductMaintenanceQuery,
+    ...args: any[]
+  ) => ProductMaintenanceQuery;
+};
+
+export type ProductMaintenanceMethods = {};
+
+export type ProductMaintenanceStatics = {
+  paginate: (this: ProductMaintenanceModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ProductMaintenanceModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProductMaintenance = mongoose.model<ProductMaintenanceDocument, ProductMaintenanceModel>("ProductMaintenance", ProductMaintenanceSchema);
+ * ```
+ */
+export type ProductMaintenanceModel = mongoose.Model<
+  ProductMaintenanceDocument,
+  ProductMaintenanceQueries
+> &
+  ProductMaintenanceStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ProductMaintenance schema instances:
+ * ```
+ * const ProductMaintenanceSchema: ProductMaintenanceSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ProductMaintenanceSchema = mongoose.Schema<
+  ProductMaintenanceDocument,
+  ProductMaintenanceModel,
+  ProductMaintenanceMethods,
+  ProductMaintenanceQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProductMaintenance = mongoose.model<ProductMaintenanceDocument, ProductMaintenanceModel>("ProductMaintenance", ProductMaintenanceSchema);
+ * ```
+ */
+export type ProductMaintenanceDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ProductMaintenanceQueries
+> &
+  ProductMaintenanceMethods & {
+    name: string;
+    description?: string;
+    attachments: mongoose.Types.Array<mongoose.Types.ObjectId>;
+    productId: ProductDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Lean version of ProductTypeDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ProductTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductTypeObject`.
@@ -868,6 +979,7 @@ export type ProductTypeDocument = mongoose.Document<
 export type Product = {
   productTypeIds: ProductType[];
   vendorIds: Contact[];
+  makeIds: Contact[];
   productModel: string;
   serialNumber: string;
   acquiredDate: Date;
@@ -882,6 +994,8 @@ export type Product = {
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   productComission: any;
+  status: "active" | "awaiting-comissioning";
+  pmDue: "pm-not-set" | "pm-due";
 };
 
 /**
@@ -966,6 +1080,7 @@ export type ProductDocument = mongoose.Document<
   ProductMethods & {
     productTypeIds: mongoose.Types.Array<ProductTypeDocument>;
     vendorIds: mongoose.Types.Array<ContactDocument>;
+    makeIds: mongoose.Types.Array<ContactDocument>;
     productModel: string;
     serialNumber: string;
     acquiredDate: Date;
@@ -980,6 +1095,8 @@ export type ProductDocument = mongoose.Document<
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     productComission: any;
+    status: "active" | "awaiting-comissioning";
+    pmDue: "pm-not-set" | "pm-due";
   };
 
 /**

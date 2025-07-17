@@ -27,6 +27,12 @@ export class ProductDTO {
   @Transform(({ value }) => JSON.parse(value))
   vendorIds!: string[];
 
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsMongoId({ each: true })
+  @Transform(({ value }) => JSON.parse(value))
+  makeIds!: string[];
+
   @IsString()
   @IsNotEmpty()
   productModel!: string;
@@ -56,10 +62,11 @@ export class ProductDTO {
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @IsOptional()
+  @Transform(({ value }) => JSON.parse(value))
   maintenanceWindowIds?: string[];
 
-  @IsOptional()
-  photo?: string;
+  // @IsOptional()
+  // photo?: string;
 
   @IsMongoId()
   locationId!: string;

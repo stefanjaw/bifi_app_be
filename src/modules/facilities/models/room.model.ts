@@ -2,7 +2,7 @@ import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { RoomDocument } from "../../../types/mongoose.gen";
+import { RoomDocument } from "@mongodb-types";
 
 const roomSchema = new Schema({
   name: {
