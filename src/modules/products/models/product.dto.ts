@@ -3,6 +3,7 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
+  IsEnum,
   IsIn,
   IsMongoId,
   IsNotEmpty,
@@ -79,6 +80,10 @@ export class ProductDTO {
   @IsNotEmpty()
   @IsOptional()
   remarks?: string | undefined;
+
+  @IsEnum(["active", "awaiting-comissioning", "under-service", "decomissioned"])
+  @IsOptional()
+  status?: string;
 
   @IsBoolean()
   @IsOptional()

@@ -92,6 +92,16 @@ const productSchema = new Schema(
       type: String,
       default: "",
     },
+    status: {
+      type: String,
+      enum: [
+        "active",
+        "awaiting-comissioning",
+        "under-service",
+        "decomissioned",
+      ],
+      default: "awaiting-comissioning",
+    },
     active: {
       type: Boolean,
       default: true,
@@ -128,65 +138,65 @@ productSchema.virtual("productMaintenance", {
 });
 
 // This is based on the last comission and maintenance
-productSchema.virtual("status").get(function (this: ProductDocument) {
-  let status: "active" | "awaiting-comissioning" | "under-service";
+// productSchema.virtual("status").get(function (this: ProductDocument) {
+//   let status: "active" | "awaiting-comissioning" | "under-service";
 
-  const productComission = this
-    .productComission as ProductComissioningDocument | null;
-  const productMaintenance = (
-    this.productMaintenance as ProductMaintenanceDocument[]
-  )?.find((maintenance) => maintenance.active);
+//   const productComission = this
+//     .productComission as ProductComissioningDocument | null;
+//   const productMaintenance = (
+//     this.productMaintenance as ProductMaintenanceDocument[]
+//   )?.find((maintenance) => maintenance.active);
 
-  // get status, if there is a maintenance, status is under-service
-  // if there is a comission, status is active
-  // else status is awaiting-comissioning
-  if (productMaintenance) status = "under-service";
-  else if (productComission && productComission.outcome === "pass")
-    status = "active";
-  else status = "awaiting-comissioning";
+//   // get status, if there is a maintenance, status is under-service
+//   // if there is a comission, status is active
+//   // else status is awaiting-comissioning
+//   if (productMaintenance) status = "under-service";
+//   else if (productComission && productComission.outcome === "pass")
+//     status = "active";
+//   else status = "awaiting-comissioning";
 
-  return status;
-});
+//   return status;
+// });
 
 // This is based on previous maintenance, if no previous maintenance, based on acquired date
-productSchema.virtual("pmDue").get(function (this: ProductDocument) {
-  // get maintenance window
-  const window = this.maintenanceWindowIds
-    ? this.maintenanceWindowIds[0]
-    : null;
-  let pmDue: "pm-not-set" | "in-pm" | "pm-due" | "pm-overdue" = "pm-not-set";
+// productSchema.virtual("pmDue").get(function (this: ProductDocument) {
+//   // get maintenance window
+//   const window = this.maintenanceWindowIds
+//     ? this.maintenanceWindowIds[0]
+//     : null;
+//   let pmDue: "pm-not-set" | "in-pm" | "pm-due" | "pm-overdue" = "pm-not-set";
 
-  // if no window, return
-  if (!window) return pmDue;
+//   // if no window, return
+//   if (!window) return pmDue;
 
-  // get last maintenance
-  const lastMaintenance = this.productMaintenance
-    ? this.productMaintenance[0]
-    : null;
+//   // get last maintenance
+//   const lastMaintenance = this.productMaintenance
+//     ? this.productMaintenance[0]
+//     : null;
 
-  // set last date to last maintenance or acquired date
-  let lastDate: Dayjs;
-  if (lastMaintenance) lastDate = dayjs(lastMaintenance.date);
-  else lastDate = dayjs(this.acquiredDate);
+//   // set last date to last maintenance or acquired date
+//   let lastDate: Dayjs;
+//   if (lastMaintenance) lastDate = dayjs(lastMaintenance.date);
+//   else lastDate = dayjs(this.acquiredDate);
 
-  // get date variables to check DUE, the exact date, the prior date, and the later date which are offsets
-  const nextWindowDate = dayjs(lastDate).add(
-    window.parseRecurrencyForDayjs().count,
-    window.parseRecurrencyForDayjs().unit
-  );
-  const priorDate = dayjs(nextWindowDate).subtract(window.daysBefore, "day");
-  const laterDate = dayjs(nextWindowDate).add(window.daysAfter, "day");
+//   // get date variables to check DUE, the exact date, the prior date, and the later date which are offsets
+//   const nextWindowDate = dayjs(lastDate).add(
+//     window.parseRecurrencyForDayjs().count,
+//     window.parseRecurrencyForDayjs().unit
+//   );
+//   const priorDate = dayjs(nextWindowDate).subtract(window.daysBefore, "day");
+//   const laterDate = dayjs(nextWindowDate).add(window.daysAfter, "day");
 
-  if (dayjs().isBetween(priorDate, laterDate)) {
-    pmDue = "in-pm";
-  } else if (dayjs().isBefore(priorDate)) {
-    pmDue = "pm-due";
-  } else if (dayjs().isAfter(laterDate)) {
-    pmDue = "pm-overdue";
-  }
+//   if (dayjs().isBetween(priorDate, laterDate)) {
+//     pmDue = "in-pm";
+//   } else if (dayjs().isBefore(priorDate)) {
+//     pmDue = "pm-due";
+//   } else if (dayjs().isAfter(laterDate)) {
+//     pmDue = "pm-overdue";
+//   }
 
-  return pmDue;
-});
+//   return pmDue;
+// });
 
 productSchema.plugin(paginate);
 productSchema.plugin(autopopulate);

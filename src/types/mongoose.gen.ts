@@ -998,8 +998,11 @@ export type Product = {
   locationId: Room;
   warrantyDate: Date;
   remarks?: string;
-  status?: "active" | "awaiting-comissioning" | "under-service";
-  pmDue?: "pm-not-set" | "in-pm" | "pm-due" | "pm-overdue";
+  status?:
+    | "active"
+    | "awaiting-comissioning"
+    | "under-service"
+    | "decomissioned";
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   productComission: any;
@@ -1040,10 +1043,7 @@ export type ProductQueries = {
   paginate: (this: ProductQuery, ...args: any[]) => ProductQuery;
 };
 
-export type ProductMethods = {
-  saveStatus: (this: ProductDocument, ...args: any[]) => any;
-  savePmDue: (this: ProductDocument, ...args: any[]) => any;
-};
+export type ProductMethods = {};
 
 export type ProductStatics = {
   paginate: (this: ProductModel, ...args: any[]) => any;
@@ -1103,8 +1103,11 @@ export type ProductDocument = mongoose.Document<
     locationId: RoomDocument;
     warrantyDate: Date;
     remarks?: string;
-    status?: "active" | "awaiting-comissioning" | "under-service";
-    pmDue?: "pm-not-set" | "in-pm" | "pm-due" | "pm-overdue";
+    status?:
+      | "active"
+      | "awaiting-comissioning"
+      | "under-service"
+      | "decomissioned";
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     productComission: any;
