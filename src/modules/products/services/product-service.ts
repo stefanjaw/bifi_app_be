@@ -12,6 +12,13 @@ export class ProductService extends BaseService<ProductDocument> {
     return GridFSBucketService.getInstance();
   }
 
+  /**
+   * Creates a product with the given data and returns the created document.
+   * If the data contains a "photo" field with an object value, it will be handled as a file upload and the file ID will be stored in the "photo" field of the product data.
+   * @param data The data to create the product with.
+   * @param session The optional client session to use for the transaction.
+   * @returns The created product document.
+   */
   override async create(
     data: Record<string, any>,
     session?: ClientSession | undefined
@@ -39,6 +46,13 @@ export class ProductService extends BaseService<ProductDocument> {
     );
   }
 
+  /**
+   * Updates a product with the given data and returns the updated document.
+   * If the data contains a "photo" field with an object value, it will be handled as a file upload and the file ID will be stored in the "photo" field of the product data.
+   * @param data The data to update the product with.
+   * @param session The optional client session to use for the transaction.
+   * @returns The updated product document.
+   */
   override async update(
     data: Record<string, any>,
     session?: ClientSession | undefined
