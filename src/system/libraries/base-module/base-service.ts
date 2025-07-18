@@ -3,6 +3,7 @@ import mongoose, {
   PaginateModel,
   PaginateResult,
 } from "mongoose";
+import { paginationOptions } from "./query-options.type";
 
 export class BaseService<T> {
   model!: PaginateModel<T>;
@@ -13,9 +14,7 @@ export class BaseService<T> {
 
   async get(
     searchParams: Record<string, any>,
-    paginationOptions:
-      | { paginate: boolean; limit: number; page: number }
-      | undefined,
+    paginationOptions: paginationOptions | undefined,
     session: ClientSession | undefined = undefined
   ): Promise<PaginateResult<T> | T[]> {
     return await this.runTransaction<PaginateResult<T> | T[]>(
