@@ -3,7 +3,7 @@ import mongoose, {
   PaginateModel,
   PaginateResult,
 } from "mongoose";
-import { paginationOptions } from "./query-options.type";
+import { orderByQuery, paginationOptions } from "./query-options.type";
 
 export class BaseService<T> {
   model!: PaginateModel<T>;
@@ -15,6 +15,7 @@ export class BaseService<T> {
   async get(
     searchParams: Record<string, any>,
     paginationOptions: paginationOptions | undefined,
+    orderBy: orderByQuery | undefined,
     session: ClientSession | undefined = undefined
   ): Promise<PaginateResult<T> | T[]> {
     return await this.runTransaction<PaginateResult<T> | T[]>(
@@ -22,16 +23,31 @@ export class BaseService<T> {
       async (newSession) => {
         let records;
 
+        // if orderBy sent by user, build the object
+        let orderByObject: Record<string, any> | undefined = {};
+
+        if (orderBy && orderBy.orderBy?.length > 0) {
+          orderBy.orderBy.forEach((item) => {
+            orderByObject[item.field] = item.order === "asc" ? 1 : -1;
+          });
+        }
+
         if (paginationOptions && paginationOptions?.paginate) {
           // if paginated
           records = await this.model.paginate(searchParams, {
             page: paginationOptions.page,
             limit: paginationOptions.limit,
             session: newSession,
+            sort: orderByObject,
           });
         } else {
           // non paginated
-          records = await this.model.find(searchParams).session(newSession);
+          records = orderByObject
+            ? await this.model
+                .find(searchParams)
+                .session(newSession)
+                .sort(orderByObject)
+            : await this.model.find(searchParams).session(newSession);
         }
 
         return records as PaginateResult<T> | T[];

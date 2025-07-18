@@ -1,3 +1,4 @@
+import { ValidationException } from "../exceptions";
 import { BaseService } from "./base-service";
 import { NextFunction, Request, Response } from "express";
 
@@ -18,8 +19,15 @@ export class BaseController<T> {
       const paginationOptions = req.query.paginationOptions
         ? JSON.parse(req.query.paginationOptions as string)
         : {};
+      const orderBy = req.query.orderBy
+        ? JSON.parse(req.query.orderBy as string)
+        : {};
 
-      const records = await this.service.get(searchParams, paginationOptions);
+      const records = await this.service.get(
+        searchParams,
+        paginationOptions,
+        orderBy
+      );
 
       this.sendData(res, records);
     } catch (error: any) {

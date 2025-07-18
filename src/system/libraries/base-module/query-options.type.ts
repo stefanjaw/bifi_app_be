@@ -4,7 +4,11 @@ export interface paginationOptions {
   page: number;
 }
 
-export interface orderByOptions {
+export interface orderByField {
   field: string;
   order: "asc" | "desc";
+}
+
+export interface orderByQuery {
+  orderBy: orderByField[];
 }

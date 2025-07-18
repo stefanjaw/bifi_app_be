@@ -33,6 +33,7 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         const existingComission = (await this.productComissioningService.get(
           { productId: data.productId, active: true },
           undefined,
+          undefined,
           newSession
         )) as ProductComissioningDocument[];
 

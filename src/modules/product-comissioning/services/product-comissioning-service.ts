@@ -27,6 +27,7 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
         const existingComission = await super.get(
           { productId: data.productId, active: true },
           undefined,
+          undefined,
           newSession
         );
 
@@ -70,6 +71,7 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
         // CHECK THAT NO OTHER COMISSION AWAS ISSUED FOR THE PRODUCT
         const existingComission = await super.get(
           { productId: data.productId, active: true, _id: { $ne: data._id } },
+          undefined,
           undefined,
           newSession
         );
