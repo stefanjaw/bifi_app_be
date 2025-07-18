@@ -579,7 +579,12 @@ export type MaintenanceWindowQueries = {
   ) => MaintenanceWindowQuery;
 };
 
-export type MaintenanceWindowMethods = {};
+export type MaintenanceWindowMethods = {
+  parseRecurrencyForDayjs: (
+    this: MaintenanceWindowDocument,
+    ...args: any[]
+  ) => any;
+};
 
 export type MaintenanceWindowStatics = {
   paginate: (this: MaintenanceWindowModel, ...args: any[]) => any;
@@ -766,6 +771,7 @@ export type ProductMaintenance = {
   description?: string;
   attachments: mongoose.Types.ObjectId[];
   productId: Product;
+  date?: Date;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
 };
@@ -860,6 +866,7 @@ export type ProductMaintenanceDocument = mongoose.Document<
     description?: string;
     attachments: mongoose.Types.Array<mongoose.Types.ObjectId>;
     productId: ProductDocument;
+    date?: Date;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
   };
@@ -991,11 +998,12 @@ export type Product = {
   locationId: Room;
   warrantyDate: Date;
   remarks?: string;
+  status?: "active" | "awaiting-comissioning" | "under-service";
+  pmDue?: "pm-not-set" | "in-pm" | "pm-due" | "pm-overdue";
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   productComission: any;
-  status: "active" | "awaiting-comissioning";
-  pmDue: "pm-not-set" | "pm-due";
+  productMaintenance: any;
 };
 
 /**
@@ -1032,7 +1040,10 @@ export type ProductQueries = {
   paginate: (this: ProductQuery, ...args: any[]) => ProductQuery;
 };
 
-export type ProductMethods = {};
+export type ProductMethods = {
+  saveStatus: (this: ProductDocument, ...args: any[]) => any;
+  savePmDue: (this: ProductDocument, ...args: any[]) => any;
+};
 
 export type ProductStatics = {
   paginate: (this: ProductModel, ...args: any[]) => any;
@@ -1092,11 +1103,12 @@ export type ProductDocument = mongoose.Document<
     locationId: RoomDocument;
     warrantyDate: Date;
     remarks?: string;
+    status?: "active" | "awaiting-comissioning" | "under-service";
+    pmDue?: "pm-not-set" | "in-pm" | "pm-due" | "pm-overdue";
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     productComission: any;
-    status: "active" | "awaiting-comissioning";
-    pmDue: "pm-not-set" | "pm-due";
+    productMaintenance: any;
   };
 
 /**

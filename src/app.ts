@@ -12,6 +12,7 @@ import {
   FacilityRouter,
   MaintenanceWindowRouter,
   ProductComissioningRouter,
+  ProductMaintenanceRouter,
   ProductRouter,
   ProductTypeRouter,
   RoomRouter,
@@ -43,6 +44,7 @@ app.use("/api", new FacilityRouter().getRouter);
 app.use("/api", new RoomRouter().getRouter);
 app.use("/api", new ProductRouter().getRouter);
 app.use("/api", new ProductComissioningRouter().getRouter);
+app.use("/api", new ProductMaintenanceRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);

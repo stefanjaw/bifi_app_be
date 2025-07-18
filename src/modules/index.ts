@@ -1,3 +1,4 @@
+export { ProductMaintenanceRouter } from "./product-maintenance/routes/product-maintenance-routes";
 export { ProductTypeRouter } from "./product-types/routes/product-type-routes";
 export { CountryRouter } from "./countries/routes/country-routes";
 export { CompanyRouter } from "./companies/routes/company-routes";
