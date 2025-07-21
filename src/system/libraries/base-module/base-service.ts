@@ -1,9 +1,6 @@
-import mongoose, {
-  ClientSession,
-  PaginateModel,
-  PaginateResult,
-} from "mongoose";
+import { ClientSession, PaginateModel, PaginateResult } from "mongoose";
 import { orderByQuery, paginationOptions } from "./query-options.type";
+import { runTransaction } from "./transaction-utils";
 
 export class BaseService<T> {
   model!: PaginateModel<T>;
@@ -12,13 +9,50 @@ export class BaseService<T> {
     Object.assign(this, params);
   }
 
+  /**
+   * Retrieve records from the database.
+   * @param searchParams - The search params as key value pair.
+   * @param orderBy - The order by query.
+   * @param session - Optional mongoose session.
+   * @returns An array of records.
+   */
+  async get(
+    searchParams: Record<string, any>,
+    paginationOptions: undefined,
+    orderBy: orderByQuery["orderBy"] | undefined,
+    session: ClientSession | undefined
+  ): Promise<T[]>;
+
+  /**
+   * Retrieve records from the database.
+   * @param searchParams - The search params as key value pair.
+   * @param paginationOptions - The pagination options with `paginate` set to `true`.
+   * @param orderBy - The order by query.
+   * @param session - Optional mongoose session.
+   * @returns A mongoose paginate result.
+   */
+  async get(
+    searchParams: Record<string, any>,
+    paginationOptions: paginationOptions & { paginate: true },
+    orderBy: orderByQuery["orderBy"] | undefined,
+    session: ClientSession | undefined
+  ): Promise<PaginateResult<T>>;
+
+  /**
+   * Retrieve records from the database.
+   * @param searchParams - The search params as key value pair.
+   * @param paginationOptions - The pagination options.
+   * @param orderBy - The order by query.
+   * @param session - The mongoose transaction session.
+   * @returns A promise that resolves to the retrieved records.
+   */
   async get(
     searchParams: Record<string, any>,
     paginationOptions: paginationOptions | undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
     session: ClientSession | undefined = undefined
   ): Promise<PaginateResult<T> | T[]> {
-    return await this.runTransaction<PaginateResult<T> | T[]>(
+    return await runTransaction<PaginateResult<T> | T[]>(
       session,
       async (newSession) => {
         let records;
@@ -55,11 +89,17 @@ export class BaseService<T> {
     );
   }
 
+  /**
+   * Creates a record in the database.
+   * @param data The data to create the record with.
+   * @param session The optional client session to use for the transaction.
+   * @returns The created record document.
+   */
   async create(
     data: Record<string, any>,
     session: ClientSession | undefined = undefined
   ): Promise<T> {
-    return await this.runTransaction<T>(session, async (newSession) => {
+    return await runTransaction<T>(session, async (newSession) => {
       const record = (
         await this.model.create([data], { session: newSession })
       )[0];
@@ -68,11 +108,22 @@ export class BaseService<T> {
     });
   }
 
+  /**
+   * Updates a record in the database with the given data.
+   * The record is identified by the `_id` field in the provided data,
+   * which is removed from the update data before performing the update.
+   * The function runs within a transaction and returns the updated record.
+   *
+   * @param data - The data to update the record with. Must include the `_id` of the record to update.
+   * @param session - The optional client session to use for the transaction.
+   * @returns The updated record document.
+   */
+
   async update(
     data: Record<string, any>,
     session: ClientSession | undefined = undefined
   ): Promise<T> {
-    return await this.runTransaction<T>(session, async (newSession) => {
+    return await runTransaction<T>(session, async (newSession) => {
       // check _id and get it
       const _id = data._id;
       delete data._id;
@@ -86,11 +137,17 @@ export class BaseService<T> {
     });
   }
 
+  /**
+   * Soft deletes a record from the database.
+   * @param _id The _id of the record to delete.
+   * @param session The optional client session to use for the transaction.
+   * @returns A boolean indicating if the deletion was successful.
+   */
   async delete(
     _id: string,
     session: ClientSession | undefined = undefined
   ): Promise<boolean> {
-    return await this.runTransaction<boolean>(session, async (newSession) => {
+    return await runTransaction<boolean>(session, async (newSession) => {
       const record = await this.model.findByIdAndUpdate(
         _id,
         {
@@ -98,6 +155,7 @@ export class BaseService<T> {
         },
         {
           session: newSession,
+          new: true,
         }
       );
 
@@ -106,27 +164,5 @@ export class BaseService<T> {
       // if active is set as true, then false for deleted and viceversa
       return ((record as any)?.active ? false : true) as boolean;
     });
-  }
-
-  async runTransaction<T>(
-    session: ClientSession | undefined,
-    callback: (newSession: ClientSession) => Promise<T>
-  ): Promise<T> {
-    const newSession = session ? session : await mongoose.startSession();
-
-    try {
-      if (!session) newSession.startTransaction();
-
-      // run the callback function
-      const result = await callback(newSession);
-
-      if (!session) await newSession.commitTransaction();
-      return result as T;
-    } catch (error) {
-      if (!session) await newSession.abortTransaction();
-      throw error;
-    } finally {
-      if (!session) await newSession.endSession();
-    }
   }
 }

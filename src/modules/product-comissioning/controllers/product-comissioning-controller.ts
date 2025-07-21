@@ -40,7 +40,7 @@ export class ProductComissioningController extends BaseController<ProductComissi
           );
         }
       } catch (error: any) {
-        super.sendError(res, 401, error.message);
+        next(error);
         return;
       }
 
@@ -66,7 +66,7 @@ export class ProductComissioningController extends BaseController<ProductComissi
           );
         }
       } catch (error: any) {
-        super.sendError(res, 401, error.message);
+        next(error);
         return;
       }
 

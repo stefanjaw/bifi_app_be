@@ -772,6 +772,7 @@ export type ProductMaintenance = {
   attachments: mongoose.Types.ObjectId[];
   productId: Product;
   date?: Date;
+  type: "service" | "preventive-maintenance";
   active?: boolean;
   _id: mongoose.Types.ObjectId;
 };
@@ -867,6 +868,7 @@ export type ProductMaintenanceDocument = mongoose.Document<
     attachments: mongoose.Types.Array<mongoose.Types.ObjectId>;
     productId: ProductDocument;
     date?: Date;
+    type: "service" | "preventive-maintenance";
     active?: boolean;
     _id: mongoose.Types.ObjectId;
   };
@@ -1002,11 +1004,15 @@ export type Product = {
     | "active"
     | "awaiting-comissioning"
     | "under-service"
-    | "decomissioned";
+    | "decomissioned"
+    | "in-pm";
+  minMaintenanceDate?: Date;
+  maintenanceDate?: Date;
+  maxMaintenanceDate?: Date;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   productComission: any;
-  productMaintenance: any;
+  productMaintenances: any;
 };
 
 /**
@@ -1107,11 +1113,15 @@ export type ProductDocument = mongoose.Document<
       | "active"
       | "awaiting-comissioning"
       | "under-service"
-      | "decomissioned";
+      | "decomissioned"
+      | "in-pm";
+    minMaintenanceDate?: Date;
+    maintenanceDate?: Date;
+    maxMaintenanceDate?: Date;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     productComission: any;
-    productMaintenance: any;
+    productMaintenances: any;
   };
 
 /**

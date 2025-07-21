@@ -10,6 +10,17 @@ export class BaseController<T> {
   }
 
   //#region Protected Methods to Handle Requests and can be overridden
+
+  /**
+   * Handles HTTP GET requests by retrieving records from the database.
+   * Parses query parameters for search, pagination, and sorting options,
+   * and uses the service to fetch the corresponding records.
+   *
+   * @param req - The express Request object containing query parameters for search, pagination, and sorting.
+   * @param res - The express Response object used to send data back to the client.
+   * @param next - The express NextFunction callback to pass control to the next middleware on error.
+   */
+
   protected async getHandler(req: Request, res: Response, next: NextFunction) {
     try {
       // get elements
@@ -26,7 +37,8 @@ export class BaseController<T> {
       const records = await this.service.get(
         searchParams,
         paginationOptions,
-        orderBy
+        orderBy,
+        undefined
       );
 
       this.sendData(res, records);
@@ -35,6 +47,14 @@ export class BaseController<T> {
     }
   }
 
+  /**
+   * Handles HTTP POST requests by creating a new record in the database.
+   * The request body is passed to the service's create method.
+   *
+   * @param req - The express Request object containing the data to create the record with.
+   * @param res - The express Response object used to send data back to the client.
+   * @param next - The express NextFunction callback to pass control to the next middleware on error.
+   */
   protected async createHandler(
     req: Request,
     res: Response,
@@ -49,6 +69,15 @@ export class BaseController<T> {
       next(error);
     }
   }
+
+  /**
+   * Handles HTTP PUT requests to update an existing record in the database.
+   * The request body is passed to the service's update method.
+   *
+   * @param req - The express Request object containing the data to update the record with.
+   * @param res - The express Response object used to send data back to the client.
+   * @param next - The express NextFunction callback to pass control to the next middleware on error.
+   */
 
   protected async updateHandler(
     req: Request,
@@ -65,15 +94,26 @@ export class BaseController<T> {
     }
   }
 
+  /**
+   * Handles HTTP DELETE requests to remove a record from the database.
+   * Requires the "_id" parameter in the request params to identify the record.
+   * Delegates the deletion to the service's delete method and sends the result back to the client.
+   *
+   * @param req - The express Request object containing the "_id" of the record to delete.
+   * @param res - The express Response object used to send the result back to the client.
+   * @param next - The express NextFunction callback to pass control to the next middleware on error.
+   */
+
   protected async deleteHandler(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      if (!req.params._id) throw new Error("_id is required for deletion");
+      if (!req.query._id)
+        throw new ValidationException("_id is required for deletion");
 
-      const result = await this.service.delete(req.params._id);
+      const result = await this.service.delete(req.query._id as string);
 
       this.sendData(res, result);
     } catch (error: any) {
@@ -100,9 +140,12 @@ export class BaseController<T> {
   };
   //#endregion
 
-  sendError(res: Response, status: number, error: string) {
-    res.status(status).json({ error });
-  }
+  /**
+   * Sends a successful HTTP response with the provided data.
+   *
+   * @param res - The express Response object used to send data back to the client.
+   * @param data - The data to be sent in the response body.
+   */
 
   sendData(res: Response, data: any) {
     res.status(200).json(data);

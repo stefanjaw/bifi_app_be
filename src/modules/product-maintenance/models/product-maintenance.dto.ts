@@ -1,6 +1,7 @@
 import {
   IsBoolean,
   IsDate,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
@@ -29,6 +30,9 @@ export class ProductMaintenanceDTO {
   @IsOptional()
   @Type(() => Date)
   date?: Date;
+
+  @IsEnum(["service", "preventive-maintenance"])
+  type!: string;
 
   @IsBoolean()
   @IsOptional()

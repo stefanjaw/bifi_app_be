@@ -2,13 +2,9 @@ import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
+import { ProductDocument } from "@mongodb-types";
 import isBetween from "dayjs/plugin/isBetween";
-import dayjs, { Dayjs } from "dayjs";
-import {
-  ProductComissioningDocument,
-  ProductDocument,
-  ProductMaintenanceDocument,
-} from "@mongodb-types";
+import dayjs from "dayjs";
 
 dayjs.extend(isBetween);
 
@@ -99,9 +95,21 @@ const productSchema = new Schema(
         "awaiting-comissioning",
         "under-service",
         "decomissioned",
+        "in-pm",
       ],
       default: "awaiting-comissioning",
     },
+    // for maintenance
+    minMaintenanceDate: {
+      type: Date,
+    },
+    maintenanceDate: {
+      type: Date,
+    },
+    maxMaintenanceDate: {
+      type: Date,
+    },
+    // ================
     active: {
       type: Boolean,
       default: true,
@@ -126,77 +134,17 @@ productSchema.virtual("productComission", {
 });
 
 // TODO: can I have only one maintenance per product at a time?
-productSchema.virtual("productMaintenance", {
+productSchema.virtual("productMaintenances", {
   ref: "ProductMaintenance",
   localField: "_id",
   foreignField: "productId",
   autopopulate: {
-    select: "outcome details attachments active",
+    select: "outcome details attachments active type",
     maxDepth: 1, // Limit depth to one level
   },
   options: { sort: { date: -1 } },
+  match: { active: true }, // Only populate active maintenances
 });
-
-// This is based on the last comission and maintenance
-// productSchema.virtual("status").get(function (this: ProductDocument) {
-//   let status: "active" | "awaiting-comissioning" | "under-service";
-
-//   const productComission = this
-//     .productComission as ProductComissioningDocument | null;
-//   const productMaintenance = (
-//     this.productMaintenance as ProductMaintenanceDocument[]
-//   )?.find((maintenance) => maintenance.active);
-
-//   // get status, if there is a maintenance, status is under-service
-//   // if there is a comission, status is active
-//   // else status is awaiting-comissioning
-//   if (productMaintenance) status = "under-service";
-//   else if (productComission && productComission.outcome === "pass")
-//     status = "active";
-//   else status = "awaiting-comissioning";
-
-//   return status;
-// });
-
-// This is based on previous maintenance, if no previous maintenance, based on acquired date
-// productSchema.virtual("pmDue").get(function (this: ProductDocument) {
-//   // get maintenance window
-//   const window = this.maintenanceWindowIds
-//     ? this.maintenanceWindowIds[0]
-//     : null;
-//   let pmDue: "pm-not-set" | "in-pm" | "pm-due" | "pm-overdue" = "pm-not-set";
-
-//   // if no window, return
-//   if (!window) return pmDue;
-
-//   // get last maintenance
-//   const lastMaintenance = this.productMaintenance
-//     ? this.productMaintenance[0]
-//     : null;
-
-//   // set last date to last maintenance or acquired date
-//   let lastDate: Dayjs;
-//   if (lastMaintenance) lastDate = dayjs(lastMaintenance.date);
-//   else lastDate = dayjs(this.acquiredDate);
-
-//   // get date variables to check DUE, the exact date, the prior date, and the later date which are offsets
-//   const nextWindowDate = dayjs(lastDate).add(
-//     window.parseRecurrencyForDayjs().count,
-//     window.parseRecurrencyForDayjs().unit
-//   );
-//   const priorDate = dayjs(nextWindowDate).subtract(window.daysBefore, "day");
-//   const laterDate = dayjs(nextWindowDate).add(window.daysAfter, "day");
-
-//   if (dayjs().isBetween(priorDate, laterDate)) {
-//     pmDue = "in-pm";
-//   } else if (dayjs().isBefore(priorDate)) {
-//     pmDue = "pm-due";
-//   } else if (dayjs().isAfter(laterDate)) {
-//     pmDue = "pm-overdue";
-//   }
-
-//   return pmDue;
-// });
 
 productSchema.plugin(paginate);
 productSchema.plugin(autopopulate);

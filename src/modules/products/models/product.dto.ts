@@ -85,6 +85,11 @@ export class ProductDTO {
   @IsOptional()
   status?: string;
 
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  maintenanceDate?: Date;
+
   @IsBoolean()
   @IsOptional()
   @Type(() => Boolean)

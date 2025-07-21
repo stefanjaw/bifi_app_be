@@ -23,7 +23,7 @@ const productMaintenanceSchema = new Schema({
     ref: "Product",
     autopopulate: {
       select:
-        "productModel serialNumber acquiredDate acquiredPrice currentPrice condition locationId warrantyDate remarks",
+        "productModel serialNumber acquiredDate acquiredPrice currentPrice condition locationId warrantyDate remarks status",
       maxDepth: 1, // Limit depth to one level
     },
     required: true,
@@ -32,6 +32,11 @@ const productMaintenanceSchema = new Schema({
     type: Date,
     required: false,
     default: new Date(),
+  },
+  type: {
+    type: String,
+    enum: ["service", "preventive-maintenance"],
+    required: true,
   },
   active: {
     type: Boolean,
