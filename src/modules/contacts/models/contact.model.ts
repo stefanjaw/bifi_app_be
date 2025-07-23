@@ -19,7 +19,7 @@ const contactSchema = new Schema({
   },
   email: {
     type: String,
-    required: true,
+    required: false,
   },
   parentId: {
     type: Schema.Types.ObjectId,

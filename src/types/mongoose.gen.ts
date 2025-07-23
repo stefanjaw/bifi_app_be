@@ -122,7 +122,7 @@ export type Contact = {
   name: string;
   lastName: string;
   phoneNumber?: string;
-  email: string;
+  email?: string;
   parentId?: Contact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -211,7 +211,7 @@ export type ContactDocument = mongoose.Document<
     name: string;
     lastName: string;
     phoneNumber?: string;
-    email: string;
+    email?: string;
     parentId?: ContactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
@@ -987,18 +987,18 @@ export type ProductTypeDocument = mongoose.Document<
  */
 export type Product = {
   productTypeIds: ProductType[];
-  vendorIds: Contact[];
+  vendorIds?: Contact[];
   makeIds: Contact[];
   productModel: string;
   serialNumber: string;
   acquiredDate: Date;
-  acquiredPrice: number;
-  currentPrice: number;
-  condition: "excellent" | "good" | "fair" | "poor";
+  acquiredPrice?: number;
+  currentPrice?: number;
+  condition?: "excellent" | "good" | "fair" | "poor";
   maintenanceWindowIds: MaintenanceWindow[];
   photo?: mongoose.Types.ObjectId;
-  locationId: Room;
-  warrantyDate: Date;
+  locationId?: Room;
+  warrantyDate?: Date;
   remarks?: string;
   status?:
     | "active"
@@ -1096,18 +1096,18 @@ export type ProductDocument = mongoose.Document<
 > &
   ProductMethods & {
     productTypeIds: mongoose.Types.Array<ProductTypeDocument>;
-    vendorIds: mongoose.Types.Array<ContactDocument>;
+    vendorIds?: mongoose.Types.Array<ContactDocument>;
     makeIds: mongoose.Types.Array<ContactDocument>;
     productModel: string;
     serialNumber: string;
     acquiredDate: Date;
-    acquiredPrice: number;
-    currentPrice: number;
-    condition: "excellent" | "good" | "fair" | "poor";
+    acquiredPrice?: number;
+    currentPrice?: number;
+    condition?: "excellent" | "good" | "fair" | "poor";
     maintenanceWindowIds: mongoose.Types.Array<MaintenanceWindowDocument>;
     photo?: mongoose.Types.ObjectId;
-    locationId: RoomDocument;
-    warrantyDate: Date;
+    locationId?: RoomDocument;
+    warrantyDate?: Date;
     remarks?: string;
     status?:
       | "active"

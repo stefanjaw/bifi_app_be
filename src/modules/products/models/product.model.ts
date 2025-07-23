@@ -19,12 +19,13 @@ const productSchema = new Schema(
     vendorIds: {
       type: [Schema.Types.ObjectId],
       ref: "Contact",
-      required: true,
+      required: false,
       // depth must be of one level
       autopopulate: {
         select: "name lastName email", // Fields to select from the parent contact
         maxDepth: 1, // Limit depth to one level
       },
+      default: [],
     },
     makeIds: {
       type: [Schema.Types.ObjectId],
@@ -50,16 +51,19 @@ const productSchema = new Schema(
     },
     acquiredPrice: {
       type: Number,
-      required: true,
+      required: false,
+      default: 0,
     },
     currentPrice: {
       type: Number,
-      required: true,
+      required: false,
+      default: 0,
     },
     condition: {
       type: String,
       enum: ["excellent", "good", "fair", "poor"],
-      required: true,
+      required: false,
+      default: "excellent",
     },
     maintenanceWindowIds: {
       type: [Schema.Types.ObjectId],
@@ -78,11 +82,11 @@ const productSchema = new Schema(
         select: "name code address active", // Fields to select from the room
         maxDepth: 1, // Limit depth to one level
       },
-      required: true,
+      required: false,
     },
     warrantyDate: {
       type: Date,
-      required: true,
+      required: false,
     },
     remarks: {
       type: String,

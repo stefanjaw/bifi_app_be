@@ -20,9 +20,11 @@ export class ContactDTO {
   lastName!: string;
 
   @IsPhoneNumber("BM")
+  @IsOptional()
   phoneNumber!: string;
 
   @IsEmail()
+  @IsOptional()
   email!: string;
 
   @IsMongoId()

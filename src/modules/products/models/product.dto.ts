@@ -26,7 +26,8 @@ export class ProductDTO {
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @Transform(({ value }) => JSON.parse(value))
-  vendorIds!: string[];
+  @IsOptional()
+  vendorIds?: string[];
 
   @IsArray()
   @ArrayMinSize(1)
@@ -49,15 +50,18 @@ export class ProductDTO {
   @IsNumber()
   @IsPositive()
   @Type(() => Number)
-  acquiredPrice!: number;
+  @IsOptional()
+  acquiredPrice?: number;
 
   @IsNumber()
   @IsPositive()
   @Type(() => Number)
-  currentPrice!: number;
+  @IsOptional()
+  currentPrice?: number;
 
   @IsIn(["excellent", "good", "fair", "poor"])
-  condition!: string;
+  @IsOptional()
+  condition?: string;
 
   @IsArray()
   @ArrayMinSize(1)
@@ -70,11 +74,13 @@ export class ProductDTO {
   // photo?: string;
 
   @IsMongoId()
-  locationId!: string;
+  @IsOptional()
+  locationId?: string;
 
   @IsDate()
   @Type(() => Date)
-  warrantyDate!: Date;
+  @IsOptional()
+  warrantyDate?: Date;
 
   @IsString()
   @IsNotEmpty()
