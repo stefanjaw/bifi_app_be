@@ -24,9 +24,7 @@ export class RoomDTO {
   @IsMongoId()
   facilityId!: string;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: string;
 }
 

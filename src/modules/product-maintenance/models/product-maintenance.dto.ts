@@ -34,9 +34,7 @@ export class ProductMaintenanceDTO {
   @IsEnum(["service", "preventive-maintenance"])
   type!: string;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: string;
 }
 

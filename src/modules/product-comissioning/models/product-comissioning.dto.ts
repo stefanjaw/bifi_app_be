@@ -24,9 +24,7 @@ export class ProductComissioningDTO {
   @IsMongoId()
   productId!: string;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: string;
 }
 

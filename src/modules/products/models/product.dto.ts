@@ -96,9 +96,7 @@ export class ProductDTO {
   @Type(() => Date)
   maintenanceDate?: Date;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: boolean;
 }
 

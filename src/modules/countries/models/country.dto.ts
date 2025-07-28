@@ -13,9 +13,7 @@ export class CountryDTO {
   @IsNotEmpty()
   name!: string;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: boolean;
 }
 

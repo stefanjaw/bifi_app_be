@@ -134,6 +134,7 @@ productSchema.virtual("productComission", {
     select: "outcome details attachments active",
     maxDepth: 1, // Limit depth to one level
   },
+  options: { sort: { date: 1 } },
   match: { active: true }, // Only populate active commissions
 });
 

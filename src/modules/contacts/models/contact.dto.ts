@@ -31,9 +31,7 @@ export class ContactDTO {
   @IsOptional()
   parentId?: string;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: boolean;
 }
 

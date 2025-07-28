@@ -20,9 +20,7 @@ export class CompanyDTO {
   @IsNotEmpty()
   address!: string;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: boolean;
 }
 

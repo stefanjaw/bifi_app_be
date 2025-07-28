@@ -33,9 +33,7 @@ export class FacilityRoomDTO {
   @IsOptional()
   facilityId!: string;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: string;
 }
 

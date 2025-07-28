@@ -18,9 +18,7 @@ export class ProductTypeDTO {
   @IsOptional()
   description?: string;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: boolean;
 }
 

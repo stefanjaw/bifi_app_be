@@ -54,6 +54,22 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
           );
         }
 
+        // GET ALL COMISSIONS FOR THE PRODUCT
+        const comissions = await this.get(
+          { productId: data.productId },
+          undefined,
+          undefined,
+          newSession
+        );
+
+        // SET ALL COMISSIONS AS INACTIVE EXCEPT THE ONE BEING CREATED
+        await Promise.all(
+          comissions.map(async (comission) => {
+            comission.active = false;
+            await comission.save({ session: newSession });
+          })
+        );
+
         // SAVE COMISSION
         const comission = await super.create(data, newSession);
 

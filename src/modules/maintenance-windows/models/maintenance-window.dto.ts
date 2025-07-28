@@ -29,9 +29,7 @@ export class MaintenanceWindowDTO {
   @IsIn(["daily", "weekly", "monthly", "quarterly", "semi-anually", "annually"])
   recurrency!: string;
 
-  @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
   active?: boolean;
 }
 
