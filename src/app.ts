@@ -17,6 +17,7 @@ import {
   ProductTypeRouter,
   RoomRouter,
 } from "./modules";
+import { FileRouter } from "./modules/files/routes/file-routes";
 
 // load .env variables
 dotenv.config();
@@ -35,6 +36,10 @@ app.use(
 );
 
 // routes will be here, main route inits with /api and then it uses the routers
+app.get("/api/filesv2/:id", (req, res) => {
+  res.status(200).json({ message: "Welcome to the BIFI App Backend API" });
+});
+app.use("/api", new FileRouter().getRouter);
 app.use("/api", new CountryRouter().getRouter);
 app.use("/api", new CompanyRouter().getRouter);
 app.use("/api", new ContactRouter().getRouter);
