@@ -144,7 +144,7 @@ productSchema.virtual("productMaintenances", {
   localField: "_id",
   foreignField: "productId",
   autopopulate: {
-    select: "outcome details attachments active type",
+    select: "name description attachments active type date",
     maxDepth: 1, // Limit depth to one level
   },
   options: { sort: { date: -1 } },
