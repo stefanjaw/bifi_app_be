@@ -59,6 +59,7 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
           { productId: data.productId },
           undefined,
           undefined,
+          false,
           newSession
         );
 
@@ -137,7 +138,7 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
   ): Promise<boolean> {
     return runTransaction<boolean>(session, async (newSession) => {
       const comission = (
-        await super.get({ _id }, undefined, undefined, newSession)
+        await super.get({ _id }, undefined, undefined, false, newSession)
       )[0];
 
       const deleted = await super.delete(_id, newSession);

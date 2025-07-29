@@ -137,7 +137,7 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
     return runTransaction<boolean>(session, async (newSession) => {
       // GET MAINTENANCE TO CHECK PRODUCT ID
       const maintenance = (
-        await super.get({ _id }, undefined, undefined, newSession)
+        await super.get({ _id }, undefined, undefined, false, newSession)
       )[0];
 
       const deleted = await super.delete(_id, newSession);

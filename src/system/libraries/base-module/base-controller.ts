@@ -13,7 +13,7 @@ export class BaseController<T> {
 
   /**
    * Handles HTTP GET requests by retrieving records from the database.
-   * Parses query parameters for search, pagination, and sorting options,
+   * Parses query parameters for search, pagination, and sorting options and count,
    * and uses the service to fetch the corresponding records.
    *
    * @param req - The express Request object containing query parameters for search, pagination, and sorting.
@@ -33,11 +33,13 @@ export class BaseController<T> {
       const orderBy = req.query.orderBy
         ? JSON.parse(req.query.orderBy as string)
         : {};
+      const count = req.query.count === "true" ? true : false;
 
       const records = await this.service.get(
         searchParams,
         paginationOptions,
         orderBy,
+        count,
         undefined
       );
 

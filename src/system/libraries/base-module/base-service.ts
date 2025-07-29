@@ -13,6 +13,7 @@ export class BaseService<T> {
    * Retrieve records from the database.
    * @param searchParams - The search params as key value pair.
    * @param orderBy - The order by query.
+   * @param count - Whether to count the number of records.
    * @param session - Optional mongoose session.
    * @returns An array of records.
    */
@@ -20,6 +21,7 @@ export class BaseService<T> {
     searchParams: Record<string, any>,
     paginationOptions: undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
+    count: boolean | undefined,
     session: ClientSession | undefined
   ): Promise<T[]>;
 
@@ -28,6 +30,7 @@ export class BaseService<T> {
    * @param searchParams - The search params as key value pair.
    * @param paginationOptions - The pagination options with `paginate` set to `true`.
    * @param orderBy - The order by query.
+   * @param count - Whether to count the number of records.
    * @param session - Optional mongoose session.
    * @returns A mongoose paginate result.
    */
@@ -35,6 +38,7 @@ export class BaseService<T> {
     searchParams: Record<string, any>,
     paginationOptions: paginationOptions & { paginate: true },
     orderBy: orderByQuery["orderBy"] | undefined,
+    count: boolean | undefined,
     session: ClientSession | undefined
   ): Promise<PaginateResult<T>>;
 
@@ -43,6 +47,7 @@ export class BaseService<T> {
    * @param searchParams - The search params as key value pair.
    * @param paginationOptions - The pagination options.
    * @param orderBy - The order by query.
+   * @param count - Whether to count the number of records.
    * @param session - The mongoose transaction session.
    * @returns A promise that resolves to the retrieved records.
    */
@@ -50,6 +55,7 @@ export class BaseService<T> {
     searchParams: Record<string, any>,
     paginationOptions: paginationOptions | undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
+    count: boolean | undefined,
     session: ClientSession | undefined = undefined
   ): Promise<PaginateResult<T> | T[]> {
     return await runTransaction<PaginateResult<T> | T[]>(
@@ -74,6 +80,11 @@ export class BaseService<T> {
             session: newSession,
             sort: orderByObject,
           });
+        } else if (count) {
+          // count
+          records = await this.model
+            .countDocuments(searchParams)
+            .session(newSession);
         } else {
           // non paginated
           records = orderByObject
