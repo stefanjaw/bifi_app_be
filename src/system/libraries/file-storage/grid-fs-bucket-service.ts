@@ -1,6 +1,10 @@
 import { Db, GridFSBucket } from "mongodb";
 import { Types } from "mongoose";
-import { ValidationException } from "../exceptions";
+import {
+  InternalServerException,
+  NotFoundException,
+  ValidationException,
+} from "../exceptions";
 
 // Will apply singleton pattern to this service for preserving the GridFSBucket instance
 // This service is used to interact with GridFS for file storage in MongoDB
@@ -46,6 +50,7 @@ export class GridFSBucketService {
 
     const stream = this.bucket.openUploadStream(file.originalname, {
       metadata: {
+        contentType: file.mimetype,
         mimetype: file.mimetype,
         originalname: file.originalname,
         size: file.size,
@@ -83,21 +88,34 @@ export class GridFSBucketService {
     const id = new Types.ObjectId(fileId);
     const downloadStream = this.bucket.openDownloadStream(id);
 
-    return new Promise<Buffer>((resolve, reject) => {
-      const chunks: Buffer[] = [];
+    const files = await this.bucket.find({ _id: id }).toArray();
+    if (!files || files.length === 0) {
+      throw new NotFoundException("File not found");
+    }
 
-      downloadStream.on("data", (chunk) => {
-        chunks.push(chunk);
-      });
+    const file = files[0];
 
-      downloadStream.on("error", (err) => {
-        reject(new Error(`File download failed: ${err.message}`));
-      });
+    return {
+      file,
+      stream: downloadStream,
+      bufferDownload: new Promise<Buffer>((resolve, reject) => {
+        const chunks: Buffer[] = [];
 
-      downloadStream.on("end", () => {
-        resolve(Buffer.concat(chunks));
-      });
-    });
+        downloadStream.on("data", (chunk) => {
+          chunks.push(chunk);
+        });
+
+        downloadStream.on("error", (err) => {
+          reject(
+            new InternalServerException(`File download failed: ${err.message}`)
+          );
+        });
+
+        downloadStream.on("end", () => {
+          resolve(Buffer.concat(chunks));
+        });
+      }),
+    };
   }
 
   /**
