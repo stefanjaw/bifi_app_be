@@ -6,6 +6,7 @@ import morgan from "morgan";
 import cors from "cors";
 import { catchExceptionMiddleware, GridFSBucketService } from "./system";
 import {
+  ActivityHistoryRouter,
   CompanyRouter,
   ContactRouter,
   CountryRouter,
@@ -50,6 +51,7 @@ app.use("/api", new RoomRouter().getRouter);
 app.use("/api", new ProductRouter().getRouter);
 app.use("/api", new ProductComissioningRouter().getRouter);
 app.use("/api", new ProductMaintenanceRouter().getRouter);
+app.use("/api", new ActivityHistoryRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);

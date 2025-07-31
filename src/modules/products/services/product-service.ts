@@ -7,9 +7,11 @@ import {
 import { productModel } from "../models/product.model";
 import { ProductDocument } from "../../../types/mongoose.gen";
 import { ProductStatusService } from "./product-status-service";
+import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 
 export class ProductService extends BaseService<ProductDocument> {
   private productStatusService = new ProductStatusService();
+  private activityHistoryService = new ActivityHistoryService();
 
   constructor() {
     super({ model: productModel });
@@ -49,6 +51,18 @@ export class ProductService extends BaseService<ProductDocument> {
         );
       }
 
+      // ADD ACTIVITY HISTORY
+      await this.activityHistoryService.create(
+        {
+          title: "Product Created",
+          details: "Product has been created",
+          performDate: new Date(),
+          model: "Product",
+          modelId: product._id,
+        },
+        newSession
+      );
+
       return product;
     });
   }
@@ -79,6 +93,20 @@ export class ProductService extends BaseService<ProductDocument> {
       if (data.maintenanceDate) {
         product = await this.productStatusService.updateProductMaintenanceDates(
           product._id,
+          newSession
+        );
+      }
+
+      if (product.status === "decomissioned") {
+        // ADD ACTIVITY HISTORY
+        await this.activityHistoryService.create(
+          {
+            title: "Decomission",
+            details: "Decomissioned. Notes: All actions are disabled",
+            performDate: new Date(),
+            model: "Product",
+            modelId: product._id,
+          },
           newSession
         );
       }

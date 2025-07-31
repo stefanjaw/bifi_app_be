@@ -8,3 +8,4 @@ export { FacilityRouter } from "./facilities/routes/facility-routes";
 export { RoomRouter } from "./facilities/routes/room-routes";
 export { ProductRouter } from "./products/routes/product-routes";
 export { ProductComissioningRouter } from "./product-comissioning/routes/product-comissioning-routes";
+export { ActivityHistoryRouter } from "./activity-history/routes/activity-history-routes";

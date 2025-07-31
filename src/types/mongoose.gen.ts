@@ -8,6 +8,119 @@
 import mongoose from "mongoose";
 
 /**
+ * Lean version of ActivityHistoryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ActivityHistoryDocument.toObject()`. To avoid conflicts with model names, use the type alias `ActivityHistoryObject`.
+ * ```
+ * const activityhistoryObject = activityhistory.toObject();
+ * ```
+ */
+export type ActivityHistory = {
+  title: string;
+  details?: string;
+  performDate?: Date;
+  model: string;
+  modelId: mongoose.Types.ObjectId;
+  metadata?: any | null;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ActivityHistoryDocument (type alias of `ActivityHistory`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ActivityHistory } from "../models"
+ * import { ActivityHistoryObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const activityhistoryObject: ActivityHistoryObject = activityhistory.toObject();
+ * ```
+ */
+export type ActivityHistoryObject = ActivityHistory;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ActivityHistoryQuery = mongoose.Query<
+  any,
+  ActivityHistoryDocument,
+  ActivityHistoryQueries
+> &
+  ActivityHistoryQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ActivityHistorySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ActivityHistoryQueries = {
+  paginate: (
+    this: ActivityHistoryQuery,
+    ...args: any[]
+  ) => ActivityHistoryQuery;
+};
+
+export type ActivityHistoryMethods = {};
+
+export type ActivityHistoryStatics = {
+  paginate: (this: ActivityHistoryModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ActivityHistoryModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ActivityHistory = mongoose.model<ActivityHistoryDocument, ActivityHistoryModel>("ActivityHistory", ActivityHistorySchema);
+ * ```
+ */
+export type ActivityHistoryModel = mongoose.Model<
+  ActivityHistoryDocument,
+  ActivityHistoryQueries
+> &
+  ActivityHistoryStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ActivityHistory schema instances:
+ * ```
+ * const ActivityHistorySchema: ActivityHistorySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ActivityHistorySchema = mongoose.Schema<
+  ActivityHistoryDocument,
+  ActivityHistoryModel,
+  ActivityHistoryMethods,
+  ActivityHistoryQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ActivityHistory = mongoose.model<ActivityHistoryDocument, ActivityHistoryModel>("ActivityHistory", ActivityHistorySchema);
+ * ```
+ */
+export type ActivityHistoryDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ActivityHistoryQueries
+> &
+  ActivityHistoryMethods & {
+    title: string;
+    details?: string;
+    performDate?: Date;
+    model: string;
+    modelId: mongoose.Types.ObjectId;
+    metadata?: any | null;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Lean version of CompanyDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CompanyDocument.toObject()`. To avoid conflicts with model names, use the type alias `CompanyObject`.

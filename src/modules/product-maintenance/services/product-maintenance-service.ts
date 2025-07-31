@@ -8,9 +8,11 @@ import {
 import { productMaintenanceModel } from "../models/product-maintenance.model";
 import { ClientSession } from "mongoose";
 import { ProductStatusService } from "../../products/services/product-status-service";
+import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 
 export class ProductMaintenanceService extends BaseService<ProductMaintenanceDocument> {
   private productStatusService = new ProductStatusService();
+  private activityHistoryService = new ActivityHistoryService();
 
   constructor() {
     super({ model: productMaintenanceModel });
@@ -76,6 +78,24 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
           );
         }
 
+        // ADD ACTIVITY HISTORY
+        await this.activityHistoryService.create(
+          {
+            title:
+              maintenance.type === "preventive-maintenance"
+                ? "PM"
+                : maintenance.name,
+            details: `Started. Notes: ${
+              maintenance.type === "preventive-maintenance" ? "PM" : "Service"
+            } has initiated`,
+            performDate: new Date(),
+            model: "ProductMaintenance",
+            modelId: maintenance._id,
+            metadata: { productId: maintenance.productId._id.toString() },
+          },
+          newSession
+        );
+
         return maintenance;
       }
     );
@@ -113,6 +133,26 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
           newSession
         );
 
+        // ADD ACTIVITY HISTORY IF DISABLED
+        if (maintenance.active === false) {
+          await this.activityHistoryService.create(
+            {
+              title:
+                maintenance.type === "preventive-maintenance"
+                  ? "PM"
+                  : maintenance.name,
+              details: `Finished. Notes: ${
+                maintenance.type === "preventive-maintenance" ? "PM" : "Service"
+              } has concluded`,
+              performDate: new Date(),
+              model: "ProductMaintenance",
+              modelId: maintenance._id,
+              metadata: { productId: maintenance.productId._id.toString() },
+            },
+            newSession
+          );
+        }
+
         return maintenance;
       }
     );
@@ -144,6 +184,23 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
 
       await this.productStatusService.updateProductStatus(
         maintenance.productId._id,
+        newSession
+      );
+
+      await this.activityHistoryService.create(
+        {
+          title:
+            maintenance.type === "preventive-maintenance"
+              ? "PM"
+              : maintenance.name,
+          details: `Finished. Notes: ${
+            maintenance.type === "preventive-maintenance" ? "PM" : "Service"
+          } has concluded`,
+          performDate: new Date(),
+          model: "ProductMaintenance",
+          modelId: maintenance._id,
+          metadata: { productId: maintenance.productId._id.toString() },
+        },
         newSession
       );
 

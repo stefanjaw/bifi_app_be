@@ -8,9 +8,11 @@ import {
 import { productComissioningModel } from "../models/product-comissioning.model";
 import { ProductComissioningDocument } from "../../../types/mongoose.gen";
 import { ProductStatusService } from "../../products/services/product-status-service";
+import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 
 export class ProductComissioningService extends BaseService<ProductComissioningDocument> {
   private productStatusService = new ProductStatusService();
+  private activityHistoryService = new ActivityHistoryService();
 
   constructor() {
     super({ model: productComissioningModel });
@@ -80,6 +82,26 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
           newSession
         );
 
+        // ADD ACTIVITY HISTORY
+        await this.activityHistoryService.create(
+          {
+            title:
+              comission.outcome === "pass"
+                ? "Comission"
+                : "Re-attempt Comission",
+            details: `Comissioned. Notes: ${
+              comission.outcome === "pass"
+                ? "OK to enter service"
+                : "comission failed"
+            }`,
+            performDate: new Date(),
+            model: "ProductComissioning",
+            modelId: comission._id,
+            metadata: { productId: comission.productId._id.toString() },
+          },
+          newSession
+        );
+
         return comission;
       }
     );
@@ -116,6 +138,21 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
           newSession
         );
 
+        // ADD ACTIVITY HISTORY IF DISABLED
+        if (comission.active === false) {
+          await this.activityHistoryService.create(
+            {
+              title: "Comission",
+              details: "Comissioned. Notes: Comission disabled",
+              performDate: new Date(),
+              model: "ProductComissioning",
+              modelId: comission._id,
+              metadata: { productId: comission.productId._id.toString() },
+            },
+            newSession
+          );
+        }
+
         return comission;
       }
     );
@@ -145,6 +182,19 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
 
       await this.productStatusService.updateProductStatus(
         comission.productId._id,
+        newSession
+      );
+
+      // ADD ACTIVITY HISTORY
+      await this.activityHistoryService.create(
+        {
+          title: "Comission",
+          details: "Comissioned. Notes: Comission disabled",
+          performDate: new Date(),
+          model: "ProductComissioning",
+          modelId: comission._id,
+          metadata: { productId: comission.productId._id.toString() },
+        },
         newSession
       );
 
