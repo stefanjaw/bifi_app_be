@@ -9,8 +9,8 @@ export class BaseRoutes<T> {
   dtoCreateClass!: new () => any;
   dtoUpdateClass!: new () => any;
 
-  private router = Router();
-  private upload = multer();
+  protected router = Router();
+  protected upload = multer();
 
   constructor(
     params: Pick<
