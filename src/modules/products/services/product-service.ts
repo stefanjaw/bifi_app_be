@@ -55,7 +55,7 @@ export class ProductService extends BaseService<ProductDocument> {
       await this.activityHistoryService.create(
         {
           title: "Product Created",
-          details: "Product has been created",
+          details: "Created. Notes: Product has been created",
           performDate: new Date(),
           model: "Product",
           modelId: product._id,
@@ -96,6 +96,18 @@ export class ProductService extends BaseService<ProductDocument> {
           newSession
         );
       }
+
+      // ADD ACTIVITY HISTORY
+      await this.activityHistoryService.create(
+        {
+          title: "Product Modified",
+          details: "Modified. Notes: Product has been modified",
+          performDate: new Date(),
+          model: "Product",
+          modelId: product._id,
+        },
+        newSession
+      );
 
       return product;
     });
