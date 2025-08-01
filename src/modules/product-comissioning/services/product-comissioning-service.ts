@@ -9,9 +9,11 @@ import { productComissioningModel } from "../models/product-comissioning.model";
 import { ProductComissioningDocument } from "../../../types/mongoose.gen";
 import { ProductStatusService } from "../../products/services/product-status-service";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
+import { ProductService } from "../../products/services/product-service";
 
 export class ProductComissioningService extends BaseService<ProductComissioningDocument> {
   private productStatusService = new ProductStatusService();
+  private productService = new ProductService();
   private activityHistoryService = new ActivityHistoryService();
 
   constructor() {
@@ -86,9 +88,7 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
         await this.activityHistoryService.create(
           {
             title:
-              comission.outcome === "pass"
-                ? "Comissioned"
-                : "Comission Failed",
+              comission.outcome === "pass" ? "Comissioned" : "Comission Failed",
             details: `Comissioned. Notes: ${
               comission.outcome === "pass"
                 ? "OK to enter service"
@@ -138,20 +138,48 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
           newSession
         );
 
-        // ADD ACTIVITY HISTORY IF DISABLED
-        // if (comission.active === false) {
-        //   await this.activityHistoryService.create(
-        //     {
-        //       title: "Comission Disabled",
-        //       details: "Comissioned. Notes: Comission disabled",
-        //       performDate: new Date(),
-        //       model: "ProductComissioning",
-        //       modelId: comission._id,
-        //       metadata: { productId: comission.productId._id.toString() },
-        //     },
-        //     newSession
-        //   );
-        // }
+        return comission;
+      }
+    );
+  }
+
+  /**
+   * Updates a product comissioning with the given data and marks it as decommissioned.
+   * It also updates the product's status to "decommissioned".
+   * Additionally, it adds an activity history record for the decomissioning event.
+   * @param data The data to update the product comissioning with.
+   * @param session The optional client session to use for the transaction.
+   * @returns The updated product comissioning document.
+   */
+  async updateDecomission(
+    data: Record<string, any>,
+    session?: ClientSession | undefined
+  ) {
+    return runTransaction<ProductComissioningDocument>(
+      session,
+      async (newSession) => {
+        const comission = await this.update(
+          { ...data, active: false },
+          newSession
+        );
+
+        await this.productService.update(
+          { _id: comission.productId._id, status: "decomissioned" },
+          newSession
+        );
+
+        // ADD ACTIVITY HISTORY
+        await this.activityHistoryService.create(
+          {
+            title: "Decomissioned",
+            details: "Decomissioned. Notes: All actions are disabled",
+            performDate: new Date(),
+            model: "ProductComissioning",
+            modelId: comission._id,
+            metadata: { productId: comission.productId._id.toString() },
+          },
+          newSession
+        );
 
         return comission;
       }
@@ -184,19 +212,6 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
         comission.productId._id,
         newSession
       );
-
-      // ADD ACTIVITY HISTORY
-      // await this.activityHistoryService.create(
-      //   {
-      //     title: "Comission",
-      //     details: "Comissioned. Notes: Comission disabled",
-      //     performDate: new Date(),
-      //     model: "ProductComissioning",
-      //     modelId: comission._id,
-      //     metadata: { productId: comission.productId._id.toString() },
-      //   },
-      //   newSession
-      // );
 
       return deleted;
     });

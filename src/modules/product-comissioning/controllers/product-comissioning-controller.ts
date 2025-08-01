@@ -75,4 +75,37 @@ export class ProductComissioningController extends BaseController<ProductComissi
 
     await super.updateHandler(req, res, next);
   }
+
+  /**
+   * Updates a product comissioning with the given data and marks it as decommissioned.
+   * It also updates the product's status to "decommissioned".
+   * Additionally, it adds an activity history record for the decomissioning event.
+   * @param req - The express Request object containing the data to update the product comissioning with.
+   * @param res - The express Response object used to send data back to the client.
+   * @param next - The express NextFunction callback to pass control to the next middleware on error.
+   */
+  protected async updateDecomissionHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const body = { ...req.body };
+      const record = await (
+        this.service as ProductComissioningService
+      ).updateDecomission(body);
+
+      this.sendData(res, record);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  updateDecomission = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    await this.updateDecomissionHandler(req, res, next);
+  };
 }
