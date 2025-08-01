@@ -97,20 +97,6 @@ export class ProductService extends BaseService<ProductDocument> {
         );
       }
 
-      if (product.status === "decomissioned") {
-        // ADD ACTIVITY HISTORY
-        await this.activityHistoryService.create(
-          {
-            title: "Decomissioned",
-            details: "Decomissioned. Notes: All actions are disabled",
-            performDate: new Date(),
-            model: "Product",
-            modelId: product._id,
-          },
-          newSession
-        );
-      }
-
       return product;
     });
   }
