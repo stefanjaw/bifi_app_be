@@ -137,10 +137,11 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         if (maintenance.active === false) {
           await this.activityHistoryService.create(
             {
-              title:
+              title: `${
                 maintenance.type === "preventive-maintenance"
                   ? "PM"
-                  : maintenance.name,
+                  : maintenance.name
+              } Finished`,
               details: `Finished. Notes: ${
                 maintenance.type === "preventive-maintenance" ? "PM" : "Service"
               } has concluded`,
@@ -189,10 +190,11 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
 
       await this.activityHistoryService.create(
         {
-          title:
+          title: `${
             maintenance.type === "preventive-maintenance"
               ? "PM"
-              : maintenance.name,
+              : maintenance.name
+          } Finished`,
           details: `Finished. Notes: ${
             maintenance.type === "preventive-maintenance" ? "PM" : "Service"
           } has concluded`,

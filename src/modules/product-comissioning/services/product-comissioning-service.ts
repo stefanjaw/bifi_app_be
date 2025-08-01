@@ -87,8 +87,8 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
           {
             title:
               comission.outcome === "pass"
-                ? "Comission"
-                : "Re-attempt Comission",
+                ? "Comissioned"
+                : "Comission Failed",
             details: `Comissioned. Notes: ${
               comission.outcome === "pass"
                 ? "OK to enter service"
@@ -139,19 +139,19 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
         );
 
         // ADD ACTIVITY HISTORY IF DISABLED
-        if (comission.active === false) {
-          await this.activityHistoryService.create(
-            {
-              title: "Comission",
-              details: "Comissioned. Notes: Comission disabled",
-              performDate: new Date(),
-              model: "ProductComissioning",
-              modelId: comission._id,
-              metadata: { productId: comission.productId._id.toString() },
-            },
-            newSession
-          );
-        }
+        // if (comission.active === false) {
+        //   await this.activityHistoryService.create(
+        //     {
+        //       title: "Comission Disabled",
+        //       details: "Comissioned. Notes: Comission disabled",
+        //       performDate: new Date(),
+        //       model: "ProductComissioning",
+        //       modelId: comission._id,
+        //       metadata: { productId: comission.productId._id.toString() },
+        //     },
+        //     newSession
+        //   );
+        // }
 
         return comission;
       }
@@ -186,17 +186,17 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
       );
 
       // ADD ACTIVITY HISTORY
-      await this.activityHistoryService.create(
-        {
-          title: "Comission",
-          details: "Comissioned. Notes: Comission disabled",
-          performDate: new Date(),
-          model: "ProductComissioning",
-          modelId: comission._id,
-          metadata: { productId: comission.productId._id.toString() },
-        },
-        newSession
-      );
+      // await this.activityHistoryService.create(
+      //   {
+      //     title: "Comission",
+      //     details: "Comissioned. Notes: Comission disabled",
+      //     performDate: new Date(),
+      //     model: "ProductComissioning",
+      //     modelId: comission._id,
+      //     metadata: { productId: comission.productId._id.toString() },
+      //   },
+      //   newSession
+      // );
 
       return deleted;
     });
