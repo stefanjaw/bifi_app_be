@@ -1,2 +1,3 @@
-export { validateBodyMiddleware } from "./validate-body-middleware";
-export { catchExceptionMiddleware } from "./catch-exception-middleware";
+export * from './auth-middleware';
+export * from './catch-exception-middleware';
+export * from './validate-body-middleware';

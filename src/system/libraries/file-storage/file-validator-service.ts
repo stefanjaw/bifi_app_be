@@ -1,4 +1,4 @@
-import { ValidationException } from "../exceptions";
+import { ValidationException } from "../exceptions/service-exception";
 
 export class FileValidatorService {
   private readonly FILE_LIMIT = 5 * 1024 * 1024; // 5MB limit

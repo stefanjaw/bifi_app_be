@@ -1,10 +1,6 @@
 import { Db, GridFSBucket } from "mongodb";
 import { Types } from "mongoose";
-import {
-  InternalServerException,
-  NotFoundException,
-  ValidationException,
-} from "../exceptions";
+import { InternalServerException, NotFoundException, ValidationException } from "../exceptions/service-exception";
 
 // Will apply singleton pattern to this service for preserving the GridFSBucket instance
 // This service is used to interact with GridFS for file storage in MongoDB

@@ -1,4 +1,4 @@
-import { ValidationException } from "../exceptions";
+import { ValidationException } from "../exceptions/service-exception";
 import { BaseService } from "./base-service";
 import { NextFunction, Request, Response } from "express";
 

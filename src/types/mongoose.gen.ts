@@ -18,7 +18,7 @@ import mongoose from "mongoose";
 export type ActivityHistory = {
   title: string;
   details?: string;
-  performDate?: Date;
+  performDate: Date;
   model: string;
   modelId: mongoose.Types.ObjectId;
   metadata?: any | null;
@@ -113,7 +113,7 @@ export type ActivityHistoryDocument = mongoose.Document<
   ActivityHistoryMethods & {
     title: string;
     details?: string;
-    performDate?: Date;
+    performDate: Date;
     model: string;
     modelId: mongoose.Types.ObjectId;
     metadata?: any | null;
@@ -1235,6 +1235,108 @@ export type ProductDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     productComission: any;
     productMaintenances: any;
+  };
+
+/**
+ * Lean version of UserDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `UserDocument.toObject()`. To avoid conflicts with model names, use the type alias `UserObject`.
+ * ```
+ * const userObject = user.toObject();
+ * ```
+ */
+export type User = {
+  authId: string;
+  provider: "google" | "email";
+  username: string;
+  email: string;
+  name: string;
+  lastName: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of UserDocument (type alias of `User`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { User } from "../models"
+ * import { UserObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const userObject: UserObject = user.toObject();
+ * ```
+ */
+export type UserObject = User;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type UserQuery = mongoose.Query<any, UserDocument, UserQueries> &
+  UserQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `UserSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type UserQueries = {
+  paginate: (this: UserQuery, ...args: any[]) => UserQuery;
+};
+
+export type UserMethods = {};
+
+export type UserStatics = {
+  paginate: (this: UserModel, ...args: any[]) => any;
+  paginateSubDocs: (this: UserModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const User = mongoose.model<UserDocument, UserModel>("User", UserSchema);
+ * ```
+ */
+export type UserModel = mongoose.Model<UserDocument, UserQueries> & UserStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new User schema instances:
+ * ```
+ * const UserSchema: UserSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type UserSchema = mongoose.Schema<
+  UserDocument,
+  UserModel,
+  UserMethods,
+  UserQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const User = mongoose.model<UserDocument, UserModel>("User", UserSchema);
+ * ```
+ */
+export type UserDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  UserQueries
+> &
+  UserMethods & {
+    authId: string;
+    provider: "google" | "email";
+    username: string;
+    email: string;
+    name: string;
+    lastName: string;
+    _id: mongoose.Types.ObjectId;
   };
 
 /**

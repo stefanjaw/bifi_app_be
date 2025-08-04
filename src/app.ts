@@ -4,27 +4,41 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import morgan from "morgan";
 import cors from "cors";
-import { catchExceptionMiddleware, GridFSBucketService } from "./system";
+import {
+  authMiddleware,
+  catchExceptionMiddleware,
+  GridFSBucketService,
+} from "./system";
 import {
   ActivityHistoryRouter,
   CompanyRouter,
   ContactRouter,
   CountryRouter,
   FacilityRouter,
+  FileRouter,
   MaintenanceWindowRouter,
   ProductComissioningRouter,
   ProductMaintenanceRouter,
   ProductRouter,
   ProductTypeRouter,
   RoomRouter,
+  UserRouter,
+  UserService,
 } from "./modules";
-import { FileRouter } from "./modules/files/routes/file-routes";
+
+import admin from "firebase-admin";
+import serviceAccount from "../firebase-admin-sdk.json";
 
 // load .env variables
 dotenv.config();
 const PORT = process.env.SERVER_PORT || 8080;
 const MONGO_DB_URL =
   process.env.MONGO_DB_URL || "mongodb://localhost:27017/bifi_app_db"; // default MongoDB URL for local development
+
+// load firebase account
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount as any),
+});
 
 // create app
 const app = express();
@@ -36,10 +50,10 @@ app.use(
   })
 );
 
+// middlewares
+app.use(authMiddleware(new UserService()));
+
 // routes will be here, main route inits with /api and then it uses the routers
-app.get("/api/filesv2/:id", (req, res) => {
-  res.status(200).json({ message: "Welcome to the BIFI App Backend API" });
-});
 app.use("/api", new FileRouter().getRouter);
 app.use("/api", new CountryRouter().getRouter);
 app.use("/api", new CompanyRouter().getRouter);
@@ -52,6 +66,7 @@ app.use("/api", new ProductRouter().getRouter);
 app.use("/api", new ProductComissioningRouter().getRouter);
 app.use("/api", new ProductMaintenanceRouter().getRouter);
 app.use("/api", new ActivityHistoryRouter().getRouter);
+app.use("/api", new UserRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);

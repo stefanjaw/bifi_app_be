@@ -1,0 +1,24 @@
+import { UserDocument } from "@mongodb-types";
+import { BaseRoutes } from "../../../system";
+import { UserController } from "../controllers/user-controller";
+import { UpdateUserDTO, UserDTO } from "../models/user.dto";
+
+const userController = new UserController();
+
+export class UserRouter extends BaseRoutes<UserDocument> {
+  constructor() {
+    super({
+      controller: userController,
+      endpoint: "/users",
+      dtoCreateClass: UserDTO,
+      dtoUpdateClass: UpdateUserDTO,
+    });
+
+    // custom routes
+    this.initMeRoute();
+  }
+
+  initMeRoute() {
+    this.router.get(this.endpoint + "/me", userController.me);
+  }
+}
