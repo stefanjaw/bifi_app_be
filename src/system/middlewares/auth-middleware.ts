@@ -4,12 +4,11 @@ import { UserService } from "../../modules";
 import { UserDocument } from "@mongodb-types";
 import admin from "firebase-admin";
 
-const ignoreEndpoints = ["/products"];
+const ignoreEndpoints: string[] = [];
 
 export function authMiddleware(userService: UserService) {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (ignoreEndpoints.some((x) => req.path.includes(x))) {
-      console.log(req.path);
       next();
       return;
     }
@@ -47,8 +46,7 @@ export function authMiddleware(userService: UserService) {
                 provider: firebaseUser.firebase.sign_in_provider,
                 username: firebaseUser.name,
                 email: firebaseUser.email,
-                name: firebaseUser.name,
-                lastName: firebaseUser.last_name || "",
+                picture: firebaseUser.picture,
               },
               newSession
             );

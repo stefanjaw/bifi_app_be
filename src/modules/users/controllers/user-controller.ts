@@ -1,5 +1,5 @@
 import { UserDocument } from "@mongodb-types";
-import { BaseController } from "../../../system";
+import { BaseController, runTransaction } from "../../../system";
 import { UserService } from "../services/user-service";
 import { Request, Response } from "express";
 
@@ -10,11 +10,11 @@ export class UserController extends BaseController<UserDocument> {
     super({ service: userService });
   }
 
-  meHandler(req: Request, res: Response) {
-    return req.user;
+  async meHandler(req: Request, res: Response) {
+    this.sendData(res, req.user);
   }
 
-  me = (req: Request, res: Response) => {
-    this.meHandler(req, res);
+  me = async (req: Request, res: Response) => {
+    await this.meHandler(req, res);
   };
 }

@@ -22,14 +22,18 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    name: {
+    picture: {
       type: String,
-      required: true,
+      required: false,
     },
-    lastName: {
-      type: String,
-      required: true,
-    },
+    // name: {
+    //   type: String,
+    //   required: true,
+    // },
+    // lastName: {
+    //   type: String,
+    //   required: true,
+    // },
   },
   {
     toObject: { virtuals: true },

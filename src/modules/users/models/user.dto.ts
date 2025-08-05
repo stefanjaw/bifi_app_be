@@ -4,12 +4,13 @@ import {
   IsFirebasePushId,
   IsMongoId,
   IsNotEmpty,
+  IsOptional,
   IsString,
 } from "class-validator";
 import { PartialType } from "../../../system";
 
 export class UserDTO {
-  @IsEnum(["google", "email"])
+  @IsEnum(["google.com", "password"])
   provider!: string;
 
   @IsString()
@@ -21,11 +22,16 @@ export class UserDTO {
 
   @IsString()
   @IsNotEmpty()
-  name!: string;
+  @IsOptional()
+  picture?: string;
 
-  @IsString()
-  @IsNotEmpty()
-  lastName!: string;
+  // @IsString()
+  // @IsNotEmpty()
+  // name!: string;
+
+  // @IsString()
+  // @IsNotEmpty()
+  // lastName!: string;
 }
 
 export class UpdateUserDTO extends PartialType(UserDTO) {

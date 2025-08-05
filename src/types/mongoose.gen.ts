@@ -1247,11 +1247,10 @@ export type ProductDocument = mongoose.Document<
  */
 export type User = {
   authId: string;
-  provider: "google" | "email";
+  provider: "google.com" | "password";
   username: string;
   email: string;
-  name: string;
-  lastName: string;
+  picture?: string;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1331,11 +1330,10 @@ export type UserDocument = mongoose.Document<
 > &
   UserMethods & {
     authId: string;
-    provider: "google" | "email";
+    provider: "google.com" | "password";
     username: string;
     email: string;
-    name: string;
-    lastName: string;
+    picture?: string;
     _id: mongoose.Types.ObjectId;
   };
 
