@@ -7,7 +7,7 @@ export const catchExceptionMiddleware = (
   res: Response,
   _next: NextFunction
 ) => {
-  console.log(error)
+  console.log(error);
   if (error instanceof ServiceException) {
     res.status(error.code).json({
       error: true,
@@ -16,10 +16,11 @@ export const catchExceptionMiddleware = (
       errorCount: Array.isArray(error.errors) ? error.errors.length : 0,
     });
   } else {
+    console.log(error);
     res.status(500).json({
       error: true,
       message:
-        "Something went wrong processing your request... An internal server error occurred",
+        "Something v2 went wrong processing your request... An internal server error occurred",
       errors: [],
       errorCount: 0,
     });

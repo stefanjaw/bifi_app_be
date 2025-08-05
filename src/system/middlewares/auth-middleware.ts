@@ -14,12 +14,13 @@ export function authMiddleware(userService: UserService) {
       return;
     }
 
-    const token = req.headers.authorization;
-
-    if (!token) {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       next(new UnauthorizedException("Unauthorized"));
       return;
     }
+
+    const token = authHeader.split(" ")[1];
 
     const firebaseUser = await admin.auth().verifyIdToken(token);
 
