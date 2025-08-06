@@ -44,7 +44,7 @@ export function authMiddleware(userService: UserService) {
               {
                 authId: firebaseUser.uid,
                 provider: firebaseUser.firebase.sign_in_provider,
-                username: firebaseUser.name,
+                username: firebaseUser.name || firebaseUser.email,
                 email: firebaseUser.email,
                 picture: firebaseUser.picture,
               },
