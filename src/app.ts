@@ -27,17 +27,18 @@ import {
 } from "./modules";
 
 import admin from "firebase-admin";
-import serviceAccount from "../firebase-admin-sdk.json";
 
 // load .env variables
 dotenv.config();
 const PORT = process.env.SERVER_PORT || 8080;
 const MONGO_DB_URL =
   process.env.MONGO_DB_URL || "mongodb://localhost:27017/bifi_app_db"; // default MongoDB URL for local development
+const FIREBASE_SERVICE_ACCOUNT =
+  process.env.FIREBASE_SERVICE_ACCOUNT || "../firebase-admin-sdk.json";
 
 // load firebase account
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount as any),
+  credential: admin.credential.cert(JSON.parse(FIREBASE_SERVICE_ACCOUNT)),
 });
 
 // create app
