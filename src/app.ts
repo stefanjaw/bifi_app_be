@@ -17,10 +17,12 @@ import {
   FacilityRouter,
   FileRouter,
   MaintenanceWindowRouter,
+  PolicyRouter,
   ProductComissioningRouter,
   ProductMaintenanceRouter,
   ProductRouter,
   ProductTypeRouter,
+  RoleRouter,
   RoomRouter,
   UserRouter,
   UserService,
@@ -68,6 +70,8 @@ app.use("/api", new ProductComissioningRouter().getRouter);
 app.use("/api", new ProductMaintenanceRouter().getRouter);
 app.use("/api", new ActivityHistoryRouter().getRouter);
 app.use("/api", new UserRouter().getRouter);
+app.use("/api", new RoleRouter().getRouter);
+app.use("/api", new PolicyRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);
@@ -85,7 +89,7 @@ const start = async () => {
     // init mongoose
     console.log("Connecting to MongoDB...");
     await mongoose.connect(MONGO_DB_URL, {
-      timeoutMS: 10000, // 10 seconds timeout
+      timeoutMS: 5000, // 5 seconds timeout
     });
 
     console.log("Connected to MongoDB successfully!");

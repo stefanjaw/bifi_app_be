@@ -1,7 +1,7 @@
 import { BaseController } from "./base-controller";
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import multer from "multer";
-import { validateBodyMiddleware } from "../../middlewares";
+import { authorizeMiddleware, validateBodyMiddleware } from "../../middlewares";
 
 export class BaseRoutes<T> {
   controller!: BaseController<T>;
@@ -11,6 +11,7 @@ export class BaseRoutes<T> {
 
   protected router = Router();
   protected upload = multer();
+  protected resource!: string;
 
   constructor(
     params: Pick<
@@ -19,6 +20,9 @@ export class BaseRoutes<T> {
     >
   ) {
     Object.assign(this, params);
+
+    // init of resources
+    this.resource = this.endpoint.replace("/", "");
 
     // init of routes
     this.initGetRoute();
@@ -32,7 +36,11 @@ export class BaseRoutes<T> {
   }
 
   protected initGetRoute() {
-    this.router.get(this.endpoint, this.controller.get);
+    this.router.get(
+      this.endpoint,
+      authorizeMiddleware(this.resource, "read"),
+      this.controller.get
+    );
   }
 
   protected initPostRoute() {
@@ -40,6 +48,7 @@ export class BaseRoutes<T> {
       this.endpoint,
       this.upload.any(),
       validateBodyMiddleware(this.dtoCreateClass),
+      authorizeMiddleware(this.resource, "create"),
       this.controller.create
     );
   }
@@ -49,11 +58,16 @@ export class BaseRoutes<T> {
       this.endpoint,
       this.upload.any(),
       validateBodyMiddleware(this.dtoUpdateClass),
+      authorizeMiddleware(this.resource, "update"),
       this.controller.update
     );
   }
 
   protected initDeleteRoute() {
-    this.router.delete(this.endpoint, this.controller.delete);
+    this.router.delete(
+      this.endpoint,
+      authorizeMiddleware(this.resource, "delete"),
+      this.controller.delete
+    );
   }
 }
