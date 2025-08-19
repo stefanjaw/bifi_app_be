@@ -1238,6 +1238,229 @@ export type ProductDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of PolicyConditionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PolicyDocument.toObject()`.
+ * ```
+ * const policyObject = policy.toObject();
+ * ```
+ */
+export type PolicyCondition = {
+  key: string;
+  operator: "==" | "!=" | ">" | "<" | "in";
+  value: any;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of PolicyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PolicyDocument.toObject()`. To avoid conflicts with model names, use the type alias `PolicyObject`.
+ * ```
+ * const policyObject = policy.toObject();
+ * ```
+ */
+export type Policy = {
+  resource: string;
+  action: "create" | "read" | "update" | "delete";
+  conditions: PolicyCondition[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of PolicyDocument (type alias of `Policy`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Policy } from "../models"
+ * import { PolicyObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const policyObject: PolicyObject = policy.toObject();
+ * ```
+ */
+export type PolicyObject = Policy;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PolicyQuery = mongoose.Query<any, PolicyDocument, PolicyQueries> &
+  PolicyQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PolicySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PolicyQueries = {
+  paginate: (this: PolicyQuery, ...args: any[]) => PolicyQuery;
+};
+
+export type PolicyMethods = {};
+
+export type PolicyStatics = {
+  paginate: (this: PolicyModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PolicyModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Policy = mongoose.model<PolicyDocument, PolicyModel>("Policy", PolicySchema);
+ * ```
+ */
+export type PolicyModel = mongoose.Model<PolicyDocument, PolicyQueries> &
+  PolicyStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Policy schema instances:
+ * ```
+ * const PolicySchema: PolicySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PolicySchema = mongoose.Schema<
+  PolicyDocument,
+  PolicyModel,
+  PolicyMethods,
+  PolicyQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `PolicyDocument["conditions"]` element.
+ */
+export type PolicyConditionDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    key: string;
+    operator: "==" | "!=" | ">" | "<" | "in";
+    value: any;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Policy = mongoose.model<PolicyDocument, PolicyModel>("Policy", PolicySchema);
+ * ```
+ */
+export type PolicyDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PolicyQueries
+> &
+  PolicyMethods & {
+    resource: string;
+    action: "create" | "read" | "update" | "delete";
+    conditions: mongoose.Types.DocumentArray<PolicyConditionDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Lean version of RoleDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `RoleDocument.toObject()`. To avoid conflicts with model names, use the type alias `RoleObject`.
+ * ```
+ * const roleObject = role.toObject();
+ * ```
+ */
+export type Role = {
+  name: string;
+  policies: Policy[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of RoleDocument (type alias of `Role`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Role } from "../models"
+ * import { RoleObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const roleObject: RoleObject = role.toObject();
+ * ```
+ */
+export type RoleObject = Role;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type RoleQuery = mongoose.Query<any, RoleDocument, RoleQueries> &
+  RoleQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `RoleSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type RoleQueries = {
+  paginate: (this: RoleQuery, ...args: any[]) => RoleQuery;
+};
+
+export type RoleMethods = {};
+
+export type RoleStatics = {
+  paginate: (this: RoleModel, ...args: any[]) => any;
+  paginateSubDocs: (this: RoleModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Role = mongoose.model<RoleDocument, RoleModel>("Role", RoleSchema);
+ * ```
+ */
+export type RoleModel = mongoose.Model<RoleDocument, RoleQueries> & RoleStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Role schema instances:
+ * ```
+ * const RoleSchema: RoleSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type RoleSchema = mongoose.Schema<
+  RoleDocument,
+  RoleModel,
+  RoleMethods,
+  RoleQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Role = mongoose.model<RoleDocument, RoleModel>("Role", RoleSchema);
+ * ```
+ */
+export type RoleDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  RoleQueries
+> &
+  RoleMethods & {
+    name: string;
+    policies: mongoose.Types.Array<PolicyDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Lean version of UserDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `UserDocument.toObject()`. To avoid conflicts with model names, use the type alias `UserObject`.
@@ -1251,6 +1474,8 @@ export type User = {
   username: string;
   email: string;
   picture?: string;
+  active?: boolean;
+  roles: Role[];
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1334,6 +1559,8 @@ export type UserDocument = mongoose.Document<
     username: string;
     email: string;
     picture?: string;
+    active?: boolean;
+    roles: mongoose.Types.Array<RoleDocument>;
     _id: mongoose.Types.ObjectId;
   };
 

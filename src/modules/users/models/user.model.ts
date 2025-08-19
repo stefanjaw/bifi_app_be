@@ -26,6 +26,16 @@ const userSchema = new Schema(
       type: String,
       required: false,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    roles: {
+      type: [mongoose.Types.ObjectId],
+      ref: "Role",
+      autopopulate: true,
+      required: true,
+    },
     // name: {
     //   type: String,
     //   required: true,

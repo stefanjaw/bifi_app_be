@@ -2,8 +2,6 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
-  IsEmail,
-  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
@@ -12,44 +10,24 @@ import {
 import { PartialType } from "../../../system";
 import { Transform, Type } from "class-transformer";
 
-export class UserDTO {
-  @IsEnum(["google.com", "password"])
-  provider!: string;
-
+export class RoleDTO {
   @IsString()
   @IsNotEmpty()
-  username!: string;
-
-  @IsEmail()
-  email!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @IsOptional()
-  picture?: string;
+  name!: string;
 
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @Transform(({ value }) => JSON.parse(value))
-  @IsOptional()
-  roles?: string[];
+  policies!: string[]; // Assuming policies are represented as an array of MongoDB ObjectIds
 
   @IsBoolean()
   @IsOptional()
   @Type(() => Boolean)
   active?: boolean;
-
-  // @IsString()
-  // @IsNotEmpty()
-  // name!: string;
-
-  // @IsString()
-  // @IsNotEmpty()
-  // lastName!: string;
 }
 
-export class UpdateUserDTO extends PartialType(UserDTO) {
+export class UpdateRoleDTO extends PartialType(RoleDTO) {
   @IsMongoId()
   _id!: string;
 }
