@@ -13,6 +13,10 @@ import {
 import { PartialType } from "../../../system";
 
 export class ConditionDTO {
+  @IsString()
+  @IsNotEmpty()
+  name!: string;
+
   @IsMongoId()
   @IsOptional()
   _id?: string;
