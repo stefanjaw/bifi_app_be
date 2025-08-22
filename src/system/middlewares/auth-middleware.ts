@@ -3,6 +3,7 @@ import { runTransaction, UnauthorizedException } from "../libraries";
 import { UserService } from "../../modules";
 import { UserDocument } from "@mongodb-types";
 import admin from "firebase-admin";
+import { FirebaseAppError } from "firebase-admin/app";
 
 const ignoreEndpoints: string[] = [];
 
@@ -21,9 +22,10 @@ export function authMiddleware(userService: UserService) {
 
     const token = authHeader.split(" ")[1];
 
-    const firebaseUser = await admin.auth().verifyIdToken(token);
-
     try {
+      // Can produce an error if the token is invalid or expired
+      const firebaseUser = await admin.auth().verifyIdToken(token);
+
       const user = await runTransaction<UserDocument>(
         undefined,
         async (newSession) => {
@@ -59,7 +61,22 @@ export function authMiddleware(userService: UserService) {
       req.token = token;
       next();
     } catch (error) {
-      next(error);
+      if (error instanceof FirebaseAppError) {
+        switch (error.code) {
+          case "auth/id-token-expired":
+          case "auth/id-token-revoked":
+            next(new UnauthorizedException("Token expired or revoked"));
+            return;
+          case "auth/invalid-id-token":
+            next(new UnauthorizedException("Invalid token"));
+            return;
+          default:
+            break;
+        }
+        // Handle Firebase authentication errors
+        console.error("Firebase authentication error:", error);
+      }
+      next(new UnauthorizedException("Unauthorized"));
     }
   };
 }
