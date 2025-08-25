@@ -2,12 +2,15 @@ import { ClientSession } from "mongoose";
 import {
   BaseService,
   GridFSBucketService,
+  NotFoundException,
   runTransaction,
 } from "../../../system";
 import { productModel } from "../models/product.model";
 import { ProductDocument } from "../../../types/mongoose.gen";
 import { ProductStatusService } from "./product-status-service";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
+import { UpdateProductDTO } from "../models/product.dto";
+import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 
 export class ProductService extends BaseService<ProductDocument> {
   private productStatusService = new ProductStatusService();
@@ -35,8 +38,10 @@ export class ProductService extends BaseService<ProductDocument> {
   ): Promise<ProductDocument> {
     return runTransaction<ProductDocument>(session, async (newSession) => {
       // Handle file upload if provided
-      if (data.photo) {
-        const fileId = await this.gridFSBucket.uploadFile(data.photo);
+      if (isValidFileUpload(data.photo)) {
+        const fileId = await this.gridFSBucket.uploadFile(
+          Array.isArray(data.photo) ? data.photo[0] : data.photo
+        );
         data.photo = fileId; // Store the file ID in the product data
       }
 
@@ -76,14 +81,22 @@ export class ProductService extends BaseService<ProductDocument> {
    * @returns The updated product document.
    */
   override async update(
-    data: Record<string, any>,
+    data: UpdateProductDTO,
     session?: ClientSession | undefined
   ): Promise<ProductDocument> {
     return runTransaction<ProductDocument>(session, async (newSession) => {
+      const existing = await this.model.findById(data._id);
+      if (!existing) throw new NotFoundException("Product does not exist");
+
       // Handle file upload if provided
-      if (data.photo) {
-        const fileId = await this.gridFSBucket.uploadFile(data.photo);
+      if (isValidFileUpload(data.photo)) {
+        const fileId = await this.gridFSBucket.uploadFile(
+          Array.isArray(data.photo) ? data.photo[0] : data.photo
+        );
         data.photo = fileId; // Store the file ID in the product data
+      } else if (data.photo !== undefined) {
+        // Delete the file if no file is provided and there is a value on the photo field
+        data.photo = null;
       }
 
       // Update the product

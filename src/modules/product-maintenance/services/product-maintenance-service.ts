@@ -9,6 +9,11 @@ import { productMaintenanceModel } from "../models/product-maintenance.model";
 import { ClientSession } from "mongoose";
 import { ProductStatusService } from "../../products/services/product-status-service";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
+import {
+  ProductMaintenanceDTO,
+  UpdateProductMaintenanceDTO,
+} from "../models/product-maintenance.dto";
+import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 
 export class ProductMaintenanceService extends BaseService<ProductMaintenanceDocument> {
   private productStatusService = new ProductStatusService();
@@ -33,7 +38,7 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
    * @returns The created product maintenance document.
    */
   override async create(
-    data: Record<string, any>,
+    data: ProductMaintenanceDTO,
     session?: ClientSession | undefined
   ): Promise<ProductMaintenanceDocument> {
     return runTransaction<ProductMaintenanceDocument>(
@@ -52,10 +57,9 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         }
 
         // HANDLE FILES IF PROVIDED
-        if (data.attachments && Array.isArray(data.attachments)) {
-          data.attachments = await this.gridFSBucket.uploadFiles(
-            data.attachments
-          );
+        const attachments = data.attachments;
+        if (isValidFileUpload(attachments)) {
+          data.attachments = await this.gridFSBucket.upload(attachments);
         }
 
         // SAVE MAINTENANCE
@@ -111,17 +115,15 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
    * @throws ValidationException if the commissioning is not issued or not approved.
    */
   override async update(
-    data: Record<string, any>,
+    data: UpdateProductMaintenanceDTO,
     session?: ClientSession | undefined
   ): Promise<ProductMaintenanceDocument> {
     return runTransaction<ProductMaintenanceDocument>(
       session,
       async (newSession) => {
         // HANDLE FILES IF PROVIDED
-        if (data.attachments && Array.isArray(data.attachments)) {
-          data.attachments = await this.gridFSBucket.uploadFiles(
-            data.attachments
-          );
+        if (isValidFileUpload(data.attachments)) {
+          data.attachments = await this.gridFSBucket.upload(data.attachments);
         }
 
         // UPDATE MAINTENANCE

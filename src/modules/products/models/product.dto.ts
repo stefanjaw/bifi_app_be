@@ -13,6 +13,7 @@ import {
 } from "class-validator";
 import { Transform, Type } from "class-transformer";
 import { PartialType } from "../../../system";
+import { Types } from "mongoose";
 
 export class ProductDTO {
   @IsArray()
@@ -69,8 +70,8 @@ export class ProductDTO {
   @Transform(({ value }) => JSON.parse(value))
   maintenanceWindowIds?: string[];
 
-  // @IsOptional()
-  // photo?: string;
+  @IsOptional()
+  photo?: unknown;
 
   @IsMongoId()
   @IsOptional()
@@ -101,5 +102,5 @@ export class ProductDTO {
 
 export class UpdateProductDTO extends PartialType(ProductDTO) {
   @IsMongoId()
-  _id!: string;
+  _id!: string | Types.ObjectId;
 }

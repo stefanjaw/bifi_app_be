@@ -9,6 +9,7 @@ import {
 } from "class-validator";
 import { PartialType } from "../../../system";
 import { Type } from "class-transformer";
+import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
 
 export class ProductMaintenanceDTO {
   @IsString()
@@ -20,8 +21,8 @@ export class ProductMaintenanceDTO {
   @IsOptional()
   description?: string;
 
-  // @IsOptional()
-  // attachments?: string | undefined;
+  @IsOptional()
+  attachments?: FileUpload;
 
   @IsMongoId()
   productId!: string;

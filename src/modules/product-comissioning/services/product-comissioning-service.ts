@@ -10,6 +10,8 @@ import { ProductComissioningDocument } from "../../../types/mongoose.gen";
 import { ProductStatusService } from "../../products/services/product-status-service";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 import { ProductService } from "../../products/services/product-service";
+import { UpdateProductComissioningDTO } from "../models/product-comissioning.dto";
+import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 
 export class ProductComissioningService extends BaseService<ProductComissioningDocument> {
   private productStatusService = new ProductStatusService();
@@ -52,10 +54,8 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
         }
 
         // HANDLE FILES IF PROVIDED
-        if (data.attachments && Array.isArray(data.attachments)) {
-          data.attachments = await this.gridFSBucket.uploadFiles(
-            data.attachments
-          );
+        if (isValidFileUpload(data.attachments)) {
+          data.attachments = await this.gridFSBucket.upload(data.attachments);
         }
 
         // GET ALL COMISSIONS FOR THE PRODUCT
@@ -116,17 +116,15 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
    * @returns The updated product comissioning document.
    */
   override async update(
-    data: Record<string, any>,
+    data: UpdateProductComissioningDTO,
     session?: ClientSession | undefined
   ): Promise<ProductComissioningDocument> {
     return runTransaction<ProductComissioningDocument>(
       session,
       async (newSession) => {
         // HANDLE FILES IF PROVIDED
-        if (data.attachments && Array.isArray(data.attachments)) {
-          data.attachments = await this.gridFSBucket.uploadFiles(
-            data.attachments
-          );
+        if (isValidFileUpload(data.attachments)) {
+          data.attachments = await this.gridFSBucket.upload(data.attachments);
         }
 
         // SAVE COMISSION
@@ -152,7 +150,7 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
    * @returns The updated product comissioning document.
    */
   async updateDecomission(
-    data: Record<string, any>,
+    data: UpdateProductComissioningDTO,
     session?: ClientSession | undefined
   ) {
     return runTransaction<ProductComissioningDocument>(
