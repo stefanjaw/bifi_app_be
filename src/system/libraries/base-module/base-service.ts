@@ -176,4 +176,8 @@ export class BaseService<T> {
       return ((record as any)?.active ? false : true) as boolean;
     });
   }
+
+  isPagination(data: T[] | PaginateResult<T>): data is PaginateResult<T> {
+    return (data as PaginateResult<T>).docs !== undefined;
+  }
 }
