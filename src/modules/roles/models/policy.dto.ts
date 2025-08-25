@@ -43,7 +43,7 @@ export class PolicyDTO {
   action!: string;
 
   @IsArray()
-  @ArrayMinSize(1)
+  // @ArrayMinSize(1)
   @IsOptional()
   @Transform(({ value }) =>
     JSON.parse(value).map((room: any) => plainToInstance(ConditionDTO, room))
