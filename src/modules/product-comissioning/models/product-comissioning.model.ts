@@ -3,6 +3,7 @@ import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { ProductComissioningDocument } from "@mongodb-types";
+import { fileSchema } from "../../../system";
 
 const productComissioningSchema = new Schema({
   outcome: {
@@ -16,8 +17,8 @@ const productComissioningSchema = new Schema({
     trim: true,
   },
   attachments: {
-    type: [Schema.Types.ObjectId],
-    autopopulate: false,
+    type: [fileSchema],
+    required: false,
   },
   productId: {
     type: Schema.Types.ObjectId,

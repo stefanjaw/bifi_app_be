@@ -53,8 +53,13 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
 
         // HANDLE FILES IF PROVIDED
         if (data.attachments && Array.isArray(data.attachments)) {
-          data.attachments = await this.gridFSBucket.uploadFiles(
-            data.attachments
+          data.attachments = await Promise.all(
+            data.attachments.map(async (file) => ({
+              fileId: await this.gridFSBucket.uploadFile(file),
+              name: file.originalname,
+              mimeType: file.mimetype,
+              size: file.size,
+            }))
           );
         }
 
@@ -124,8 +129,13 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
       async (newSession) => {
         // HANDLE FILES IF PROVIDED
         if (data.attachments && Array.isArray(data.attachments)) {
-          data.attachments = await this.gridFSBucket.uploadFiles(
-            data.attachments
+          data.attachments = await Promise.all(
+            data.attachments.map(async (file) => ({
+              fileId: await this.gridFSBucket.uploadFile(file),
+              name: file.originalname,
+              mimeType: file.mimetype,
+              size: file.size,
+            }))
           );
         }
 

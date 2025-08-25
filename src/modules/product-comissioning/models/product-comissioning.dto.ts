@@ -1,6 +1,4 @@
-import { Type } from "class-transformer";
 import {
-  IsBoolean,
   IsIn,
   IsMongoId,
   IsNotEmpty,
@@ -18,8 +16,15 @@ export class ProductComissioningDTO {
   @IsOptional()
   details?: string;
 
+  // @IsArray()
+  // @ArrayMinSize(1)
   // @IsOptional()
-  // attachments?: string | undefined;
+  // @Transform(({ value }) =>
+  //   JSON.parse(value).map((room: any) => plainToInstance(FileDTO, room))
+  // )
+  // @Type(() => FileDTO)
+  // @ValidateNested({ each: true })
+  // attachments?: FileDTO[];
 
   @IsMongoId()
   productId!: string;
