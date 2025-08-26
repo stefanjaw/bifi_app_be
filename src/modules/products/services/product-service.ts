@@ -3,6 +3,7 @@ import {
   BaseService,
   GridFSBucketService,
   orderByQuery,
+  paginationOptions,
   runTransaction,
 } from "../../../system";
 import { productModel } from "../models/product.model";
@@ -11,10 +12,6 @@ import { ProductStatusService } from "./product-status-service";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 import { productComissioningModel } from "../../product-comissioning/models/product-comissioning.model";
 import { productMaintenanceModel } from "../../product-maintenance/models/product-maintenance.model";
-
-type paginationOptions =
-  | { paginate: true; page: number; limit: number }
-  | { paginate: false };
 
 export class ProductService extends BaseService<ProductDocument> {
   private productStatusService = new ProductStatusService();
