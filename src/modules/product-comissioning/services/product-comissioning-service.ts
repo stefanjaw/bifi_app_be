@@ -10,7 +10,10 @@ import { ProductComissioningDocument } from "../../../types/mongoose.gen";
 import { ProductStatusService } from "../../products/services/product-status-service";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 import { ProductService } from "../../products/services/product-service";
-import { UpdateProductComissioningDTO } from "../models/product-comissioning.dto";
+import {
+  ProductComissioningDTO,
+  UpdateProductComissioningDTO,
+} from "../models/product-comissioning.dto";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 
 export class ProductComissioningService extends BaseService<ProductComissioningDocument> {
@@ -35,7 +38,7 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
    * @returns The created product comissioning document.
    */
   override async create(
-    data: Record<string, any>,
+    data: ProductComissioningDTO,
     session?: ClientSession | undefined
   ): Promise<ProductComissioningDocument> {
     return runTransaction<ProductComissioningDocument>(
