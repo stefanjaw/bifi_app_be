@@ -10,6 +10,16 @@ export class BaseService<T> {
   }
 
   /**
+   * Retrieves a single document by its id.
+   * @param id - The id of the document to retrieve.
+   * @returns The retrieved document or undefined if not found.
+   */
+  async getById(id: string): Promise<T | undefined> {
+    const document = await this.model.findById(id);
+    return document as T | undefined;
+  }
+
+  /**
    * Retrieve records from the database.
    * @param searchParams - The search params as key value pair.
    * @param orderBy - The order by query.
@@ -175,5 +185,9 @@ export class BaseService<T> {
       // if active is set as true, then false for deleted and viceversa
       return ((record as any)?.active ? false : true) as boolean;
     });
+  }
+
+  isPagination(data: T[] | PaginateResult<T>): data is PaginateResult<T> {
+    return (data as PaginateResult<T>).docs !== undefined;
   }
 }

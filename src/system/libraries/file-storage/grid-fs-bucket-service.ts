@@ -1,6 +1,10 @@
 import { Db, GridFSBucket } from "mongodb";
 import { Types } from "mongoose";
-import { InternalServerException, NotFoundException, ValidationException } from "../exceptions/service-exception";
+import {
+  InternalServerException,
+  NotFoundException,
+  ValidationException,
+} from "../exceptions/service-exception";
 
 // Will apply singleton pattern to this service for preserving the GridFSBucket instance
 // This service is used to interact with GridFS for file storage in MongoDB
@@ -127,6 +131,25 @@ export class GridFSBucketService {
 
   async uploadFiles(files: Express.Multer.File[]) {
     return Promise.all(files.map((file) => this.uploadFile(file)));
+  }
+
+  /**
+   * Uploads one or more files to the GridFS bucket.
+   *
+   * @param files - A single file to be uploaded, represented as an Express.Multer.File object,
+   *                or an array of files to be uploaded, each represented as an Express.Multer.File object.
+   * @returns A promise that resolves to an array of file IDs as strings, corresponding to the uploaded files,
+   *          or a single file ID as a string if a single file was uploaded.
+   * @throws Error if there is a problem during the upload process.
+   *
+   * This function is a convenience wrapper for the uploadFile and uploadFiles methods.
+   */
+  async upload(files: Express.Multer.File[] | Express.Multer.File) {
+    if (Array.isArray(files)) {
+      return this.uploadFiles(files);
+    } else {
+      return this.uploadFile(files);
+    }
   }
 
   /**

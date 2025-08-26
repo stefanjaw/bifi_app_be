@@ -1,6 +1,7 @@
 import { UserDocument } from "@mongodb-types";
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
+import autopopulate from "mongoose-autopopulate";
 
 const userSchema = new Schema(
   {
@@ -26,6 +27,16 @@ const userSchema = new Schema(
       type: String,
       required: false,
     },
+    active: {
+      type: Boolean,
+      default: true,
+    },
+    roles: {
+      type: [mongoose.Types.ObjectId],
+      ref: "Role",
+      autopopulate: true,
+      required: true,
+    },
     // name: {
     //   type: String,
     //   required: true,
@@ -42,6 +53,7 @@ const userSchema = new Schema(
 );
 
 userSchema.plugin(paginate);
+userSchema.plugin(autopopulate);
 
 const userModel = mongoose.model<UserDocument, PaginateModel<UserDocument>>(
   "User",

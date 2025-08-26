@@ -12,6 +12,29 @@ export class BaseController<T> {
   //#region Protected Methods to Handle Requests and can be overridden
 
   /**
+   * Handles HTTP GET requests by retrieving a single record from the database by its id.
+   * The id is passed as a route parameter.
+   * @param req - The express Request object containing the id parameter.
+   * @param res - The express Response object to send the retrieved record.
+   * @param next - The express NextFunction callback to pass control to the next middleware on error.
+   * @throws {ValidationException} - If the id is not provided or invalid.
+   * @throws {ServiceException} - If the record is not found or an unexpected error occurs.
+   */
+  protected async getByIdHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const id = req.params.id;
+      const record = await this.service.getById(id);
+      this.sendData(res, record);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  /**
    * Handles HTTP GET requests by retrieving records from the database.
    * Parses query parameters for search, pagination, and sorting options and count,
    * and uses the service to fetch the corresponding records.
@@ -20,7 +43,6 @@ export class BaseController<T> {
    * @param res - The express Response object used to send data back to the client.
    * @param next - The express NextFunction callback to pass control to the next middleware on error.
    */
-
   protected async getHandler(req: Request, res: Response, next: NextFunction) {
     try {
       // get elements
@@ -125,6 +147,10 @@ export class BaseController<T> {
   //#endregion
 
   //#region Public Methods That Express Will Use
+  getById = async (req: Request, res: Response, next: NextFunction) => {
+    await this.getByIdHandler(req, res, next);
+  };
+
   get = async (req: Request, res: Response, next: NextFunction) => {
     await this.getHandler(req, res, next);
   };

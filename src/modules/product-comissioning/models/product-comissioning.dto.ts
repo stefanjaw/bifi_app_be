@@ -1,4 +1,3 @@
-import { Type } from "class-transformer";
 import {
   IsBoolean,
   IsIn,
@@ -8,6 +7,7 @@ import {
   IsString,
 } from "class-validator";
 import { PartialType } from "../../../system";
+import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
 
 export class ProductComissioningDTO {
   @IsIn(["fail", "pass"])
@@ -18,14 +18,15 @@ export class ProductComissioningDTO {
   @IsOptional()
   details?: string;
 
-  // @IsOptional()
-  // attachments?: string | undefined;
+  @IsOptional()
+  attachments?: FileUpload;
 
   @IsMongoId()
   productId!: string;
 
   @IsOptional()
-  active?: string;
+  @IsBoolean()
+  active?: boolean;
 }
 
 export class UpdateProductComissioningDTO extends PartialType(
