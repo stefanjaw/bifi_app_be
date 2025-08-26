@@ -1,6 +1,13 @@
 export type FileUpload =
   | Express.Multer.File
   | Express.Multer.File[]
-  | string
-  | string[]
+  | InnerFile
+  | InnerFile[]
   | null;
+
+export type InnerFile = {
+  fileId: string;
+  name: string;
+  mimeType: string;
+  size: number;
+};
