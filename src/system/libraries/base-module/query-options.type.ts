@@ -1,8 +1,6 @@
-export interface paginationOptions {
-  paginate: boolean;
-  limit: number;
-  page: number;
-}
+export type paginationOptions =
+  | { paginate: true; page: number; limit: number }
+  | { paginate: false };
 
 export interface orderByField {
   field: string;

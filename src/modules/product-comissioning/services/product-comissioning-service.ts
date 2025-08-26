@@ -15,6 +15,7 @@ import {
   UpdateProductComissioningDTO,
 } from "../models/product-comissioning.dto";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
+import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
 
 export class ProductComissioningService extends BaseService<ProductComissioningDocument> {
   private productStatusService = new ProductStatusService();
@@ -57,8 +58,18 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
         }
 
         // HANDLE FILES IF PROVIDED
-        if (isValidFileUpload(data.attachments)) {
-          data.attachments = await this.gridFSBucket.upload(data.attachments);
+        if (
+          isValidFileUpload(data.attachments) &&
+          Array.isArray(data.attachments)
+        ) {
+          data.attachments = await Promise.all(
+            data.attachments.map<Promise<InnerFile>>(async (file) => ({
+              fileId: await this.gridFSBucket.uploadFile(file),
+              name: file.originalname,
+              mimeType: file.mimetype,
+              size: file.size,
+            }))
+          );
         }
 
         // GET ALL COMISSIONS FOR THE PRODUCT
@@ -126,8 +137,18 @@ export class ProductComissioningService extends BaseService<ProductComissioningD
       session,
       async (newSession) => {
         // HANDLE FILES IF PROVIDED
-        if (isValidFileUpload(data.attachments)) {
-          data.attachments = await this.gridFSBucket.upload(data.attachments);
+        if (
+          isValidFileUpload(data.attachments) &&
+          Array.isArray(data.attachments)
+        ) {
+          data.attachments = await Promise.all(
+            data.attachments.map<Promise<InnerFile>>(async (file) => ({
+              fileId: await this.gridFSBucket.uploadFile(file),
+              name: file.originalname,
+              mimeType: file.mimetype,
+              size: file.size,
+            }))
+          );
         }
 
         // SAVE COMISSION

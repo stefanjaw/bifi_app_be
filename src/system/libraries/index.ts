@@ -6,6 +6,7 @@ export * from './base-module/transaction-utils';
 export * from './exceptions/perform-validation';
 export * from './exceptions/service-exception';
 export * from './file-storage/file-validator-service';
+export * from './file-storage/file.model';
 export * from './file-storage/grid-fs-bucket-service';
 export * from './partial-types/mapped-type.type';
 export * from './partial-types/partial-type-helpers';

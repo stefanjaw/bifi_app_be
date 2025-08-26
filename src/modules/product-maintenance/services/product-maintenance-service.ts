@@ -57,9 +57,18 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         }
 
         // HANDLE FILES IF PROVIDED
-        const attachments = data.attachments;
-        if (isValidFileUpload(attachments)) {
-          data.attachments = await this.gridFSBucket.upload(attachments);
+        if (
+          isValidFileUpload(data.attachments) &&
+          Array.isArray(data.attachments)
+        ) {
+          data.attachments = await Promise.all(
+            data.attachments.map(async (file) => ({
+              fileId: await this.gridFSBucket.uploadFile(file),
+              name: file.originalname,
+              mimeType: file.mimetype,
+              size: file.size,
+            }))
+          );
         }
 
         // SAVE MAINTENANCE
@@ -122,8 +131,18 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
       session,
       async (newSession) => {
         // HANDLE FILES IF PROVIDED
-        if (isValidFileUpload(data.attachments)) {
-          data.attachments = await this.gridFSBucket.upload(data.attachments);
+        if (
+          isValidFileUpload(data.attachments) &&
+          Array.isArray(data.attachments)
+        ) {
+          data.attachments = await Promise.all(
+            data.attachments.map(async (file) => ({
+              fileId: await this.gridFSBucket.uploadFile(file),
+              name: file.originalname,
+              mimeType: file.mimetype,
+              size: file.size,
+            }))
+          );
         }
 
         // UPDATE MAINTENANCE

@@ -761,6 +761,22 @@ export type MaintenanceWindowDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ProductComissioningAttachmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProductComissioningDocument.toObject()`.
+ * ```
+ * const productcomissioningObject = productcomissioning.toObject();
+ * ```
+ */
+export type ProductComissioningAttachment = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType?: string;
+  size?: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of ProductComissioningDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ProductComissioningDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductComissioningObject`.
@@ -771,7 +787,7 @@ export type MaintenanceWindowDocument = mongoose.Document<
 export type ProductComissioning = {
   outcome: "fail" | "pass";
   details?: string;
-  attachments: mongoose.Types.ObjectId[];
+  attachments: ProductComissioningAttachment[];
   productId: Product;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -851,6 +867,20 @@ export type ProductComissioningSchema = mongoose.Schema<
 >;
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `ProductComissioningDocument["attachments"]` element.
+ */
+export type ProductComissioningAttachmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType?: string;
+    size?: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -865,7 +895,7 @@ export type ProductComissioningDocument = mongoose.Document<
   ProductComissioningMethods & {
     outcome: "fail" | "pass";
     details?: string;
-    attachments: mongoose.Types.Array<mongoose.Types.ObjectId>;
+    attachments: mongoose.Types.DocumentArray<ProductComissioningAttachmentDocument>;
     productId: ProductDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
@@ -1261,6 +1291,7 @@ export type PolicyCondition = {
  * ```
  */
 export type Policy = {
+  name: string;
   resource: string;
   action: "create" | "read" | "update" | "delete";
   conditions: PolicyCondition[];
@@ -1357,6 +1388,7 @@ export type PolicyDocument = mongoose.Document<
   PolicyQueries
 > &
   PolicyMethods & {
+    name: string;
     resource: string;
     action: "create" | "read" | "update" | "delete";
     conditions: mongoose.Types.DocumentArray<PolicyConditionDocument>;

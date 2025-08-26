@@ -3,6 +3,7 @@ import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { ProductMaintenanceDocument } from "@mongodb-types";
+import { fileSchema } from "../../../system";
 
 const productMaintenanceSchema = new Schema({
   name: {
@@ -15,8 +16,8 @@ const productMaintenanceSchema = new Schema({
     trim: true,
   },
   attachments: {
-    type: [Schema.Types.ObjectId],
-    autopopulate: false,
+    type: [fileSchema],
+    required: false,
   },
   productId: {
     type: Schema.Types.ObjectId,
