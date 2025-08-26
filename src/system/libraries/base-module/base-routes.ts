@@ -25,6 +25,10 @@ export class BaseRoutes<T> {
     this.resource = this.endpoint.replace("/", "");
 
     // init of routes
+    this.initRoutes();
+  }
+
+  protected initRoutes() {
     this.initGetByIdRoute();
     this.initGetRoute();
     this.initPostRoute();

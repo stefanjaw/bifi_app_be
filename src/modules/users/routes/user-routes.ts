@@ -13,9 +13,11 @@ export class UserRouter extends BaseRoutes<UserDocument> {
       dtoCreateClass: UserDTO,
       dtoUpdateClass: UpdateUserDTO,
     });
+  }
 
-    // custom routes
+  override initRoutes(): void {
     this.initMeRoute();
+    super.initRoutes();
   }
 
   initMeRoute() {
