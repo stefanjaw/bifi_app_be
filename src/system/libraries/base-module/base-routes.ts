@@ -25,6 +25,7 @@ export class BaseRoutes<T> {
     this.resource = this.endpoint.replace("/", "");
 
     // init of routes
+    this.initGetByIdRoute();
     this.initGetRoute();
     this.initPostRoute();
     this.initPutRoute();
@@ -33,6 +34,14 @@ export class BaseRoutes<T> {
 
   get getRouter() {
     return this.router;
+  }
+
+  protected initGetByIdRoute() {
+    this.router.get(
+      `${this.endpoint}/:id`,
+      authorizeMiddleware(this.resource, "read"),
+      this.controller.getById
+    );
   }
 
   protected initGetRoute() {
