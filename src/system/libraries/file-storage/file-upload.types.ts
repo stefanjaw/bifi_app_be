@@ -10,4 +10,5 @@ export type InnerFile = {
   name: string;
   mimeType: string;
   size: number;
+  fileMetadata?: object;
 };

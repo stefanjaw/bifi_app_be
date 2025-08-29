@@ -96,6 +96,8 @@ export class ProductController extends BaseController<ProductDocument> {
             this.acceptedAttarchmentTypes
           );
         }
+
+        req.body.attachments = attachments;
       } catch (error: any) {
         next(error);
         return;

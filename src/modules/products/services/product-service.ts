@@ -176,8 +176,8 @@ export class ProductService extends BaseService<ProductDocument> {
       }
 
       // Handle file uploads for attachments
-      let attachments = (data as any).attachments;
-      let attachmentsMetadata = (data as any).attachmentsMetadata as object[];
+      let attachments = data.attachments;
+      let attachmentsMetadata = data.attachmentsMetadata as object[];
 
       if (isValidFileUpload(attachments) && Array.isArray(attachments)) {
         attachments = await Promise.all(

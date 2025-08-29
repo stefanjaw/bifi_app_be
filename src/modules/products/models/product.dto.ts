@@ -7,6 +7,7 @@ import {
   IsMongoId,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsPositive,
   IsString,
@@ -14,6 +15,7 @@ import {
 import { Transform, Type } from "class-transformer";
 import { PartialType } from "../../../system";
 import { Types } from "mongoose";
+import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
 
 export class ProductDTO {
   @IsArray()
@@ -103,4 +105,13 @@ export class ProductDTO {
 export class UpdateProductDTO extends PartialType(ProductDTO) {
   @IsMongoId()
   _id!: string | Types.ObjectId;
+
+  @IsOptional()
+  attachments?: FileUpload;
+
+  @IsOptional()
+  @IsArray()
+  @IsObject({ each: true })
+  @Transform(({ value }) => JSON.parse(value))
+  attachmentsMetadata?: object[];
 }
