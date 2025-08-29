@@ -5,6 +5,7 @@ import autopopulate from "mongoose-autopopulate";
 import { ProductDocument } from "@mongodb-types";
 import isBetween from "dayjs/plugin/isBetween";
 import dayjs from "dayjs";
+import { fileSchema } from "../../../system";
 
 dayjs.extend(isBetween);
 
@@ -112,6 +113,10 @@ const productSchema = new Schema(
     },
     maxMaintenanceDate: {
       type: Date,
+    },
+    attachments: {
+      type: [fileSchema],
+      required: false,
     },
     // ================
     active: {
