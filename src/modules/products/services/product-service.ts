@@ -63,7 +63,7 @@ export class ProductService extends BaseService<ProductDocument> {
     product: ProductDocument,
     session: ClientSession | null = null
   ) {
-    const files: object[] = [];
+    const files = product.attachments || [];
 
     // Get the product's comissions
     const productComissions = await productComissioningModel
