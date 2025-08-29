@@ -7,13 +7,13 @@ import {
 } from "../../../system";
 import { productModel } from "../models/product.model";
 import {
-  ProductAttachmentDocument,
+  // ProductAttachmentDocument,
   ProductDocument,
 } from "../../../types/mongoose.gen";
 import { ProductStatusService } from "./product-status-service";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
-import { productComissioningModel } from "../../product-comissioning/models/product-comissioning.model";
-import { productMaintenanceModel } from "../../product-maintenance/models/product-maintenance.model";
+// import { productComissioningModel } from "../../product-comissioning/models/product-comissioning.model";
+// import { productMaintenanceModel } from "../../product-maintenance/models/product-maintenance.model";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 import { UpdateProductDTO } from "../models/product.dto";
 import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
@@ -35,25 +35,25 @@ export class ProductService extends BaseService<ProductDocument> {
    * @param id - The ID of the product to retrieve.
    * @returns The product document with all associated documents, or undefined if not found.
    */
-  override async getById(id: string): Promise<ProductDocument | undefined> {
-    return await runTransaction<ProductDocument | undefined>(
-      undefined,
-      async (newSession) => {
-        const product = (await super.getById(id))?.toObject();
+  // override async getById(id: string): Promise<ProductDocument | undefined> {
+  //   return await runTransaction<ProductDocument | undefined>(
+  //     undefined,
+  //     async (newSession) => {
+  //       const product = (await super.getById(id))?.toObject();
 
-        if (!product) {
-          throw new NotFoundException("Product not found");
-        }
+  //       if (!product) {
+  //         throw new NotFoundException("Product not found");
+  //       }
 
-        product.attachments = await this.getAttachmentsPerProduct(
-          product,
-          newSession
-        );
+  //       product.attachments = await this.getAttachmentsPerProduct(
+  //         product,
+  //         newSession
+  //       );
 
-        return product;
-      }
-    );
-  }
+  //       return product;
+  //     }
+  //   );
+  // }
 
   /**
    * Retrieves all documents associated with a product from both product comissioning and product maintenance.
@@ -61,41 +61,41 @@ export class ProductService extends BaseService<ProductDocument> {
    * @param session - Optional mongoose session.
    * @returns An array of all documents associated with the product.
    */
-  private async getAttachmentsPerProduct(
-    product: ProductDocument,
-    session: ClientSession | null = null
-  ) {
-    const files = product.attachments || [];
+  // private async getAttachmentsPerProduct(
+  //   product: ProductDocument,
+  //   session: ClientSession | null = null
+  // ) {
+  //   const files = product.attachments || [];
 
-    // Get the product's comissions
-    const productComissions = await productComissioningModel
-      .find({
-        productId: product._id,
-      })
-      .session(session);
+  //   // Get the product's comissions
+  //   const productComissions = await productComissioningModel
+  //     .find({
+  //       productId: product._id,
+  //     })
+  //     .session(session);
 
-    // Get the product's maintenances
-    const productMaintenances = await productMaintenanceModel
-      .find({
-        productId: product._id,
-      })
-      .session(session);
+  //   // Get the product's maintenances
+  //   const productMaintenances = await productMaintenanceModel
+  //     .find({
+  //       productId: product._id,
+  //     })
+  //     .session(session);
 
-    // Add the attachments to the files array
-    productComissions
-      ?.flatMap((comission) => comission.attachments)
-      .forEach((attachment) => {
-        files.push(attachment);
-      });
+  //   // Add the attachments to the files array
+  //   productComissions
+  //     ?.flatMap((comission) => comission.attachments)
+  //     .forEach((attachment) => {
+  //       files.push(attachment);
+  //     });
 
-    productMaintenances
-      ?.flatMap((maintenance) => maintenance.attachments)
-      .forEach((attachment) => {
-        files.push(attachment);
-      });
+  //   productMaintenances
+  //     ?.flatMap((maintenance) => maintenance.attachments)
+  //     .forEach((attachment) => {
+  //       files.push(attachment);
+  //     });
 
-    return files;
-  }
+  //   return files;
+  // }
 
   /**
    * Creates a product with the given data and returns the created document.
