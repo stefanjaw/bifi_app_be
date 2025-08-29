@@ -771,8 +771,9 @@ export type MaintenanceWindowDocument = mongoose.Document<
 export type ProductComissioningAttachment = {
   fileId: mongoose.Types.ObjectId;
   name: string;
-  mimeType?: string;
-  size?: number;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -875,8 +876,9 @@ export type ProductComissioningAttachmentDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
     fileId: mongoose.Types.ObjectId;
     name: string;
-    mimeType?: string;
-    size?: number;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -912,8 +914,9 @@ export type ProductComissioningDocument = mongoose.Document<
 export type ProductMaintenanceAttachment = {
   fileId: mongoose.Types.ObjectId;
   name: string;
-  mimeType?: string;
-  size?: number;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1018,8 +1021,9 @@ export type ProductMaintenanceAttachmentDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
     fileId: mongoose.Types.ObjectId;
     name: string;
-    mimeType?: string;
-    size?: number;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -1161,8 +1165,9 @@ export type ProductTypeDocument = mongoose.Document<
 export type ProductAttachment = {
   fileId: mongoose.Types.ObjectId;
   name: string;
-  mimeType?: string;
-  size?: number;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1281,8 +1286,9 @@ export type ProductAttachmentDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
     fileId: mongoose.Types.ObjectId;
     name: string;
-    mimeType?: string;
-    size?: number;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
     _id: mongoose.Types.ObjectId;
   };
 

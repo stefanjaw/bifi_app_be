@@ -1,20 +1,22 @@
-import { ClientSession, PaginateResult } from "mongoose";
+import { ClientSession } from "mongoose";
 import {
   BaseService,
   GridFSBucketService,
   NotFoundException,
-  orderByQuery,
-  paginationOptions,
   runTransaction,
 } from "../../../system";
 import { productModel } from "../models/product.model";
-import { ProductDocument } from "../../../types/mongoose.gen";
+import {
+  ProductAttachmentDocument,
+  ProductDocument,
+} from "../../../types/mongoose.gen";
 import { ProductStatusService } from "./product-status-service";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 import { productComissioningModel } from "../../product-comissioning/models/product-comissioning.model";
 import { productMaintenanceModel } from "../../product-maintenance/models/product-maintenance.model";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 import { UpdateProductDTO } from "../models/product.dto";
+import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
 
 export class ProductService extends BaseService<ProductDocument> {
   private productStatusService = new ProductStatusService();
@@ -160,18 +162,47 @@ export class ProductService extends BaseService<ProductDocument> {
       if (!existing) throw new NotFoundException("Product does not exist");
 
       // Handle file upload if provided
-      if (isValidFileUpload(data.photo)) {
+      let photo = data.photo;
+
+      // If a file is provided, upload it and store the file ID in the product data
+      if (isValidFileUpload(photo)) {
         const fileId = await this.gridFSBucket.uploadFile(
-          Array.isArray(data.photo) ? data.photo[0] : data.photo
+          Array.isArray(photo) ? photo[0] : photo
         );
-        data.photo = fileId; // Store the file ID in the product data
-      } else if (data.photo !== undefined) {
+        photo = fileId; // Store the file ID in the product data
+      } else if (photo !== undefined) {
         // Delete the file if no file is provided and there is a value on the photo field
-        data.photo = null;
+        photo = null;
+      }
+
+      // Handle file uploads for attachments
+      let attachments = (data as any).attachments;
+      let attachmentsMetadata = (data as any).attachmentsMetadata as object[];
+
+      if (isValidFileUpload(attachments) && Array.isArray(attachments)) {
+        attachments = await Promise.all(
+          attachments.map<Promise<InnerFile>>(async (file, i) => ({
+            fileId: await this.gridFSBucket.uploadFile(file),
+            name: file.originalname,
+            mimeType: file.mimetype,
+            size: file.size,
+            fileMetadata: attachmentsMetadata?.[i],
+          }))
+        );
+      } else if (attachments !== undefined) {
+        // Delete the file if no file is provided and there is a value on the photo field
+        attachments = null;
       }
 
       // Update the product
-      let product = await super.update(data, newSession);
+      let product = await super.update(
+        {
+          ...data,
+          photo,
+          attachments,
+        },
+        newSession
+      );
 
       // If maintenance was sent, then update the maintenance dates
       if (data.maintenanceDate) {
