@@ -771,8 +771,9 @@ export type MaintenanceWindowDocument = mongoose.Document<
 export type ProductComissioningAttachment = {
   fileId: mongoose.Types.ObjectId;
   name: string;
-  mimeType?: string;
-  size?: number;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -875,8 +876,9 @@ export type ProductComissioningAttachmentDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
     fileId: mongoose.Types.ObjectId;
     name: string;
-    mimeType?: string;
-    size?: number;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -902,6 +904,23 @@ export type ProductComissioningDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ProductMaintenanceAttachmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProductMaintenanceDocument.toObject()`.
+ * ```
+ * const productmaintenanceObject = productmaintenance.toObject();
+ * ```
+ */
+export type ProductMaintenanceAttachment = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of ProductMaintenanceDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ProductMaintenanceDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductMaintenanceObject`.
@@ -912,7 +931,7 @@ export type ProductComissioningDocument = mongoose.Document<
 export type ProductMaintenance = {
   name: string;
   description?: string;
-  attachments: mongoose.Types.ObjectId[];
+  attachments: ProductMaintenanceAttachment[];
   productId: Product;
   date?: Date;
   type: "service" | "preventive-maintenance";
@@ -994,6 +1013,21 @@ export type ProductMaintenanceSchema = mongoose.Schema<
 >;
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `ProductMaintenanceDocument["attachments"]` element.
+ */
+export type ProductMaintenanceAttachmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -1008,7 +1042,7 @@ export type ProductMaintenanceDocument = mongoose.Document<
   ProductMaintenanceMethods & {
     name: string;
     description?: string;
-    attachments: mongoose.Types.Array<mongoose.Types.ObjectId>;
+    attachments: mongoose.Types.DocumentArray<ProductMaintenanceAttachmentDocument>;
     productId: ProductDocument;
     date?: Date;
     type: "service" | "preventive-maintenance";
@@ -1121,6 +1155,23 @@ export type ProductTypeDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ProductAttachmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProductDocument.toObject()`.
+ * ```
+ * const productObject = product.toObject();
+ * ```
+ */
+export type ProductAttachment = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of ProductDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ProductDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductObject`.
@@ -1152,6 +1203,7 @@ export type Product = {
   minMaintenanceDate?: Date;
   maintenanceDate?: Date;
   maxMaintenanceDate?: Date;
+  attachments: ProductAttachment[];
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   productComission: any;
@@ -1226,6 +1278,21 @@ export type ProductSchema = mongoose.Schema<
 >;
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `ProductDocument["attachments"]` element.
+ */
+export type ProductAttachmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -1261,6 +1328,7 @@ export type ProductDocument = mongoose.Document<
     minMaintenanceDate?: Date;
     maintenanceDate?: Date;
     maxMaintenanceDate?: Date;
+    attachments: mongoose.Types.DocumentArray<ProductAttachmentDocument>;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     productComission: any;
