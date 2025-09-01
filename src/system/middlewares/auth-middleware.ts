@@ -61,23 +61,22 @@ export function authMiddleware(userService: UserService) {
       req.token = token;
       next();
     } catch (error) {
-      next(error);
-      // if (error instanceof FirebaseAppError) {
-      //   switch (error.code) {
-      //     case "auth/id-token-expired":
-      //     case "auth/id-token-revoked":
-      //       next(new UnauthorizedException("Token expired or revoked"));
-      //       return;
-      //     case "auth/invalid-id-token":
-      //       next(new UnauthorizedException("Invalid token"));
-      //       return;
-      //     default:
-      //       break;
-      //   }
-      //   // Handle Firebase authentication errors
-      //   console.error("Firebase authentication error:", error);
-      // }
-      // next(new UnauthorizedException("Unauthorized"));
+      if (error instanceof FirebaseAppError) {
+        switch (error.code) {
+          case "auth/id-token-expired":
+          case "auth/id-token-revoked":
+            next(new UnauthorizedException("Token expired or revoked"));
+            return;
+          case "auth/invalid-id-token":
+            next(new UnauthorizedException("Invalid token"));
+            return;
+          default:
+            break;
+        }
+        // Handle Firebase authentication errors
+        console.error("Firebase authentication error:", error);
+      }
+      next(new UnauthorizedException("Unauthorized"));
     }
   };
 }

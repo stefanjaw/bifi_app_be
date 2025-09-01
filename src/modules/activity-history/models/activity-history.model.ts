@@ -25,6 +25,10 @@ const activityHistorySchema = new Schema(
     modelId: {
       type: Schema.Types.ObjectId,
       required: true,
+      refPath: "model",
+      autopopulate: {
+        depth: 1,
+      },
     },
     metadata: {
       type: Object,
@@ -43,6 +47,16 @@ const activityHistorySchema = new Schema(
     toJSON: { virtuals: true }, // Include virtuals in toJSON output
   }
 );
+
+// activityHistorySchema.post("find" as any, async function (docs, next) {
+//   if (!docs || !Array.isArray(docs)) return next();
+
+//   for (let doc of docs) {
+//     await doc.populate("modelId").execPopulate();
+//   }
+
+//   next();
+// });
 
 activityHistorySchema.plugin(paginate);
 activityHistorySchema.plugin(autopopulate);
