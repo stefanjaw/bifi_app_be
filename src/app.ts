@@ -78,12 +78,10 @@ app.use(catchExceptionMiddleware);
 
 // default route
 app.get("/", (req, res) => {
-  res
-    .status(200)
-    .json({
-      message: "Welcome to the BIFI App Backend API",
-      version: "202508291155",
-    });
+  res.status(200).json({
+    message: "Welcome to the BIFI App Backend API",
+    version: "202509021240",
+  });
 });
 
 // start function
