@@ -102,8 +102,8 @@ export class ProductController extends BaseController<ProductDocument> {
         next(error);
         return;
       }
-
-      await super.updateHandler(req, res, next);
     }
+
+    await super.updateHandler(req, res, next);
   }
 }
