@@ -60,9 +60,9 @@ export class ProductController extends BaseController<ProductDocument> {
         next(error);
         return;
       }
-
-      await super.createHandler(req, res, next);
     }
+
+    await super.createHandler(req, res, next);
   }
 
   protected override async updateHandler(

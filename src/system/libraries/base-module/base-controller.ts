@@ -28,6 +28,7 @@ export class BaseController<T> {
     try {
       const id = req.params.id;
       const record = await this.service.getById(id);
+      console.log(record);
       this.sendData(res, record);
     } catch (error: any) {
       next(error);

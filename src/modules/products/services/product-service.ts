@@ -130,16 +130,16 @@ export class ProductService extends BaseService<ProductDocument> {
       }
 
       // ADD ACTIVITY HISTORY
-      await this.activityHistoryService.create(
-        {
-          title: "Product Created",
-          details: "Created. Notes: Product has been created",
-          performDate: new Date(),
-          model: "Product",
-          modelId: product._id,
-        },
-        newSession
-      );
+      // await this.activityHistoryService.create(
+      //   {
+      //     title: "Product Created",
+      //     details: "Created. Notes: Product has been created",
+      //     performDate: new Date(),
+      //     model: "Product",
+      //     modelId: product._id,
+      //   },
+      //   newSession
+      // );
 
       return product;
     });
@@ -213,16 +213,16 @@ export class ProductService extends BaseService<ProductDocument> {
       }
 
       // ADD ACTIVITY HISTORY
-      await this.activityHistoryService.create(
-        {
-          title: "Product Modified",
-          details: "Modified. Notes: Product has been modified",
-          performDate: new Date(),
-          model: "Product",
-          modelId: product._id,
-        },
-        newSession
-      );
+      // await this.activityHistoryService.create(
+      //   {
+      //     title: "Product Modified",
+      //     details: "Modified. Notes: Product has been modified",
+      //     performDate: new Date(),
+      //     model: "Product",
+      //     modelId: product._id,
+      //   },
+      //   newSession
+      // );
 
       return product;
     });

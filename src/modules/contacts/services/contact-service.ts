@@ -1,3 +1,4 @@
+import { ClientSession } from "mongoose";
 import { BaseService } from "../../../system";
 import { ContactDocument } from "../../../types/mongoose.gen";
 import { contactModel } from "../models/contact.model";
