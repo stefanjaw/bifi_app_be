@@ -1,6 +1,7 @@
 import { ClientSession, PaginateModel, PaginateResult } from "mongoose";
 import { orderByQuery, paginationOptions } from "./query-options.type";
 import { runTransaction } from "./transaction-utils";
+import { json2csv } from "json-2-csv";
 
 export class BaseService<T> {
   model!: PaginateModel<T>;
@@ -139,7 +140,6 @@ export class BaseService<T> {
    * @param session - The optional client session to use for the transaction.
    * @returns The updated record document.
    */
-
   async update(
     data: Record<string, any>,
     session: ClientSession | undefined = undefined
@@ -186,6 +186,22 @@ export class BaseService<T> {
       return ((record as any)?.active ? false : true) as boolean;
     });
   }
+
+  /**
+   * Converts the given data into a CSV and returns it as a Buffer.
+   * @param data The data to convert into a CSV. Defaults to an empty array.
+   * @returns A Buffer containing the CSV data.
+   */
+  async exportCSV(data: Record<string, any>[] = []): Promise<Buffer> {
+    try {
+      const csv = json2csv(data);
+      return Buffer.from(csv, "utf-8");
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  importCSV(): void {}
 
   isPagination(data: T[] | PaginateResult<T>): data is PaginateResult<T> {
     return (data as PaginateResult<T>).docs !== undefined;

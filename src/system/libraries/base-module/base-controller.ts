@@ -28,7 +28,6 @@ export class BaseController<T> {
     try {
       const id = req.params.id;
       const record = await this.service.getById(id);
-      console.log(record);
       this.sendData(res, record);
     } catch (error: any) {
       next(error);
@@ -145,6 +144,32 @@ export class BaseController<T> {
       next(error);
     }
   }
+
+  /**
+   * Handles HTTP GET requests to export all records of the collection in CSV format.
+   * Delegates the exportation to the service's exportCSV method and sends the result as a CSV file back to the client.
+   *
+   * @param req - The express Request object.
+   * @param res - The express Response object used to send the CSV file back to the client.
+   * @param next - The express NextFunction callback to pass control to the next middleware on error.
+   */
+  protected async exportCSVHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const data = await this.service.exportCSV();
+
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", "inline; filename=export.csv");
+
+      res.write(data);
+      res.end();
+    } catch (error: any) {
+      next(error);
+    }
+  }
   //#endregion
 
   //#region Public Methods That Express Will Use
@@ -166,6 +191,10 @@ export class BaseController<T> {
 
   delete = async (req: Request, res: Response, next: NextFunction) => {
     await this.deleteHandler(req, res, next);
+  };
+
+  exportCSV = async (req: Request, res: Response, next: NextFunction) => {
+    await this.exportCSVHandler(req, res, next);
   };
   //#endregion
 

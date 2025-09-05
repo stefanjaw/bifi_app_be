@@ -29,6 +29,7 @@ export class BaseRoutes<T> {
   }
 
   protected initRoutes() {
+    this.initExportCSVRoute();
     this.initGetByIdRoute();
     this.initGetRoute();
     this.initPostRoute();
@@ -38,6 +39,14 @@ export class BaseRoutes<T> {
 
   get getRouter() {
     return this.router;
+  }
+
+  protected initExportCSVRoute() {
+    this.router.get(
+      `${this.endpoint}/export`,
+      authorizeMiddleware(this.resource, "read"),
+      this.controller.exportCSV
+    );
   }
 
   protected initGetByIdRoute() {

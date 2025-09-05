@@ -6,21 +6,14 @@ import {
   runTransaction,
 } from "../../../system";
 import { productModel } from "../models/product.model";
-import {
-  // ProductAttachmentDocument,
-  ProductDocument,
-} from "../../../types/mongoose.gen";
+import { ProductDocument } from "../../../types/mongoose.gen";
 import { ProductStatusService } from "./product-status-service";
-import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
-// import { productComissioningModel } from "../../product-comissioning/models/product-comissioning.model";
-// import { productMaintenanceModel } from "../../product-maintenance/models/product-maintenance.model";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 import { UpdateProductDTO } from "../models/product.dto";
 import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
 
 export class ProductService extends BaseService<ProductDocument> {
   private productStatusService = new ProductStatusService();
-  private activityHistoryService = new ActivityHistoryService();
 
   constructor() {
     super({ model: productModel });
@@ -29,73 +22,6 @@ export class ProductService extends BaseService<ProductDocument> {
   private get gridFSBucket() {
     return GridFSBucketService.getInstance();
   }
-
-  /**
-   * Retrieves a product by its ID, including all associated documents.
-   * @param id - The ID of the product to retrieve.
-   * @returns The product document with all associated documents, or undefined if not found.
-   */
-  // override async getById(id: string): Promise<ProductDocument | undefined> {
-  //   return await runTransaction<ProductDocument | undefined>(
-  //     undefined,
-  //     async (newSession) => {
-  //       const product = (await super.getById(id))?.toObject();
-
-  //       if (!product) {
-  //         throw new NotFoundException("Product not found");
-  //       }
-
-  //       product.attachments = await this.getAttachmentsPerProduct(
-  //         product,
-  //         newSession
-  //       );
-
-  //       return product;
-  //     }
-  //   );
-  // }
-
-  /**
-   * Retrieves all documents associated with a product from both product comissioning and product maintenance.
-   * @param product - The product document.
-   * @param session - Optional mongoose session.
-   * @returns An array of all documents associated with the product.
-   */
-  // private async getAttachmentsPerProduct(
-  //   product: ProductDocument,
-  //   session: ClientSession | null = null
-  // ) {
-  //   const files = product.attachments || [];
-
-  //   // Get the product's comissions
-  //   const productComissions = await productComissioningModel
-  //     .find({
-  //       productId: product._id,
-  //     })
-  //     .session(session);
-
-  //   // Get the product's maintenances
-  //   const productMaintenances = await productMaintenanceModel
-  //     .find({
-  //       productId: product._id,
-  //     })
-  //     .session(session);
-
-  //   // Add the attachments to the files array
-  //   productComissions
-  //     ?.flatMap((comission) => comission.attachments)
-  //     .forEach((attachment) => {
-  //       files.push(attachment);
-  //     });
-
-  //   productMaintenances
-  //     ?.flatMap((maintenance) => maintenance.attachments)
-  //     .forEach((attachment) => {
-  //       files.push(attachment);
-  //     });
-
-  //   return files;
-  // }
 
   /**
    * Creates a product with the given data and returns the created document.
@@ -128,18 +54,6 @@ export class ProductService extends BaseService<ProductDocument> {
           newSession
         );
       }
-
-      // ADD ACTIVITY HISTORY
-      // await this.activityHistoryService.create(
-      //   {
-      //     title: "Product Created",
-      //     details: "Created. Notes: Product has been created",
-      //     performDate: new Date(),
-      //     model: "Product",
-      //     modelId: product._id,
-      //   },
-      //   newSession
-      // );
 
       return product;
     });
@@ -225,6 +139,57 @@ export class ProductService extends BaseService<ProductDocument> {
       // );
 
       return product;
+    });
+  }
+
+  /**
+   * Exports all products as a CSV file.
+   * The CSV will contain the following columns:
+   * - productModel
+   * - serialNumber
+   * - acquiredDate
+   * - acquiredPrice
+   * - currentPrice
+   * - condition
+   * - productTypes
+   * - vendors
+   * - makes
+   * - maintenanceWindows
+   * - location
+   * - warrantyDate
+   * - remarks
+   * - status
+   * - maintenanceDate
+   * - active
+   *
+   * @returns A Buffer containing the CSV data.
+   */
+  override async exportCSV(data?: Record<string, any>[]): Promise<Buffer> {
+    return runTransaction<Buffer>(undefined, async (newSession) => {
+      const products = await this.model.find().session(newSession);
+
+      const json = products.map((p) => ({
+        productModel: p.productModel,
+        serialNumber: p.serialNumber,
+        acquiredDate: p.acquiredDate?.toISOString().split("T")[0] ?? "",
+        acquiredPrice: p.acquiredPrice,
+        currentPrice: p.currentPrice,
+        condition: p.condition,
+        productTypes: p.productTypeIds?.map((t: any) => t.name).join(";"),
+        vendors: p.vendorIds?.map((v: any) => v.email).join(";"),
+        makes: p.makeIds.map((m: any) => m.email).join(";"),
+        maintenanceWindows: p.maintenanceWindowIds
+          .map((m: any) => m.name + " - " + m.recurrency)
+          .join(";"),
+        location: p.locationId ? p.locationId.code : "",
+        warrantyDate: p.warrantyDate?.toISOString().split("T")[0] ?? "",
+        remarks: p.remarks,
+        status: p.status,
+        maintenanceDate: p.maintenanceDate?.toISOString().split("T")[0] ?? "",
+        active: p.active,
+      }));
+
+      return super.exportCSV(json);
     });
   }
 }
