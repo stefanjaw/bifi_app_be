@@ -92,22 +92,22 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         }
 
         // ADD ACTIVITY HISTORY
-        await this.activityHistoryService.create(
-          {
-            title:
-              maintenance.type === "preventive-maintenance"
-                ? "PM"
-                : maintenance.name,
-            details: `Started. Notes: ${
-              maintenance.type === "preventive-maintenance" ? "PM" : "Service"
-            } has initiated`,
-            performDate: new Date(),
-            model: "ProductMaintenance",
-            modelId: maintenance._id,
-            metadata: { productId: maintenance.productId._id.toString() },
-          },
-          newSession
-        );
+        // await this.activityHistoryService.create(
+        //   {
+        //     title:
+        //       maintenance.type === "preventive-maintenance"
+        //         ? "PM"
+        //         : maintenance.name,
+        //     details: `Started. Notes: ${
+        //       maintenance.type === "preventive-maintenance" ? "PM" : "Service"
+        //     } has initiated`,
+        //     performDate: new Date(),
+        //     model: "ProductMaintenance",
+        //     modelId: maintenance._id,
+        //     metadata: { productId: maintenance.productId._id.toString() },
+        //   },
+        //   newSession
+        // );
 
         return maintenance;
       }
@@ -158,11 +158,10 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         if (maintenance.active === false) {
           await this.activityHistoryService.create(
             {
-              title: `${
-                maintenance.type === "preventive-maintenance"
-                  ? "PM"
-                  : maintenance.name
-              } Finished`,
+              title: (maintenance.type === "preventive-maintenance"
+                ? "PM"
+                : maintenance.name
+              ).replace("-", " "),
               details: `Finished. Notes: ${
                 maintenance.type === "preventive-maintenance" ? "PM" : "Service"
               } has concluded`,
