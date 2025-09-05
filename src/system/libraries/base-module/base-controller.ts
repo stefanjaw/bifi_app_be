@@ -1,6 +1,9 @@
 import { ValidationException } from "../exceptions/service-exception";
 import { BaseService } from "./base-service";
 import { NextFunction, Request, Response } from "express";
+import { FileValidatorService } from "../file-storage/file-validator-service";
+import csvParser from "csv-parser";
+import { Readable } from "stream";
 
 export class BaseController<T> {
   service!: BaseService<T>;
@@ -27,7 +30,7 @@ export class BaseController<T> {
   ) {
     try {
       const id = req.params.id;
-      const record = await this.service.getById(id);
+      const record = await this.service.getById(id, undefined);
       this.sendData(res, record);
     } catch (error: any) {
       next(error);
@@ -170,6 +173,52 @@ export class BaseController<T> {
       next(error);
     }
   }
+
+  /**
+   * Handles HTTP POST requests to import records from a CSV file.
+   *
+   * Expects a CSV file to be sent in the request body.
+   * Delegates the importation to the service's importCSV method and sends the result back to the client.
+   *
+   * @param req - The express Request object containing the CSV file in the "csv" field.
+   * @param res - The express Response object used to send the imported records back to the client.
+   * @param next - The express NextFunction callback to pass control to the next middleware on error.
+   */
+  protected async importCSVHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const file = req.file as Express.Multer.File;
+
+      if (!file) throw new ValidationException("CSV file is required");
+
+      const fileValidator = new FileValidatorService();
+      fileValidator.validateFileType(file, ["text/csv"]);
+
+      // convert it to JSON
+      const results: Record<string, any>[] = [];
+
+      const bufferStream = new Readable();
+      bufferStream.push(file.buffer);
+      bufferStream.push(null);
+
+      await new Promise<void>((resolve, reject) => {
+        bufferStream
+          .pipe(csvParser())
+          .on("data", (data) => results.push(data))
+          .on("end", () => resolve())
+          .on("error", (error) => reject(error));
+      });
+
+      const records = await this.service.importCSV(results);
+
+      this.sendData(res, records);
+    } catch (error: any) {
+      next(error);
+    }
+  }
   //#endregion
 
   //#region Public Methods That Express Will Use
@@ -195,6 +244,10 @@ export class BaseController<T> {
 
   exportCSV = async (req: Request, res: Response, next: NextFunction) => {
     await this.exportCSVHandler(req, res, next);
+  };
+
+  importCSV = async (req: Request, res: Response, next: NextFunction) => {
+    await this.importCSVHandler(req, res, next);
   };
   //#endregion
 

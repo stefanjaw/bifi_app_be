@@ -11,9 +11,17 @@ import { ProductStatusService } from "./product-status-service";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 import { UpdateProductDTO } from "../models/product.dto";
 import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
+import { productCSVFormat } from "../models/product-csv-format";
+import { ProductTypeService } from "../../product-types/services/product-type-service";
+import { ContactService } from "../../contacts/services/contact-service";
 
-export class ProductService extends BaseService<ProductDocument> {
+export class ProductService extends BaseService<
+  ProductDocument,
+  productCSVFormat
+> {
   private productStatusService = new ProductStatusService();
+  private productTypeService = new ProductTypeService();
+  private contactsService = new ContactService();
 
   constructor() {
     super({ model: productModel });
@@ -191,5 +199,153 @@ export class ProductService extends BaseService<ProductDocument> {
 
       return super.exportCSV(json);
     });
+  }
+
+  /**
+   * Imports the given data into products.
+   * The data should be an array of objects with the following properties:
+   * - productModel: string
+   * - serialNumber: string
+   * - acquiredDate: string (ISO date format)
+   * - acquiredPrice: number
+   * - currentPrice: number
+   * - condition: string
+   * - productTypes: string (comma-separated list of product type names)
+   * - vendors: string (comma-separated list of vendor email addresses)
+   * - makes: string (comma-separated list of make email addresses)
+   * - warrantyDate: string (ISO date format)
+   * - remarks: string
+   * - active: string (true/false)
+   *
+   * @param data The data to import.
+   * @param session The optional client session to use for the transaction.
+   * @returns An array of created product documents.
+   */
+  override async importCSV(
+    data: productCSVFormat[],
+    session?: ClientSession
+  ): Promise<ProductDocument[]> {
+    return await runTransaction<ProductDocument[]>(
+      session,
+      async (newSession) => {
+        if (!data || !Array.isArray(data)) {
+          throw new Error("Invalid data format");
+        }
+
+        const products: any[] = [];
+
+        for (const product of data) {
+          const productTypeNames = product.productTypes.split(";");
+          const vendorEmails = product.vendors?.split(";");
+          const makeEmails = product.makes?.split(";");
+
+          // Find or create product types
+          const productTypeIds = await Promise.all(
+            productTypeNames.map(async (name) => {
+              let productType = (
+                await this.productTypeService.get(
+                  { name },
+                  undefined,
+                  undefined,
+                  undefined,
+                  newSession
+                )
+              )[0];
+
+              if (!productType)
+                productType = await this.productTypeService.create(
+                  {
+                    name,
+                  },
+                  newSession
+                );
+
+              return productType._id;
+            })
+          );
+
+          // Find or create vendors
+          const vendorIds = vendorEmails
+            ? await Promise.all(
+                vendorEmails.map(async (email) => {
+                  let vendor = (
+                    await this.contactsService.get(
+                      { email },
+                      undefined,
+                      undefined,
+                      undefined,
+                      newSession
+                    )
+                  )[0];
+
+                  if (!vendor)
+                    vendor = await this.contactsService.create(
+                      {
+                        name: "default",
+                        lastName: "default",
+                        email,
+                      },
+                      newSession
+                    );
+
+                  return vendor._id;
+                })
+              )
+            : [];
+
+          // Find or create makes
+          const makeIds = makeEmails
+            ? await Promise.all(
+                makeEmails.map(async (email) => {
+                  let make = (
+                    await this.contactsService.get(
+                      { email },
+                      undefined,
+                      undefined,
+                      undefined,
+                      newSession
+                    )
+                  )[0];
+
+                  if (!make)
+                    make = await this.contactsService.create(
+                      {
+                        name: "default",
+                        lastName: "default",
+                        email,
+                      },
+                      newSession
+                    );
+
+                  return make._id;
+                })
+              )
+            : [];
+
+          products.push({
+            productModel: product.productModel,
+            serialNumber: product.serialNumber,
+            acquiredDate: new Date(product.acquiredDate),
+            acquiredPrice: product.acquiredPrice
+              ? Number.parseFloat(product.acquiredPrice)
+              : undefined,
+            currentPrice: product.currentPrice
+              ? Number.parseFloat(product.currentPrice)
+              : undefined,
+            condition: product.condition,
+            productTypeIds: productTypeIds,
+            vendorIds: vendorIds,
+            makeIds: makeIds,
+            warrantyDate: product.warrantyDate
+              ? new Date(product.warrantyDate)
+              : undefined,
+            remarks: product.remarks,
+            active: product.active === "true" ? true : false,
+          });
+        }
+
+        return await super.importCSV(products, newSession);
+      }
+    );
   }
 }

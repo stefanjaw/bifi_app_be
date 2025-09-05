@@ -29,10 +29,11 @@ export class BaseRoutes<T> {
   }
 
   protected initRoutes() {
-    this.initExportCSVRoute();
+    this.initGetExportCSVRoute();
     this.initGetByIdRoute();
     this.initGetRoute();
     this.initPostRoute();
+    this.initPostImportCSV();
     this.initPutRoute();
     this.initDeleteRoute();
   }
@@ -41,7 +42,7 @@ export class BaseRoutes<T> {
     return this.router;
   }
 
-  protected initExportCSVRoute() {
+  protected initGetExportCSVRoute() {
     this.router.get(
       `${this.endpoint}/export`,
       authorizeMiddleware(this.resource, "read"),
@@ -72,6 +73,15 @@ export class BaseRoutes<T> {
       validateBodyMiddleware(this.dtoCreateClass),
       authorizeMiddleware(this.resource, "create"),
       this.controller.create
+    );
+  }
+
+  protected initPostImportCSV() {
+    this.router.post(
+      `${this.endpoint}/import`,
+      this.upload.single("csv"),
+      authorizeMiddleware(this.resource, "update"),
+      this.controller.importCSV
     );
   }
 

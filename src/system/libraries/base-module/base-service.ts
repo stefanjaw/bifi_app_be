@@ -3,7 +3,7 @@ import { orderByQuery, paginationOptions } from "./query-options.type";
 import { runTransaction } from "./transaction-utils";
 import { json2csv } from "json-2-csv";
 
-export class BaseService<T> {
+export class BaseService<T, CSVFormat = Record<string, any>> {
   model!: PaginateModel<T>;
 
   constructor(params: Pick<BaseService<T>, "model">) {
@@ -12,12 +12,20 @@ export class BaseService<T> {
 
   /**
    * Retrieves a single document by its id.
+   *
+   * This function runs a transactional operation.
    * @param id - The id of the document to retrieve.
+   * @param session - Optional mongoose session.
    * @returns The retrieved document or undefined if not found.
    */
-  async getById(id: string): Promise<T | undefined> {
-    const document = await this.model.findById(id);
-    return document as T | undefined;
+  async getById(
+    id: string,
+    session: ClientSession | undefined
+  ): Promise<T | undefined> {
+    return await runTransaction<T | undefined>(session, async (newSession) => {
+      const document = await this.model.findById(id).session(newSession); // This is a mongoose session
+      return document as T | undefined;
+    });
   }
 
   /**
@@ -201,7 +209,25 @@ export class BaseService<T> {
     }
   }
 
-  importCSV(): void {}
+  /**
+   * Imports the given data as a record in the database.
+   * @param data The data to import as records.
+   * @param session The optional client session to use for the transaction.
+   * @returns The created record document.
+   */
+  async importCSV(
+    data: CSVFormat[], // previously sent as a csv file
+    session?: ClientSession
+  ): Promise<T[]> {
+    return await runTransaction<T[]>(session, async (newSession) => {
+      const records = await this.model.create([...data], {
+        session: newSession,
+        ordered: true,
+      });
+
+      return records as T[];
+    });
+  }
 
   isPagination(data: T[] | PaginateResult<T>): data is PaginateResult<T> {
     return (data as PaginateResult<T>).docs !== undefined;
