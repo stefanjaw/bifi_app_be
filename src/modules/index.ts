@@ -51,6 +51,7 @@ export * from './product-types/models/product-type.model';
 export * from './product-types/routes/product-type-routes';
 export * from './product-types/services/product-type-service';
 export * from './products/controllers/product-controller';
+export * from './products/models/product-csv.dto';
 export * from './products/models/product-status.type';
 export * from './products/models/product.dto';
 export * from './products/models/product.model';
