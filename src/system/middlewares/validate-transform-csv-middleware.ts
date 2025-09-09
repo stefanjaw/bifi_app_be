@@ -63,7 +63,7 @@ export function validateAndTransformCSVMiddleware<T extends object>(
                 if (result[key] === "") result[key] = undefined;
               });
 
-              return await performValidation(dtoClass, result);
+              return await performValidation(dtoClass, result, false);
             })
           );
 
