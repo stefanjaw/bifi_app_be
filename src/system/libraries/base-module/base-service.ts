@@ -3,7 +3,7 @@ import { orderByQuery, paginationOptions } from "./query-options.type";
 import { runTransaction } from "./transaction-utils";
 import { json2csv } from "json-2-csv";
 
-export class BaseService<T, CSVFormat = Record<string, any>> {
+export class BaseService<T> {
   model!: PaginateModel<T>;
 
   constructor(params: Pick<BaseService<T>, "model">) {
@@ -216,7 +216,7 @@ export class BaseService<T, CSVFormat = Record<string, any>> {
    * @returns The created record document.
    */
   async importCSV(
-    data: CSVFormat[], // previously sent as a csv file
+    data: Record<string, any>[], // previously sent as a csv file
     session?: ClientSession
   ): Promise<T[]> {
     return await runTransaction<T[]>(session, async (newSession) => {
