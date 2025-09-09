@@ -1,13 +1,18 @@
 import { BaseController } from "./base-controller";
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import multer from "multer";
-import { authorizeMiddleware, validateBodyMiddleware } from "../../middlewares";
+import {
+  authorizeMiddleware,
+  validateBodyMiddleware,
+  validateAndTransformCSVMiddleware,
+} from "../../middlewares";
 
 export class BaseRoutes<T> {
   controller!: BaseController<T>;
   endpoint!: string;
   dtoCreateClass!: new () => any;
   dtoUpdateClass!: new () => any;
+  csvDtoClass?: new () => any;
 
   protected router = Router();
   protected upload = multer();
@@ -16,7 +21,11 @@ export class BaseRoutes<T> {
   constructor(
     params: Pick<
       BaseRoutes<T>,
-      "controller" | "endpoint" | "dtoCreateClass" | "dtoUpdateClass"
+      | "controller"
+      | "endpoint"
+      | "dtoCreateClass"
+      | "dtoUpdateClass"
+      | "csvDtoClass"
     >
   ) {
     Object.assign(this, params);
@@ -76,11 +85,22 @@ export class BaseRoutes<T> {
     );
   }
 
+  /**
+   * Initialize the POST /{endpoint}/import route.
+   *
+   * This route expects a CSV file to be sent in the request body.
+   * The file is validated against the `csvDtoClass` if provided, otherwise
+   * it is validated against the `dtoCreateClass`.
+   * The `importCSV` method of the controller is called with the validated records.
+   */
   protected initPostImportCSV() {
     this.router.post(
       `${this.endpoint}/import`,
       this.upload.single("csv"),
-      authorizeMiddleware(this.resource, "update"),
+      validateAndTransformCSVMiddleware(
+        this.csvDtoClass || this.dtoCreateClass
+      ),
+      authorizeMiddleware(this.resource, "create"),
       this.controller.importCSV
     );
   }

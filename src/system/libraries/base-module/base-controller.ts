@@ -190,30 +190,7 @@ export class BaseController<T> {
     next: NextFunction
   ) {
     try {
-      const file = req.file as Express.Multer.File;
-
-      if (!file) throw new ValidationException("CSV file is required");
-
-      const fileValidator = new FileValidatorService();
-      fileValidator.validateFileType(file, ["text/csv"]);
-
-      // convert it to JSON
-      const results: Record<string, any>[] = [];
-
-      const bufferStream = new Readable();
-      bufferStream.push(file.buffer);
-      bufferStream.push(null);
-
-      await new Promise<void>((resolve, reject) => {
-        bufferStream
-          .pipe(csvParser())
-          .on("data", (data) => results.push(data))
-          .on("end", () => resolve())
-          .on("error", (error) => reject(error));
-      });
-
-      const records = await this.service.importCSV(results);
-
+      const records = await this.service.importCSV(req.body);
       this.sendData(res, records);
     } catch (error: any) {
       next(error);

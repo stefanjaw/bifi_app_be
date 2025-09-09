@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { performValidation, ValidationException } from "../libraries";
+import { performValidation } from "../libraries";
 
 export function validateBodyMiddleware<T extends object>(
   dtoClass: new () => T
