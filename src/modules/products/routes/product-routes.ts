@@ -5,6 +5,7 @@ import {
 } from "../../../system";
 import { ProductDocument } from "../../../types/mongoose.gen";
 import { ProductController } from "../controllers/product-controller";
+import { ProductCSVDTO } from "../models/product-csv.dto";
 import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
 
 const productController = new ProductController();
@@ -16,6 +17,7 @@ export class ProductRouter extends BaseRoutes<ProductDocument> {
       endpoint: "/products",
       dtoCreateClass: ProductDTO,
       dtoUpdateClass: UpdateProductDTO,
+      csvDtoClass: ProductCSVDTO,
     });
   }
 

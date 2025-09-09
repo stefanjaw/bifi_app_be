@@ -11,14 +11,11 @@ import { ProductStatusService } from "./product-status-service";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 import { UpdateProductDTO } from "../models/product.dto";
 import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
-import { productCSVFormat } from "../models/product-csv-format";
 import { ProductTypeService } from "../../product-types/services/product-type-service";
 import { ContactService } from "../../contacts/services/contact-service";
+import { ProductCSVDTO } from "../models/product-csv.dto";
 
-export class ProductService extends BaseService<
-  ProductDocument,
-  productCSVFormat
-> {
+export class ProductService extends BaseService<ProductDocument> {
   private productStatusService = new ProductStatusService();
   private productTypeService = new ProductTypeService();
   private contactsService = new ContactService();
@@ -222,7 +219,7 @@ export class ProductService extends BaseService<
    * @returns An array of created product documents.
    */
   override async importCSV(
-    data: productCSVFormat[],
+    data: ProductCSVDTO[],
     session?: ClientSession
   ): Promise<ProductDocument[]> {
     return await runTransaction<ProductDocument[]>(
@@ -325,22 +322,16 @@ export class ProductService extends BaseService<
           products.push({
             productModel: product.productModel,
             serialNumber: product.serialNumber,
-            acquiredDate: new Date(product.acquiredDate),
-            acquiredPrice: product.acquiredPrice
-              ? Number.parseFloat(product.acquiredPrice)
-              : undefined,
-            currentPrice: product.currentPrice
-              ? Number.parseFloat(product.currentPrice)
-              : undefined,
+            acquiredDate: product.acquiredDate,
+            acquiredPrice: product.acquiredPrice,
+            currentPrice: product.currentPrice,
             condition: product.condition,
             productTypeIds: productTypeIds,
             vendorIds: vendorIds,
             makeIds: makeIds,
-            warrantyDate: product.warrantyDate
-              ? new Date(product.warrantyDate)
-              : undefined,
+            warrantyDate: product.warrantyDate,
             remarks: product.remarks,
-            active: product.active === "true" ? true : false,
+            active: product.active,
           });
         }
 
