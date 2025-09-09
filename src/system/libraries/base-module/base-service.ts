@@ -202,6 +202,12 @@ export class BaseService<T> {
    */
   async exportCSV(data: Record<string, any>[] = []): Promise<Buffer> {
     try {
+      if (data.length === 0) {
+        data = (await this.model.find().lean()).map((item) =>
+          JSON.parse(JSON.stringify(item))
+        );
+      }
+
       const csv = json2csv(data);
       return Buffer.from(csv, "utf-8");
     } catch (err) {
