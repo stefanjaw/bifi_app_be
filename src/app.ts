@@ -11,6 +11,7 @@ import {
 } from "./system";
 import {
   ActivityHistoryRouter,
+  BugReportingRouter,
   CompanyRouter,
   ContactRouter,
   CountryRouter,
@@ -72,6 +73,7 @@ app.use("/api", new ActivityHistoryRouter().getRouter);
 app.use("/api", new UserRouter().getRouter);
 app.use("/api", new RoleRouter().getRouter);
 app.use("/api", new PolicyRouter().getRouter);
+app.use("/api", new BugReportingRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);
