@@ -45,6 +45,8 @@ export class ProductComissioningController extends BaseController<ProductComissi
       }
 
       req.body.attachments = files;
+    } else {
+      req.body.attachments = [];
     }
 
     await super.createHandler(req, res, next);
@@ -71,6 +73,8 @@ export class ProductComissioningController extends BaseController<ProductComissi
       }
 
       req.body.attachments = files;
+    } else {
+      req.body.attachments = [];
     }
 
     await super.updateHandler(req, res, next);
