@@ -19,9 +19,15 @@ export function authorizeMiddleware(
   getDocument: (req: Request) => Promise<Record<string, any>> = () =>
     Promise.resolve({})
 ) {
+  const RBAC_ENABLE = process.env.RBAC_ENABLE
+    ? process.env.RBAC_ENABLE === "true"
+    : true;
+
   return async (req: Request, res: Response, next: NextFunction) => {
-    next();
-    return;
+    if (!RBAC_ENABLE) {
+      next();
+      return;
+    }
 
     try {
       const user = req.user;

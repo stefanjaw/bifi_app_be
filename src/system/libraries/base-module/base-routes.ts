@@ -51,10 +51,15 @@ export class BaseRoutes<T> {
     return this.router;
   }
 
+  /**
+   * Initialize the GET /{endpoint}/export route.
+   * This route returns a CSV file containing all records of the collection.
+   * The `exportCSV` method of the controller is called to generate the CSV file.
+   */
   protected initGetExportCSVRoute() {
     this.router.get(
       `${this.endpoint}/export`,
-      authorizeMiddleware(this.resource, "read"),
+      authorizeMiddleware(`${this.resource}/export`, "read"),
       this.controller.exportCSV
     );
   }
@@ -100,7 +105,7 @@ export class BaseRoutes<T> {
       validateAndTransformCSVMiddleware(
         this.csvDtoClass || this.dtoCreateClass
       ),
-      authorizeMiddleware(this.resource, "create"),
+      authorizeMiddleware(`${this.resource}/import`, "create"),
       this.controller.importCSV
     );
   }
