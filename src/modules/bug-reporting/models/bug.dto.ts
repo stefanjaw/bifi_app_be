@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsEmail, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { FileUpload } from "../../../system";
 
 export class BugDTO {
@@ -9,6 +9,13 @@ export class BugDTO {
   @IsString()
   @IsNotEmpty()
   description!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  platform!: string;
+
+  @IsEmail()
+  email!: string;
 
   @IsOptional()
   files?: FileUpload;
