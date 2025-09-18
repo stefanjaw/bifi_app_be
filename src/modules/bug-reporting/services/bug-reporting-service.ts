@@ -23,7 +23,7 @@ export class BugReportingService {
       // Fields
       formData.append("subject", data.subject);
       formData.append("description", data.description);
-      formData.append("startDate", new Date().toISOString());
+      formData.append("startDate", new Date().toISOString().split("T")[0]);
       formData.append("platform", data.platform);
       formData.append("email", data.email);
       formData.append("typeId", this.TYPE_ID);
@@ -31,16 +31,13 @@ export class BugReportingService {
 
       // files
       if (data.files && Array.isArray(data.files) && data.files.length > 0) {
-        // loop through each file
-        for (const file of data.files) {
-          const multerFile = file as Express.Multer.File;
+        const multerFile = data.files[0] as Express.Multer.File;
 
-          // append file
-          formData.append("files", multerFile.buffer, {
-            contentType: multerFile.mimetype,
-            filename: multerFile.originalname,
-          });
-        }
+        // append file
+        formData.append("file", multerFile.buffer, {
+          contentType: multerFile.mimetype,
+          filename: multerFile.originalname,
+        });
       }
 
       // post request
