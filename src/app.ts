@@ -82,7 +82,7 @@ app.use(catchExceptionMiddleware);
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
-    version: "202509171046",
+    version: "202509181528",
   });
 });
 
