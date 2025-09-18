@@ -1,5 +1,7 @@
 import { BugDTO } from "../models/bug.dto";
-import { bug } from "../models/bug.model";
+import { bugStatus } from "../models/bug.model";
+import FormData from "form-data";
+import axios from "axios";
 
 export class BugReportingService {
   private readonly TYPE_ID = "7";
@@ -13,72 +15,45 @@ export class BugReportingService {
    * @param {BugDTO} data - The bug report data.
    * @return {Promise<Response>} - The response from the API.
    */
-  async reportBug(data: BugDTO): Promise<bug> {
+  async reportBug(data: BugDTO): Promise<bugStatus> {
     try {
       // creating form data
       const formData = new FormData();
 
-      // password
-      // formData.append("password", this.password);
-
-      // subject
+      // Fields
       formData.append("subject", data.subject);
-
-      // description
       formData.append("description", data.description);
-
-      // start date
-      formData.append("startDate", new Date().toISOString());
-
-      // type
+      formData.append("startDate", new Date().toISOString().split("T")[0]);
+      formData.append("platform", data.platform);
+      formData.append("email", data.email);
       formData.append("typeId", this.TYPE_ID);
-
-      // project
       formData.append("projectId", this.PROJECT_ID);
 
       // files
       if (data.files && Array.isArray(data.files) && data.files.length > 0) {
-        // loop through each file
-        for (const file of data.files) {
-          const multerFile = file as Express.Multer.File;
+        const multerFile = data.files[0] as Express.Multer.File;
 
-          // create blob
-          const blob = new Blob([new Uint8Array(multerFile.buffer)], {
-            type: multerFile.mimetype,
-          });
-
-          // append to form
-          formData.append("files", blob, multerFile.originalname);
-        }
+        // append file
+        formData.append("file", multerFile.buffer, {
+          contentType: multerFile.mimetype,
+          filename: multerFile.originalname,
+        });
       }
 
-      // send request
-      const bug = await fetch(this.URL, {
-        method: "POST",
-        body: formData,
+      // post request
+      const bug = await axios.post(this.URL, formData, {
+        headers: formData.getHeaders(),
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity,
       });
 
-      // throw error if response is not ok
-      if (!bug.ok) {
-        const message = await bug.json();
-        throw new Error(message.error);
-      }
-
-      // return response
-      const json = await bug.json();
-
       return {
-        id: json.id,
-        subject: json.subject,
-        // description: json.description,
-        // startDate: json.startDate,
-        // typeId: json.typeId,
-        // projectId: json.projectId,
-        status: json.status,
+        id: bug.data.id,
+        subject: bug.data.subject,
+        status: bug.data.status,
       };
-    } catch (error) {
-      // throw error
-      throw error;
+    } catch (error: any) {
+      throw new Error(error.message);
     }
   }
 }
