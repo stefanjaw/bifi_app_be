@@ -1,9 +1,6 @@
 import { ValidationException } from "../exceptions/service-exception";
 import { BaseService } from "./base-service";
 import { NextFunction, Request, Response } from "express";
-import { FileValidatorService } from "../file-storage/file-validator-service";
-import csvParser from "csv-parser";
-import { Readable } from "stream";
 
 export class BaseController<T> {
   service!: BaseService<T>;

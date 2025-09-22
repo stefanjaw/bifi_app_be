@@ -19,7 +19,8 @@ export class ContactDTO {
   @IsNotEmpty()
   lastName!: string;
 
-  @IsPhoneNumber("BM")
+  // @IsPhoneNumber("BM")
+  @IsString()
   @IsOptional()
   phoneNumber!: string;
 
