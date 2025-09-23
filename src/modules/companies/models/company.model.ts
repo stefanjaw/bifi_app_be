@@ -4,26 +4,31 @@ import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { CompanyDocument } from "@mongodb-types";
 
-const companySchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const companySchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    countryId: {
+      type: Schema.Types.ObjectId,
+      ref: "Country",
+      required: true,
+      autopopulate: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
-  countryId: {
-    type: Schema.Types.ObjectId,
-    ref: "Country",
-    required: true,
-    autopopulate: true,
-  },
-  address: {
-    type: String,
-    required: true,
-  },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 companySchema.plugin(paginate);
 companySchema.plugin(autopopulate);

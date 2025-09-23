@@ -3,16 +3,19 @@ import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 
-const countrySchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const countrySchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-});
+  { timestamps: true }
+);
 
 countrySchema.plugin(paginate);
 

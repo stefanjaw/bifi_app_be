@@ -3,20 +3,25 @@ import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 
-const productTypeSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const productTypeSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
-  description: {
-    type: String,
-    default: "",
-  },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 productTypeSchema.plugin(paginate);
 

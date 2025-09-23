@@ -45,6 +45,7 @@ const activityHistorySchema = new Schema(
   {
     toObject: { virtuals: true }, // Include virtuals in toObject output
     toJSON: { virtuals: true }, // Include virtuals in toJSON output
+    timestamps: true,
   }
 );
 

@@ -5,36 +5,41 @@ import autopopulate from "mongoose-autopopulate";
 import { MaintenanceWindowDocument } from "@mongodb-types";
 import { ManipulateType } from "dayjs";
 
-const maintenanceWindowSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const maintenanceWindowSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    daysBefore: {
+      type: Number,
+      required: true,
+    },
+    daysAfter: {
+      type: Number,
+      required: true,
+    },
+    recurrency: {
+      type: String,
+      enum: [
+        "daily",
+        "weekly",
+        "monthly",
+        "quarterly",
+        "semi-anually",
+        "annually",
+      ],
+      required: true,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
-  daysBefore: {
-    type: Number,
-    required: true,
-  },
-  daysAfter: {
-    type: Number,
-    required: true,
-  },
-  recurrency: {
-    type: String,
-    enum: [
-      "daily",
-      "weekly",
-      "monthly",
-      "quarterly",
-      "semi-anually",
-      "annually",
-    ],
-    required: true,
-  },
-  active: {
-    type: Boolean,
-    default: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 maintenanceWindowSchema.plugin(paginate);
 maintenanceWindowSchema.plugin(autopopulate);
