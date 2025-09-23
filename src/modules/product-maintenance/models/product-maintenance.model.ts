@@ -15,6 +15,12 @@ const productMaintenanceSchema = new Schema({
     required: false,
     trim: true,
   },
+  // Notes for when service is being concluded
+  notes: {
+    type: String,
+    required: false,
+    trim: true,
+  },
   attachments: {
     type: [fileSchema],
     required: false,

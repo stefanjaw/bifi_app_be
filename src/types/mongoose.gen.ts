@@ -931,6 +931,7 @@ export type ProductMaintenanceAttachment = {
 export type ProductMaintenance = {
   name: string;
   description?: string;
+  notes?: string;
   attachments: ProductMaintenanceAttachment[];
   productId: Product;
   date?: Date;
@@ -1042,6 +1043,7 @@ export type ProductMaintenanceDocument = mongoose.Document<
   ProductMaintenanceMethods & {
     name: string;
     description?: string;
+    notes?: string;
     attachments: mongoose.Types.DocumentArray<ProductMaintenanceAttachmentDocument>;
     productId: ProductDocument;
     date?: Date;

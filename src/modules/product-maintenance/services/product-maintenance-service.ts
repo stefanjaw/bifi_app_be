@@ -163,8 +163,8 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
                 : maintenance.name
               ).replace("-", " "),
               details: `Finished. Notes: ${
-                maintenance.type === "preventive-maintenance" ? "PM" : "Service"
-              } has concluded`,
+                maintenance.notes ? maintenance.notes : "No notes provided."
+              }`,
               performDate: new Date(),
               model: "ProductMaintenance",
               modelId: maintenance._id,

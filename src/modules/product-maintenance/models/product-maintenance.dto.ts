@@ -21,6 +21,11 @@ export class ProductMaintenanceDTO {
   @IsOptional()
   description?: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  notes?: string;
+
   @IsOptional()
   attachments?: FileUpload;
 
