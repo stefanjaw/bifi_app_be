@@ -189,7 +189,12 @@ export class ProductService extends BaseService<ProductDocument> {
         location: p.locationId ? p.locationId.code : "",
         warrantyDate: p.warrantyDate?.toISOString().split("T")[0] ?? "",
         remarks: p.remarks,
-        status: p.status,
+        status:
+          p.status
+            ?.replace("-", " ")
+            .split(" ")
+            .map((s) => `${s.charAt(0).toUpperCase() + s.slice(1)}`)
+            .join(" ") ?? "",
         maintenanceDate: p.maintenanceDate?.toISOString().split("T")[0] ?? "",
         active: p.active,
       }));
