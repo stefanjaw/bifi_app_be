@@ -150,7 +150,7 @@ productSchema.virtual("productMaintenances", {
   localField: "_id",
   foreignField: "productId",
   autopopulate: {
-    select: "name description attachments active type date",
+    select: "name description attachments active type dateStart dateEnd",
     maxDepth: 1, // Limit depth to one level
   },
   options: { sort: { date: -1 } },

@@ -25,50 +25,53 @@ export class ProductStatusService {
    * @param session - The optional client session to use for the transaction.
    */
 
-  updateProductStatus(
+  async updateProductStatus(
     productId: string | Types.ObjectId,
     session: ClientSession | undefined
   ) {
-    return runTransaction<ProductDocument>(session, async (newSession) => {
-      let productStatus: productStatus = "awaiting-comissioning";
+    return await runTransaction<ProductDocument>(
+      session,
+      async (newSession) => {
+        let productStatus: productStatus = "awaiting-comissioning";
 
-      const product = await productModel
-        .findById(productId)
-        .session(newSession);
+        const product = await productModel
+          .findById(productId)
+          .session(newSession);
 
-      if (!product) throw new ValidationException("Product not found");
+        if (!product) throw new ValidationException("Product not found");
 
-      const maintenances: ProductMaintenanceDocument[] =
-        product.productMaintenances;
-      const comissioning: ProductComissioningDocument | null =
-        product.productComission;
+        const maintenances: ProductMaintenanceDocument[] =
+          product.productMaintenances;
+        const comissioning: ProductComissioningDocument | null =
+          product.productComission;
 
-      // check if service is available
-      const service = maintenances.find(
-        (m) => m.active && m.type === "service"
-      );
+        // check if service is available
+        const service = maintenances.find(
+          (m) => m.active && m.type === "service"
+        );
 
-      // check if preventive maintenance
-      const preventive = maintenances.find(
-        (m) => m.active && m.type === "preventive-maintenance"
-      );
+        // check if preventive maintenance
+        const preventive = maintenances.find(
+          (m) => m.active && m.type === "preventive-maintenance"
+        );
 
-      if (service) {
-        productStatus = "under-service";
-      } else if (preventive) {
-        productStatus = "in-pm";
-      } else if (comissioning && comissioning.outcome === "pass") {
-        productStatus = "active";
+        if (service) {
+          productStatus = "under-service";
+        } else if (preventive) {
+          productStatus = "in-pm";
+        } else if (comissioning && comissioning.outcome === "pass") {
+          productStatus = "active";
+        }
+
+        return (await productModel.findByIdAndUpdate(
+          productId,
+          {
+            status: productStatus,
+          },
+          { session: newSession, new: true }
+        )) as ProductDocument;
       }
-
-      return (await productModel.findByIdAndUpdate(
-        productId,
-        {
-          status: productStatus,
-        },
-        { session: newSession, new: true }
-      )) as ProductDocument;
-    });
+    );
   }
 
   /**
@@ -82,11 +85,11 @@ export class ProductStatusService {
    * @param session - The optional client session to use for the transaction.
    * @returns A boolean indicating if the product has an active and approved comissioning.
    */
-  productHasActiveComissioning(
+  async productHasActiveComissioning(
     productId: string,
     session: ClientSession | undefined
   ) {
-    return runTransaction<boolean>(session, async (newSession) => {
+    return await runTransaction<boolean>(session, async (newSession) => {
       const product = await productModel
         .findById(productId)
         .session(newSession);
@@ -110,51 +113,54 @@ export class ProductStatusService {
    * @throws ValidationException if the product or its maintenance window is not found.
    */
 
-  updateNextProductMaintenanceDates(
+  async updateNextProductMaintenanceDates(
     productId: string | Types.ObjectId,
     session: ClientSession | undefined
   ) {
-    return runTransaction<ProductDocument>(session, async (newSession) => {
-      const product = await productModel
-        .findById(productId)
-        .session(newSession);
+    return await runTransaction<ProductDocument>(
+      session,
+      async (newSession) => {
+        const product = await productModel
+          .findById(productId)
+          .session(newSession);
 
-      // Check if the product exists and is comissioned
-      if (!product) throw new ValidationException("Product not found");
-      if (product.productComission?.outcome !== "pass")
-        throw new ValidationException(
-          "Product not comissioned, must be comissioned to update maintenance dates"
+        // Check if the product exists and is comissioned
+        if (!product) throw new ValidationException("Product not found");
+        if (product.productComission?.outcome !== "pass")
+          throw new ValidationException(
+            "Product not comissioned, must be comissioned to update maintenance dates"
+          );
+
+        const window = product.maintenanceWindowIds?.[0];
+
+        if (!window)
+          throw new ValidationException("Maintenance window not found");
+
+        // get recurrency for the maintenanceDate
+        const { unit, count } = window.parseRecurrencyForDayjs();
+
+        // calculate min and max maintenance dates and curr maintenance date
+        const maintenanceDate = dayjs(product.maintenanceDate).add(count, unit);
+        const minMaintenanceDate = dayjs(maintenanceDate).subtract(
+          window.daysBefore,
+          "day"
+        );
+        const maxMaintenanceDate = dayjs(maintenanceDate).add(
+          window.daysAfter,
+          "day"
         );
 
-      const window = product.maintenanceWindowIds?.[0];
-
-      if (!window)
-        throw new ValidationException("Maintenance window not found");
-
-      // get recurrency for the maintenanceDate
-      const { unit, count } = window.parseRecurrencyForDayjs();
-
-      // calculate min and max maintenance dates and curr maintenance date
-      const maintenanceDate = dayjs(product.maintenanceDate).add(count, unit);
-      const minMaintenanceDate = dayjs(maintenanceDate).subtract(
-        window.daysBefore,
-        "day"
-      );
-      const maxMaintenanceDate = dayjs(maintenanceDate).add(
-        window.daysAfter,
-        "day"
-      );
-
-      return (await productModel.findByIdAndUpdate(
-        productId,
-        {
-          minMaintenanceDate: minMaintenanceDate.toDate(),
-          maxMaintenanceDate: maxMaintenanceDate.toDate(),
-          maintenanceDate: maintenanceDate.toDate(),
-        },
-        { session: newSession, new: true }
-      )) as ProductDocument;
-    });
+        return (await productModel.findByIdAndUpdate(
+          productId,
+          {
+            minMaintenanceDate: minMaintenanceDate.toDate(),
+            maxMaintenanceDate: maxMaintenanceDate.toDate(),
+            maintenanceDate: maintenanceDate.toDate(),
+          },
+          { session: newSession, new: true }
+        )) as ProductDocument;
+      }
+    );
   }
 
   /**
@@ -168,44 +174,47 @@ export class ProductStatusService {
    * @param session - The optional client session to use for the transaction.
    * @returns The updated product document.
    */
-  updateProductMaintenanceDates(
+  async updateProductMaintenanceDates(
     productId: string | Types.ObjectId,
     session: ClientSession | undefined
   ) {
-    return runTransaction<ProductDocument>(session, async (newSession) => {
-      const product = await productModel
-        .findById(productId)
-        .session(newSession);
+    return await runTransaction<ProductDocument>(
+      session,
+      async (newSession) => {
+        const product = await productModel
+          .findById(productId)
+          .session(newSession);
 
-      // Check if the product exists and is comissioned
-      if (!product) throw new ValidationException("Product not found");
-      if (product.productComission?.outcome !== "pass")
-        throw new ValidationException(
-          "Product not comissioned, must be comissioned to update maintenance dates"
+        // Check if the product exists and is comissioned
+        if (!product) throw new ValidationException("Product not found");
+        if (product.productComission?.outcome !== "pass")
+          throw new ValidationException(
+            "Product not comissioned, must be comissioned to update maintenance dates"
+          );
+
+        const window = product.maintenanceWindowIds?.[0];
+
+        if (!window)
+          throw new ValidationException("Maintenance window not found");
+
+        const minMaintenanceDate = dayjs(product.maintenanceDate).subtract(
+          window.daysBefore,
+          "day"
+        );
+        const maxMaintenanceDate = dayjs(product.maintenanceDate).add(
+          window.daysAfter,
+          "day"
         );
 
-      const window = product.maintenanceWindowIds?.[0];
-
-      if (!window)
-        throw new ValidationException("Maintenance window not found");
-
-      const minMaintenanceDate = dayjs(product.maintenanceDate).subtract(
-        window.daysBefore,
-        "day"
-      );
-      const maxMaintenanceDate = dayjs(product.maintenanceDate).add(
-        window.daysAfter,
-        "day"
-      );
-
-      return (await productModel.findByIdAndUpdate(
-        productId,
-        {
-          minMaintenanceDate: minMaintenanceDate.toDate(),
-          maxMaintenanceDate: maxMaintenanceDate.toDate(),
-        },
-        { session: newSession, new: true }
-      )) as ProductDocument;
-    });
+        return (await productModel.findByIdAndUpdate(
+          productId,
+          {
+            minMaintenanceDate: minMaintenanceDate.toDate(),
+            maxMaintenanceDate: maxMaintenanceDate.toDate(),
+          },
+          { session: newSession, new: true }
+        )) as ProductDocument;
+      }
+    );
   }
 }

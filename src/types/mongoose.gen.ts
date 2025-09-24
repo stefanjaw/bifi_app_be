@@ -23,6 +23,8 @@ export type ActivityHistory = {
   modelId: mongoose.Types.ObjectId;
   metadata?: any | null;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -118,6 +120,8 @@ export type ActivityHistoryDocument = mongoose.Document<
     modelId: mongoose.Types.ObjectId;
     metadata?: any | null;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -134,6 +138,8 @@ export type Company = {
   address: string;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -221,6 +227,8 @@ export type CompanyDocument = mongoose.Document<
     address: string;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -239,6 +247,8 @@ export type Contact = {
   parentId?: Contact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -328,6 +338,8 @@ export type ContactDocument = mongoose.Document<
     parentId?: ContactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -342,6 +354,8 @@ export type Country = {
   name: string;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -427,6 +441,8 @@ export type CountryDocument = mongoose.Document<
     name: string;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -442,6 +458,8 @@ export type Facility = {
   mainPlace: Contact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
   rooms: any;
 };
 
@@ -529,6 +547,8 @@ export type FacilityDocument = mongoose.Document<
     mainPlace: ContactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
     rooms: any;
   };
 
@@ -547,6 +567,8 @@ export type Room = {
   facilityId: Facility;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -630,6 +652,8 @@ export type RoomDocument = mongoose.Document<
     facilityId: FacilityDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -653,6 +677,8 @@ export type MaintenanceWindow = {
     | "annually";
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -758,6 +784,8 @@ export type MaintenanceWindowDocument = mongoose.Document<
       | "annually";
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -775,6 +803,8 @@ export type ProductComissioningAttachment = {
   size: number;
   fileMetadata?: any;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -792,6 +822,8 @@ export type ProductComissioning = {
   productId: Product;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -880,6 +912,8 @@ export type ProductComissioningAttachmentDocument =
     size: number;
     fileMetadata?: any;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -901,6 +935,8 @@ export type ProductComissioningDocument = mongoose.Document<
     productId: ProductDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -918,6 +954,8 @@ export type ProductMaintenanceAttachment = {
   size: number;
   fileMetadata?: any;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -934,10 +972,13 @@ export type ProductMaintenance = {
   notes?: string;
   attachments: ProductMaintenanceAttachment[];
   productId: Product;
-  date?: Date;
+  dateStart?: Date;
+  dateEnd: Date;
   type: "service" | "preventive-maintenance";
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -1026,6 +1067,8 @@ export type ProductMaintenanceAttachmentDocument =
     size: number;
     fileMetadata?: any;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -1046,10 +1089,13 @@ export type ProductMaintenanceDocument = mongoose.Document<
     notes?: string;
     attachments: mongoose.Types.DocumentArray<ProductMaintenanceAttachmentDocument>;
     productId: ProductDocument;
-    date?: Date;
+    dateStart?: Date;
+    dateEnd: Date;
     type: "service" | "preventive-maintenance";
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -1065,6 +1111,8 @@ export type ProductType = {
   description?: string;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -1154,6 +1202,8 @@ export type ProductTypeDocument = mongoose.Document<
     description?: string;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -1171,6 +1221,8 @@ export type ProductAttachment = {
   size: number;
   fileMetadata?: any;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -1208,6 +1260,8 @@ export type Product = {
   attachments: ProductAttachment[];
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
   productComission: any;
   productMaintenances: any;
 };
@@ -1292,6 +1346,8 @@ export type ProductAttachmentDocument =
     size: number;
     fileMetadata?: any;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -1333,6 +1389,8 @@ export type ProductDocument = mongoose.Document<
     attachments: mongoose.Types.DocumentArray<ProductAttachmentDocument>;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
     productComission: any;
     productMaintenances: any;
   };
@@ -1367,6 +1425,8 @@ export type Policy = {
   conditions: PolicyCondition[];
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -1464,6 +1524,8 @@ export type PolicyDocument = mongoose.Document<
     conditions: mongoose.Types.DocumentArray<PolicyConditionDocument>;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -1479,6 +1541,8 @@ export type Role = {
   policies: Policy[];
   active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -1560,6 +1624,8 @@ export type RoleDocument = mongoose.Document<
     policies: mongoose.Types.Array<PolicyDocument>;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -1579,6 +1645,8 @@ export type User = {
   active?: boolean;
   roles: Role[];
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -1664,6 +1732,8 @@ export type UserDocument = mongoose.Document<
     active?: boolean;
     roles: mongoose.Types.Array<RoleDocument>;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**

@@ -36,10 +36,14 @@ const productMaintenanceSchema = new Schema(
       },
       required: true,
     },
-    date: {
+    dateStart: {
       type: Date,
       required: false,
       default: new Date(),
+    },
+    dateEnd: {
+      type: Date,
+      required: false,
     },
     type: {
       type: String,

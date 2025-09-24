@@ -14,6 +14,7 @@ import {
   UpdateProductMaintenanceDTO,
 } from "../models/product-maintenance.dto";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
+import dayjs from "dayjs";
 
 export class ProductMaintenanceService extends BaseService<ProductMaintenanceDocument> {
   private productStatusService = new ProductStatusService();
@@ -91,24 +92,6 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
           );
         }
 
-        // ADD ACTIVITY HISTORY
-        // await this.activityHistoryService.create(
-        //   {
-        //     title:
-        //       maintenance.type === "preventive-maintenance"
-        //         ? "PM"
-        //         : maintenance.name,
-        //     details: `Started. Notes: ${
-        //       maintenance.type === "preventive-maintenance" ? "PM" : "Service"
-        //     } has initiated`,
-        //     performDate: new Date(),
-        //     model: "ProductMaintenance",
-        //     modelId: maintenance._id,
-        //     metadata: { productId: maintenance.productId._id.toString() },
-        //   },
-        //   newSession
-        // );
-
         return maintenance;
       }
     );
@@ -162,7 +145,11 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
                 ? "PM"
                 : maintenance.name
               ).replace("-", " "),
-              details: `Finished. Notes: ${
+              details: `Finished (${dayjs(maintenance.dateStart).format(
+                "DD MMM YYYY"
+              )} - ${dayjs(maintenance.dateEnd).format(
+                "DD MMM YYYY"
+              )}). Notes: ${
                 maintenance.notes ? maintenance.notes : "No notes provided."
               }`,
               performDate: new Date(),
@@ -215,7 +202,9 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
               ? "PM"
               : maintenance.name
           } Finished`,
-          details: `Finished. Notes: ${
+          details: `Finished (${dayjs(maintenance.dateStart).format(
+            "DD MMM YYYY"
+          )} - ${dayjs(maintenance.dateEnd).format("DD MMM YYYY")}). Notes: ${
             maintenance.type === "preventive-maintenance" ? "PM" : "Service"
           } has concluded`,
           performDate: new Date(),

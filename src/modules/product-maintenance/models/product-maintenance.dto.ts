@@ -35,7 +35,12 @@ export class ProductMaintenanceDTO {
   @IsDate()
   @IsOptional()
   @Type(() => Date)
-  date?: Date;
+  dateStart?: Date;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  dateEnd?: Date;
 
   @IsEnum(["service", "preventive-maintenance"])
   type!: string;
