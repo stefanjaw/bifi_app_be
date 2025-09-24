@@ -61,7 +61,8 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         // HANDLE FILES IF PROVIDED
         if (
           isValidFileUpload(data.attachments) &&
-          Array.isArray(data.attachments)
+          Array.isArray(data.attachments) &&
+          data.attachments.length > 0
         ) {
           data.attachments = await Promise.all(
             data.attachments.map(async (file) => ({
@@ -117,7 +118,8 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         // HANDLE FILES IF PROVIDED
         if (
           isValidFileUpload(data.attachments) &&
-          Array.isArray(data.attachments)
+          Array.isArray(data.attachments) &&
+          data.attachments.length > 0
         ) {
           data.attachments = await Promise.all(
             data.attachments.map(async (file) => ({

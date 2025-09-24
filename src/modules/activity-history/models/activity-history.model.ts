@@ -27,7 +27,7 @@ const activityHistorySchema = new Schema(
       required: true,
       refPath: "model",
       autopopulate: {
-        depth: 1,
+        maxDepth: 1,
       },
     },
     metadata: {
