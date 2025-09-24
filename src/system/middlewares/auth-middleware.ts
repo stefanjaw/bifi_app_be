@@ -26,36 +26,27 @@ export function authMiddleware(userService: UserService) {
       // Can produce an error if the token is invalid or expired
       const firebaseUser = await admin.auth().verifyIdToken(token);
 
-      const user = await runTransaction<UserDocument>(
-        undefined,
-        async (newSession) => {
-          let user: UserDocument;
+      let user = (
+        await userService.get(
+          { authId: firebaseUser.uid },
+          undefined,
+          undefined,
+          undefined,
+          undefined
+        )
+      )?.[0];
 
-          user = (
-            await userService.get(
-              { authId: firebaseUser.uid },
-              undefined,
-              undefined,
-              undefined,
-              newSession
-            )
-          )?.[0];
-
-          if (!user)
-            user = await userService.create(
-              {
-                authId: firebaseUser.uid,
-                provider: firebaseUser.firebase.sign_in_provider,
-                username: firebaseUser.name || firebaseUser.email,
-                email: firebaseUser.email,
-                picture: firebaseUser.picture,
-              },
-              newSession
-            );
-
-          return user;
-        }
-      );
+      if (!user)
+        user = await userService.create(
+          {
+            authId: firebaseUser.uid,
+            provider: firebaseUser.firebase.sign_in_provider,
+            username: firebaseUser.name || firebaseUser.email,
+            email: firebaseUser.email,
+            picture: firebaseUser.picture,
+          },
+          undefined
+        );
 
       // Set the user and token in the UserStore
       UserStore.getInstance().user = user;
