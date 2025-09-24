@@ -22,6 +22,7 @@ export type ActivityHistory = {
   model: string;
   modelId: mongoose.Types.ObjectId;
   metadata?: any | null;
+  userId: User;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -119,6 +120,7 @@ export type ActivityHistoryDocument = mongoose.Document<
     model: string;
     modelId: mongoose.Types.ObjectId;
     metadata?: any | null;
+    userId: UserDocument;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -973,7 +975,7 @@ export type ProductMaintenance = {
   attachments: ProductMaintenanceAttachment[];
   productId: Product;
   dateStart?: Date;
-  dateEnd: Date;
+  dateEnd?: Date;
   type: "service" | "preventive-maintenance";
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -1090,7 +1092,7 @@ export type ProductMaintenanceDocument = mongoose.Document<
     attachments: mongoose.Types.DocumentArray<ProductMaintenanceAttachmentDocument>;
     productId: ProductDocument;
     dateStart?: Date;
-    dateEnd: Date;
+    dateEnd?: Date;
     type: "service" | "preventive-maintenance";
     active?: boolean;
     _id: mongoose.Types.ObjectId;

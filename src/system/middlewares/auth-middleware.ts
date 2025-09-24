@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { runTransaction, UnauthorizedException } from "../libraries";
+import { runTransaction, UnauthorizedException, UserStore } from "../libraries";
 import { UserService } from "../../modules";
 import { UserDocument } from "@mongodb-types";
 import admin from "firebase-admin";
@@ -57,8 +57,10 @@ export function authMiddleware(userService: UserService) {
         }
       );
 
-      req.user = user;
-      req.token = token;
+      // Set the user and token in the UserStore
+      UserStore.getInstance().user = user;
+      UserStore.getInstance().token = token;
+
       next();
     } catch (error) {
       if (error instanceof FirebaseAppError) {

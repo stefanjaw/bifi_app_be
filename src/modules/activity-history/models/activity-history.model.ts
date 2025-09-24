@@ -35,12 +35,15 @@ const activityHistorySchema = new Schema(
       required: false,
       default: null,
     },
-    //   userId: {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "User",
-    //     required: true,
-    //     autopopulate: true,
-    //   },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      // required: true,
+      autopopulate: {
+        select: "username email",
+        maxDepth: 1,
+      },
+    },
   },
   {
     toObject: { virtuals: true }, // Include virtuals in toObject output

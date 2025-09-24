@@ -1,3 +1,4 @@
+export * from './auth/user-store';
 export * from './base-module/base-controller';
 export * from './base-module/base-routes';
 export * from './base-module/base-service';

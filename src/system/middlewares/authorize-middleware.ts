@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UnauthorizedException } from "../libraries";
+import { UnauthorizedException, UserStore } from "../libraries";
 import { PolicyDocument, UserDocument } from "@mongodb-types";
 
 /**
@@ -30,7 +30,7 @@ export function authorizeMiddleware(
     }
 
     try {
-      const user = req.user;
+      const user = UserStore.getInstance().user;
       const document = await getDocument(req);
 
       // Check if user exists, if not, throw an error
