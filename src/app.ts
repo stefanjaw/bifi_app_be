@@ -54,12 +54,7 @@ app.use(
   })
 );
 
-// middlewares only if RBAC_ENABLE = TRUE
-const RBAC_ENABLE = process.env.RBAC_ENABLE
-  ? process.env.RBAC_ENABLE === "true"
-  : true;
-
-if (RBAC_ENABLE) app.use(authMiddleware(new UserService()));
+app.use(authMiddleware(new UserService()));
 
 // routes will be here, main route inits with /api and then it uses the routers
 app.use("/api", new FileRouter().getRouter);
