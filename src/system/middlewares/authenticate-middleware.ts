@@ -1,13 +1,12 @@
 import { NextFunction, Request, Response } from "express";
-import { runTransaction, UnauthorizedException, UserStore } from "../libraries";
+import { UnauthorizedException, UserStore } from "../libraries";
 import { UserService } from "../../modules";
-import { UserDocument } from "@mongodb-types";
 import admin from "firebase-admin";
 import { FirebaseAppError } from "firebase-admin/app";
 
 const ignoreEndpoints: string[] = [];
 
-export function authMiddleware(userService: UserService) {
+export function authenticateMiddleware(userService: UserService) {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (ignoreEndpoints.some((x) => req.path.includes(x))) {
       next();
