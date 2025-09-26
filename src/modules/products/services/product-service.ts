@@ -1,4 +1,4 @@
-import { ClientSession } from "mongoose";
+import mongoose, { ClientSession, PaginateModel } from "mongoose";
 import {
   BaseService,
   GridFSBucketService,
@@ -6,7 +6,6 @@ import {
   runTransaction,
 } from "../../../system";
 import { productModel } from "../models/product.model";
-import { ProductDocument } from "../../../types/mongoose.gen";
 import { ProductStatusService } from "./product-status-service";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 import { UpdateProductDTO } from "../models/product.dto";
@@ -14,6 +13,12 @@ import { InnerFile } from "../../../system/libraries/file-storage/file-upload.ty
 import { ProductTypeService } from "../../product-types/services/product-type-service";
 import { ContactService } from "../../contacts/services/contact-service";
 import { ProductCSVDTO } from "../models/product-csv.dto";
+import {
+  ContactDocument,
+  ProductDocument,
+  ProductTypeDocument,
+  RoomDocument,
+} from "@mongodb-types";
 
 export class ProductService extends BaseService<ProductDocument> {
   private productStatusService = new ProductStatusService();
@@ -21,7 +26,35 @@ export class ProductService extends BaseService<ProductDocument> {
   private contactsService = new ContactService();
 
   constructor() {
-    super({ model: productModel });
+    super({
+      model: productModel,
+      // refFields: ["productTypeIds", "vendorIds", "makeIds"],
+      refFields: [
+        {
+          path: "productTypeIds",
+          getModel: () =>
+            mongoose.model("ProductType") as PaginateModel<ProductTypeDocument>,
+          isArray: true,
+        },
+        {
+          path: "vendorIds",
+          getModel: () =>
+            mongoose.model("Contact") as PaginateModel<ContactDocument>,
+          isArray: true,
+        },
+        {
+          path: "makeIds",
+          getModel: () =>
+            mongoose.model("Contact") as PaginateModel<ContactDocument>,
+          isArray: true,
+        },
+        {
+          path: "locationId",
+          getModel: () => mongoose.model("Room") as PaginateModel<RoomDocument>,
+          isArray: false,
+        },
+      ],
+    });
   }
 
   private get gridFSBucket() {
