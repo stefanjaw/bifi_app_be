@@ -1,10 +1,20 @@
-import { UserDocument } from "@mongodb-types";
-import { BaseService, runTransaction } from "../../../system";
+import { RoleDocument, UserDocument } from "@mongodb-types";
+import { BaseService } from "../../../system";
 import { userModel } from "../models/user.model";
-import { ClientSession } from "mongoose";
+import mongoose from "mongoose";
+import { PaginateModel } from "mongoose";
 
 export class UserService extends BaseService<UserDocument> {
   constructor() {
-    super({ model: userModel });
+    super({
+      model: userModel,
+      refFields: [
+        {
+          path: "roles",
+          getModel: () => mongoose.model("Role") as PaginateModel<RoleDocument>,
+          isArray: true,
+        },
+      ],
+    });
   }
 }
