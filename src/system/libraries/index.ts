@@ -3,6 +3,7 @@ export * from './base-module/base-controller';
 export * from './base-module/base-routes';
 export * from './base-module/base-service';
 export * from './base-module/query-options.type';
+export * from './base-module/ref-model-map';
 export * from './base-module/transaction-utils';
 export * from './exceptions/perform-validation';
 export * from './exceptions/service-exception';

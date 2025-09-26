@@ -1,15 +1,23 @@
-import { ClientSession, PaginateModel, PaginateResult } from "mongoose";
+import {
+  ClientSession,
+  FilterQuery,
+  PaginateModel,
+  PaginateResult,
+} from "mongoose";
 import { orderByQuery, paginationOptions } from "./query-options.type";
 import { runTransaction } from "./transaction-utils";
 import { json2csv } from "json-2-csv";
+import { refModelMap } from "./ref-model-map";
 
 export class BaseService<T> {
   model!: PaginateModel<T>;
+  refFields?: refModelMap<T>[];
 
-  constructor(params: Pick<BaseService<T>, "model">) {
+  constructor(params: Pick<BaseService<T>, "model" | "refFields">) {
     Object.assign(this, params);
   }
 
+  //#region GET METHODS
   /**
    * Retrieves a single document by its id.
    *
@@ -80,6 +88,13 @@ export class BaseService<T> {
     return await runTransaction<PaginateResult<T> | T[]>(
       session,
       async (newSession) => {
+        if (this.refFields && this.refFields.length > 0) {
+          searchParams = await this.transformReferenceFilters(
+            searchParams,
+            newSession
+          );
+        }
+
         let records;
 
         // if orderBy sent by user, build the object
@@ -118,6 +133,69 @@ export class BaseService<T> {
       }
     );
   }
+
+  async transformReferenceFilters(
+    searchParams: Record<string, any>,
+    session: ClientSession
+  ) {
+    // Make a deep copy to avoid mutating the original object
+    const newFilters = Array.isArray(searchParams)
+      ? [...searchParams]
+      : { ...searchParams };
+
+    // Recursive function to process filters
+    const processObject = async (obj: any) => {
+      if (Array.isArray(obj)) {
+        // If the object is an array ($or/$and), process each element recursively
+        for (let i = 0; i < obj.length; i++) {
+          obj[i] = await processObject(obj[i]);
+        }
+      } else if (typeof obj === "object") {
+        // Iterate through all keys in the object
+        for (const key of Object.keys(obj)) {
+          // Check if the key corresponds to a configured reference
+          const refField = (this.refFields || []).find((rf) =>
+            key.startsWith(rf.path + ".")
+          );
+
+          if (refField) {
+            // Extract the actual field name from the reference (e.g., "name" from "productTypeIds.name")
+            const fieldName = key.slice(refField.path.length + 1);
+            const filterValue = obj[key];
+
+            // Find IDs in the referenced model that match the filter
+            const filter: FilterQuery<any> = { [fieldName]: filterValue };
+
+            const matchingDocs = await refField
+              .getModel()
+              .find(filter)
+              .select("_id")
+              .session(session);
+
+            const ids = matchingDocs.map((d) => d._id);
+
+            // Replace the original filter with $in for arrays, or single value for non-array
+            if (refField.isArray) {
+              obj[refField.path] = { $in: ids };
+            } else {
+              obj[refField.path] = ids.length === 1 ? ids[0] : { $in: ids };
+            }
+
+            // Remove the original key with the dot notation
+            delete obj[key];
+          } else if (typeof obj[key] === "object") {
+            // Recursive call for nested objects (sub-$or/$and or nested filters)
+            obj[key] = await processObject(obj[key]);
+          }
+        }
+      }
+      return obj;
+    };
+
+    // Start processing the top-level filters
+    return await processObject(newFilters);
+  }
+  //#endregion
 
   /**
    * Creates a record in the database.

@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import cors from "cors";
 import {
-  authMiddleware,
+  authenticateMiddleware,
   catchExceptionMiddleware,
   GridFSBucketService,
 } from "./system";
@@ -54,7 +54,7 @@ app.use(
   })
 );
 
-app.use(authMiddleware(new UserService()));
+app.use(authenticateMiddleware(new UserService()));
 
 // routes will be here, main route inits with /api and then it uses the routers
 app.use("/api", new FileRouter().getRouter);
@@ -81,7 +81,7 @@ app.use(catchExceptionMiddleware);
 app.get("/", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
-    version: "202509241433",
+    version: "202509261320",
   });
 });
 

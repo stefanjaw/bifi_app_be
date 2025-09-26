@@ -1,4 +1,4 @@
-export * from "./auth-middleware";
+export * from "./authenticate-middleware";
 export * from "./authorize-middleware";
 export * from "./catch-exception-middleware";
 export * from "./validate-body-middleware";

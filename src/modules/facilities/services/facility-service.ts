@@ -1,14 +1,24 @@
-import { ClientSession } from "mongoose";
+import mongoose, { ClientSession, PaginateModel } from "mongoose";
 import { BaseService, runTransaction } from "../../../system";
 import { facilityModel } from "../models/facility.model";
 import { RoomService } from "./room-service";
-import { FacilityDocument } from "../../../types/mongoose.gen";
+import { ContactDocument, FacilityDocument } from "@mongodb-types";
 
 export class FacilityService extends BaseService<FacilityDocument> {
   private roomService: RoomService = new RoomService();
 
   constructor() {
-    super({ model: facilityModel });
+    super({
+      model: facilityModel,
+      refFields: [
+        {
+          path: "mainPlace",
+          getModel: () =>
+            mongoose.model("Contact") as PaginateModel<ContactDocument>,
+          isArray: false,
+        },
+      ],
+    });
     // super.setPopulatingFields = ["rooms"];
   }
 
