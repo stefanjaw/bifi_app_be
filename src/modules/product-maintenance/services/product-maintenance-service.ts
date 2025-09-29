@@ -3,7 +3,6 @@ import {
   BaseService,
   GridFSBucketService,
   runTransaction,
-  UserStore,
   ValidationException,
 } from "../../../system";
 import { productMaintenanceModel } from "../models/product-maintenance.model";
@@ -141,7 +140,7 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         );
 
         // ADD ACTIVITY HISTORY IF DISABLED
-        if (maintenance.active === false) {
+        if (data.active && data.active === "false") {
           await this.activityHistoryService.create(
             {
               title: (maintenance.type === "preventive-maintenance"
