@@ -12,7 +12,7 @@ export class FacilityService extends BaseService<FacilityDocument> {
       model: facilityModel,
       refFields: [
         {
-          path: "mainPlace",
+          path: "contactId",
           getModel: () =>
             mongoose.model("Contact") as PaginateModel<ContactDocument>,
           isArray: false,

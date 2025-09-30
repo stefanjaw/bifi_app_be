@@ -10,7 +10,7 @@ const facilitySchema = new Schema(
       type: String,
       required: true,
     },
-    mainPlace: {
+    contactId: {
       type: Schema.Types.ObjectId,
       ref: "Contact",
       required: true,

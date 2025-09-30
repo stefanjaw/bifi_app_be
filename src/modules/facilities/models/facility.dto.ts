@@ -43,7 +43,7 @@ export class FacilityDTO {
   name!: string;
 
   @IsMongoId()
-  mainPlace!: string;
+  contactId!: string;
 
   @IsArray()
   @ArrayMinSize(1)

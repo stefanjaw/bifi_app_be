@@ -23,7 +23,7 @@ const roomSchema = new Schema(
       ref: "Facility",
       required: true,
       autopopulate: {
-        select: "mainPlace name active", // Fields to select from the facility
+        select: "contactId name active", // Fields to select from the facility
         maxDepth: 1, // Limit depth to one level
       },
     },
