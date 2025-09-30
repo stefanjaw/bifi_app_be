@@ -35,17 +35,27 @@ export function authenticateMiddleware(userService: UserService) {
         )
       )?.[0];
 
-      if (!user)
+      if (!user) {
+        const [fName, lName] = (firebaseUser.name || " ").split(" ");
+
         user = await userService.create(
           {
             authId: firebaseUser.uid,
             provider: firebaseUser.firebase.sign_in_provider,
-            username: firebaseUser.name || firebaseUser.email,
-            email: firebaseUser.email,
+            username: firebaseUser.email || "Email not provided",
+            email: firebaseUser.email || "Email not provided",
             picture: firebaseUser.picture,
+            contactInformation: {
+              email: firebaseUser.email || "Email not provided",
+              phoneNumber: firebaseUser.phone_number || "Phone not provided",
+              active: true,
+              name: fName || "Name not provided",
+              lastName: lName || "Last name not provided",
+            },
           },
           undefined
         );
+      }
 
       // Set the user and token in the UserStore
       UserStore.getInstance().user = user;

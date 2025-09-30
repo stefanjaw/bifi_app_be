@@ -22,7 +22,7 @@ export type ActivityHistory = {
   model: string;
   modelId: mongoose.Types.ObjectId;
   metadata?: any | null;
-  userId: User;
+  userId?: User;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -120,7 +120,7 @@ export type ActivityHistoryDocument = mongoose.Document<
     model: string;
     modelId: mongoose.Types.ObjectId;
     metadata?: any | null;
-    userId: UserDocument;
+    userId?: UserDocument;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -457,7 +457,7 @@ export type CountryDocument = mongoose.Document<
  */
 export type Facility = {
   name: string;
-  mainPlace: Contact;
+  contactId: Contact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -546,7 +546,7 @@ export type FacilityDocument = mongoose.Document<
 > &
   FacilityMethods & {
     name: string;
-    mainPlace: ContactDocument;
+    contactId: ContactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -1646,6 +1646,7 @@ export type User = {
   picture?: string;
   active?: boolean;
   roles: Role[];
+  contactId?: Contact;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -1733,6 +1734,7 @@ export type UserDocument = mongoose.Document<
     picture?: string;
     active?: boolean;
     roles: mongoose.Types.Array<RoleDocument>;
+    contactId?: ContactDocument;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

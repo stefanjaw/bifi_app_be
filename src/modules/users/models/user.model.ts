@@ -37,6 +37,14 @@ const userSchema = new Schema(
       autopopulate: true,
       required: true,
     },
+    contactId: {
+      type: mongoose.Types.ObjectId,
+      ref: "Contact",
+      autopopulate: {
+        maxDepth: 1,
+      },
+      required: false,
+    },
     // name: {
     //   type: String,
     //   required: true,
