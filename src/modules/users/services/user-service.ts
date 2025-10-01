@@ -47,7 +47,7 @@ export class UserService extends BaseService<UserDocument> {
       // If contact information is provided without an _id, create a new contact
       if (data.contactInformation && !data.contactInformation._id) {
         const newContact = await this.contactService.create(
-          data.contactInformation,
+          { ...data.contactInformation, type: "individual" },
           newSession
         );
 
@@ -55,7 +55,11 @@ export class UserService extends BaseService<UserDocument> {
       } else if (data.contactInformation && data.contactInformation._id) {
         // If contact information with an _id is provided, update the existing contact
         const updatedContact = await this.contactService.update(
-          data.contactInformation,
+          {
+            ...data.contactInformation,
+            type: "individual",
+            _id: data.contactInformation._id,
+          },
           newSession
         );
         contactId = updatedContact._id.toString();

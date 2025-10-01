@@ -319,6 +319,8 @@ export class ProductService extends BaseService<ProductDocument> {
                         name: "default",
                         lastName: "default",
                         email,
+                        phoneNumber: "0000000000",
+                        type: "company",
                       },
                       newSession
                     );
@@ -348,6 +350,8 @@ export class ProductService extends BaseService<ProductDocument> {
                         name: "default",
                         lastName: "default",
                         email,
+                        phoneNumber: "0000000000",
+                        type: "company",
                       },
                       newSession
                     );

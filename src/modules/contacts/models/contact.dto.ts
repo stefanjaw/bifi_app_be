@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsString,
   IsNotEmpty,
@@ -35,6 +35,11 @@ export class ContactDTO {
 
   @IsEnum(["individual", "company"])
   type!: "individual" | "company";
+
+  @IsMongoId({ each: true })
+  @Transform(({ value }) => JSON.parse(value))
+  @IsOptional()
+  childIds?: string[];
 
   @IsOptional()
   active?: boolean;
