@@ -47,7 +47,7 @@ export class UserService extends BaseService<UserDocument> {
       // If contact information is provided without an _id, create a new contact
       if (data.contactInformation && !data.contactInformation._id) {
         const newContact = await this.contactService.create(
-          { ...data.contactInformation, type: "individual" },
+          data.contactInformation,
           newSession
         );
 

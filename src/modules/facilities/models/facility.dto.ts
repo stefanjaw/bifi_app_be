@@ -10,31 +10,13 @@ import {
   ValidateNested,
 } from "class-validator";
 import { PartialType } from "../../../system";
+import { RoomDTO } from "./room.dto";
 
 // To verify from the facility dto
-export class FacilityRoomDTO {
+export class FacilityRoomInformationDTO extends RoomDTO {
   @IsMongoId()
   @IsOptional()
   _id?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  name!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  code!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  address!: string;
-
-  @IsMongoId()
-  @IsOptional()
-  facilityId!: string;
-
-  @IsOptional()
-  active?: string;
 }
 
 export class FacilityDTO {
@@ -49,11 +31,13 @@ export class FacilityDTO {
   @ArrayMinSize(1)
   @IsOptional()
   @Transform(({ value }) =>
-    JSON.parse(value).map((room: any) => plainToInstance(FacilityRoomDTO, room))
+    JSON.parse(value).map((room: any) =>
+      plainToInstance(FacilityRoomInformationDTO, room)
+    )
   )
-  @Type(() => FacilityRoomDTO)
+  @Type(() => FacilityRoomInformationDTO)
   @ValidateNested({ each: true })
-  rooms?: FacilityRoomDTO[];
+  rooms?: FacilityRoomInformationDTO[];
 
   @IsBoolean()
   @IsOptional()
