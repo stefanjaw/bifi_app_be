@@ -4,11 +4,12 @@ import {
   GridFSBucketService,
   NotFoundException,
   runTransaction,
+  ValidationException,
 } from "../../../system";
 import { productModel } from "../models/product.model";
 import { ProductStatusService } from "./product-status-service";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
-import { UpdateProductDTO } from "../models/product.dto";
+import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
 import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
 import { ProductTypeService } from "../../product-types/services/product-type-service";
 import { ContactService } from "../../contacts/services/contact-service";
@@ -70,7 +71,7 @@ export class ProductService extends BaseService<ProductDocument> {
    * @returns The created product document.
    */
   override async create(
-    data: Record<string, any>,
+    data: ProductDTO,
     session?: ClientSession | undefined
   ): Promise<ProductDocument> {
     return runTransaction<ProductDocument>(session, async (newSession) => {
@@ -82,8 +83,19 @@ export class ProductService extends BaseService<ProductDocument> {
         data.photo = fileId; // Store the file ID in the product data
       }
 
+      // productType & make
+      const makeId = await this.createMakeId(data, false, newSession);
+      const productTypeId = await this.createProductTypeId(
+        data,
+        false,
+        newSession
+      );
+
       // Create the product
-      let product = await super.create(data, newSession);
+      let product = await super.create(
+        { ...data, makeIds: [makeId], productTypeIds: [productTypeId] },
+        newSession
+      );
 
       // If maintenance was sent, then update the maintenance dates
       if (data.maintenanceDate) {
@@ -146,12 +158,22 @@ export class ProductService extends BaseService<ProductDocument> {
         attachments = null;
       }
 
+      // productType & make
+      const makeId = await this.createMakeId(data, true, newSession);
+      const productTypeId = await this.createProductTypeId(
+        data,
+        true,
+        newSession
+      );
+
       // Update the product
       let product = await super.update(
         {
           ...data,
           photo,
           attachments,
+          ...(makeId && { makeIds: [makeId] }),
+          ...(productTypeId && { productTypeIds: [productTypeId] }),
         },
         newSession
       );
@@ -164,20 +186,100 @@ export class ProductService extends BaseService<ProductDocument> {
         );
       }
 
-      // ADD ACTIVITY HISTORY
-      // await this.activityHistoryService.create(
-      //   {
-      //     title: "Product Modified",
-      //     details: "Modified. Notes: Product has been modified",
-      //     performDate: new Date(),
-      //     model: "Product",
-      //     modelId: product._id,
-      //   },
-      //   newSession
-      // );
-
       return product;
     });
+  }
+
+  /**
+   * Creates a product type id with the given data and returns the created id.
+   * If the data contains a "productTypeInformation" field with an object value,
+   * it will be handled as a product type creation and the product type id will be stored in the "productTypeIds"
+   * field of the product data.
+   * @param data The data to create the product type id with.
+   * @param newSession The optional client session to use for the transaction.
+   * @returns The created product type id.
+   * @throws ValidationException if the product type is not provided.
+   **/
+  private async createProductTypeId(
+    data: ProductDTO | UpdateProductDTO,
+    isUpdate: boolean,
+    session: ClientSession
+  ) {
+    return await runTransaction<string | undefined>(
+      session,
+      async (newSession) => {
+        // productType
+        let productTypeId = data.productTypeIds?.[0] || undefined;
+
+        if (data.productTypeInformation && !productTypeId) {
+          productTypeId = (
+            data.productTypeInformation._id
+              ? await this.productTypeService.update(
+                  {
+                    ...data.productTypeInformation,
+                    _id: data.productTypeInformation._id || "",
+                  },
+                  newSession
+                )
+              : await this.productTypeService.create(
+                  data.productTypeInformation,
+                  newSession
+                )
+          )._id.toString();
+        }
+
+        if (!productTypeId && !isUpdate)
+          throw new ValidationException("Product type is required");
+
+        return productTypeId;
+      }
+    );
+  }
+
+  /**
+   * Creates a make id with the given data and returns the created id.
+   * If the data contains a "makeInformation" field with an object value,
+   * it will be handled as a make creation and the make id will be stored in the "makeIds"
+   * field of the product data.
+   * @param data The data to create the make id with.
+   * @param newSession The optional client session to use for the transaction.
+   * @returns The created make id.
+   * @throws ValidationException if the make is not provided.
+   */
+  private async createMakeId(
+    data: ProductDTO | UpdateProductDTO,
+    isUpdate: boolean,
+    session: ClientSession
+  ) {
+    return await runTransaction<string | undefined>(
+      session,
+      async (newSession) => {
+        // make
+        let makeId = data.makeIds?.[0] || undefined;
+
+        if (data.makeInformation && !makeId) {
+          makeId = (
+            data.makeInformation._id
+              ? await this.contactsService.update(
+                  {
+                    ...data.makeInformation,
+                    _id: data.makeInformation._id || "",
+                  },
+                  newSession
+                )
+              : await this.contactsService.create(
+                  data.makeInformation,
+                  newSession
+                )
+          )._id.toString();
+        }
+
+        if (!makeId && !isUpdate)
+          throw new ValidationException("Make is required");
+
+        return makeId;
+      }
+    );
   }
 
   /**
