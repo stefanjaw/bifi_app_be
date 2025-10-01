@@ -44,8 +44,21 @@ const contactSchema = new Schema(
   },
   {
     timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
   }
 );
+
+contactSchema.virtual("childIds", {
+  ref: "Contact",
+  localField: "_id",
+  foreignField: "parentId",
+  autopopulate: {
+    select: "name lastName email phoneNumber type", // Fields to select from the child contacts
+    maxDepth: 1,
+  },
+  match: { active: true },
+});
 
 contactSchema.plugin(paginate);
 contactSchema.plugin(autopopulate);

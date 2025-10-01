@@ -252,6 +252,7 @@ export type Contact = {
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
+  childIds: any;
 };
 
 /**
@@ -344,6 +345,7 @@ export type ContactDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
+    childIds: any;
   };
 
 /**
