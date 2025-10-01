@@ -12,35 +12,12 @@ import {
 } from "class-validator";
 import { PartialType } from "../../../system";
 import { plainToInstance, Transform, Type } from "class-transformer";
+import { ContactDTO } from "../../contacts/models/contact.dto";
 
-export class UserContactDTO {
+export class UserContactInformationDTO extends ContactDTO {
   @IsMongoId()
   @IsOptional()
   _id?: string;
-
-  @IsString()
-  @IsNotEmpty()
-  name!: string;
-
-  @IsString()
-  @IsNotEmpty()
-  lastName!: string;
-
-  // @IsPhoneNumber("BM")
-  @IsString()
-  @IsOptional()
-  phoneNumber!: string;
-
-  @IsEmail()
-  @IsOptional()
-  email!: string;
-
-  @IsMongoId()
-  @IsOptional()
-  parentId?: string;
-
-  @IsOptional()
-  active?: boolean;
 }
 
 export class UserDTO {
@@ -75,11 +52,13 @@ export class UserDTO {
   @IsOptional()
   contactId?: string;
 
-  @Transform(({ value }) => plainToInstance(UserContactDTO, JSON.parse(value)))
-  @Type(() => UserContactDTO)
+  @Transform(({ value }) =>
+    plainToInstance(UserContactInformationDTO, JSON.parse(value))
+  )
+  @Type(() => UserContactInformationDTO)
   @ValidateNested()
   @IsOptional()
-  contactInformation?: UserContactDTO;
+  contactInformation?: UserContactInformationDTO;
 
   @IsBoolean()
   @IsOptional()

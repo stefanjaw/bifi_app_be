@@ -11,18 +11,43 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  ValidateNested,
 } from "class-validator";
-import { Transform, Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import { PartialType } from "../../../system";
 import { Types } from "mongoose";
 import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
+import { ContactDTO } from "../../contacts/models/contact.dto";
+import { ProductTypeDTO } from "../../product-types/models/product-type.dto";
+
+export class makeInformationDTO extends ContactDTO {
+  @IsMongoId()
+  @IsOptional()
+  _id?: string;
+}
+
+export class productTypeInformationDTO extends ProductTypeDTO {
+  @IsMongoId()
+  @IsOptional()
+  _id?: string;
+}
 
 export class ProductDTO {
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @Transform(({ value }) => JSON.parse(value))
-  productTypeIds!: string[];
+  @IsOptional()
+  productTypeIds?: string[];
+
+  // when productTypeInformation is passed, creation or update of product types will be done
+  @Transform(({ value }) =>
+    plainToInstance(productTypeInformationDTO, JSON.parse(value))
+  )
+  @Type(() => productTypeInformationDTO)
+  @ValidateNested()
+  @IsOptional()
+  productTypeInformation?: productTypeInformationDTO;
 
   @IsArray()
   @ArrayMinSize(1)
@@ -35,7 +60,17 @@ export class ProductDTO {
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @Transform(({ value }) => JSON.parse(value))
-  makeIds!: string[];
+  @IsOptional()
+  makeIds?: string[];
+
+  // when makeInformation is passed, creation or update of makes will be done
+  @Transform(({ value }) =>
+    plainToInstance(makeInformationDTO, JSON.parse(value))
+  )
+  @Type(() => makeInformationDTO)
+  @ValidateNested()
+  @IsOptional()
+  makeInformation?: makeInformationDTO;
 
   @IsString()
   @IsNotEmpty()

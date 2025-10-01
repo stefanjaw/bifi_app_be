@@ -51,6 +51,7 @@ export function authenticateMiddleware(userService: UserService) {
               active: true,
               name: fName || "Name not provided",
               lastName: lName || "Last name not provided",
+              type: "individual",
             },
           },
           undefined

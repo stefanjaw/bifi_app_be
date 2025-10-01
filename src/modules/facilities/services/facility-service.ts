@@ -3,6 +3,7 @@ import { BaseService, runTransaction } from "../../../system";
 import { facilityModel } from "../models/facility.model";
 import { RoomService } from "./room-service";
 import { ContactDocument, FacilityDocument } from "@mongodb-types";
+import { FacilityDTO, UpdateFacilityDTO } from "../models/facility.dto";
 
 export class FacilityService extends BaseService<FacilityDocument> {
   private roomService: RoomService = new RoomService();
@@ -23,7 +24,7 @@ export class FacilityService extends BaseService<FacilityDocument> {
   }
 
   override async create(
-    data: Record<string, any>,
+    data: FacilityDTO,
     session?: ClientSession | undefined
   ): Promise<FacilityDocument> {
     return runTransaction<FacilityDocument>(session, async (newSession) => {
@@ -53,7 +54,7 @@ export class FacilityService extends BaseService<FacilityDocument> {
   }
 
   override async update(
-    data: Record<string, any>,
+    data: UpdateFacilityDTO,
     session?: ClientSession | undefined
   ): Promise<FacilityDocument> {
     return runTransaction<FacilityDocument>(session, async (newSession) => {

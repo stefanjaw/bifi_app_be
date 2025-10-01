@@ -1,12 +1,11 @@
-import { Type } from "class-transformer";
+import { Transform } from "class-transformer";
 import {
   IsString,
   IsNotEmpty,
   IsEmail,
   IsMongoId,
   IsOptional,
-  IsBoolean,
-  IsPhoneNumber,
+  IsEnum,
 } from "class-validator";
 import { PartialType } from "../../../system";
 
@@ -31,6 +30,14 @@ export class ContactDTO {
   @IsMongoId()
   @IsOptional()
   parentId?: string;
+
+  @IsEnum(["individual", "company"])
+  type!: "individual" | "company";
+
+  @IsMongoId({ each: true })
+  @Transform(({ value }) => JSON.parse(value))
+  @IsOptional()
+  childIds?: string[];
 
   @IsOptional()
   active?: boolean;

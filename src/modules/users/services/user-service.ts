@@ -55,7 +55,11 @@ export class UserService extends BaseService<UserDocument> {
       } else if (data.contactInformation && data.contactInformation._id) {
         // If contact information with an _id is provided, update the existing contact
         const updatedContact = await this.contactService.update(
-          data.contactInformation,
+          {
+            ...data.contactInformation,
+            type: "individual",
+            _id: data.contactInformation._id,
+          },
           newSession
         );
         contactId = updatedContact._id.toString();
