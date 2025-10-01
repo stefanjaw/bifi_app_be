@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsBoolean,
   IsPhoneNumber,
+  IsEnum,
 } from "class-validator";
 import { PartialType } from "../../../system";
 
@@ -31,6 +32,9 @@ export class ContactDTO {
   @IsMongoId()
   @IsOptional()
   parentId?: string;
+
+  @IsEnum(["individual", "company"])
+  type!: "individual" | "company";
 
   @IsOptional()
   active?: boolean;

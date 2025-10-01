@@ -247,6 +247,7 @@ export type Contact = {
   phoneNumber?: string;
   email?: string;
   parentId?: Contact;
+  type: "individual" | "company";
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -338,6 +339,7 @@ export type ContactDocument = mongoose.Document<
     phoneNumber?: string;
     email?: string;
     parentId?: ContactDocument;
+    type: "individual" | "company";
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;

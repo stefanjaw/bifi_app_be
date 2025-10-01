@@ -32,6 +32,11 @@ const contactSchema = new Schema(
         maxDepth: 1, // Limit depth to one level
       },
     },
+    type: {
+      type: String,
+      enum: ["individual", "company"],
+      required: true,
+    },
     active: {
       type: Boolean,
       default: true,
