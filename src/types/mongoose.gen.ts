@@ -138,6 +138,7 @@ export type Company = {
   name: string;
   countryId: Country;
   address: string;
+  contactId: Contact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -227,6 +228,7 @@ export type CompanyDocument = mongoose.Document<
     name: string;
     countryId: CountryDocument;
     address: string;
+    contactId: ContactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;

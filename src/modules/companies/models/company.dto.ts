@@ -1,11 +1,4 @@
-import { Type } from "class-transformer";
-import {
-  IsString,
-  IsNotEmpty,
-  IsMongoId,
-  IsOptional,
-  IsBoolean,
-} from "class-validator";
+import { IsString, IsNotEmpty, IsMongoId, IsOptional } from "class-validator";
 import { PartialType } from "../../../system";
 
 export class CompanyDTO {
@@ -19,6 +12,10 @@ export class CompanyDTO {
   @IsString()
   @IsNotEmpty()
   address!: string;
+
+  @IsMongoId()
+  @IsOptional()
+  contactId?: string;
 
   @IsOptional()
   active?: boolean;

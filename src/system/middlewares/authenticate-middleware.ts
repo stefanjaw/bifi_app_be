@@ -35,6 +35,9 @@ export function authenticateMiddleware(userService: UserService) {
         )
       )?.[0];
 
+      // if user is found but not active, throw an error
+      if (user && !user.active) next(new UnauthorizedException("Unauthorized"));
+
       if (!user) {
         const [fName, lName] = (firebaseUser.name || " ").split(" ");
 

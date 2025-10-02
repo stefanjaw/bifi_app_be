@@ -20,6 +20,16 @@ const companySchema = new Schema(
       type: String,
       required: true,
     },
+    contactId: {
+      type: Schema.Types.ObjectId,
+      ref: "Contact",
+      required: true,
+      // depth must be of one level
+      autopopulate: {
+        select: "name lastName email", // Fields to select from the parent contact
+        maxDepth: 1, // Limit depth to one level
+      },
+    },
     active: {
       type: Boolean,
       default: true,
