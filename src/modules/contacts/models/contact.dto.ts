@@ -6,6 +6,7 @@ import {
   IsMongoId,
   IsOptional,
   IsEnum,
+  ValidateIf,
 } from "class-validator";
 import { PartialType } from "../../../system";
 
@@ -16,6 +17,7 @@ export class ContactDTO {
 
   @IsString()
   @IsNotEmpty()
+  @ValidateIf((obj) => obj.type === "individual")
   lastName!: string;
 
   // @IsPhoneNumber("BM")

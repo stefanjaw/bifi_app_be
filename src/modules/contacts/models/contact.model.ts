@@ -12,7 +12,9 @@ const contactSchema = new Schema(
     },
     lastName: {
       type: String,
-      required: true,
+      required: function (this: ContactDocument) {
+        return this.type === "individual";
+      },
     },
     phoneNumber: {
       type: String,
