@@ -245,7 +245,7 @@ export type CompanyDocument = mongoose.Document<
  */
 export type Contact = {
   name: string;
-  lastName: string;
+  lastName?: string;
   phoneNumber?: string;
   email?: string;
   parentId?: Contact;
@@ -338,7 +338,7 @@ export type ContactDocument = mongoose.Document<
 > &
   ContactMethods & {
     name: string;
-    lastName: string;
+    lastName?: string;
     phoneNumber?: string;
     email?: string;
     parentId?: ContactDocument;
@@ -360,6 +360,9 @@ export type ContactDocument = mongoose.Document<
  */
 export type Country = {
   name: string;
+  code: string;
+  currencyCode: string;
+  currencySymbol: string;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -447,6 +450,9 @@ export type CountryDocument = mongoose.Document<
 > &
   CountryMethods & {
     name: string;
+    code: string;
+    currencyCode: string;
+    currencySymbol: string;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
