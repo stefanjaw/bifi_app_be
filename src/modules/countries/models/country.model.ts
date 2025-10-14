@@ -9,6 +9,18 @@ const countrySchema = new Schema(
       type: String,
       required: true,
     },
+    code: {
+      type: String,
+      required: true,
+    },
+    currencyCode: {
+      type: String,
+      required: true,
+    },
+    currencySymbol: {
+      type: String,
+      required: true,
+    },
     active: {
       type: Boolean,
       default: true,

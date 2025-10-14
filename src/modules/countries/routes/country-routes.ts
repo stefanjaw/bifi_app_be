@@ -1,4 +1,4 @@
-import { BaseRoutes } from "../../../system";
+import { authorizeMiddleware, BaseRoutes } from "../../../system";
 import { CountryDocument } from "../../../types/mongoose.gen";
 import { CountryController } from "../controllers/country-controller";
 import { CountryDTO, UpdateCountryDTO } from "../models/country.dto";
@@ -13,5 +13,15 @@ export class CountryRouter extends BaseRoutes<CountryDocument> {
       dtoCreateClass: CountryDTO,
       dtoUpdateClass: UpdateCountryDTO,
     });
+
+    this.initPostPopulateCountriesRoute();
+  }
+
+  initPostPopulateCountriesRoute() {
+    this.router.post(
+      this.endpoint + "/populate",
+      authorizeMiddleware("countries/populate", "create"),
+      (this.controller as CountryController).createPopulateCountries
+    );
   }
 }
