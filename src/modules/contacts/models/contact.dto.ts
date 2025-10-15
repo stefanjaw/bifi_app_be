@@ -36,6 +36,18 @@ export class ContactDTO {
   @IsEnum(["individual", "company"])
   type!: "individual" | "company";
 
+  @IsMongoId()
+  @IsOptional()
+  countryId?: string;
+
+  @IsString()
+  @IsOptional()
+  streetAddress?: string;
+
+  @IsString()
+  @IsOptional()
+  streetAddress2?: string;
+
   @IsMongoId({ each: true })
   @Transform(({ value }) => JSON.parse(value))
   @IsOptional()

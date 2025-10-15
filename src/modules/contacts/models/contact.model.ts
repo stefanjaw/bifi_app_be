@@ -39,6 +39,23 @@ const contactSchema = new Schema(
       enum: ["individual", "company"],
       required: true,
     },
+    countryId: {
+      type: Schema.Types.ObjectId,
+      ref: "Country",
+      required: false,
+      autopopulate: {
+        select: "name code", // Fields to select from the country
+        maxDepth: 1,
+      },
+    },
+    streetAddress: {
+      type: String,
+      required: false,
+    },
+    streetAddress2: {
+      type: String,
+      required: false,
+    },
     active: {
       type: Boolean,
       default: true,

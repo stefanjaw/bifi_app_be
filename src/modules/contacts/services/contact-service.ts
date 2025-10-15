@@ -1,8 +1,8 @@
-import { ClientSession } from "mongoose";
+import mongoose, { ClientSession, PaginateModel } from "mongoose";
 import { BaseService, runTransaction } from "../../../system";
-import { ContactDocument } from "../../../types/mongoose.gen";
 import { contactModel } from "../models/contact.model";
 import { ContactDTO, UpdateContactDTO } from "../models/contact.dto";
+import { ContactDocument, CountryDocument } from "@mongodb-types";
 
 export class ContactService extends BaseService<ContactDocument> {
   constructor() {
@@ -12,6 +12,12 @@ export class ContactService extends BaseService<ContactDocument> {
         {
           path: "parentId",
           getModel: () => contactModel,
+          isArray: false,
+        },
+        {
+          path: "countryId",
+          getModel: () =>
+            mongoose.model("Country") as PaginateModel<CountryDocument>,
           isArray: false,
         },
       ],
