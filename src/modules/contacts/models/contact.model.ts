@@ -19,10 +19,12 @@ const contactSchema = new Schema(
     phoneNumber: {
       type: String,
       required: false, // Optional field
+      unique: true,
     },
     email: {
       type: String,
       required: false,
+      unique: true,
     },
     parentId: {
       type: Schema.Types.ObjectId,
@@ -38,6 +40,23 @@ const contactSchema = new Schema(
       type: String,
       enum: ["individual", "company"],
       required: true,
+    },
+    countryId: {
+      type: Schema.Types.ObjectId,
+      ref: "Country",
+      required: false,
+      autopopulate: {
+        select: "name code", // Fields to select from the country
+        maxDepth: 1,
+      },
+    },
+    streetAddress: {
+      type: String,
+      required: false,
+    },
+    streetAddress2: {
+      type: String,
+      required: false,
     },
     active: {
       type: Boolean,
