@@ -19,12 +19,12 @@ const contactSchema = new Schema(
     phoneNumber: {
       type: String,
       required: false, // Optional field
-      unique: true,
+      // unique: true,
     },
     email: {
       type: String,
       required: false,
-      unique: true,
+      // unique: true,
     },
     parentId: {
       type: Schema.Types.ObjectId,
