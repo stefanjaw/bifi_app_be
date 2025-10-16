@@ -41,7 +41,9 @@ export function authenticateMiddleware(userService: UserService) {
       // if user is found but not active, throw an error
       if (user && !user.active) {
         console.log("User is not active");
-        next(new UnauthorizedException("Unauthorized"));
+        next(
+          new UnauthorizedException("Error authenticating, account is disabled")
+        );
         return;
       }
 
