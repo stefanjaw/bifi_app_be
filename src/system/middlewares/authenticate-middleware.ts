@@ -20,10 +20,12 @@ export function authenticateMiddleware(userService: UserService) {
     }
 
     const token = authHeader.split(" ")[1];
+    console.log("🚀 ~ authenticateMiddleware ~ token:", token);
 
     try {
       // Can produce an error if the token is invalid or expired
       const firebaseUser = await admin.auth().verifyIdToken(token);
+      console.log("🚀 ~ authenticateMiddleware ~ firebaseUser:", firebaseUser);
 
       let user = (
         await userService.get(
@@ -34,9 +36,14 @@ export function authenticateMiddleware(userService: UserService) {
           undefined
         )
       )?.[0];
+      console.log("🚀 ~ authenticateMiddleware ~ user:", user);
 
       // if user is found but not active, throw an error
-      if (user && !user.active) next(new UnauthorizedException("Unauthorized"));
+      if (user && !user.active) {
+        console.log("User is not active");
+        next(new UnauthorizedException("Unauthorized"));
+        return;
+      }
 
       if (!user) {
         const [fName, lName] = (firebaseUser.name || " ").split(" ");
@@ -59,6 +66,7 @@ export function authenticateMiddleware(userService: UserService) {
           },
           undefined
         );
+        console.log("🚀 ~ authenticateMiddleware ~ user:", user);
       }
 
       // Set the user and token in the UserStore
@@ -67,6 +75,8 @@ export function authenticateMiddleware(userService: UserService) {
 
       next();
     } catch (error) {
+      console.error("Authentication error:", error);
+
       if (error instanceof FirebaseAppError) {
         switch (error.code) {
           case "auth/id-token-expired":
