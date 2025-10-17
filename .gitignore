@@ -140,3 +140,6 @@ vite.config.ts.timestamp-*
 
 # firebase
 firebase-admin-sdk.json
+
+# ignore graph.svg
+graph.svg
