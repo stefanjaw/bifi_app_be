@@ -8,6 +8,7 @@ import {
   IsEnum,
   ValidateIf,
   IsPostalCode,
+  IsUrl,
 } from "class-validator";
 import { PartialType } from "../../../system";
 
@@ -29,6 +30,10 @@ export class ContactDTO {
   @IsEmail()
   @IsOptional()
   email!: string;
+
+  @IsUrl()
+  @ValidateIf((obj) => obj.type === "company")
+  website?: string;
 
   @IsMongoId()
   @IsOptional()

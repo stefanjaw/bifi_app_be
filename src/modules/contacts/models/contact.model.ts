@@ -26,6 +26,12 @@ const contactSchema = new Schema(
       required: false,
       // unique: true,
     },
+    website: {
+      type: String,
+      required: function (this: ContactDocument) {
+        return this.type === "company";
+      },
+    },
     parentId: {
       type: Schema.Types.ObjectId,
       ref: "Contact",
