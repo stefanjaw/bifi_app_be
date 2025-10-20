@@ -251,6 +251,9 @@ export type Contact = {
   parentId?: Contact;
   type: "individual" | "company";
   countryId?: Country;
+  state?: string;
+  city?: string;
+  zipCode?: string;
   streetAddress?: string;
   streetAddress2?: string;
   active?: boolean;
@@ -347,6 +350,9 @@ export type ContactDocument = mongoose.Document<
     parentId?: ContactDocument;
     type: "individual" | "company";
     countryId?: CountryDocument;
+    state?: string;
+    city?: string;
+    zipCode?: string;
     streetAddress?: string;
     streetAddress2?: string;
     active?: boolean;

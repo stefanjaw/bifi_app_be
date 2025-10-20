@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsEnum,
   ValidateIf,
+  IsPostalCode,
 } from "class-validator";
 import { PartialType } from "../../../system";
 
@@ -39,6 +40,19 @@ export class ContactDTO {
   @IsMongoId()
   @IsOptional()
   countryId?: string;
+
+  @IsString()
+  @IsOptional()
+  city?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsPostalCode("any")
+  zipCode?: string;
+
+  @IsString()
+  @IsOptional()
+  state?: string;
 
   @IsString()
   @IsOptional()

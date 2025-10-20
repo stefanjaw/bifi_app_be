@@ -50,6 +50,18 @@ const contactSchema = new Schema(
         maxDepth: 1,
       },
     },
+    state: {
+      type: String,
+      required: false,
+    },
+    city: {
+      type: String,
+      required: false,
+    },
+    zipCode: {
+      type: String,
+      required: false,
+    },
     streetAddress: {
       type: String,
       required: false,
