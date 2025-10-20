@@ -60,6 +60,11 @@ export class UserDTO {
   @IsOptional()
   contactInformation?: UserContactInformationDTO;
 
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  password?: string;
+
   @IsBoolean()
   @IsOptional()
   @Type(() => Boolean)

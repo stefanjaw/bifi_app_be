@@ -2,6 +2,7 @@ import { ContactDocument, RoleDocument, UserDocument } from "@mongodb-types";
 import { BaseService, runTransaction } from "../../../system";
 import { userModel } from "../models/user.model";
 import mongoose from "mongoose";
+import admin from "firebase-admin";
 import { PaginateModel } from "mongoose";
 import { UserDTO } from "../models/user.dto";
 import { ContactService } from "../../contacts/services/contact-service";
@@ -63,6 +64,19 @@ export class UserService extends BaseService<UserDocument> {
           newSession
         );
         contactId = updatedContact._id.toString();
+      }
+
+      // create user is no authId is provided, and email and password are provided, create user in firebase auth
+      if (!data.authId && data.email && data.password) {
+        const userRecord = await admin.auth().createUser({
+          email: data.email,
+          password: data.password,
+          displayName: data.username,
+          photoURL: data.picture,
+          // phoneNumber: data.contactInformation?.phoneNumber,
+        });
+
+        data.authId = userRecord.uid;
       }
 
       const userData: UserDTO = {
