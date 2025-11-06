@@ -4,7 +4,7 @@ import { userModel } from "../models/user.model";
 import mongoose from "mongoose";
 import admin from "firebase-admin";
 import { PaginateModel } from "mongoose";
-import { UserDTO } from "../models/user.dto";
+import { UpdateUserDTO, UserDTO } from "../models/user.dto";
 import { ContactService } from "../../contacts/services/contact-service";
 
 export class UserService extends BaseService<UserDocument> {
@@ -84,7 +84,47 @@ export class UserService extends BaseService<UserDocument> {
         contactId: contactId,
       };
 
-      return super.create(userData, newSession);
+      return await super.create(userData, newSession);
+    });
+  }
+
+  override async update(
+    data: UpdateUserDTO,
+    session?: mongoose.ClientSession | undefined
+  ): Promise<UserDocument> {
+    return await runTransaction<UserDocument>(session, async (newSession) => {
+      // Prevent updating authId through this method
+      if (data.authId) delete data.authId;
+
+      let contactId: string | undefined = data.contactId;
+
+      // If contact information is provided without an _id, create a new contact
+      if (data.contactInformation && !data.contactInformation._id) {
+        const newContact = await this.contactService.create(
+          data.contactInformation,
+          newSession
+        );
+
+        contactId = newContact._id.toString();
+      } else if (data.contactInformation && data.contactInformation._id) {
+        // If contact information with an _id is provided, update the existing contact
+        const updatedContact = await this.contactService.update(
+          {
+            ...data.contactInformation,
+            type: "individual",
+            _id: data.contactInformation._id,
+          },
+          newSession
+        );
+        contactId = updatedContact._id.toString();
+      }
+
+      const userData: UpdateUserDTO = {
+        ...data,
+        contactId: contactId,
+      };
+
+      return await super.update(userData, newSession);
     });
   }
 }
