@@ -59,35 +59,37 @@ export class ContactService extends BaseService<ContactDocument> {
         throw new Error("Contact not found");
       }
 
-      // Find childIds that are being removed
-      const removedChildIds =
-        existingContact.childIds?.filter(
-          (child: ContactDocument) =>
-            !data.childIds!.includes(child._id.toString())
-        ) || [];
+      if (data.childIds) {
+        // Find childIds that are being removed
+        const removedChildIds =
+          existingContact.childIds?.filter(
+            (child: ContactDocument) =>
+              !data.childIds?.includes(child._id.toString())
+          ) || [];
 
-      // Set parentId to null for removed childIds
-      if (removedChildIds.length > 0) {
-        await contactModel.updateMany(
-          { _id: { $in: removedChildIds } },
-          { parentId: null },
-          { session }
-        );
-      }
+        // Set parentId to null for removed childIds
+        if (removedChildIds.length > 0) {
+          await contactModel.updateMany(
+            { _id: { $in: removedChildIds } },
+            { parentId: null },
+            { session }
+          );
+        }
 
-      // Find new childIds that are being added
-      const newChildIds =
-        data.childIds?.filter(
-          (id) => !existingContact.childIds?.includes(id)
-        ) || [];
+        // Find new childIds that are being added
+        const newChildIds =
+          data.childIds?.filter(
+            (id) => !existingContact.childIds?.includes(id)
+          ) || [];
 
-      // Set parentId to current contact's _id for new childIds
-      if (newChildIds.length > 0) {
-        await contactModel.updateMany(
-          { _id: { $in: newChildIds } },
-          { parentId: data._id },
-          { session }
-        );
+        // Set parentId to current contact's _id for new childIds
+        if (newChildIds.length > 0) {
+          await contactModel.updateMany(
+            { _id: { $in: newChildIds } },
+            { parentId: data._id },
+            { session }
+          );
+        }
       }
 
       delete data.childIds; // Remove childIds from data to prevent direct update
