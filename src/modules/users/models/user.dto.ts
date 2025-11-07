@@ -41,6 +41,9 @@ export class UserDTO {
   @IsOptional()
   picture?: string;
 
+  @IsOptional()
+  uploadedPictureId?: unknown;
+
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })

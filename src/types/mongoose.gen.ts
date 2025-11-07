@@ -1670,6 +1670,7 @@ export type User = {
   username: string;
   email: string;
   picture?: string;
+  uploadedPictureId?: mongoose.Types.ObjectId;
   active?: boolean;
   roles: Role[];
   contactId?: Contact;
@@ -1758,6 +1759,7 @@ export type UserDocument = mongoose.Document<
     username: string;
     email: string;
     picture?: string;
+    uploadedPictureId?: mongoose.Types.ObjectId;
     active?: boolean;
     roles: mongoose.Types.Array<RoleDocument>;
     contactId?: ContactDocument;

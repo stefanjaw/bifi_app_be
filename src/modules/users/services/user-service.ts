@@ -1,5 +1,10 @@
 import { ContactDocument, RoleDocument, UserDocument } from "@mongodb-types";
-import { BaseService, runTransaction } from "../../../system";
+import {
+  BaseService,
+  GridFSBucketService,
+  isValidFileUpload,
+  runTransaction,
+} from "../../../system";
 import { userModel } from "../models/user.model";
 import mongoose from "mongoose";
 import admin from "firebase-admin";
@@ -27,6 +32,10 @@ export class UserService extends BaseService<UserDocument> {
         },
       ],
     });
+  }
+
+  private get gridFSBucket() {
+    return GridFSBucketService.getInstance();
   }
 
   /**
@@ -117,6 +126,16 @@ export class UserService extends BaseService<UserDocument> {
           newSession
         );
         contactId = updatedContact._id.toString();
+      }
+
+      if (isValidFileUpload(data.uploadedPictureId)) {
+        const fileId = await this.gridFSBucket.uploadFile(
+          data.uploadedPictureId as Express.Multer.File
+        );
+
+        data.uploadedPictureId = fileId;
+      } else {
+        delete data.uploadedPictureId;
       }
 
       const userData: UpdateUserDTO = {

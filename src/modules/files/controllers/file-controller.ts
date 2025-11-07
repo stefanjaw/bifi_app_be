@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { BadRequestException, GridFSBucketService } from "../../../system";
 import { isValidObjectId } from "mongoose";
+import sharp from "sharp";
 
 export class FileController {
   /**
@@ -14,10 +15,18 @@ export class FileController {
   async getById(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id;
+      const imageSize = req.query.imageSize as
+        | ("icon" | "full" | "preview")
+        | undefined;
 
       if (!id) throw new BadRequestException("You must provide an id");
       if (!isValidObjectId(id))
         throw new BadRequestException("Invalid id format");
+
+      if (imageSize && !["icon", "full", "preview"].includes(imageSize))
+        throw new BadRequestException(
+          "Invalid image size parameter, must be 'icon', 'full' or 'preview'"
+        );
 
       const { file, bufferDownload } =
         await GridFSBucketService.getInstance().downloadFile(id);
@@ -32,7 +41,22 @@ export class FileController {
       );
 
       // Write the buffer to the response
-      const data = await bufferDownload;
+      let data = await bufferDownload;
+
+      // here we parse and rescale the image if needed and file is an image (icon, full, preview)
+      if (imageSize && file.metadata?.mimetype.startsWith("image/")) {
+        let image = sharp(data);
+
+        if (imageSize === "icon") {
+          image = image.resize(100, 100, { fit: "cover" });
+        } else if (imageSize === "preview") {
+          image = image.resize(800, 800, { fit: "inside" });
+        }
+
+        const resizedBuffer = await image.toBuffer();
+        data = resizedBuffer;
+      }
+
       res.write(data);
       res.end();
     } catch (error) {

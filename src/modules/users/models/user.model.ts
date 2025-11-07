@@ -25,9 +25,15 @@ const userSchema = new Schema(
       required: true,
       // unique: true,
     },
+    // is the picture brought from firebase
     picture: {
       type: String,
       required: false,
+    },
+    // is the picture uploaded by the user
+    uploadedPictureId: {
+      type: mongoose.Types.ObjectId,
+      autopopulate: false,
     },
     active: {
       type: Boolean,
@@ -47,14 +53,6 @@ const userSchema = new Schema(
       },
       required: false,
     },
-    // name: {
-    //   type: String,
-    //   required: true,
-    // },
-    // lastName: {
-    //   type: String,
-    //   required: true,
-    // },
   },
   {
     toObject: { virtuals: true },

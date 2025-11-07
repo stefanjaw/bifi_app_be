@@ -1,5 +1,9 @@
 import { UserDocument } from "@mongodb-types";
-import { BaseRoutes } from "../../../system";
+import {
+  authorizeMiddleware,
+  BaseRoutes,
+  validateBodyMiddleware,
+} from "../../../system";
 import { UserController } from "../controllers/user-controller";
 import { UpdateUserDTO, UserDTO } from "../models/user.dto";
 
@@ -22,5 +26,15 @@ export class UserRouter extends BaseRoutes<UserDocument> {
 
   initMeRoute() {
     this.router.get(this.endpoint + "/me", userController.me);
+  }
+
+  protected override initPutRoute(): void {
+    this.router.put(
+      this.endpoint,
+      this.upload.any(),
+      validateBodyMiddleware(this.dtoUpdateClass),
+      authorizeMiddleware(this.resource, "update"),
+      this.controller.update
+    );
   }
 }
