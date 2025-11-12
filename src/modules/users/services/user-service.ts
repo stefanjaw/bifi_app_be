@@ -4,6 +4,8 @@ import {
   GridFSBucketService,
   isValidFileUpload,
   runTransaction,
+  UserStore,
+  ValidationException,
 } from "../../../system";
 import { userModel } from "../models/user.model";
 import mongoose from "mongoose";
@@ -144,6 +146,20 @@ export class UserService extends BaseService<UserDocument> {
       };
 
       return await super.update(userData, newSession);
+    });
+  }
+
+  async updateProfile(
+    data: UpdateUserDTO,
+    session?: mongoose.ClientSession | undefined
+  ): Promise<UserDocument> {
+    return await runTransaction<UserDocument>(session, async (newSession) => {
+      if (data._id !== UserStore.getInstance().user?._id.toString())
+        throw new ValidationException(
+          "The logged user can update only the own profile"
+        );
+
+      return this.update(data, newSession);
     });
   }
 }

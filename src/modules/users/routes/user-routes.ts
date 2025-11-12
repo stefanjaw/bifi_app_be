@@ -21,6 +21,7 @@ export class UserRouter extends BaseRoutes<UserDocument> {
 
   override initRoutes(): void {
     this.initMeRoute();
+    this.initPutProfileRoute();
     super.initRoutes();
   }
 
@@ -28,13 +29,13 @@ export class UserRouter extends BaseRoutes<UserDocument> {
     this.router.get(this.endpoint + "/me", userController.me);
   }
 
-  protected override initPutRoute(): void {
+  initPutProfileRoute(): void {
     this.router.put(
-      this.endpoint,
+      this.endpoint + "/profile",
       this.upload.any(),
       validateBodyMiddleware(this.dtoUpdateClass),
-      authorizeMiddleware(this.resource, "update"),
-      this.controller.update
+      authorizeMiddleware(this.resource + "/profile", "update"),
+      userController.updateProfile
     );
   }
 }

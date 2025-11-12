@@ -13,31 +13,11 @@ const userService = new UserService();
 export class UserController extends BaseController<UserDocument> {
   fileValidator = new FileValidatorService();
 
-  private acceptedAttarchmentTypes = [
-    "image/jpeg",
-    "image/png",
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/vnd.ms-excel",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "application/vnd.ms-powerpoint",
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    "text/plain",
-  ];
-
   constructor() {
     super({ service: userService });
   }
 
-  async meHandler(req: Request, res: Response) {
-    this.sendData(res, UserStore.getInstance().user);
-  }
-
-  me = async (req: Request, res: Response) => {
-    await this.meHandler(req, res);
-  };
-
+  // overrides
   protected override async updateHandler(
     req: Request,
     res: Response,
@@ -58,4 +38,44 @@ export class UserController extends BaseController<UserDocument> {
 
     await super.updateHandler(req, res, next);
   }
+
+  // custom controller for profile
+  protected async updateProfileHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const photo = (req.files as Express.Multer.File[] | undefined)?.[0];
+
+    if (photo) {
+      try {
+        this.fileValidator.validateImageFile(photo);
+      } catch (error: any) {
+        next(error);
+        return;
+      }
+
+      req.body.uploadedPictureId = photo;
+    }
+
+    try {
+      const profile = await userService.updateProfile(req.body);
+      this.sendData(res, profile);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+    await this.updateProfileHandler(req, res, next);
+  };
+
+  // custom controller for me handler
+  protected async meHandler(req: Request, res: Response) {
+    this.sendData(res, UserStore.getInstance().user);
+  }
+
+  me = async (req: Request, res: Response) => {
+    await this.meHandler(req, res);
+  };
 }
