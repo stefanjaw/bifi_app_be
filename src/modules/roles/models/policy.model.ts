@@ -13,11 +13,6 @@ const policySchema = new Schema(
       type: String,
       required: true,
     },
-    action: {
-      type: String,
-      enum: ["create", "read", "update", "delete"],
-      required: true,
-    },
     conditions: {
       type: [
         {

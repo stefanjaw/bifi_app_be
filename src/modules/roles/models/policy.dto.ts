@@ -1,6 +1,5 @@
 import { plainToInstance, Transform, Type } from "class-transformer";
 import {
-  ArrayMinSize,
   IsArray,
   IsBoolean,
   IsEnum,
@@ -37,10 +36,6 @@ export class PolicyDTO {
   @IsString()
   @IsNotEmpty()
   resource!: string;
-
-  @IsString()
-  @IsEnum(["create", "read", "update", "delete"])
-  action!: string;
 
   @IsArray()
   // @ArrayMinSize(1)

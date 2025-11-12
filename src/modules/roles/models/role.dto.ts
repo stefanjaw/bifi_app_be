@@ -2,13 +2,25 @@ import {
   ArrayMinSize,
   IsArray,
   IsBoolean,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsOptional,
   IsString,
+  ValidateNested,
 } from "class-validator";
 import { PartialType } from "../../../system";
-import { Transform, Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
+
+export class RolePolicyDTO {
+  @IsMongoId()
+  policyId!: string;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsEnum(["create", "read", "update", "delete"], { each: true })
+  actions!: string[];
+}
 
 export class RoleDTO {
   @IsString()
@@ -17,9 +29,14 @@ export class RoleDTO {
 
   @IsArray()
   @ArrayMinSize(1)
-  @IsMongoId({ each: true })
-  @Transform(({ value }) => JSON.parse(value))
-  policies!: string[]; // Assuming policies are represented as an array of MongoDB ObjectIds
+  @Transform(({ value }) =>
+    JSON.parse(value).map((policy: any) =>
+      plainToInstance(RolePolicyDTO, policy)
+    )
+  )
+  @Type(() => RolePolicyDTO)
+  @ValidateNested({ each: true })
+  policies!: RolePolicyDTO[]; // Assuming policies are represented as an array of MongoDB ObjectIds
 
   @IsBoolean()
   @IsOptional()

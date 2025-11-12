@@ -11,10 +11,24 @@ const roleSchema = new Schema(
       unique: true,
     },
     policies: {
-      type: [Schema.Types.ObjectId],
-      ref: "Policy",
-      autopopulate: true,
-      required: true,
+      type: [
+        {
+          policyId: {
+            type: Schema.Types.ObjectId,
+            ref: "Policy",
+            autopopulate: true,
+            required: true,
+          },
+          actions: [
+            {
+              type: String,
+              enum: ["create", "read", "update", "delete"],
+              required: true,
+            },
+          ],
+        },
+      ],
+      required: false,
     },
     active: {
       type: Boolean,

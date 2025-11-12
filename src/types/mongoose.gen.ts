@@ -1449,7 +1449,6 @@ export type PolicyCondition = {
 export type Policy = {
   name: string;
   resource: string;
-  action: "create" | "read" | "update" | "delete";
   conditions: PolicyCondition[];
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -1548,13 +1547,26 @@ export type PolicyDocument = mongoose.Document<
   PolicyMethods & {
     name: string;
     resource: string;
-    action: "create" | "read" | "update" | "delete";
     conditions: mongoose.Types.DocumentArray<PolicyConditionDocument>;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
   };
+
+/**
+ * Lean version of RolePolicyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `RoleDocument.toObject()`.
+ * ```
+ * const roleObject = role.toObject();
+ * ```
+ */
+export type RolePolicy = {
+  policyId: Policy;
+  actions: ("create" | "read" | "update" | "delete")[];
+  _id: mongoose.Types.ObjectId;
+};
 
 /**
  * Lean version of RoleDocument
@@ -1566,7 +1578,7 @@ export type PolicyDocument = mongoose.Document<
  */
 export type Role = {
   name: string;
-  policies: Policy[];
+  policies: RolePolicy[];
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -1636,6 +1648,18 @@ export type RoleSchema = mongoose.Schema<
 >;
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `RoleDocument["policies"]` element.
+ */
+export type RolePolicyDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    policyId: PolicyDocument;
+    actions: mongoose.Types.Array<"create" | "read" | "update" | "delete">;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -1649,7 +1673,7 @@ export type RoleDocument = mongoose.Document<
 > &
   RoleMethods & {
     name: string;
-    policies: mongoose.Types.Array<PolicyDocument>;
+    policies: mongoose.Types.DocumentArray<RolePolicyDocument>;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
