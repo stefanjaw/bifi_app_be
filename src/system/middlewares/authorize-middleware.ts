@@ -44,7 +44,8 @@ export function authorizeMiddleware(
           .filter(
             (policy) =>
               policy.policyId.resource === resource &&
-              policy.actions.includes(action)
+              policy.actions.includes(action) &&
+              policy.policyId.type === "model"
           ) || [];
 
       // Check if policies exist, if not, throw an error

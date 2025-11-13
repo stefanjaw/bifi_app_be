@@ -13,6 +13,12 @@ const policySchema = new Schema(
       type: String,
       required: true,
     },
+    type: {
+      type: String,
+      enum: ["view", "menu", "model"],
+      required: true,
+      default: "model",
+    },
     conditions: {
       type: [
         {

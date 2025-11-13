@@ -37,6 +37,9 @@ export class PolicyDTO {
   @IsNotEmpty()
   resource!: string;
 
+  @IsEnum(["model", "view", "menu"])
+  type!: string;
+
   @IsArray()
   // @ArrayMinSize(1)
   @IsOptional()

@@ -1449,6 +1449,7 @@ export type PolicyCondition = {
 export type Policy = {
   name: string;
   resource: string;
+  type: "view" | "menu" | "model";
   conditions: PolicyCondition[];
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -1547,6 +1548,7 @@ export type PolicyDocument = mongoose.Document<
   PolicyMethods & {
     name: string;
     resource: string;
+    type: "view" | "menu" | "model";
     conditions: mongoose.Types.DocumentArray<PolicyConditionDocument>;
     active?: boolean;
     _id: mongoose.Types.ObjectId;

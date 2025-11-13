@@ -7,6 +7,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
 import { PartialType } from "../../../system";
@@ -17,7 +18,7 @@ export class RolePolicyDTO {
   policyId!: string;
 
   @IsArray()
-  @ArrayMinSize(1)
+  @IsOptional()
   @IsEnum(["create", "read", "update", "delete"], { each: true })
   actions!: string[];
 }
