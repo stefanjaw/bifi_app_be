@@ -35,7 +35,7 @@ export class FileValidatorService {
     this.validateMaxSize(file);
   }
 
-  private validateMaxSize(file: Express.Multer.File) {
+  validateMaxSize(file: Express.Multer.File) {
     if (file.size > this.FILE_LIMIT) {
       throw new ValidationException(
         `File size exceeds the limit of ${this.FILE_LIMIT / (1024 * 1024)}MB`

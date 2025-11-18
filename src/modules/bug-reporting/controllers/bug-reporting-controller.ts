@@ -4,18 +4,6 @@ import { FileValidatorService } from "../../../system";
 
 export class BugReportingController {
   private readonly bugReportingService = new BugReportingService();
-  private acceptedAttarchmentTypes = [
-    "image/jpeg",
-    "image/png",
-    "application/pdf",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    "application/vnd.ms-excel",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    "application/vnd.ms-powerpoint",
-    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-    "text/plain",
-  ];
 
   /**
    * Handles HTTP POST requests to create a new bug report.
@@ -35,7 +23,7 @@ export class BugReportingController {
       // Validate the attachments to be pdf or images
       if (files && files.length > 0) {
         for (const file of files) {
-          fileValidator.validateFileType(file, this.acceptedAttarchmentTypes);
+          fileValidator.validateMaxSize(file);
         }
       }
 
