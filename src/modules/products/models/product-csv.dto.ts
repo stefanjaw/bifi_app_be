@@ -10,7 +10,7 @@ import {
   IsPositive,
   IsString,
 } from "class-validator";
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 
 export class ProductCSVDTO {
   @IsString()
@@ -26,15 +26,21 @@ export class ProductCSVDTO {
   acquiredDate!: Date;
 
   @IsNumber()
-  @IsPositive()
   @Type(() => Number)
   @IsOptional()
+  @Transform(({ value }) => {
+    const num = Number(value);
+    return isNaN(num) ? 0 : num;
+  })
   acquiredPrice?: number;
 
   @IsNumber()
-  @IsPositive()
   @Type(() => Number)
   @IsOptional()
+  @Transform(({ value }) => {
+    const num = Number(value);
+    return isNaN(num) ? 0 : num;
+  })
   currentPrice?: number;
 
   @IsEnum(["excellent", "good", "fair", "poor"])
