@@ -28,9 +28,10 @@ const contactSchema = new Schema(
     },
     website: {
       type: String,
-      required: function (this: ContactDocument) {
-        return this.type === "company";
-      },
+      // required: function (this: ContactDocument) {
+      //   return this.type === "company";
+      // },
+      required: false,
     },
     parentId: {
       type: Schema.Types.ObjectId,
