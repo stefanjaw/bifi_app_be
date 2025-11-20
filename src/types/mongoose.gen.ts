@@ -1003,6 +1003,7 @@ export type ProductMaintenance = {
   dateStart?: Date;
   dateEnd?: Date;
   type: "service" | "preventive-maintenance";
+  manual?: boolean;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -1120,6 +1121,7 @@ export type ProductMaintenanceDocument = mongoose.Document<
     dateStart?: Date;
     dateEnd?: Date;
     type: "service" | "preventive-maintenance";
+    manual?: boolean;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;

@@ -82,10 +82,11 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
           newSession
         );
 
-        // HANDLE NEXT MAINTENANCE DATES
+        // HANDLE NEXT MAINTENANCE DATES ONLY WHEN IT IS A PM, IS ACTIVE AND IS NOT MANUAL
         if (
           maintenance.type === "preventive-maintenance" &&
-          maintenance.active
+          maintenance.active &&
+          !maintenance.manual
         ) {
           await this.productStatusService.updateNextProductMaintenanceDates(
             maintenance.productId._id,
@@ -153,7 +154,7 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
                 "DD MMM YYYY"
               )}). Notes: ${
                 maintenance.notes ? maintenance.notes : "No notes provided."
-              }`,
+              } ${maintenance.manual ? "(Manual)" : ""}`,
               performDate: new Date(),
               model: "ProductMaintenance",
               modelId: maintenance._id,
@@ -179,7 +180,6 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
    * @param session - The optional client session to use for the transaction.
    * @returns A boolean indicating if the deletion was successful.
    */
-
   override async delete(
     _id: string,
     session?: ClientSession | undefined

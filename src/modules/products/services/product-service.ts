@@ -9,7 +9,11 @@ import {
 import { productModel } from "../models/product.model";
 import { ProductStatusService } from "./product-status-service";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
-import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
+import {
+  ProductDTO,
+  SkipProductPMDTO,
+  UpdateProductDTO,
+} from "../models/product.dto";
 import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
 import { ProductTypeService } from "../../product-types/services/product-type-service";
 import { ContactService } from "../../contacts/services/contact-service";
@@ -20,11 +24,13 @@ import {
   ProductTypeDocument,
   RoomDocument,
 } from "@mongodb-types";
+import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 
 export class ProductService extends BaseService<ProductDocument> {
   private productStatusService = new ProductStatusService();
   private productTypeService = new ProductTypeService();
   private contactsService = new ContactService();
+  private activityHistoryService = new ActivityHistoryService();
 
   constructor() {
     super({
@@ -188,6 +194,35 @@ export class ProductService extends BaseService<ProductDocument> {
 
       return product;
     });
+  }
+
+  async skipProductPM(
+    data: SkipProductPMDTO,
+    session?: ClientSession | undefined
+  ): Promise<ProductDocument> {
+    return await runTransaction<ProductDocument>(
+      session,
+      async (newSession) => {
+        const product =
+          await this.productStatusService.updateNextProductMaintenanceDates(
+            data._id,
+            newSession
+          );
+
+        await this.activityHistoryService.create(
+          {
+            title: "PM was skipped",
+            details: "PM was skipped for the following reasons: " + data.notes,
+            performDate: new Date(),
+            model: "Product",
+            modelId: data._id,
+          },
+          newSession
+        );
+
+        return product;
+      }
+    );
   }
 
   /**

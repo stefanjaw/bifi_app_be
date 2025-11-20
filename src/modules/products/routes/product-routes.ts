@@ -6,7 +6,11 @@ import {
 import { ProductDocument } from "../../../types/mongoose.gen";
 import { ProductController } from "../controllers/product-controller";
 import { ProductCSVDTO } from "../models/product-csv.dto";
-import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
+import {
+  ProductDTO,
+  SkipProductPMDTO,
+  UpdateProductDTO,
+} from "../models/product.dto";
 
 const productController = new ProductController();
 
@@ -21,6 +25,11 @@ export class ProductRouter extends BaseRoutes<ProductDocument> {
     });
   }
 
+  protected override initRoutes(): void {
+    this.initSkipProductPMRoute();
+    super.initRoutes();
+  }
+
   override initPutRoute() {
     this.router.put(
       this.endpoint,
@@ -31,6 +40,16 @@ export class ProductRouter extends BaseRoutes<ProductDocument> {
       validateBodyMiddleware(this.dtoUpdateClass),
       authorizeMiddleware(this.resource, "update"),
       this.controller.update
+    );
+  }
+
+  initSkipProductPMRoute() {
+    this.router.put(
+      `${this.endpoint}/skip-pm`,
+      this.upload.any(),
+      validateBodyMiddleware(SkipProductPMDTO),
+      authorizeMiddleware(`${this.resource}/skip-pm`, "update"),
+      productController.updateSkipProductPM
     );
   }
 }

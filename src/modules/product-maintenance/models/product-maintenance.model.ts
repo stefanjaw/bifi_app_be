@@ -50,6 +50,10 @@ const productMaintenanceSchema = new Schema(
       enum: ["service", "preventive-maintenance"],
       required: true,
     },
+    manual: {
+      type: Boolean,
+      required: false,
+    },
     active: {
       type: Boolean,
       default: true,

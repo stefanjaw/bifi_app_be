@@ -46,6 +46,9 @@ export class ProductMaintenanceDTO {
   type!: string;
 
   @IsOptional()
+  manual?: string;
+
+  @IsOptional()
   active?: string;
 }
 

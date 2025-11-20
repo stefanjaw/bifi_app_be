@@ -106,4 +106,28 @@ export class ProductController extends BaseController<ProductDocument> {
 
     await super.updateHandler(req, res, next);
   }
+
+  // for skipping PM
+  protected async updateSkipProductPMHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const body = req.body;
+      const product = await productService.skipProductPM(body);
+
+      this.sendData(res, product);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  updateSkipProductPM = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    await this.updateSkipProductPMHandler(req, res, next);
+  };
 }

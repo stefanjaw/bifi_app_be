@@ -150,3 +150,12 @@ export class UpdateProductDTO extends PartialType(ProductDTO) {
   @Transform(({ value }) => JSON.parse(value))
   attachmentsMetadata?: object[];
 }
+
+export class SkipProductPMDTO {
+  @IsMongoId()
+  _id!: string;
+
+  @IsOptional()
+  @IsString()
+  notes!: string;
+}
