@@ -3,6 +3,7 @@ import {
   FilterQuery,
   PaginateModel,
   PaginateResult,
+  Types,
 } from "mongoose";
 import { orderByQuery, paginationOptions } from "./query-options.type";
 import { runTransaction } from "./transaction-utils";
@@ -134,7 +135,7 @@ export class BaseService<T> {
     );
   }
 
-  async transformReferenceFilters(
+  private async transformReferenceFilters(
     searchParams: Record<string, any>,
     session: ClientSession
   ) {
