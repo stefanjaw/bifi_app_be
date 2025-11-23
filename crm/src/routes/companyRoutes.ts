@@ -1,11 +1,21 @@
 import { Router } from 'express';
-import { protect } from '../middleware/authMiddleware';
-import { getAllCompanies, createCompany } from '../controllers/companyController';
+import {
+  getAll,
+  create,
+  getById,
+  update,
+  remove
+} from '../controllers/companyController';
 
 const router = Router();
 
 router.route('/')
-  .get(protect, getAllCompanies)
-  .post(protect, createCompany);
+  .get(getAll)
+  .post(create);
+
+router.route('/:id')
+  .get(getById)
+  .put(update)
+  .delete(remove);
 
 export default router;

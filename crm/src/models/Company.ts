@@ -1,24 +1,22 @@
+// src/models/Company.ts
 import { Schema, model, Document } from 'mongoose';
 
-export interface CompanyDocument extends Document {
+export interface ICompany extends Document {
   name: string;
   industry?: string;
   website?: string;
   phone?: string;
-  owner: Schema.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
+  annualRevenue?: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const CompanySchema = new Schema<CompanyDocument>(
-  {
-    name: { type: String, required: true },
-    industry: String,
-    website: String,
-    phone: String,
-    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true }
-  },
-  { timestamps: true }
-);
+const CompanySchema = new Schema<ICompany>({
+  name: { type: String, required: true },
+  industry: String,
+  website: String,
+  phone: String,
+  annualRevenue: Number,
+}, { timestamps: true });
 
-export default model<CompanyDocument>('Company', CompanySchema);
+export default model<ICompany>('Company', CompanySchema);
