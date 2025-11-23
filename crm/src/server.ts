@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import connectDB from './config/database';
 
-import companyRoutes from './routes/companyRoutes';
+import companyRoutes from './system_company/routes/companyRoutes';
 // import contactRoutes from './routes/contactRoutes';
 // import dealRoutes from './routes/dealRoutes';
 
