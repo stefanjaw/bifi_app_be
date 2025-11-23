@@ -1,0 +1,17 @@
+Field,Type,Notes
+_id,INT (PK),
+deal_name,VARCHAR,Required
+company_id,INT (FK),
+contact_id,INT (FK),Primary contact
+amount,DECIMAL,
+currency,VARCHAR,"USD, EUR, etc."
+stage,VARCHAR,"Prospecting, Qualification, Proposal, Negotiation, Closed Won, Closed Lost"
+probability,INT,0–100%
+expected_close_date,DATE,
+actual_close_date,DATE,
+deal_source,VARCHAR,
+description,TEXT,
+created_at,DATETIME,
+updated_at,DATETIME,
+owner_user_id,INT (FK),
+forecast_category,VARCHAR,"Pipeline, Best Case, Committed, Closed"

@@ -1,0 +1,4 @@
+Field,Type,Notes
+tag_id,INT (PK),
+name,VARCHAR,
+color,VARCHAR,Hex code

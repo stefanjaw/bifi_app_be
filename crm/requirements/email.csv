@@ -1,0 +1,8 @@
+Field,Type,Notes
+email_id,INT (PK),
+contact_id,INT (FK),
+direction,VARCHAR,Sent / Received
+subject,VARCHAR,
+body,TEXT,
+sent_at,DATETIME,
+user_id,INT (FK),

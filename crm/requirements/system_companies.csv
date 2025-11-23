@@ -1,0 +1,16 @@
+Field,Type,Notes
+_id,INT (PK),Auto-increment
+company_name,VARCHAR,Required
+industry,VARCHAR,"e.g., Technology, Healthcare, Finance"
+company_size,VARCHAR,"1-10, 11-50, 51-200, 201-500, 500+"
+website,VARCHAR,
+phone,VARCHAR,
+billing_address,TEXT,
+shipping_address,TEXT,
+annual_revenue,DECIMAL,
+ownership_type,VARCHAR,"Public, Private, Nonprofit, etc."
+description,TEXT,
+created_at,DATETIME,
+updated_at,DATETIME,
+owner_user_id,INT (FK),Sales rep assigned
+custom_fields,JSON,For flexibility

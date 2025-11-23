@@ -1,0 +1,19 @@
+Field,Type,Notes
+_id,INT (PK),
+company_id,INT (FK),Can be null for personal contacts
+first_name,VARCHAR,Required
+last_name,VARCHAR,Required
+email,VARCHAR,Unique (optional)
+phone,VARCHAR,
+mobile,VARCHAR,
+job_title,VARCHAR,
+department,VARCHAR,
+linkedin_url,VARCHAR,
+address,TEXT,
+birthday,DATE,
+lead_source,VARCHAR,"Website, Referral, Cold Call, etc."
+lifecycle_stage,VARCHAR,Lead → Opportunity → Customer → Evangelist
+created_at,DATETIME,
+updated_at,DATETIME,
+owner_user_id,INT (FK),
+is_primary_contact,BOOLEAN,For the company

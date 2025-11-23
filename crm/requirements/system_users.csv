@@ -1,0 +1,9 @@
+Field,Type,Notes
+_id,INT (PK),
+first_name,VARCHAR,
+last_name,VARCHAR,
+email,VARCHAR,Unique
+password_hash,VARCHAR,
+role,VARCHAR,"Admin, Manager, Sales Rep, etc."
+is_active,BOOLEAN,
+created_at,DATETIME,

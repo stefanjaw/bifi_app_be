@@ -1,0 +1,12 @@
+Field,Type,Notes
+_id,INT (PK),
+title,VARCHAR,
+description,TEXT,
+due_date,DATETIME,
+status,VARCHAR,"Not Started, In Progress, Completed, Deferred"
+priority,VARCHAR,"Low, Medium, High, Urgent"
+related_to_type,VARCHAR,Deal / Contact / Company
+related_to_id,INT,
+assigned_to_user_id,INT (FK),
+created_by_user_id,INT (FK),
+completed_at,DATETIME,

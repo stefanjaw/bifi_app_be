@@ -1,0 +1,10 @@
+Field,Type,Notes
+_id,INT (PK),
+contact_id,INT (FK),
+company_id,INT (FK),
+direction,VARCHAR,Inbound / Outbound
+duration_seconds,INT,
+call_result,VARCHAR,"Answered, No Answer, Voicemail, etc."
+notes,TEXT,
+recorded_at,DATETIME,
+user_id,INT (FK),
