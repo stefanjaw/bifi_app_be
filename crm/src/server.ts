@@ -4,7 +4,7 @@ import cors from 'cors';
 import connectDB from './config/database';
 
 import companyRoutes from './system_company/routes/companyRoutes';
-// import contactRoutes from './routes/contactRoutes';
+import contactRoutes from './contact/routes/contactRoutes';
 // import dealRoutes from './routes/dealRoutes';
 
 const app = express();
@@ -18,7 +18,7 @@ app.get('/', (_req, res) => {
 });
 
 app.use('/api/companies', companyRoutes);
-// app.use('/api/contacts', contactRoutes);
+app.use('/api/contacts', contactRoutes);
 // app.use('/api/deals', dealRoutes);
 
 const PORT = process.env.PORT || 5000;
