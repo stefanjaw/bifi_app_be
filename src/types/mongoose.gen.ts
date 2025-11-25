@@ -474,6 +474,136 @@ export type CountryDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of CRMDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CRMDocument.toObject()`. To avoid conflicts with model names, use the type alias `CRMObject`.
+ * ```
+ * const crmObject = crm.toObject();
+ * ```
+ */
+export type CRM = {
+  title: string;
+  amount: number;
+  currency?: string;
+  stage?:
+    | "prospecting"
+    | "qualification"
+    | "proposal"
+    | "negotiation"
+    | "closed-won"
+    | "closed-lost";
+  probability?: number;
+  expectedCloseDate?: Date;
+  actualCloseDate?: Date;
+  contact: Contact;
+  company: Company;
+  owner?: User["_id"] | User;
+  description?: string;
+  notes?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CRMDocument (type alias of `CRM`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CRM } from "../models"
+ * import { CRMObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const crmObject: CRMObject = crm.toObject();
+ * ```
+ */
+export type CRMObject = CRM;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CRMQuery = mongoose.Query<any, CRMDocument, CRMQueries> &
+  CRMQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CRMSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CRMQueries = {
+  paginate: (this: CRMQuery, ...args: any[]) => CRMQuery;
+};
+
+export type CRMMethods = {};
+
+export type CRMStatics = {
+  paginate: (this: CRMModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CRMModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CRM = mongoose.model<CRMDocument, CRMModel>("CRM", CRMSchema);
+ * ```
+ */
+export type CRMModel = mongoose.Model<CRMDocument, CRMQueries> & CRMStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CRM schema instances:
+ * ```
+ * const CRMSchema: CRMSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CRMSchema = mongoose.Schema<
+  CRMDocument,
+  CRMModel,
+  CRMMethods,
+  CRMQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CRM = mongoose.model<CRMDocument, CRMModel>("CRM", CRMSchema);
+ * ```
+ */
+export type CRMDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CRMQueries
+> &
+  CRMMethods & {
+    title: string;
+    amount: number;
+    currency?: string;
+    stage?:
+      | "prospecting"
+      | "qualification"
+      | "proposal"
+      | "negotiation"
+      | "closed-won"
+      | "closed-lost";
+    probability?: number;
+    expectedCloseDate?: Date;
+    actualCloseDate?: Date;
+    contact: ContactDocument;
+    company: CompanyDocument;
+    owner?: UserDocument["_id"] | UserDocument;
+    description?: string;
+    notes?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of FacilityDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `FacilityDocument.toObject()`. To avoid conflicts with model names, use the type alias `FacilityObject`.

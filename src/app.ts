@@ -15,6 +15,7 @@ import {
   CompanyRouter,
   ContactRouter,
   CountryRouter,
+  CRMRouter,
   FacilityRouter,
   FileRouter,
   MaintenanceWindowRouter,
@@ -73,6 +74,7 @@ app.use("/api", new UserRouter().getRouter);
 app.use("/api", new RoleRouter().getRouter);
 app.use("/api", new PolicyRouter().getRouter);
 app.use("/api", new BugReportingRouter().getRouter);
+app.use("/api", new CRMRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);
