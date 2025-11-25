@@ -1,0 +1,24 @@
+{
+  "name": "reporting",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/server.ts",
+    "dev:no-reload": "tsx src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "puppeteer": "^24.31.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6"
+  }
+}

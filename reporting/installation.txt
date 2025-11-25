@@ -1,0 +1,6 @@
+mkdir invoice-pdf-generator
+cd invoice-pdf-generator
+npm init -y
+npm install express puppeteer
+npm install -D typescript ts-node @types/express @types/node
+npx tsc --init
