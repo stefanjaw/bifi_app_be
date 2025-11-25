@@ -32,13 +32,14 @@ export class ProductStatusService {
     return await runTransaction<ProductDocument>(
       session,
       async (newSession) => {
-        let productStatus: productStatus = "awaiting-commissioning";
-
         const product = await productModel
           .findById(productId)
           .session(newSession);
 
         if (!product) throw new ValidationException("Product not found");
+
+        let productStatus: productStatus =
+          product.status || "awaiting-commissioning";
 
         const maintenances: ProductMaintenanceDocument[] =
           product.productMaintenances;

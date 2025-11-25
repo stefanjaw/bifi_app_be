@@ -109,7 +109,7 @@ export class ProductCommissioningService extends BaseService<ProductCommissionin
               commission.outcome === "pass"
                 ? "OK to enter service"
                 : "commission failed"
-            }`,
+            }. Reason: ${commission.details}`,
             performDate: new Date(),
             model: "ProductCommissioning",
             modelId: commission._id,
@@ -196,7 +196,9 @@ export class ProductCommissioningService extends BaseService<ProductCommissionin
         await this.activityHistoryService.create(
           {
             title: "Decommissioned",
-            details: "Decommissioned. Notes: All actions are disabled",
+            details:
+              "Decommissioned. Notes: All actions are disabled. Reason: " +
+              data.details,
             performDate: new Date(),
             model: "ProductCommissioning",
             modelId: commission._id,
