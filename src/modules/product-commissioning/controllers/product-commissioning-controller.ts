@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { BaseController, FileValidatorService } from "../../../system";
-import { ProductComissioningService } from "../services/product-comissioning-service";
-import { ProductComissioningDocument } from "../../../types/mongoose.gen";
+import { ProductCommissioningService } from "../services/product-commissioning-service";
+import { ProductCommissioningDocument } from "../../../types/mongoose.gen";
 
-const productComissioningService = new ProductComissioningService();
+const productCommissioningService = new ProductCommissioningService();
 
-export class ProductComissioningController extends BaseController<ProductComissioningDocument> {
+export class ProductCommissioningController extends BaseController<ProductCommissioningDocument> {
   private fileValidator = new FileValidatorService();
   private acceptedAttarchmentTypes = [
     "image/jpeg",
@@ -21,7 +21,7 @@ export class ProductComissioningController extends BaseController<ProductComissi
   ];
 
   constructor() {
-    super({ service: productComissioningService });
+    super({ service: productCommissioningService });
   }
 
   protected override async createHandler(
@@ -81,14 +81,14 @@ export class ProductComissioningController extends BaseController<ProductComissi
   }
 
   /**
-   * Updates a product comissioning with the given data and marks it as decommissioned.
+   * Updates a product commissioning with the given data and marks it as decommissioned.
    * It also updates the product's status to "decommissioned".
-   * Additionally, it adds an activity history record for the decomissioning event.
-   * @param req - The express Request object containing the data to update the product comissioning with.
+   * Additionally, it adds an activity history record for the decommissioning event.
+   * @param req - The express Request object containing the data to update the product commissioning with.
    * @param res - The express Response object used to send data back to the client.
    * @param next - The express NextFunction callback to pass control to the next middleware on error.
    */
-  protected async updateDecomissionHandler(
+  protected async updateDecommissionHandler(
     req: Request,
     res: Response,
     next: NextFunction
@@ -96,8 +96,8 @@ export class ProductComissioningController extends BaseController<ProductComissi
     try {
       const body = { ...req.body };
       const record = await (
-        this.service as ProductComissioningService
-      ).updateDecomission(body);
+        this.service as ProductCommissioningService
+      ).updateDecommission(body);
 
       this.sendData(res, record);
     } catch (error: any) {
@@ -105,11 +105,11 @@ export class ProductComissioningController extends BaseController<ProductComissi
     }
   }
 
-  updateDecomission = async (
+  updateDecommission = async (
     req: Request,
     res: Response,
     next: NextFunction
   ) => {
-    await this.updateDecomissionHandler(req, res, next);
+    await this.updateDecommissionHandler(req, res, next);
   };
 }

@@ -9,7 +9,7 @@ import {
 import { PartialType } from "../../../system";
 import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
 
-export class ProductComissioningDTO {
+export class ProductCommissioningDTO {
   @IsIn(["fail", "pass"])
   outcome!: string;
 
@@ -29,8 +29,8 @@ export class ProductComissioningDTO {
   active?: boolean;
 }
 
-export class UpdateProductComissioningDTO extends PartialType(
-  ProductComissioningDTO
+export class UpdateProductCommissioningDTO extends PartialType(
+  ProductCommissioningDTO
 ) {
   @IsMongoId()
   _id!: string;

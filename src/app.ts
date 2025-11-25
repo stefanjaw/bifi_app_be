@@ -20,7 +20,7 @@ import {
   FileRouter,
   MaintenanceWindowRouter,
   PolicyRouter,
-  ProductComissioningRouter,
+  ProductCommissioningRouter,
   ProductMaintenanceRouter,
   ProductRouter,
   ProductTypeRouter,
@@ -67,7 +67,7 @@ app.use("/api", new MaintenanceWindowRouter().getRouter);
 app.use("/api", new FacilityRouter().getRouter);
 app.use("/api", new RoomRouter().getRouter);
 app.use("/api", new ProductRouter().getRouter);
-app.use("/api", new ProductComissioningRouter().getRouter);
+app.use("/api", new ProductCommissioningRouter().getRouter);
 app.use("/api", new ProductMaintenanceRouter().getRouter);
 app.use("/api", new ActivityHistoryRouter().getRouter);
 app.use("/api", new UserRouter().getRouter);

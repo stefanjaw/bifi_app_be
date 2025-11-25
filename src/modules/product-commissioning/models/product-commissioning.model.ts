@@ -2,10 +2,10 @@ import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { ProductComissioningDocument } from "@mongodb-types";
+import { ProductCommissioningDocument } from "@mongodb-types";
 import { fileSchema } from "../../../system";
 
-const productComissioningSchema = new Schema(
+const productCommissioningSchema = new Schema(
   {
     outcome: {
       type: String,
@@ -41,12 +41,12 @@ const productComissioningSchema = new Schema(
   }
 );
 
-productComissioningSchema.plugin(paginate);
-productComissioningSchema.plugin(autopopulate);
+productCommissioningSchema.plugin(paginate);
+productCommissioningSchema.plugin(autopopulate);
 
-const productComissioningModel = mongoose.model<
-  ProductComissioningDocument,
-  PaginateModel<ProductComissioningDocument>
->("ProductComissioning", productComissioningSchema);
+const productCommissioningModel = mongoose.model<
+  ProductCommissioningDocument,
+  PaginateModel<ProductCommissioningDocument>
+>("ProductCommissioning", productCommissioningSchema);
 
-export { productComissioningModel };
+export { productCommissioningModel };

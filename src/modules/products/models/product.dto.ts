@@ -124,7 +124,7 @@ export class ProductDTO {
   @IsOptional()
   remarks?: string | undefined;
 
-  @IsEnum(["active", "awaiting-comissioning", "under-service", "decomissioned"])
+  @IsEnum(["active", "awaiting-commissioning", "under-service", "decommissioned"])
   @IsOptional()
   status?: string;
 

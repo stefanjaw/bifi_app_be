@@ -9,7 +9,7 @@ export class CRMRouter extends BaseRoutes<CRMDocument> {
   constructor() {
     super({
       controller: crmController,
-      endpoint: "/crms",
+      endpoint: "/crm",
       dtoCreateClass: CRMDTO,
       dtoUpdateClass: UpdateCRMDTO,
     });

@@ -1,6 +1,6 @@
 export type productStatus =
   | "active"
-  | "awaiting-comissioning"
+  | "awaiting-commissioning"
   | "under-service"
-  | "decomissioned"
+  | "decommissioned"
   | "in-pm";

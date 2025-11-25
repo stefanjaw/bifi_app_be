@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { runTransaction, ValidationException } from "../../../system";
 import { ClientSession, Types } from "mongoose";
 import {
-  ProductComissioningDocument,
+  ProductCommissioningDocument,
   ProductDocument,
   ProductMaintenanceDocument,
 } from "@mongodb-types";
@@ -19,7 +19,7 @@ export class ProductStatusService {
    * and commissioning outcome to determine the appropriate status. The product status
    * can be set to "under-service" if an active service maintenance is found, "in-pm" for
    * preventive maintenance, or "active" if the commissioning outcome is a pass. If none
-   * of these conditions are met, the status remains "awaiting-comissioning".
+   * of these conditions are met, the status remains "awaiting-commissioning".
    *
    * @param productId - The ID of the product to update.
    * @param session - The optional client session to use for the transaction.
@@ -32,7 +32,7 @@ export class ProductStatusService {
     return await runTransaction<ProductDocument>(
       session,
       async (newSession) => {
-        let productStatus: productStatus = "awaiting-comissioning";
+        let productStatus: productStatus = "awaiting-commissioning";
 
         const product = await productModel
           .findById(productId)
@@ -42,8 +42,8 @@ export class ProductStatusService {
 
         const maintenances: ProductMaintenanceDocument[] =
           product.productMaintenances;
-        const comissioning: ProductComissioningDocument | null =
-          product.productComission;
+        const commissioning: ProductCommissioningDocument | null =
+          product.productCommission;
 
         // check if service is available
         const service = maintenances.find(
@@ -59,7 +59,7 @@ export class ProductStatusService {
           productStatus = "under-service";
         } else if (preventive) {
           productStatus = "in-pm";
-        } else if (comissioning && comissioning.outcome === "pass") {
+        } else if (commissioning && commissioning.outcome === "pass") {
           productStatus = "active";
         }
 
@@ -75,17 +75,17 @@ export class ProductStatusService {
   }
 
   /**
-   * Checks if a product has an active and approved comissioning.
+   * Checks if a product has an active and approved commissioning.
    *
    * This function retrieves the product by its ID and evaluates its active
-   * comissioning to determine if it is approved. The function returns a boolean
-   * indicating if the product has an active and approved comissioning.
+   * commissioning to determine if it is approved. The function returns a boolean
+   * indicating if the product has an active and approved commissioning.
    *
    * @param productId - The ID of the product to check.
    * @param session - The optional client session to use for the transaction.
-   * @returns A boolean indicating if the product has an active and approved comissioning.
+   * @returns A boolean indicating if the product has an active and approved commissioning.
    */
-  async productHasActiveComissioning(
+  async productHasActiveCommissioning(
     productId: string,
     session: ClientSession | undefined
   ) {
@@ -94,7 +94,7 @@ export class ProductStatusService {
         .findById(productId)
         .session(newSession);
 
-      return product?.productComission?.outcome === "pass";
+      return product?.productCommission?.outcome === "pass";
     });
   }
 
@@ -124,11 +124,11 @@ export class ProductStatusService {
           .findById(productId)
           .session(newSession);
 
-        // Check if the product exists and is comissioned
+        // Check if the product exists and is commissioned
         if (!product) throw new ValidationException("Product not found");
-        if (product.productComission?.outcome !== "pass")
+        if (product.productCommission?.outcome !== "pass")
           throw new ValidationException(
-            "Product not comissioned, must be comissioned to update maintenance dates"
+            "Product not commissioned, must be commissioned to update maintenance dates"
           );
 
         const window = product.maintenanceWindowIds?.[0];
@@ -185,11 +185,11 @@ export class ProductStatusService {
           .findById(productId)
           .session(newSession);
 
-        // Check if the product exists and is comissioned
+        // Check if the product exists and is commissioned
         if (!product) throw new ValidationException("Product not found");
-        if (product.productComission?.outcome !== "pass")
+        if (product.productCommission?.outcome !== "pass")
           throw new ValidationException(
-            "Product not comissioned, must be comissioned to update maintenance dates"
+            "Product not commissioned, must be commissioned to update maintenance dates"
           );
 
         const window = product.maintenanceWindowIds?.[0];

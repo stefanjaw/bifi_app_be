@@ -947,14 +947,14 @@ export type MaintenanceWindowDocument = mongoose.Document<
   };
 
 /**
- * Lean version of ProductComissioningAttachmentDocument
+ * Lean version of ProductCommissioningAttachmentDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `ProductComissioningDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProductCommissioningDocument.toObject()`.
  * ```
- * const productcomissioningObject = productcomissioning.toObject();
+ * const productcommissioningObject = productcommissioning.toObject();
  * ```
  */
-export type ProductComissioningAttachment = {
+export type ProductCommissioningAttachment = {
   fileId: mongoose.Types.ObjectId;
   name: string;
   mimeType: string;
@@ -966,17 +966,17 @@ export type ProductComissioningAttachment = {
 };
 
 /**
- * Lean version of ProductComissioningDocument
+ * Lean version of ProductCommissioningDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `ProductComissioningDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductComissioningObject`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProductCommissioningDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductCommissioningObject`.
  * ```
- * const productcomissioningObject = productcomissioning.toObject();
+ * const productcommissioningObject = productcommissioning.toObject();
  * ```
  */
-export type ProductComissioning = {
+export type ProductCommissioning = {
   outcome: "fail" | "pass";
   details?: string;
-  attachments: ProductComissioningAttachment[];
+  attachments: ProductCommissioningAttachment[];
   productId: Product;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -985,47 +985,47 @@ export type ProductComissioning = {
 };
 
 /**
- * Lean version of ProductComissioningDocument (type alias of `ProductComissioning`)
+ * Lean version of ProductCommissioningDocument (type alias of `ProductCommissioning`)
  *
  * Use this type alias to avoid conflicts with model names:
  * ```
- * import { ProductComissioning } from "../models"
- * import { ProductComissioningObject } from "../interfaces/mongoose.gen.ts"
+ * import { ProductCommissioning } from "../models"
+ * import { ProductCommissioningObject } from "../interfaces/mongoose.gen.ts"
  *
- * const productcomissioningObject: ProductComissioningObject = productcomissioning.toObject();
+ * const productcommissioningObject: ProductCommissioningObject = productcommissioning.toObject();
  * ```
  */
-export type ProductComissioningObject = ProductComissioning;
+export type ProductCommissioningObject = ProductCommissioning;
 
 /**
  * Mongoose Query type
  *
  * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
  */
-export type ProductComissioningQuery = mongoose.Query<
+export type ProductCommissioningQuery = mongoose.Query<
   any,
-  ProductComissioningDocument,
-  ProductComissioningQueries
+  ProductCommissioningDocument,
+  ProductCommissioningQueries
 > &
-  ProductComissioningQueries;
+  ProductCommissioningQueries;
 
 /**
  * Mongoose Query helper types
  *
- * This type represents `ProductComissioningSchema.query`. For most use cases, you should not need to use this type explicitly.
+ * This type represents `ProductCommissioningSchema.query`. For most use cases, you should not need to use this type explicitly.
  */
-export type ProductComissioningQueries = {
+export type ProductCommissioningQueries = {
   paginate: (
-    this: ProductComissioningQuery,
+    this: ProductCommissioningQuery,
     ...args: any[]
-  ) => ProductComissioningQuery;
+  ) => ProductCommissioningQuery;
 };
 
-export type ProductComissioningMethods = {};
+export type ProductCommissioningMethods = {};
 
-export type ProductComissioningStatics = {
-  paginate: (this: ProductComissioningModel, ...args: any[]) => any;
-  paginateSubDocs: (this: ProductComissioningModel, ...args: any[]) => any;
+export type ProductCommissioningStatics = {
+  paginate: (this: ProductCommissioningModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ProductCommissioningModel, ...args: any[]) => any;
 };
 
 /**
@@ -1033,36 +1033,36 @@ export type ProductComissioningStatics = {
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const ProductComissioning = mongoose.model<ProductComissioningDocument, ProductComissioningModel>("ProductComissioning", ProductComissioningSchema);
+ * const ProductCommissioning = mongoose.model<ProductCommissioningDocument, ProductCommissioningModel>("ProductCommissioning", ProductCommissioningSchema);
  * ```
  */
-export type ProductComissioningModel = mongoose.Model<
-  ProductComissioningDocument,
-  ProductComissioningQueries
+export type ProductCommissioningModel = mongoose.Model<
+  ProductCommissioningDocument,
+  ProductCommissioningQueries
 > &
-  ProductComissioningStatics;
+  ProductCommissioningStatics;
 
 /**
  * Mongoose Schema type
  *
- * Assign this type to new ProductComissioning schema instances:
+ * Assign this type to new ProductCommissioning schema instances:
  * ```
- * const ProductComissioningSchema: ProductComissioningSchema = new mongoose.Schema({ ... })
+ * const ProductCommissioningSchema: ProductCommissioningSchema = new mongoose.Schema({ ... })
  * ```
  */
-export type ProductComissioningSchema = mongoose.Schema<
-  ProductComissioningDocument,
-  ProductComissioningModel,
-  ProductComissioningMethods,
-  ProductComissioningQueries
+export type ProductCommissioningSchema = mongoose.Schema<
+  ProductCommissioningDocument,
+  ProductCommissioningModel,
+  ProductCommissioningMethods,
+  ProductCommissioningQueries
 >;
 
 /**
  * Mongoose Subdocument type
  *
- * Type of `ProductComissioningDocument["attachments"]` element.
+ * Type of `ProductCommissioningDocument["attachments"]` element.
  */
-export type ProductComissioningAttachmentDocument =
+export type ProductCommissioningAttachmentDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
     fileId: mongoose.Types.ObjectId;
     name: string;
@@ -1079,17 +1079,17 @@ export type ProductComissioningAttachmentDocument =
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const ProductComissioning = mongoose.model<ProductComissioningDocument, ProductComissioningModel>("ProductComissioning", ProductComissioningSchema);
+ * const ProductCommissioning = mongoose.model<ProductCommissioningDocument, ProductCommissioningModel>("ProductCommissioning", ProductCommissioningSchema);
  * ```
  */
-export type ProductComissioningDocument = mongoose.Document<
+export type ProductCommissioningDocument = mongoose.Document<
   mongoose.Types.ObjectId,
-  ProductComissioningQueries
+  ProductCommissioningQueries
 > &
-  ProductComissioningMethods & {
+  ProductCommissioningMethods & {
     outcome: "fail" | "pass";
     details?: string;
-    attachments: mongoose.Types.DocumentArray<ProductComissioningAttachmentDocument>;
+    attachments: mongoose.Types.DocumentArray<ProductCommissioningAttachmentDocument>;
     productId: ProductDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
@@ -1410,9 +1410,9 @@ export type Product = {
   remarks?: string;
   status?:
     | "active"
-    | "awaiting-comissioning"
+    | "awaiting-commissioning"
     | "under-service"
-    | "decomissioned"
+    | "decommissioned"
     | "in-pm";
   minMaintenanceDate?: Date;
   maintenanceDate?: Date;
@@ -1422,7 +1422,7 @@ export type Product = {
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
-  productComission: any;
+  productCommission: any;
   productMaintenances: any;
 };
 
@@ -1539,9 +1539,9 @@ export type ProductDocument = mongoose.Document<
     remarks?: string;
     status?:
       | "active"
-      | "awaiting-comissioning"
+      | "awaiting-commissioning"
       | "under-service"
-      | "decomissioned"
+      | "decommissioned"
       | "in-pm";
     minMaintenanceDate?: Date;
     maintenanceDate?: Date;
@@ -1551,7 +1551,7 @@ export type ProductDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
-    productComission: any;
+    productCommission: any;
     productMaintenances: any;
   };
 

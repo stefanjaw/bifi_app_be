@@ -30,7 +30,7 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
 
   /**
    * Creates a product maintenance with the given data and returns the created document.
-   * Before creating, it checks that the product has a comission issued and it succeed.
+   * Before creating, it checks that the product has a commission issued and it succeed.
    * It also handles file uploads and updates the product's status accordingly.
    * If the maintenance is a preventive maintenance and it is active, it also updates
    * the next maintenance dates for the product.
@@ -47,7 +47,7 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
       async (newSession) => {
         // CHECK THAT THE PRODUCT HAS A COMISSION ISSUED AND IT SUCCEED
         if (
-          !(await this.productStatusService.productHasActiveComissioning(
+          !(await this.productStatusService.productHasActiveCommissioning(
             data.productId,
             newSession
           ))
@@ -144,10 +144,15 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         if (data.active && data.active === "false") {
           await this.activityHistoryService.create(
             {
-              title: (maintenance.type === "preventive-maintenance"
-                ? "PM"
-                : maintenance.name
-              ).replace("-", " "),
+              title:
+                maintenance.type === "preventive-maintenance"
+                  ? "PM"
+                  : maintenance.name
+                      .split("-")
+                      .map(
+                        (w) => `${w.charAt(0).toUpperCase()}${w.substring(1)}`
+                      )
+                      .join(" "),
               details: `Finished (${dayjs(maintenance.dateStart).format(
                 "DD MMM YYYY"
               )} - ${dayjs(maintenance.dateEnd).format(
@@ -203,6 +208,9 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
             maintenance.type === "preventive-maintenance"
               ? "PM"
               : maintenance.name
+                  .split("-")
+                  .map((w) => `${w.charAt(0).toUpperCase()}${w.substring(1)}`)
+                  .join(" ")
           } Finished`,
           details: `Finished (${dayjs(maintenance.dateStart).format(
             "DD MMM YYYY"

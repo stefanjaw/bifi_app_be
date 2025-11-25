@@ -97,12 +97,12 @@ const productSchema = new Schema(
       type: String,
       enum: [
         "active",
-        "awaiting-comissioning",
+        "awaiting-commissioning",
         "under-service",
-        "decomissioned",
+        "decommissioned",
         "in-pm",
       ],
-      default: "awaiting-comissioning",
+      default: "awaiting-commissioning",
     },
     // for maintenance
     minMaintenanceDate: {
@@ -131,8 +131,8 @@ const productSchema = new Schema(
   }
 );
 
-productSchema.virtual("productComission", {
-  ref: "ProductComissioning",
+productSchema.virtual("productCommission", {
+  ref: "ProductCommissioning",
   justOne: true,
   localField: "_id",
   foreignField: "productId",
