@@ -24,6 +24,7 @@ import {
   ProductMaintenanceRouter,
   ProductRouter,
   ProductTypeRouter,
+  ReportingRouter,
   RoleRouter,
   RoomRouter,
   UserRouter,
@@ -75,6 +76,7 @@ app.use("/api", new RoleRouter().getRouter);
 app.use("/api", new PolicyRouter().getRouter);
 app.use("/api", new BugReportingRouter().getRouter);
 app.use("/api", new CRMRouter().getRouter);
+app.use("/api", new ReportingRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);
