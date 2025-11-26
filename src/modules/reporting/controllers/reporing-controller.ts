@@ -1,21 +1,28 @@
 import { NextFunction, Request, Response } from "express";
 import { ReportingService } from "../services/reporting-service";
-import { ValidationException } from "../../../system";
+import { BaseController, ValidationException } from "../../../system";
+import { ReportingDocument } from "@mongodb-types";
 
-export class ReportingController {
-  private reportingService = new ReportingService();
+const reportingService = new ReportingService();
 
-  async getGenerateReportHandler(
+export class ReportingController extends BaseController<ReportingDocument> {
+  constructor() {
+    super({ service: reportingService });
+  }
+
+  protected async getGenerateReportHandler(
     req: Request,
     res: Response,
     next: NextFunction
   ) {
     try {
-      const model = req.params.model;
+      const model = req.query.model as string | undefined;
+      const reportId = req.query.reportId as string | undefined;
 
-      if (!model) throw new ValidationException("Model is required");
+      if (!model && !reportId)
+        throw new ValidationException("Either model or reportId must be sent");
 
-      const pdf = await this.reportingService.generatePDFReport(model);
+      const pdf = await reportingService.generatePDFReport(model, reportId);
 
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader("Content-Disposition", `inline; filename=${model}.pdf`);

@@ -1,20 +1,30 @@
-import { Router } from "express";
 import { ReportingController } from "../controllers/reporing-controller";
-import { authorizeMiddleware } from "../../../system";
+import { authorizeMiddleware, BaseRoutes } from "../../../system";
+import { ReportingDocument } from "@mongodb-types";
+import { ReportingDTO, UpdateReportingDTO } from "../models/reporting.dto";
 
-export class ReportingRouter {
-  private router = Router();
-  private reportingController = new ReportingController();
+const reportingController = new ReportingController();
 
+export class ReportingRouter extends BaseRoutes<ReportingDocument> {
   constructor() {
-    this.router.get(
-      "/reporting/:model",
-      //   authorizeMiddleware("reporting/:model", "read"),
-      this.reportingController.getGenerateReport
-    );
+    super({
+      controller: reportingController,
+      endpoint: "/reporting",
+      dtoCreateClass: ReportingDTO,
+      dtoUpdateClass: UpdateReportingDTO,
+    });
   }
 
-  get getRouter() {
-    return this.router;
+  protected override initRoutes(): void {
+    this.initGenerateReportingRoute();
+    super.initRoutes();
+  }
+
+  initGenerateReportingRoute() {
+    this.router.get(
+      `${this.endpoint}/generate-report`,
+      //   authorizeMiddleware("reporting/generate-report", "read"),
+      reportingController.getGenerateReport
+    );
   }
 }

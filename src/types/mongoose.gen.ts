@@ -497,7 +497,7 @@ export type CRM = {
   actualCloseDate?: Date;
   contact: Contact;
   company: Company;
-  owner?: User["_id"] | User;
+  owner?: User;
   description?: string;
   notes?: string;
   _id: mongoose.Types.ObjectId;
@@ -595,7 +595,7 @@ export type CRMDocument = mongoose.Document<
     actualCloseDate?: Date;
     contact: ContactDocument;
     company: CompanyDocument;
-    owner?: UserDocument["_id"] | UserDocument;
+    owner?: UserDocument;
     description?: string;
     notes?: string;
     _id: mongoose.Types.ObjectId;
@@ -1553,6 +1553,108 @@ export type ProductDocument = mongoose.Document<
     updatedAt?: Date;
     productCommission: any;
     productMaintenances: any;
+  };
+
+/**
+ * Lean version of ReportingDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ReportingDocument.toObject()`. To avoid conflicts with model names, use the type alias `ReportingObject`.
+ * ```
+ * const reportingObject = reporting.toObject();
+ * ```
+ */
+export type Reporting = {
+  template: string;
+  model: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ReportingDocument (type alias of `Reporting`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Reporting } from "../models"
+ * import { ReportingObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const reportingObject: ReportingObject = reporting.toObject();
+ * ```
+ */
+export type ReportingObject = Reporting;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ReportingQuery = mongoose.Query<
+  any,
+  ReportingDocument,
+  ReportingQueries
+> &
+  ReportingQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ReportingSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ReportingQueries = {
+  paginate: (this: ReportingQuery, ...args: any[]) => ReportingQuery;
+};
+
+export type ReportingMethods = {};
+
+export type ReportingStatics = {
+  paginate: (this: ReportingModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ReportingModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Reporting = mongoose.model<ReportingDocument, ReportingModel>("Reporting", ReportingSchema);
+ * ```
+ */
+export type ReportingModel = mongoose.Model<
+  ReportingDocument,
+  ReportingQueries
+> &
+  ReportingStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Reporting schema instances:
+ * ```
+ * const ReportingSchema: ReportingSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ReportingSchema = mongoose.Schema<
+  ReportingDocument,
+  ReportingModel,
+  ReportingMethods,
+  ReportingQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Reporting = mongoose.model<ReportingDocument, ReportingModel>("Reporting", ReportingSchema);
+ * ```
+ */
+export type ReportingDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ReportingQueries
+> &
+  ReportingMethods & {
+    template: string;
+    model: string;
+    _id: mongoose.Types.ObjectId;
   };
 
 /**
