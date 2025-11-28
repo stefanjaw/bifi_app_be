@@ -10,6 +10,7 @@ import dayjs from "dayjs";
 import { reportingModel } from "../models/reporting.model";
 import Handlebars from "handlebars";
 import { ReportingDocument } from "@mongodb-types";
+import { ReportingDTO, UpdateReportingDTO } from "../models/reporting.dto";
 
 export class ReportingService extends BaseService<ReportingDocument> {
   constructor() {
@@ -149,6 +150,40 @@ export class ReportingService extends BaseService<ReportingDocument> {
         await browser.close();
 
         return pdfBuffer;
+      }
+    );
+  }
+
+  override async create(
+    data: ReportingDTO,
+    session?: ClientSession | undefined
+  ): Promise<ReportingDocument> {
+    return await runTransaction<ReportingDocument>(
+      session,
+      async (newSession) => {
+        if (!mongoose.modelNames().includes(data.model))
+          throw new ValidationException(
+            "Model is not valid and included in models list"
+          );
+
+        return await super.create(data, newSession);
+      }
+    );
+  }
+
+  override async update(
+    data: UpdateReportingDTO,
+    session?: ClientSession | undefined
+  ): Promise<ReportingDocument> {
+    return await runTransaction<ReportingDocument>(
+      session,
+      async (newSession) => {
+        if (data.model && !mongoose.modelNames().includes(data.model))
+          throw new ValidationException(
+            "Model is not valid and included in models list"
+          );
+
+        return await super.update(data, newSession);
       }
     );
   }
