@@ -1,6 +1,7 @@
 import mongoose, { model } from "mongoose";
 import {
   BaseService,
+  orderByQuery,
   runTransaction,
   ValidationException,
 } from "../../../system";
@@ -90,8 +91,10 @@ export class ReportingService extends BaseService<ReportingDocument> {
   }
 
   async generatePDFReport(
-    modelName?: string,
-    reportId?: string,
+    modelName: string | undefined,
+    reportId: string | undefined,
+    searchParams: Record<string, any> | undefined,
+    orderBy: orderByQuery["orderBy"] | undefined,
     session?: ClientSession | undefined
   ) {
     return await runTransaction<Uint8Array<ArrayBufferLike>>(
@@ -124,8 +127,20 @@ export class ReportingService extends BaseService<ReportingDocument> {
         // finding data
         const model = mongoose.model<Document>(reportingTemplate.model);
 
+        // if orderBy sent by user, build the object
+        let orderByObject: Record<string, any> | undefined = {};
+
+        if (orderBy && orderBy.length > 0) {
+          orderBy.forEach((item) => {
+            orderByObject[item.field] = item.order === "asc" ? 1 : -1;
+          });
+        }
+
         const data = (
-          await model.find({ active: true }).session(newSession)
+          await model
+            .find(searchParams || { active: true })
+            .sort(orderByObject)
+            .session(newSession)
         ).map((doc) => doc.toObject());
 
         // generate html

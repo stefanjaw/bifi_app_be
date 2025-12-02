@@ -135,7 +135,7 @@ export class BaseService<T> {
     );
   }
 
-  private async transformReferenceFilters(
+  protected async transformReferenceFilters(
     searchParams: Record<string, any>,
     session: ClientSession
   ) {
