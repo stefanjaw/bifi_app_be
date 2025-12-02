@@ -82,6 +82,11 @@ export class ReportingService extends BaseService<ReportingDocument> {
     Handlebars.registerHelper("now", function () {
       return dayjs().format("DD MMM YYYY (hh:mm a)");
     });
+
+    Handlebars.registerHelper("getISODate", function (item, rawPath) {
+      const date = Handlebars.helpers.getValue(item, rawPath);
+      return date ? dayjs(date).toISOString().split("T")[0] : "NO DATE";
+    });
   }
 
   async generatePDFReport(

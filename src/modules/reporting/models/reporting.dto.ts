@@ -11,6 +11,10 @@ import { Type } from "class-transformer";
 export class ReportingDTO {
   @IsString()
   @IsNotEmpty()
+  title!: string;
+
+  @IsString()
+  @IsNotEmpty()
   //   @Matches(/^<(\w+)\b[^>]*>.*?<\/\1>$/, { message: "Invalid HTML structure" })
   template!: string;
 

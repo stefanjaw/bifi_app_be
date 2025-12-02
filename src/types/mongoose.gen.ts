@@ -1564,9 +1564,13 @@ export type ProductDocument = mongoose.Document<
  * ```
  */
 export type Reporting = {
+  title: string;
   template: string;
   model: string;
+  active?: boolean;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -1652,9 +1656,13 @@ export type ReportingDocument = mongoose.Document<
   ReportingQueries
 > &
   ReportingMethods & {
+    title: string;
     template: string;
     model: string;
+    active?: boolean;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**

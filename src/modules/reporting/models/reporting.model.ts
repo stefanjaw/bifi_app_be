@@ -5,6 +5,10 @@ import { ReportingDocument } from "@mongodb-types";
 
 export const reportingSchema = new Schema(
   {
+    title: {
+      type: String,
+      required: true,
+    },
     template: {
       type: String,
       required: true,
