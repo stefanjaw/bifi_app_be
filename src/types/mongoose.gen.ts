@@ -1925,6 +1925,131 @@ export type RoleDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of TemplateDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TemplateDocument.toObject()`. To avoid conflicts with model names, use the type alias `TemplateObject`.
+ * ```
+ * const templateObject = template.toObject();
+ * ```
+ */
+export type Template = {
+  name: string;
+  codeOriginal?: string;
+  codeCustom?: string;
+  directory: string;
+  filename: string;
+  mimeType:
+    | "text/typescript"
+    | "application/typescript"
+    | "application/javascript"
+    | "text/javascript"
+    | "text/html"
+    | "text/css";
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TemplateDocument (type alias of `Template`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Template } from "../models"
+ * import { TemplateObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const templateObject: TemplateObject = template.toObject();
+ * ```
+ */
+export type TemplateObject = Template;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type TemplateQuery = mongoose.Query<
+  any,
+  TemplateDocument,
+  TemplateQueries
+> &
+  TemplateQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `TemplateSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type TemplateQueries = {
+  paginate: (this: TemplateQuery, ...args: any[]) => TemplateQuery;
+};
+
+export type TemplateMethods = {};
+
+export type TemplateStatics = {
+  paginate: (this: TemplateModel, ...args: any[]) => any;
+  paginateSubDocs: (this: TemplateModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Template = mongoose.model<TemplateDocument, TemplateModel>("Template", TemplateSchema);
+ * ```
+ */
+export type TemplateModel = mongoose.Model<TemplateDocument, TemplateQueries> &
+  TemplateStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Template schema instances:
+ * ```
+ * const TemplateSchema: TemplateSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type TemplateSchema = mongoose.Schema<
+  TemplateDocument,
+  TemplateModel,
+  TemplateMethods,
+  TemplateQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Template = mongoose.model<TemplateDocument, TemplateModel>("Template", TemplateSchema);
+ * ```
+ */
+export type TemplateDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  TemplateQueries
+> &
+  TemplateMethods & {
+    name: string;
+    codeOriginal?: string;
+    codeCustom?: string;
+    directory: string;
+    filename: string;
+    mimeType:
+      | "text/typescript"
+      | "application/typescript"
+      | "application/javascript"
+      | "text/javascript"
+      | "text/html"
+      | "text/css";
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of UserDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `UserDocument.toObject()`. To avoid conflicts with model names, use the type alias `UserObject`.

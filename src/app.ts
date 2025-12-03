@@ -27,6 +27,7 @@ import {
   ReportingRouter,
   RoleRouter,
   RoomRouter,
+  TemplateRouter,
   UserRouter,
   UserService,
 } from "./modules";
@@ -77,6 +78,7 @@ app.use("/api", new PolicyRouter().getRouter);
 app.use("/api", new BugReportingRouter().getRouter);
 app.use("/api", new CRMRouter().getRouter);
 app.use("/api", new ReportingRouter().getRouter);
+app.use("/api", new TemplateRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);
