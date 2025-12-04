@@ -16,12 +16,10 @@ export class TemplateDTO {
   name!: string;
 
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   codeOriginal?: string;
 
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   codeCustom!: string;
 
