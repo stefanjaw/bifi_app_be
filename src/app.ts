@@ -19,6 +19,7 @@ import {
   FacilityRouter,
   FileRouter,
   MaintenanceWindowRouter,
+  ModelRouter,
   PolicyRouter,
   ProductCommissioningRouter,
   ProductMaintenanceRouter,
@@ -79,6 +80,7 @@ app.use("/api", new BugReportingRouter().getRouter);
 app.use("/api", new CRMRouter().getRouter);
 app.use("/api", new ReportingRouter().getRouter);
 app.use("/api", new TemplateRouter().getRouter);
+app.use("/api", new ModelRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);
