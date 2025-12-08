@@ -1,4 +1,5 @@
 import mongoose, { ClientSession } from "mongoose";
+import { MongoException } from "../exceptions/service-exception";
 
 /**
  * Runs a callback function within a transaction.
@@ -26,9 +27,11 @@ export const runTransaction = async <T>(
 
     if (!session) await newSession.commitTransaction();
     return result as T;
-  } catch (error) {
+  } catch (error: any) {
+    console.log("🚀 ~ runTransaction ~ error:", error);
+    
     if (!session) await newSession.abortTransaction();
-    throw error;
+    throw new MongoException("Transaction failed", error.message || error);
   } finally {
     if (!session) await newSession.endSession();
   }
