@@ -57,6 +57,18 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
           );
         }
 
+        if (
+          data.type === "preventive-maintenance" &&
+          (await this.productStatusService.productIsBeforeDueForMaintenance(
+            data.productId,
+            newSession
+          ))
+        ) {
+          throw new ValidationException(
+            "The product is not yet due for preventive maintenance."
+          );
+        }
+
         // HANDLE FILES IF PROVIDED
         if (
           isValidFileUpload(data.attachments) &&

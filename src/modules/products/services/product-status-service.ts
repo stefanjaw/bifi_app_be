@@ -24,7 +24,6 @@ export class ProductStatusService {
    * @param productId - The ID of the product to update.
    * @param session - The optional client session to use for the transaction.
    */
-
   async updateProductStatus(
     productId: string | Types.ObjectId,
     session: ClientSession | undefined
@@ -113,7 +112,6 @@ export class ProductStatusService {
    * @returns The updated product document with new maintenance dates.
    * @throws ValidationException if the product or its maintenance window is not found.
    */
-
   async updateNextProductMaintenanceDates(
     productId: string | Types.ObjectId,
     session: ClientSession | undefined
@@ -217,5 +215,82 @@ export class ProductStatusService {
         )) as ProductDocument;
       }
     );
+  }
+
+  /**
+   * Checks if a product is within its maintenance window.
+   *
+   * This function retrieves a product by its ID and checks if the current date is
+   * within the product's maintenance window. If the product is not found, it throws a
+   * `ValidationException`.
+   *
+   * @param productId - The ID of the product to check.
+   * @param session - The optional client session to use for the transaction
+   * @returns A boolean indicating whether the product is within its maintenance window
+   */
+  async productIsDueForMaintenance(
+    productId: string | Types.ObjectId,
+    session: ClientSession | undefined
+  ): Promise<boolean> {
+    return await runTransaction<boolean>(session, async (newSession) => {
+      const product = await productModel
+        .findById(productId)
+        .session(newSession);
+
+      if (!product) throw new ValidationException("Product not found");
+
+      const today = dayjs();
+      const minDate = dayjs(product.minMaintenanceDate);
+      const maxDate = dayjs(product.maxMaintenanceDate);
+
+      return today.isBetween(minDate, maxDate, "day", "[]");
+    });
+  }
+
+  /**
+   * Checks if a product's maintenance window has expired.
+   *
+   * This function retrieves a product by its ID and checks if the current date is
+   * after the product's maximum maintenance date. If the product is not found, it
+   * throws a `ValidationException`.
+   *
+   * @param productId - The ID of the product to check.
+   * @param session - The optional client session to use for the transaction
+   * @returns A boolean indicating whether the product's maintenance window has expired
+   */
+  async productIsOverdueForMaintenance(
+    productId: string | Types.ObjectId,
+    session: ClientSession | undefined
+  ): Promise<boolean> {
+    return await runTransaction<boolean>(session, async (newSession) => {
+      const product = await productModel
+        .findById(productId)
+        .session(newSession);
+
+      if (!product) throw new ValidationException("Product not found");
+
+      const today = dayjs();
+      const maxDate = dayjs(product.maxMaintenanceDate);
+
+      return today.isAfter(maxDate, "day");
+    });
+  }
+
+  async productIsBeforeDueForMaintenance(
+    productId: string | Types.ObjectId,
+    session: ClientSession | undefined
+  ): Promise<boolean> {
+    return await runTransaction<boolean>(session, async (newSession) => {
+      const product = await productModel
+        .findById(productId)
+        .session(newSession);
+
+      if (!product) throw new ValidationException("Product not found");
+
+      const today = dayjs();
+      const minDate = dayjs(product.minMaintenanceDate);
+
+      return today.isBefore(minDate, "day");
+    });
   }
 }

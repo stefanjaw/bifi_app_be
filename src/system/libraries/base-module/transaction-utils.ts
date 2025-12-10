@@ -29,9 +29,9 @@ export const runTransaction = async <T>(
     return result as T;
   } catch (error: any) {
     console.log("🚀 ~ runTransaction ~ error:", error);
-    
+
     if (!session) await newSession.abortTransaction();
-    throw new MongoException("Transaction failed", error.message || error);
+    throw new MongoException(error.message || error);
   } finally {
     if (!session) await newSession.endSession();
   }
