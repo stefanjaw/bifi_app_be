@@ -97,8 +97,7 @@ export class ProductMaintenanceService extends BaseService<ProductMaintenanceDoc
         // HANDLE NEXT MAINTENANCE DATES ONLY WHEN IT IS A PM, IS ACTIVE AND IS NOT MANUAL
         if (
           maintenance.type === "preventive-maintenance" &&
-          maintenance.active &&
-          !maintenance.manual
+          maintenance.active
         ) {
           await this.productStatusService.updateNextProductMaintenanceDates(
             maintenance.productId._id,
