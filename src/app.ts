@@ -21,10 +21,10 @@ import {
   MaintenanceWindowRouter,
   ModelRouter,
   PolicyRouter,
-  ProductCommissioningRouter,
-  ProductMaintenanceRouter,
-  ProductRouter,
-  ProductTypeRouter,
+  AssetCommissioningRouter,
+  AssetMaintenanceRouter,
+  AssetRosterRouter,
+  AssetTypeRouter,
   ReportingRouter,
   RoleRouter,
   RoomRouter,
@@ -65,13 +65,13 @@ app.use("/api", new FileRouter().getRouter);
 app.use("/api", new CountryRouter().getRouter);
 app.use("/api", new CompanyRouter().getRouter);
 app.use("/api", new ContactRouter().getRouter);
-app.use("/api", new ProductTypeRouter().getRouter);
+app.use("/api", new AssetTypeRouter().getRouter);
 app.use("/api", new MaintenanceWindowRouter().getRouter);
 app.use("/api", new FacilityRouter().getRouter);
 app.use("/api", new RoomRouter().getRouter);
-app.use("/api", new ProductRouter().getRouter);
-app.use("/api", new ProductCommissioningRouter().getRouter);
-app.use("/api", new ProductMaintenanceRouter().getRouter);
+app.use("/api", new AssetRosterRouter().getRouter);
+app.use("/api", new AssetCommissioningRouter().getRouter);
+app.use("/api", new AssetMaintenanceRouter().getRouter);
 app.use("/api", new ActivityHistoryRouter().getRouter);
 app.use("/api", new UserRouter().getRouter);
 app.use("/api", new RoleRouter().getRouter);

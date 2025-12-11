@@ -6,7 +6,7 @@ import { PolicyDocument, RolePolicy, UserDocument } from "@mongodb-types";
  * Authorization middleware to check if the user has the required permissions
  * to perform the action on the resource.
  *
- * @param resource - The resource name (e.g. "user", "product", etc.)
+ * @param resource - The resource name (e.g. "user", "assetRoster", etc.)
  * @param action - The action to be performed on the resource (e.g. "read", "write", etc.)
  * @param getDocument - A function that returns the document to be checked
  * @returns A middleware that checks if the user has the required permissions

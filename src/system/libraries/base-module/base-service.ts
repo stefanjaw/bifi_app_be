@@ -160,7 +160,7 @@ export class BaseService<T> {
           );
 
           if (refField) {
-            // Extract the actual field name from the reference (e.g., "name" from "productTypeIds.name")
+            // Extract the actual field name from the reference (e.g., "name" from "assetTypeIds.name")
             const fieldName = key.slice(refField.path.length + 1);
             const filterValue = obj[key];
 

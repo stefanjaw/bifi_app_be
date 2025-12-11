@@ -127,6 +127,618 @@ export type ActivityHistoryDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of AssetCommissioningAttachmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetCommissioningDocument.toObject()`.
+ * ```
+ * const assetcommissioningObject = assetcommissioning.toObject();
+ * ```
+ */
+export type AssetCommissioningAttachment = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AssetCommissioningDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetCommissioningDocument.toObject()`. To avoid conflicts with model names, use the type alias `AssetCommissioningObject`.
+ * ```
+ * const assetcommissioningObject = assetcommissioning.toObject();
+ * ```
+ */
+export type AssetCommissioning = {
+  outcome: "fail" | "pass";
+  details?: string;
+  attachments: AssetCommissioningAttachment[];
+  assetRosterId: AssetRoster;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AssetCommissioningDocument (type alias of `AssetCommissioning`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { AssetCommissioning } from "../models"
+ * import { AssetCommissioningObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const assetcommissioningObject: AssetCommissioningObject = assetcommissioning.toObject();
+ * ```
+ */
+export type AssetCommissioningObject = AssetCommissioning;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetCommissioningQuery = mongoose.Query<
+  any,
+  AssetCommissioningDocument,
+  AssetCommissioningQueries
+> &
+  AssetCommissioningQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `AssetCommissioningSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetCommissioningQueries = {
+  paginate: (
+    this: AssetCommissioningQuery,
+    ...args: any[]
+  ) => AssetCommissioningQuery;
+};
+
+export type AssetCommissioningMethods = {};
+
+export type AssetCommissioningStatics = {
+  paginate: (this: AssetCommissioningModel, ...args: any[]) => any;
+  paginateSubDocs: (this: AssetCommissioningModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetCommissioning = mongoose.model<AssetCommissioningDocument, AssetCommissioningModel>("AssetCommissioning", AssetCommissioningSchema);
+ * ```
+ */
+export type AssetCommissioningModel = mongoose.Model<
+  AssetCommissioningDocument,
+  AssetCommissioningQueries
+> &
+  AssetCommissioningStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new AssetCommissioning schema instances:
+ * ```
+ * const AssetCommissioningSchema: AssetCommissioningSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type AssetCommissioningSchema = mongoose.Schema<
+  AssetCommissioningDocument,
+  AssetCommissioningModel,
+  AssetCommissioningMethods,
+  AssetCommissioningQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `AssetCommissioningDocument["attachments"]` element.
+ */
+export type AssetCommissioningAttachmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetCommissioning = mongoose.model<AssetCommissioningDocument, AssetCommissioningModel>("AssetCommissioning", AssetCommissioningSchema);
+ * ```
+ */
+export type AssetCommissioningDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  AssetCommissioningQueries
+> &
+  AssetCommissioningMethods & {
+    outcome: "fail" | "pass";
+    details?: string;
+    attachments: mongoose.Types.DocumentArray<AssetCommissioningAttachmentDocument>;
+    assetRosterId: AssetRosterDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of AssetMaintenanceAttachmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetMaintenanceDocument.toObject()`.
+ * ```
+ * const assetmaintenanceObject = assetmaintenance.toObject();
+ * ```
+ */
+export type AssetMaintenanceAttachment = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AssetMaintenanceDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetMaintenanceDocument.toObject()`. To avoid conflicts with model names, use the type alias `AssetMaintenanceObject`.
+ * ```
+ * const assetmaintenanceObject = assetmaintenance.toObject();
+ * ```
+ */
+export type AssetMaintenance = {
+  name: string;
+  description?: string;
+  notes?: string;
+  attachments: AssetMaintenanceAttachment[];
+  assetRosterId: AssetRoster;
+  dateStart?: Date;
+  dateEnd?: Date;
+  type: "service" | "preventive-maintenance";
+  manual?: boolean;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AssetMaintenanceDocument (type alias of `AssetMaintenance`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { AssetMaintenance } from "../models"
+ * import { AssetMaintenanceObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const assetmaintenanceObject: AssetMaintenanceObject = assetmaintenance.toObject();
+ * ```
+ */
+export type AssetMaintenanceObject = AssetMaintenance;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetMaintenanceQuery = mongoose.Query<
+  any,
+  AssetMaintenanceDocument,
+  AssetMaintenanceQueries
+> &
+  AssetMaintenanceQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `AssetMaintenanceSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetMaintenanceQueries = {
+  paginate: (
+    this: AssetMaintenanceQuery,
+    ...args: any[]
+  ) => AssetMaintenanceQuery;
+};
+
+export type AssetMaintenanceMethods = {};
+
+export type AssetMaintenanceStatics = {
+  paginate: (this: AssetMaintenanceModel, ...args: any[]) => any;
+  paginateSubDocs: (this: AssetMaintenanceModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetMaintenance = mongoose.model<AssetMaintenanceDocument, AssetMaintenanceModel>("AssetMaintenance", AssetMaintenanceSchema);
+ * ```
+ */
+export type AssetMaintenanceModel = mongoose.Model<
+  AssetMaintenanceDocument,
+  AssetMaintenanceQueries
+> &
+  AssetMaintenanceStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new AssetMaintenance schema instances:
+ * ```
+ * const AssetMaintenanceSchema: AssetMaintenanceSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type AssetMaintenanceSchema = mongoose.Schema<
+  AssetMaintenanceDocument,
+  AssetMaintenanceModel,
+  AssetMaintenanceMethods,
+  AssetMaintenanceQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `AssetMaintenanceDocument["attachments"]` element.
+ */
+export type AssetMaintenanceAttachmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetMaintenance = mongoose.model<AssetMaintenanceDocument, AssetMaintenanceModel>("AssetMaintenance", AssetMaintenanceSchema);
+ * ```
+ */
+export type AssetMaintenanceDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  AssetMaintenanceQueries
+> &
+  AssetMaintenanceMethods & {
+    name: string;
+    description?: string;
+    notes?: string;
+    attachments: mongoose.Types.DocumentArray<AssetMaintenanceAttachmentDocument>;
+    assetRosterId: AssetRosterDocument;
+    dateStart?: Date;
+    dateEnd?: Date;
+    type: "service" | "preventive-maintenance";
+    manual?: boolean;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of AssetRosterAttachmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetRosterDocument.toObject()`.
+ * ```
+ * const assetrosterObject = assetroster.toObject();
+ * ```
+ */
+export type AssetRosterAttachment = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AssetRosterDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetRosterDocument.toObject()`. To avoid conflicts with model names, use the type alias `AssetRosterObject`.
+ * ```
+ * const assetrosterObject = assetroster.toObject();
+ * ```
+ */
+export type AssetRoster = {
+  assetTypeIds: AssetType[];
+  vendorIds?: Contact[];
+  makeIds: Contact[];
+  productModel: string;
+  serialNumber: string;
+  acquiredDate: Date;
+  acquiredPrice?: number;
+  currentPrice?: number;
+  condition?: "excellent" | "good" | "fair" | "poor";
+  maintenanceWindowIds: MaintenanceWindow[];
+  photo?: mongoose.Types.ObjectId;
+  locationId?: Room;
+  warrantyDate?: Date;
+  remarks?: string;
+  status?:
+    | "active"
+    | "awaiting-commissioning"
+    | "under-service"
+    | "decommissioned"
+    | "in-pm";
+  minMaintenanceDate?: Date;
+  maintenanceDate?: Date;
+  maxMaintenanceDate?: Date;
+  attachments: AssetRosterAttachment[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+  assetCommission: any;
+  assetMaintenances: any;
+};
+
+/**
+ * Lean version of AssetRosterDocument (type alias of `AssetRoster`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { AssetRoster } from "../models"
+ * import { AssetRosterObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const assetrosterObject: AssetRosterObject = assetroster.toObject();
+ * ```
+ */
+export type AssetRosterObject = AssetRoster;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetRosterQuery = mongoose.Query<
+  any,
+  AssetRosterDocument,
+  AssetRosterQueries
+> &
+  AssetRosterQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `AssetRosterSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetRosterQueries = {
+  paginate: (this: AssetRosterQuery, ...args: any[]) => AssetRosterQuery;
+};
+
+export type AssetRosterMethods = {};
+
+export type AssetRosterStatics = {
+  paginate: (this: AssetRosterModel, ...args: any[]) => any;
+  paginateSubDocs: (this: AssetRosterModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetRoster = mongoose.model<AssetRosterDocument, AssetRosterModel>("AssetRoster", AssetRosterSchema);
+ * ```
+ */
+export type AssetRosterModel = mongoose.Model<
+  AssetRosterDocument,
+  AssetRosterQueries
+> &
+  AssetRosterStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new AssetRoster schema instances:
+ * ```
+ * const AssetRosterSchema: AssetRosterSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type AssetRosterSchema = mongoose.Schema<
+  AssetRosterDocument,
+  AssetRosterModel,
+  AssetRosterMethods,
+  AssetRosterQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `AssetRosterDocument["attachments"]` element.
+ */
+export type AssetRosterAttachmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetRoster = mongoose.model<AssetRosterDocument, AssetRosterModel>("AssetRoster", AssetRosterSchema);
+ * ```
+ */
+export type AssetRosterDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  AssetRosterQueries
+> &
+  AssetRosterMethods & {
+    assetTypeIds: mongoose.Types.Array<AssetTypeDocument>;
+    vendorIds?: mongoose.Types.Array<ContactDocument>;
+    makeIds: mongoose.Types.Array<ContactDocument>;
+    productModel: string;
+    serialNumber: string;
+    acquiredDate: Date;
+    acquiredPrice?: number;
+    currentPrice?: number;
+    condition?: "excellent" | "good" | "fair" | "poor";
+    maintenanceWindowIds: mongoose.Types.Array<MaintenanceWindowDocument>;
+    photo?: mongoose.Types.ObjectId;
+    locationId?: RoomDocument;
+    warrantyDate?: Date;
+    remarks?: string;
+    status?:
+      | "active"
+      | "awaiting-commissioning"
+      | "under-service"
+      | "decommissioned"
+      | "in-pm";
+    minMaintenanceDate?: Date;
+    maintenanceDate?: Date;
+    maxMaintenanceDate?: Date;
+    attachments: mongoose.Types.DocumentArray<AssetRosterAttachmentDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+    assetCommission: any;
+    assetMaintenances: any;
+  };
+
+/**
+ * Lean version of AssetTypeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `AssetTypeObject`.
+ * ```
+ * const assettypeObject = assettype.toObject();
+ * ```
+ */
+export type AssetType = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AssetTypeDocument (type alias of `AssetType`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { AssetType } from "../models"
+ * import { AssetTypeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const assettypeObject: AssetTypeObject = assettype.toObject();
+ * ```
+ */
+export type AssetTypeObject = AssetType;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetTypeQuery = mongoose.Query<
+  any,
+  AssetTypeDocument,
+  AssetTypeQueries
+> &
+  AssetTypeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `AssetTypeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetTypeQueries = {
+  paginate: (this: AssetTypeQuery, ...args: any[]) => AssetTypeQuery;
+};
+
+export type AssetTypeMethods = {};
+
+export type AssetTypeStatics = {
+  paginate: (this: AssetTypeModel, ...args: any[]) => any;
+  paginateSubDocs: (this: AssetTypeModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetType = mongoose.model<AssetTypeDocument, AssetTypeModel>("AssetType", AssetTypeSchema);
+ * ```
+ */
+export type AssetTypeModel = mongoose.Model<
+  AssetTypeDocument,
+  AssetTypeQueries
+> &
+  AssetTypeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new AssetType schema instances:
+ * ```
+ * const AssetTypeSchema: AssetTypeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type AssetTypeSchema = mongoose.Schema<
+  AssetTypeDocument,
+  AssetTypeModel,
+  AssetTypeMethods,
+  AssetTypeQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetType = mongoose.model<AssetTypeDocument, AssetTypeModel>("AssetType", AssetTypeSchema);
+ * ```
+ */
+export type AssetTypeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  AssetTypeQueries
+> &
+  AssetTypeMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of CompanyDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CompanyDocument.toObject()`. To avoid conflicts with model names, use the type alias `CompanyObject`.
@@ -944,615 +1556,6 @@ export type MaintenanceWindowDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
-  };
-
-/**
- * Lean version of ProductCommissioningAttachmentDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ProductCommissioningDocument.toObject()`.
- * ```
- * const productcommissioningObject = productcommissioning.toObject();
- * ```
- */
-export type ProductCommissioningAttachment = {
-  fileId: mongoose.Types.ObjectId;
-  name: string;
-  mimeType: string;
-  size: number;
-  fileMetadata?: any;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of ProductCommissioningDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ProductCommissioningDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductCommissioningObject`.
- * ```
- * const productcommissioningObject = productcommissioning.toObject();
- * ```
- */
-export type ProductCommissioning = {
-  outcome: "fail" | "pass";
-  details?: string;
-  attachments: ProductCommissioningAttachment[];
-  productId: Product;
-  active?: boolean;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of ProductCommissioningDocument (type alias of `ProductCommissioning`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { ProductCommissioning } from "../models"
- * import { ProductCommissioningObject } from "../interfaces/mongoose.gen.ts"
- *
- * const productcommissioningObject: ProductCommissioningObject = productcommissioning.toObject();
- * ```
- */
-export type ProductCommissioningObject = ProductCommissioning;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type ProductCommissioningQuery = mongoose.Query<
-  any,
-  ProductCommissioningDocument,
-  ProductCommissioningQueries
-> &
-  ProductCommissioningQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `ProductCommissioningSchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type ProductCommissioningQueries = {
-  paginate: (
-    this: ProductCommissioningQuery,
-    ...args: any[]
-  ) => ProductCommissioningQuery;
-};
-
-export type ProductCommissioningMethods = {};
-
-export type ProductCommissioningStatics = {
-  paginate: (this: ProductCommissioningModel, ...args: any[]) => any;
-  paginateSubDocs: (this: ProductCommissioningModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const ProductCommissioning = mongoose.model<ProductCommissioningDocument, ProductCommissioningModel>("ProductCommissioning", ProductCommissioningSchema);
- * ```
- */
-export type ProductCommissioningModel = mongoose.Model<
-  ProductCommissioningDocument,
-  ProductCommissioningQueries
-> &
-  ProductCommissioningStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new ProductCommissioning schema instances:
- * ```
- * const ProductCommissioningSchema: ProductCommissioningSchema = new mongoose.Schema({ ... })
- * ```
- */
-export type ProductCommissioningSchema = mongoose.Schema<
-  ProductCommissioningDocument,
-  ProductCommissioningModel,
-  ProductCommissioningMethods,
-  ProductCommissioningQueries
->;
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ProductCommissioningDocument["attachments"]` element.
- */
-export type ProductCommissioningAttachmentDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    fileId: mongoose.Types.ObjectId;
-    name: string;
-    mimeType: string;
-    size: number;
-    fileMetadata?: any;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const ProductCommissioning = mongoose.model<ProductCommissioningDocument, ProductCommissioningModel>("ProductCommissioning", ProductCommissioningSchema);
- * ```
- */
-export type ProductCommissioningDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  ProductCommissioningQueries
-> &
-  ProductCommissioningMethods & {
-    outcome: "fail" | "pass";
-    details?: string;
-    attachments: mongoose.Types.DocumentArray<ProductCommissioningAttachmentDocument>;
-    productId: ProductDocument;
-    active?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Lean version of ProductMaintenanceAttachmentDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ProductMaintenanceDocument.toObject()`.
- * ```
- * const productmaintenanceObject = productmaintenance.toObject();
- * ```
- */
-export type ProductMaintenanceAttachment = {
-  fileId: mongoose.Types.ObjectId;
-  name: string;
-  mimeType: string;
-  size: number;
-  fileMetadata?: any;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of ProductMaintenanceDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ProductMaintenanceDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductMaintenanceObject`.
- * ```
- * const productmaintenanceObject = productmaintenance.toObject();
- * ```
- */
-export type ProductMaintenance = {
-  name: string;
-  description?: string;
-  notes?: string;
-  attachments: ProductMaintenanceAttachment[];
-  productId: Product;
-  dateStart?: Date;
-  dateEnd?: Date;
-  type: "service" | "preventive-maintenance";
-  manual?: boolean;
-  active?: boolean;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of ProductMaintenanceDocument (type alias of `ProductMaintenance`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { ProductMaintenance } from "../models"
- * import { ProductMaintenanceObject } from "../interfaces/mongoose.gen.ts"
- *
- * const productmaintenanceObject: ProductMaintenanceObject = productmaintenance.toObject();
- * ```
- */
-export type ProductMaintenanceObject = ProductMaintenance;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type ProductMaintenanceQuery = mongoose.Query<
-  any,
-  ProductMaintenanceDocument,
-  ProductMaintenanceQueries
-> &
-  ProductMaintenanceQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `ProductMaintenanceSchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type ProductMaintenanceQueries = {
-  paginate: (
-    this: ProductMaintenanceQuery,
-    ...args: any[]
-  ) => ProductMaintenanceQuery;
-};
-
-export type ProductMaintenanceMethods = {};
-
-export type ProductMaintenanceStatics = {
-  paginate: (this: ProductMaintenanceModel, ...args: any[]) => any;
-  paginateSubDocs: (this: ProductMaintenanceModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const ProductMaintenance = mongoose.model<ProductMaintenanceDocument, ProductMaintenanceModel>("ProductMaintenance", ProductMaintenanceSchema);
- * ```
- */
-export type ProductMaintenanceModel = mongoose.Model<
-  ProductMaintenanceDocument,
-  ProductMaintenanceQueries
-> &
-  ProductMaintenanceStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new ProductMaintenance schema instances:
- * ```
- * const ProductMaintenanceSchema: ProductMaintenanceSchema = new mongoose.Schema({ ... })
- * ```
- */
-export type ProductMaintenanceSchema = mongoose.Schema<
-  ProductMaintenanceDocument,
-  ProductMaintenanceModel,
-  ProductMaintenanceMethods,
-  ProductMaintenanceQueries
->;
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ProductMaintenanceDocument["attachments"]` element.
- */
-export type ProductMaintenanceAttachmentDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    fileId: mongoose.Types.ObjectId;
-    name: string;
-    mimeType: string;
-    size: number;
-    fileMetadata?: any;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const ProductMaintenance = mongoose.model<ProductMaintenanceDocument, ProductMaintenanceModel>("ProductMaintenance", ProductMaintenanceSchema);
- * ```
- */
-export type ProductMaintenanceDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  ProductMaintenanceQueries
-> &
-  ProductMaintenanceMethods & {
-    name: string;
-    description?: string;
-    notes?: string;
-    attachments: mongoose.Types.DocumentArray<ProductMaintenanceAttachmentDocument>;
-    productId: ProductDocument;
-    dateStart?: Date;
-    dateEnd?: Date;
-    type: "service" | "preventive-maintenance";
-    manual?: boolean;
-    active?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Lean version of ProductTypeDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ProductTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductTypeObject`.
- * ```
- * const producttypeObject = producttype.toObject();
- * ```
- */
-export type ProductType = {
-  name: string;
-  description?: string;
-  active?: boolean;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of ProductTypeDocument (type alias of `ProductType`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { ProductType } from "../models"
- * import { ProductTypeObject } from "../interfaces/mongoose.gen.ts"
- *
- * const producttypeObject: ProductTypeObject = producttype.toObject();
- * ```
- */
-export type ProductTypeObject = ProductType;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type ProductTypeQuery = mongoose.Query<
-  any,
-  ProductTypeDocument,
-  ProductTypeQueries
-> &
-  ProductTypeQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `ProductTypeSchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type ProductTypeQueries = {
-  paginate: (this: ProductTypeQuery, ...args: any[]) => ProductTypeQuery;
-};
-
-export type ProductTypeMethods = {};
-
-export type ProductTypeStatics = {
-  paginate: (this: ProductTypeModel, ...args: any[]) => any;
-  paginateSubDocs: (this: ProductTypeModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const ProductType = mongoose.model<ProductTypeDocument, ProductTypeModel>("ProductType", ProductTypeSchema);
- * ```
- */
-export type ProductTypeModel = mongoose.Model<
-  ProductTypeDocument,
-  ProductTypeQueries
-> &
-  ProductTypeStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new ProductType schema instances:
- * ```
- * const ProductTypeSchema: ProductTypeSchema = new mongoose.Schema({ ... })
- * ```
- */
-export type ProductTypeSchema = mongoose.Schema<
-  ProductTypeDocument,
-  ProductTypeModel,
-  ProductTypeMethods,
-  ProductTypeQueries
->;
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const ProductType = mongoose.model<ProductTypeDocument, ProductTypeModel>("ProductType", ProductTypeSchema);
- * ```
- */
-export type ProductTypeDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  ProductTypeQueries
-> &
-  ProductTypeMethods & {
-    name: string;
-    description?: string;
-    active?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Lean version of ProductAttachmentDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ProductDocument.toObject()`.
- * ```
- * const productObject = product.toObject();
- * ```
- */
-export type ProductAttachment = {
-  fileId: mongoose.Types.ObjectId;
-  name: string;
-  mimeType: string;
-  size: number;
-  fileMetadata?: any;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of ProductDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ProductDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductObject`.
- * ```
- * const productObject = product.toObject();
- * ```
- */
-export type Product = {
-  productTypeIds: ProductType[];
-  vendorIds?: Contact[];
-  makeIds: Contact[];
-  productModel: string;
-  serialNumber: string;
-  acquiredDate: Date;
-  acquiredPrice?: number;
-  currentPrice?: number;
-  condition?: "excellent" | "good" | "fair" | "poor";
-  maintenanceWindowIds: MaintenanceWindow[];
-  photo?: mongoose.Types.ObjectId;
-  locationId?: Room;
-  warrantyDate?: Date;
-  remarks?: string;
-  status?:
-    | "active"
-    | "awaiting-commissioning"
-    | "under-service"
-    | "decommissioned"
-    | "in-pm";
-  minMaintenanceDate?: Date;
-  maintenanceDate?: Date;
-  maxMaintenanceDate?: Date;
-  attachments: ProductAttachment[];
-  active?: boolean;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-  productCommission: any;
-  productMaintenances: any;
-};
-
-/**
- * Lean version of ProductDocument (type alias of `Product`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { Product } from "../models"
- * import { ProductObject } from "../interfaces/mongoose.gen.ts"
- *
- * const productObject: ProductObject = product.toObject();
- * ```
- */
-export type ProductObject = Product;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type ProductQuery = mongoose.Query<
-  any,
-  ProductDocument,
-  ProductQueries
-> &
-  ProductQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `ProductSchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type ProductQueries = {
-  paginate: (this: ProductQuery, ...args: any[]) => ProductQuery;
-};
-
-export type ProductMethods = {};
-
-export type ProductStatics = {
-  paginate: (this: ProductModel, ...args: any[]) => any;
-  paginateSubDocs: (this: ProductModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const Product = mongoose.model<ProductDocument, ProductModel>("Product", ProductSchema);
- * ```
- */
-export type ProductModel = mongoose.Model<ProductDocument, ProductQueries> &
-  ProductStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new Product schema instances:
- * ```
- * const ProductSchema: ProductSchema = new mongoose.Schema({ ... })
- * ```
- */
-export type ProductSchema = mongoose.Schema<
-  ProductDocument,
-  ProductModel,
-  ProductMethods,
-  ProductQueries
->;
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ProductDocument["attachments"]` element.
- */
-export type ProductAttachmentDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    fileId: mongoose.Types.ObjectId;
-    name: string;
-    mimeType: string;
-    size: number;
-    fileMetadata?: any;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const Product = mongoose.model<ProductDocument, ProductModel>("Product", ProductSchema);
- * ```
- */
-export type ProductDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  ProductQueries
-> &
-  ProductMethods & {
-    productTypeIds: mongoose.Types.Array<ProductTypeDocument>;
-    vendorIds?: mongoose.Types.Array<ContactDocument>;
-    makeIds: mongoose.Types.Array<ContactDocument>;
-    productModel: string;
-    serialNumber: string;
-    acquiredDate: Date;
-    acquiredPrice?: number;
-    currentPrice?: number;
-    condition?: "excellent" | "good" | "fair" | "poor";
-    maintenanceWindowIds: mongoose.Types.Array<MaintenanceWindowDocument>;
-    photo?: mongoose.Types.ObjectId;
-    locationId?: RoomDocument;
-    warrantyDate?: Date;
-    remarks?: string;
-    status?:
-      | "active"
-      | "awaiting-commissioning"
-      | "under-service"
-      | "decommissioned"
-      | "in-pm";
-    minMaintenanceDate?: Date;
-    maintenanceDate?: Date;
-    maxMaintenanceDate?: Date;
-    attachments: mongoose.Types.DocumentArray<ProductAttachmentDocument>;
-    active?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-    productCommission: any;
-    productMaintenances: any;
   };
 
 /**
