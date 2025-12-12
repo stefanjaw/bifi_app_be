@@ -11,6 +11,7 @@ import {
   isValidFileUpload,
   runTransaction,
   UserStore,
+  ValidationException,
 } from "../../../system";
 import { taskModel } from "../models/task.model";
 import mongoose, { PaginateModel } from "mongoose";
@@ -91,15 +92,20 @@ export class TaskService extends BaseService<TaskDocument> {
 
       // HANDLE STAGE, IF NOT PROVIDED
       if (!data.stage) {
-        data.stage = (
-          await this.taskStageService.get(
-            { isDefault: true },
-            undefined,
-            undefined,
-            undefined,
-            newSession
-          )
-        )?.[0]?.id;
+        const stages = await this.taskStageService.get(
+          { isDefault: true },
+          undefined,
+          undefined,
+          undefined,
+          newSession
+        );
+
+        if (!stages || stages.length === 0)
+          throw new ValidationException(
+            "No default stage found, please create one"
+          );
+
+        data.stage = stages[0]._id.toString();
       }
 
       return await super.create({
