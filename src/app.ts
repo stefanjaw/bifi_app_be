@@ -31,6 +31,9 @@ import {
   TemplateRouter,
   UserRouter,
   UserService,
+  TaskProjectRouter,
+  TaskStageRouter,
+  TaskRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -81,6 +84,9 @@ app.use("/api", new CRMRouter().getRouter);
 app.use("/api", new ReportingRouter().getRouter);
 app.use("/api", new TemplateRouter().getRouter);
 app.use("/api", new ModelRouter().getRouter);
+app.use("/api", new TaskRouter().getRouter);
+app.use("/api", new TaskProjectRouter().getRouter);
+app.use("/api", new TaskStageRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);

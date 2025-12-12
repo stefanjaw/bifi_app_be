@@ -1928,6 +1928,390 @@ export type RoleDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of TaskProjectDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TaskProjectDocument.toObject()`. To avoid conflicts with model names, use the type alias `TaskProjectObject`.
+ * ```
+ * const taskprojectObject = taskproject.toObject();
+ * ```
+ */
+export type TaskProject = {
+  name: string;
+  description?: string;
+  createdBy: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TaskProjectDocument (type alias of `TaskProject`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { TaskProject } from "../models"
+ * import { TaskProjectObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const taskprojectObject: TaskProjectObject = taskproject.toObject();
+ * ```
+ */
+export type TaskProjectObject = TaskProject;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaskProjectQuery = mongoose.Query<
+  any,
+  TaskProjectDocument,
+  TaskProjectQueries
+> &
+  TaskProjectQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `TaskProjectSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaskProjectQueries = {
+  paginate: (this: TaskProjectQuery, ...args: any[]) => TaskProjectQuery;
+};
+
+export type TaskProjectMethods = {};
+
+export type TaskProjectStatics = {
+  paginate: (this: TaskProjectModel, ...args: any[]) => any;
+  paginateSubDocs: (this: TaskProjectModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const TaskProject = mongoose.model<TaskProjectDocument, TaskProjectModel>("TaskProject", TaskProjectSchema);
+ * ```
+ */
+export type TaskProjectModel = mongoose.Model<
+  TaskProjectDocument,
+  TaskProjectQueries
+> &
+  TaskProjectStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new TaskProject schema instances:
+ * ```
+ * const TaskProjectSchema: TaskProjectSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type TaskProjectSchema = mongoose.Schema<
+  TaskProjectDocument,
+  TaskProjectModel,
+  TaskProjectMethods,
+  TaskProjectQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const TaskProject = mongoose.model<TaskProjectDocument, TaskProjectModel>("TaskProject", TaskProjectSchema);
+ * ```
+ */
+export type TaskProjectDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  TaskProjectQueries
+> &
+  TaskProjectMethods & {
+    name: string;
+    description?: string;
+    createdBy: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of TaskStageDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TaskStageDocument.toObject()`. To avoid conflicts with model names, use the type alias `TaskStageObject`.
+ * ```
+ * const taskstageObject = taskstage.toObject();
+ * ```
+ */
+export type TaskStage = {
+  name: string;
+  description?: string;
+  isDefault?: boolean;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TaskStageDocument (type alias of `TaskStage`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { TaskStage } from "../models"
+ * import { TaskStageObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const taskstageObject: TaskStageObject = taskstage.toObject();
+ * ```
+ */
+export type TaskStageObject = TaskStage;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaskStageQuery = mongoose.Query<
+  any,
+  TaskStageDocument,
+  TaskStageQueries
+> &
+  TaskStageQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `TaskStageSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaskStageQueries = {
+  paginate: (this: TaskStageQuery, ...args: any[]) => TaskStageQuery;
+};
+
+export type TaskStageMethods = {};
+
+export type TaskStageStatics = {
+  paginate: (this: TaskStageModel, ...args: any[]) => any;
+  paginateSubDocs: (this: TaskStageModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const TaskStage = mongoose.model<TaskStageDocument, TaskStageModel>("TaskStage", TaskStageSchema);
+ * ```
+ */
+export type TaskStageModel = mongoose.Model<
+  TaskStageDocument,
+  TaskStageQueries
+> &
+  TaskStageStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new TaskStage schema instances:
+ * ```
+ * const TaskStageSchema: TaskStageSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type TaskStageSchema = mongoose.Schema<
+  TaskStageDocument,
+  TaskStageModel,
+  TaskStageMethods,
+  TaskStageQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const TaskStage = mongoose.model<TaskStageDocument, TaskStageModel>("TaskStage", TaskStageSchema);
+ * ```
+ */
+export type TaskStageDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  TaskStageQueries
+> &
+  TaskStageMethods & {
+    name: string;
+    description?: string;
+    isDefault?: boolean;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of TaskAttachmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TaskDocument.toObject()`.
+ * ```
+ * const taskObject = task.toObject();
+ * ```
+ */
+export type TaskAttachment = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TaskDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TaskDocument.toObject()`. To avoid conflicts with model names, use the type alias `TaskObject`.
+ * ```
+ * const taskObject = task.toObject();
+ * ```
+ */
+export type Task = {
+  name: string;
+  description?: string;
+  plannedStartDate?: Date;
+  plannedEndDate?: Date;
+  plannedDuration?: number;
+  progress?: number;
+  stage?: TaskStage;
+  projectId?: TaskProject;
+  dependencyIds?: Task[];
+  parentId?: Task;
+  priority?: "low" | "medium" | "high" | "urgent";
+  createdBy: User;
+  updatedBy?: User;
+  assigned?: User;
+  attachments: TaskAttachment[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+  childIds: any;
+};
+
+/**
+ * Lean version of TaskDocument (type alias of `Task`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Task } from "../models"
+ * import { TaskObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const taskObject: TaskObject = task.toObject();
+ * ```
+ */
+export type TaskObject = Task;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaskQuery = mongoose.Query<any, TaskDocument, TaskQueries> &
+  TaskQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `TaskSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaskQueries = {
+  paginate: (this: TaskQuery, ...args: any[]) => TaskQuery;
+};
+
+export type TaskMethods = {};
+
+export type TaskStatics = {
+  paginate: (this: TaskModel, ...args: any[]) => any;
+  paginateSubDocs: (this: TaskModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Task = mongoose.model<TaskDocument, TaskModel>("Task", TaskSchema);
+ * ```
+ */
+export type TaskModel = mongoose.Model<TaskDocument, TaskQueries> & TaskStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Task schema instances:
+ * ```
+ * const TaskSchema: TaskSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type TaskSchema = mongoose.Schema<
+  TaskDocument,
+  TaskModel,
+  TaskMethods,
+  TaskQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `TaskDocument["attachments"]` element.
+ */
+export type TaskAttachmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Task = mongoose.model<TaskDocument, TaskModel>("Task", TaskSchema);
+ * ```
+ */
+export type TaskDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  TaskQueries
+> &
+  TaskMethods & {
+    name: string;
+    description?: string;
+    plannedStartDate?: Date;
+    plannedEndDate?: Date;
+    plannedDuration?: number;
+    progress?: number;
+    stage?: TaskStageDocument;
+    projectId?: TaskProjectDocument;
+    dependencyIds?: mongoose.Types.Array<TaskDocument>;
+    parentId?: TaskDocument;
+    priority?: "low" | "medium" | "high" | "urgent";
+    createdBy: UserDocument;
+    updatedBy?: UserDocument;
+    assigned?: UserDocument;
+    attachments: mongoose.Types.DocumentArray<TaskAttachmentDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+    childIds: any;
+  };
+
+/**
  * Lean version of TemplateDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `TemplateDocument.toObject()`. To avoid conflicts with model names, use the type alias `TemplateObject`.
