@@ -17,6 +17,7 @@ import { taskModel } from "../models/task.model";
 import mongoose, { PaginateModel } from "mongoose";
 import { TaskDTO, UpdateTaskDTO } from "../models/task.dto";
 import { TaskStageService } from "../../task-stages/services/task-stage-service";
+import dayjs from "dayjs";
 
 export class TaskService extends BaseService<TaskDocument> {
   private taskStageService = new TaskStageService();
@@ -106,6 +107,18 @@ export class TaskService extends BaseService<TaskDocument> {
           );
 
         data.stage = stages[0]._id.toString();
+      }
+
+      if (!data.plannedStartDate) {
+        data.plannedStartDate = data.plannedEndDate
+          ? dayjs(data.plannedEndDate).subtract(1, "day").toDate()
+          : dayjs().add(1, "day").toDate();
+      }
+
+      if (!data.plannedEndDate) {
+        data.plannedEndDate = data.plannedStartDate
+          ? dayjs(data.plannedStartDate).add(1, "day").toDate()
+          : dayjs().add(1, "day").toDate();
       }
 
       return await super.create({
