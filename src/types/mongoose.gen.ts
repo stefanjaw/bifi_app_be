@@ -2179,7 +2179,7 @@ export type Task = {
   plannedDuration?: number;
   progress?: number;
   stage?: TaskStage;
-  projectId?: TaskProject;
+  projectId?: Project;
   dependencyIds?: Task[];
   parentId?: Task;
   priority?: "low" | "medium" | "high" | "urgent";
@@ -2293,7 +2293,7 @@ export type TaskDocument = mongoose.Document<
     plannedDuration?: number;
     progress?: number;
     stage?: TaskStageDocument;
-    projectId?: TaskProjectDocument;
+    projectId?: ProjectDocument;
     dependencyIds?: mongoose.Types.Array<TaskDocument>;
     parentId?: TaskDocument;
     priority?: "low" | "medium" | "high" | "urgent";
