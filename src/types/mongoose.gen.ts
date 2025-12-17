@@ -1559,6 +1559,113 @@ export type MaintenanceWindowDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ProjectDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProjectDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProjectObject`.
+ * ```
+ * const projectObject = project.toObject();
+ * ```
+ */
+export type Project = {
+  name: string;
+  description?: string;
+  createdBy: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ProjectDocument (type alias of `Project`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Project } from "../models"
+ * import { ProjectObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const projectObject: ProjectObject = project.toObject();
+ * ```
+ */
+export type ProjectObject = Project;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProjectQuery = mongoose.Query<
+  any,
+  ProjectDocument,
+  ProjectQueries
+> &
+  ProjectQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ProjectSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProjectQueries = {
+  paginate: (this: ProjectQuery, ...args: any[]) => ProjectQuery;
+};
+
+export type ProjectMethods = {};
+
+export type ProjectStatics = {
+  paginate: (this: ProjectModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ProjectModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Project = mongoose.model<ProjectDocument, ProjectModel>("Project", ProjectSchema);
+ * ```
+ */
+export type ProjectModel = mongoose.Model<ProjectDocument, ProjectQueries> &
+  ProjectStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Project schema instances:
+ * ```
+ * const ProjectSchema: ProjectSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ProjectSchema = mongoose.Schema<
+  ProjectDocument,
+  ProjectModel,
+  ProjectMethods,
+  ProjectQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Project = mongoose.model<ProjectDocument, ProjectModel>("Project", ProjectSchema);
+ * ```
+ */
+export type ProjectDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ProjectQueries
+> &
+  ProjectMethods & {
+    name: string;
+    description?: string;
+    createdBy: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of ReportingDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ReportingDocument.toObject()`. To avoid conflicts with model names, use the type alias `ReportingObject`.
@@ -1921,116 +2028,6 @@ export type RoleDocument = mongoose.Document<
   RoleMethods & {
     name: string;
     policies: mongoose.Types.DocumentArray<RolePolicyDocument>;
-    active?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Lean version of TaskProjectDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `TaskProjectDocument.toObject()`. To avoid conflicts with model names, use the type alias `TaskProjectObject`.
- * ```
- * const taskprojectObject = taskproject.toObject();
- * ```
- */
-export type TaskProject = {
-  name: string;
-  description?: string;
-  createdBy: User;
-  active?: boolean;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of TaskProjectDocument (type alias of `TaskProject`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { TaskProject } from "../models"
- * import { TaskProjectObject } from "../interfaces/mongoose.gen.ts"
- *
- * const taskprojectObject: TaskProjectObject = taskproject.toObject();
- * ```
- */
-export type TaskProjectObject = TaskProject;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type TaskProjectQuery = mongoose.Query<
-  any,
-  TaskProjectDocument,
-  TaskProjectQueries
-> &
-  TaskProjectQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `TaskProjectSchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type TaskProjectQueries = {
-  paginate: (this: TaskProjectQuery, ...args: any[]) => TaskProjectQuery;
-};
-
-export type TaskProjectMethods = {};
-
-export type TaskProjectStatics = {
-  paginate: (this: TaskProjectModel, ...args: any[]) => any;
-  paginateSubDocs: (this: TaskProjectModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const TaskProject = mongoose.model<TaskProjectDocument, TaskProjectModel>("TaskProject", TaskProjectSchema);
- * ```
- */
-export type TaskProjectModel = mongoose.Model<
-  TaskProjectDocument,
-  TaskProjectQueries
-> &
-  TaskProjectStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new TaskProject schema instances:
- * ```
- * const TaskProjectSchema: TaskProjectSchema = new mongoose.Schema({ ... })
- * ```
- */
-export type TaskProjectSchema = mongoose.Schema<
-  TaskProjectDocument,
-  TaskProjectModel,
-  TaskProjectMethods,
-  TaskProjectQueries
->;
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const TaskProject = mongoose.model<TaskProjectDocument, TaskProjectModel>("TaskProject", TaskProjectSchema);
- * ```
- */
-export type TaskProjectDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  TaskProjectQueries
-> &
-  TaskProjectMethods & {
-    name: string;
-    description?: string;
-    createdBy: UserDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;

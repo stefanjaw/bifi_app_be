@@ -8,7 +8,7 @@ import {
 } from "class-validator";
 import { PartialType } from "../../../system";
 
-export class TaskProjectDTO {
+export class ProjectDTO {
   @IsString()
   @IsNotEmpty()
   name!: string;
@@ -24,7 +24,7 @@ export class TaskProjectDTO {
   active?: boolean;
 }
 
-export class UpdateTaskProjectDTO extends PartialType(TaskProjectDTO) {
+export class UpdateProjectDTO extends PartialType(ProjectDTO) {
   @IsMongoId()
   _id!: string;
 }

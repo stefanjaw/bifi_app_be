@@ -1,9 +1,9 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { TaskProjectDocument } from "@mongodb-types";
+import { ProjectDocument } from "@mongodb-types";
 
-const taskProjectSchema = new Schema(
+const projectSchema = new Schema(
   {
     name: {
       type: String,
@@ -30,12 +30,12 @@ const taskProjectSchema = new Schema(
   { timestamps: true }
 );
 
-taskProjectSchema.plugin(paginate);
-taskProjectSchema.plugin(autopopulate);
+projectSchema.plugin(paginate);
+projectSchema.plugin(autopopulate);
 
-const taskProjectModel = mongoose.model<
-  TaskProjectDocument,
-  PaginateModel<TaskProjectDocument>
->("TaskProject", taskProjectSchema);
+const projectModel = mongoose.model<
+  ProjectDocument,
+  PaginateModel<ProjectDocument>
+>("Project", projectSchema);
 
-export { taskProjectModel };
+export { projectModel };

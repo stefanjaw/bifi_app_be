@@ -31,7 +31,7 @@ import {
   TemplateRouter,
   UserRouter,
   UserService,
-  TaskProjectRouter,
+  ProjectRouter,
   TaskStageRouter,
   TaskRouter,
 } from "./modules";
@@ -85,7 +85,7 @@ app.use("/api", new ReportingRouter().getRouter);
 app.use("/api", new TemplateRouter().getRouter);
 app.use("/api", new ModelRouter().getRouter);
 app.use("/api", new TaskRouter().getRouter);
-app.use("/api", new TaskProjectRouter().getRouter);
+app.use("/api", new ProjectRouter().getRouter);
 app.use("/api", new TaskStageRouter().getRouter);
 
 // middlewares

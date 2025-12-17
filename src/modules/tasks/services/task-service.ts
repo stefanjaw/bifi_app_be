@@ -1,6 +1,6 @@
 import {
   TaskDocument,
-  TaskProjectDocument,
+  ProjectDocument,
   TaskStageDocument,
   UserDocument,
 } from "@mongodb-types";
@@ -35,7 +35,7 @@ export class TaskService extends BaseService<TaskDocument> {
         {
           path: "projectId",
           getModel: () =>
-            mongoose.model("TaskProject") as PaginateModel<TaskProjectDocument>,
+            mongoose.model("TaskProject") as PaginateModel<ProjectDocument>,
           isArray: false,
         },
         {

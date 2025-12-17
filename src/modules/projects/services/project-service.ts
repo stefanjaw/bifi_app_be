@@ -1,13 +1,13 @@
-import { TaskProjectDocument, UserDocument } from "@mongodb-types";
+import { ProjectDocument, UserDocument } from "@mongodb-types";
 import { BaseService, runTransaction, UserStore } from "../../../system";
-import { taskProjectModel } from "../models/task-project.model";
+import { projectModel } from "../models/project.model";
 import mongoose, { PaginateModel } from "mongoose";
-import { TaskProjectDTO } from "../models/task-project.dto";
+import { ProjectDTO } from "../models/project.dto";
 
-export class TaskProjectService extends BaseService<TaskProjectDocument> {
+export class ProjectService extends BaseService<ProjectDocument> {
   constructor() {
     super({
-      model: taskProjectModel,
+      model: projectModel,
       refFields: [
         {
           path: "createdBy",
@@ -19,10 +19,10 @@ export class TaskProjectService extends BaseService<TaskProjectDocument> {
   }
 
   override async create(
-    data: TaskProjectDTO,
+    data: ProjectDTO,
     session?: mongoose.ClientSession | undefined
-  ): Promise<TaskProjectDocument> {
-    return await runTransaction<TaskProjectDocument>(
+  ): Promise<ProjectDocument> {
+    return await runTransaction<ProjectDocument>(
       session,
       async (newSession) => {
         return await super.create(
