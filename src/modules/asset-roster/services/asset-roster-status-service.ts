@@ -103,11 +103,19 @@ export class AssetRosterStatusService {
         // get recurrency for the maintenanceDate
         const { unit, count } = window.parseRecurrencyForDayjs();
 
-        // calculate min and max maintenance dates and curr maintenance date
-        const maintenanceDate = dayjs(assetRoster.maintenanceDate).add(
-          count,
-          unit
+        // check if the current date of finalizing the PM is overdue
+        const isOverdue = await this.assetRosterIsOverdueForMaintenance(
+          assetRosterId,
+          newSession
         );
+
+        // calculate min and max maintenance dates and curr maintenance date
+        // if its overdue, use the current date
+        const maintenanceDate = dayjs(
+          isOverdue ? Date.now() : assetRoster.maintenanceDate
+        ).add(count, unit);
+
+        // calculate min and max maintenance dates
         const minMaintenanceDate = dayjs(maintenanceDate).subtract(
           window.daysBefore,
           "day"
