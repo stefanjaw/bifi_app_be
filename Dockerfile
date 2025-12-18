@@ -25,24 +25,24 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# clone submodule
-RUN git submodule update --progress --init --recursive
-RUN git -C ./bifi_app_be checkout nodev22
-
 # create app directory
 WORKDIR /app
 
 # copy everthing
-COPY ./bifi_app_be .
+COPY . .
+
+# clone submodule
+RUN git submodule update --progress --init --recursive
+RUN git -C ./bifi_app_be checkout nodev22
 
 # install dependencies
-RUN cd npm install
+RUN npm --prefix ./bifi_app_be install
 
 # install puppeteer dependencies
-RUN npx puppeteer browsers install chrome
+RUN npx --prefix ./bifi_app_be puppeteer browsers install chrome
 
 # build app
-RUN npm run build
+RUN npm --prefix ./bifi_app_be run build
 
 # run app
-CMD ["node", "dist/index.js"]
+CMD ["node", "bifi_app_be/dist/index.js"]
