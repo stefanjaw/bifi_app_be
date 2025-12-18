@@ -154,4 +154,20 @@ export class TaskService extends BaseService<TaskDocument> {
       });
     });
   }
+
+  override async delete(
+    _id: string,
+    session?: mongoose.ClientSession | undefined
+  ): Promise<boolean> {
+    return await runTransaction<boolean>(session, async (newSession) => {
+      // when a task is deleted, all subtasks where parentId is the deleted task, should be removed from parentId
+      await taskModel.updateMany(
+        { parentId: _id },
+        { parentId: null },
+        { session: newSession }
+      );
+
+      return await super.delete(_id, newSession);
+    });
+  }
 }
