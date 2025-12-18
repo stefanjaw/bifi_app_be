@@ -33,7 +33,7 @@ COPY . .
 
 # clone submodule
 RUN git submodule update --progress --init --recursive
-RUN cd ./bifi_app_be && git checkout angularv20
+RUN cd ./bifi_app_be && git checkout nodev22
 
 # install dependencies
 RUN npm install
