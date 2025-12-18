@@ -28,8 +28,14 @@ RUN apt-get update && apt-get install -y \
 # create app directory
 WORKDIR /app
 
-# install app dependencies
+# copy everthing
 COPY . .
+
+# clone submodule
+RUN git submodule update --progress --init --recursive
+RUN cd ./bifi_app_be && git checkout angularv20
+
+# install dependencies
 RUN npm install
 
 # install puppeteer dependencies
