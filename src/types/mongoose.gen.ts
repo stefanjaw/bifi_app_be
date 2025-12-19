@@ -2035,6 +2035,402 @@ export type RoleDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ShippingInvoiceCommentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShippingInvoiceDocument.toObject()`.
+ * ```
+ * const shippinginvoiceObject = shippinginvoice.toObject();
+ * ```
+ */
+export type ShippingInvoiceComment = {
+  description: string;
+  createdAt?: Date;
+  createdBy: User;
+  active?: boolean;
+  status?: "DRAFT" | "CANCELLED" | "DONE";
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ShippingInvoicePdfExtractedDatumLineTariffDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShippingInvoicePdfExtractedDatumLineDocument.toObject()`.
+ * ```
+ * const shippinginvoicepdfextracteddatumlineObject = shippinginvoicepdfextracteddatumline.toObject();
+ * ```
+ */
+export type ShippingInvoicePdfExtractedDatumLineTariff = {
+  code?: string | null;
+  chapter: string;
+  heading: string;
+  subheading: string;
+  userDescription?: string | null;
+  description?: string | null;
+  rateOfDuty?: number | null;
+  unitOfMeasurement?: string | null;
+  tax?: number | null;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ShippingInvoicePdfExtractedDatumLineDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShippingInvoicePdfExtractedDatumDocument.toObject()`.
+ * ```
+ * const shippinginvoicepdfextracteddatumObject = shippinginvoicepdfextracteddatum.toObject();
+ * ```
+ */
+export type ShippingInvoicePdfExtractedDatumLine = {
+  lineNumber: string;
+  countryId: Country;
+  currency?: string | null;
+  description: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+  customsClassification: string;
+  hsCode?: string | null;
+  customsChapter?: string | null;
+  customsHeading?: string | null;
+  customsSubheading?: string | null;
+  chapterDescription?: string | null;
+  headingDescription?: string | null;
+  subheadingDescription?: string | null;
+  recordNumber?: number | null;
+  tariff?: ShippingInvoicePdfExtractedDatumLineTariff;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ShippingInvoicePdfExtractedDatumDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShippingInvoicePdfDocument.toObject()`.
+ * ```
+ * const shippinginvoicepdfObject = shippinginvoicepdf.toObject();
+ * ```
+ */
+export type ShippingInvoicePdfExtractedDatum = {
+  header: {
+    invoiceNumber: string;
+    date: Date;
+    countryId: Country;
+    companyId: Company;
+    address?: string | null;
+    phone?: string | null;
+    email?: string;
+    total: number;
+    currency?: string | null;
+  };
+  lines: ShippingInvoicePdfExtractedDatumLine[];
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ShippingInvoicePdfFileDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShippingInvoicePdfDocument.toObject()`.
+ * ```
+ * const shippinginvoicepdfObject = shippinginvoicepdf.toObject();
+ * ```
+ */
+export type ShippingInvoicePdfFile = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ShippingInvoicePdfDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShippingInvoiceDocument.toObject()`.
+ * ```
+ * const shippinginvoiceObject = shippinginvoice.toObject();
+ * ```
+ */
+export type ShippingInvoicePdf = {
+  extractedData?: ShippingInvoicePdfExtractedDatum;
+  file?: ShippingInvoicePdfFile;
+};
+
+/**
+ * Lean version of ShippingInvoiceDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShippingDocument.toObject()`.
+ * ```
+ * const shippingObject = shipping.toObject();
+ * ```
+ */
+export type ShippingInvoice = {
+  comments: ShippingInvoiceComment[];
+  pdf?: ShippingInvoicePdf;
+  status: "PROCESSING_PDF" | "ERROR_JSON" | "DATA_PROCESSED" | "COMPLETE";
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ShippingDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShippingDocument.toObject()`. To avoid conflicts with model names, use the type alias `ShippingObject`.
+ * ```
+ * const shippingObject = shipping.toObject();
+ * ```
+ */
+export type Shipping = {
+  name: string;
+  origin: Country;
+  destination: Country;
+  createdBy: User;
+  updatedBy?: User;
+  status: "UPLOADING" | "ERROR" | "PDF_PROCESSED" | "BCD_SENT";
+  stage: "HS_CODES" | "TARIFF_CODES" | "GROUPING" | "SUMMARY" | "COMPLETE";
+  invoices: ShippingInvoice[];
+  bcds: mongoose.Types.ObjectId[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ShippingDocument (type alias of `Shipping`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Shipping } from "../models"
+ * import { ShippingObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const shippingObject: ShippingObject = shipping.toObject();
+ * ```
+ */
+export type ShippingObject = Shipping;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ShippingQuery = mongoose.Query<
+  any,
+  ShippingDocument,
+  ShippingQueries
+> &
+  ShippingQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ShippingSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ShippingQueries = {
+  paginate: (this: ShippingQuery, ...args: any[]) => ShippingQuery;
+};
+
+export type ShippingMethods = {};
+
+export type ShippingStatics = {
+  paginate: (this: ShippingModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ShippingModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Shipping = mongoose.model<ShippingDocument, ShippingModel>("Shipping", ShippingSchema);
+ * ```
+ */
+export type ShippingModel = mongoose.Model<ShippingDocument, ShippingQueries> &
+  ShippingStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Shipping schema instances:
+ * ```
+ * const ShippingSchema: ShippingSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ShippingSchema = mongoose.Schema<
+  ShippingDocument,
+  ShippingModel,
+  ShippingMethods,
+  ShippingQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ShippingInvoiceDocument["comments"]` element.
+ */
+export type ShippingInvoiceCommentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    description: string;
+    createdAt?: Date;
+    createdBy: UserDocument;
+    active?: boolean;
+    status?: "DRAFT" | "CANCELLED" | "DONE";
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ShippingInvoicePdfExtractedDatumLine = mongoose.model<ShippingInvoicePdfExtractedDatumLineDocument, ShippingInvoicePdfExtractedDatumLineModel>("ShippingInvoicePdfExtractedDatumLine", ShippingInvoicePdfExtractedDatumLineSchema);
+ * ```
+ */
+export type ShippingInvoicePdfExtractedDatumLineTariffDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    code?: string | null;
+    chapter: string;
+    heading: string;
+    subheading: string;
+    userDescription?: string | null;
+    description?: string | null;
+    rateOfDuty?: number | null;
+    unitOfMeasurement?: string | null;
+    tax?: number | null;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ShippingInvoicePdfExtractedDatumDocument["lines"]` element.
+ */
+export type ShippingInvoicePdfExtractedDatumLineDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    lineNumber: string;
+    countryId: CountryDocument;
+    currency?: string | null;
+    description: string;
+    quantity: number;
+    price: number;
+    subtotal: number;
+    customsClassification: string;
+    hsCode?: string | null;
+    customsChapter?: string | null;
+    customsHeading?: string | null;
+    customsSubheading?: string | null;
+    chapterDescription?: string | null;
+    headingDescription?: string | null;
+    subheadingDescription?: string | null;
+    recordNumber?: number | null;
+    tariff?: ShippingInvoicePdfExtractedDatumLineTariffDocument;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ShippingInvoicePdf = mongoose.model<ShippingInvoicePdfDocument, ShippingInvoicePdfModel>("ShippingInvoicePdf", ShippingInvoicePdfSchema);
+ * ```
+ */
+export type ShippingInvoicePdfExtractedDatumDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    header: {
+      invoiceNumber: string;
+      date: Date;
+      countryId: CountryDocument;
+      companyId: CompanyDocument;
+      address?: string | null;
+      phone?: string | null;
+      email?: string;
+      total: number;
+      currency?: string | null;
+    };
+    lines: mongoose.Types.DocumentArray<ShippingInvoicePdfExtractedDatumLineDocument>;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ShippingInvoicePdf = mongoose.model<ShippingInvoicePdfDocument, ShippingInvoicePdfModel>("ShippingInvoicePdf", ShippingInvoicePdfSchema);
+ * ```
+ */
+export type ShippingInvoicePdfFileDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ShippingInvoice = mongoose.model<ShippingInvoiceDocument, ShippingInvoiceModel>("ShippingInvoice", ShippingInvoiceSchema);
+ * ```
+ */
+export type ShippingInvoicePdfDocument = mongoose.Document<any> & {
+  extractedData?: ShippingInvoicePdfExtractedDatumDocument;
+  file?: ShippingInvoicePdfFileDocument;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ShippingDocument["invoices"]` element.
+ */
+export type ShippingInvoiceDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    comments: mongoose.Types.DocumentArray<ShippingInvoiceCommentDocument>;
+    pdf?: ShippingInvoicePdfDocument;
+    status: "PROCESSING_PDF" | "ERROR_JSON" | "DATA_PROCESSED" | "COMPLETE";
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Shipping = mongoose.model<ShippingDocument, ShippingModel>("Shipping", ShippingSchema);
+ * ```
+ */
+export type ShippingDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ShippingQueries
+> &
+  ShippingMethods & {
+    name: string;
+    origin: CountryDocument;
+    destination: CountryDocument;
+    createdBy: UserDocument;
+    updatedBy?: UserDocument;
+    status: "UPLOADING" | "ERROR" | "PDF_PROCESSED" | "BCD_SENT";
+    stage: "HS_CODES" | "TARIFF_CODES" | "GROUPING" | "SUMMARY" | "COMPLETE";
+    invoices: mongoose.Types.DocumentArray<ShippingInvoiceDocument>;
+    bcds: mongoose.Types.Array<mongoose.Types.ObjectId>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of TaskStageDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `TaskStageDocument.toObject()`. To avoid conflicts with model names, use the type alias `TaskStageObject`.

@@ -35,7 +35,10 @@ export class GenAIService {
         model: this.MODEL,
         contents: [question, context, ...promptParts],
         config: {
-          ...(schema && { responseSchema: schema }),
+          ...(schema && {
+            responseSchema: schema,
+            responseMimeType: "application/json",
+          }),
         },
       });
     } catch (error: any) {
