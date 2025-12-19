@@ -34,6 +34,7 @@ import {
   ProjectRouter,
   TaskStageRouter,
   TaskRouter,
+  GenAIRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -87,6 +88,7 @@ app.use("/api", new ModelRouter().getRouter);
 app.use("/api", new TaskRouter().getRouter);
 app.use("/api", new ProjectRouter().getRouter);
 app.use("/api", new TaskStageRouter().getRouter);
+app.use("/api", new GenAIRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);
