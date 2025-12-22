@@ -15,6 +15,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
 
   override initRoutes() {
     this.initGenerateShippingFromFileRoute();
+    this.initRegenerateShippingFromFileRoute();
     // this.initCloneShippingRoute();
     super.initRoutes();
   }
@@ -24,6 +25,15 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
       `${this.endpoint}/from-file`,
       this.upload.single("file"),
       authorizeMiddleware(`${this.resource}/from-file`, "create"),
+      (this.controller as ShippingController).generateShippingFromFile
+    );
+  }
+
+  initRegenerateShippingFromFileRoute() {
+    this.router.post(
+      `${this.endpoint}/from-file/:id`,
+      this.upload.single("file"),
+      authorizeMiddleware(`${this.resource}/from-file/:id`, "create"),
       (this.controller as ShippingController).generateShippingFromFile
     );
   }

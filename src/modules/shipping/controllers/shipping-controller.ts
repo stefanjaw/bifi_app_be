@@ -37,13 +37,14 @@ export class ShippingController extends BaseController<ShippingDocument> {
   ) {
     try {
       const file = req.file;
+      const id: string | undefined = req.params.id;
 
       if (!file) throw new ValidationException("File is required");
       this.fileValidatorService.validatePDFFile(file);
 
       const record = await (
         this.service as ShippingService
-      ).generateShippingFromFile(file);
+      ).generateShippingFromFile(file, id);
       this.sendData(res, record);
     } catch (error: any) {
       next(error);

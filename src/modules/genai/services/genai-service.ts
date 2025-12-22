@@ -104,4 +104,18 @@ export class GenAIService {
       },
     };
   }
+
+  /**
+   * Converts a string to a GenAI Part.
+   * @param text the string to convert
+   * @returns a GenAI Part with the string's contents as inline data
+   */
+  stringToGenerativePart(text: string): Part {
+    return {
+      inlineData: {
+        mimeType: "text/plain",
+        data: text,
+      },
+    };
+  }
 }

@@ -1,5 +1,11 @@
 import { ShippingDocument } from "@mongodb-types";
-import { BaseService, runTransaction, UserStore } from "../../../system";
+import {
+  BaseService,
+  GridFSBucketService,
+  runTransaction,
+  UserStore,
+  ValidationException,
+} from "../../../system";
 import { shippingModel } from "../models/shipping.model";
 import { ClientSession } from "mongoose";
 import { ShippingDTO, UpdateShippingDTO } from "../models/shipping.dto";
@@ -34,6 +40,10 @@ export class ShippingService extends BaseService<ShippingDocument> {
       - All numeric values must be numbers, not strings.
       - All ObjectId references must be returned as strings.
       - Arrays that are required must never be empty.
+      - For countries and companies, use the _id field based on the countries and companies
+        collections provided to you in prompt.
+      - For companies, if not found the correct one, use the first one to appear in the company 
+        list of collections.
 
       Header rules:
       - The header object represents the main invoice metadata.
@@ -86,6 +96,10 @@ export class ShippingService extends BaseService<ShippingDocument> {
     super({
       model: shippingModel,
     });
+  }
+
+  private get gridFSBucket() {
+    return GridFSBucketService.getInstance();
   }
 
   /**
@@ -153,31 +167,94 @@ export class ShippingService extends BaseService<ShippingDocument> {
     );
   }
 
+  /**
+   * Generates a shipping record from a file and saves it to the database.
+   *
+   * This function uses the Gen AI service to generate a shipping record from a file.
+   * The generated shipping record is then parsed and saved to the database.
+   *
+   * The function runs a transactional operation.
+   *
+   * @param file - The file to generate the shipping record from.
+   * @param _id - The id of the shipping record to update (if any).
+   * @param session - Optional mongoose session.
+   * @returns The generated shipping record.
+   */
   async generateShippingFromFile(
     file: Express.Multer.File,
+    _id: string | undefined,
     session?: ClientSession | undefined
   ): Promise<ShippingDocument> {
     return await runTransaction<ShippingDocument>(
       session,
       async (newSession) => {
+        // Get countries
+        const countries = await this.countryService.get(
+          {},
+          undefined,
+          undefined,
+          undefined,
+          newSession
+        );
+
+        // Get companies
+        const companies = await this.companyService.get(
+          {},
+          undefined,
+          undefined,
+          undefined,
+          newSession
+        );
+
+        // Generate
         const parts = [this.genAIService.fileToGenerativePart(file)];
 
         const response = await this.genAIService.generate({
           question: this.GENAI_MESSAGE,
-          context: this.GENAI_CONTEXT,
+          context:
+            this.GENAI_CONTEXT + JSON.stringify({ countries, companies }),
           promptParts: parts,
           schema: shippingSchema,
         });
 
+        // Parse
         const shippingData = JSON.parse(response.text || "") as ShippingDTO;
 
-        return await super.create(
-          {
-            ...shippingData,
-            createdBy: UserStore.getInstance().user?.id,
-          },
-          newSession
+        // Save pdf file to gridFS
+        const gridFSFile = await this.gridFSBucket.uploadFile(file);
+
+        // Attach file to shipping
+        shippingData.invoices?.forEach(
+          (invoice) =>
+            (invoice.pdf.file = {
+              fileId: gridFSFile,
+              name: file.originalname,
+              mimeType: file.mimetype,
+              size: file.size,
+            })
         );
+
+        if (_id) {
+          if (!(await shippingModel.findById(_id).session(newSession)))
+            throw new ValidationException("Shipping does not exist");
+
+          return await super.update(
+            {
+              ...shippingData,
+              _id: _id,
+              updatedBy: UserStore.getInstance().user?.id,
+            },
+            newSession
+          );
+        } else {
+          return await super.create(
+            {
+              ...shippingData,
+              createdBy: UserStore.getInstance().user?.id,
+            },
+            newSession
+          );
+        }
       }
     );
   }

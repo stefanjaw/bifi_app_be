@@ -27,33 +27,63 @@ export const invoiceSchema: Schema = {
                 "total",
               ],
               properties: {
-                invoiceNumber: { type: Type.STRING },
+                invoiceNumber: {
+                  type: Type.STRING,
+                },
                 date: {
                   type: Type.STRING,
                   description: "ISO date string",
                 },
                 countryId: {
                   type: Type.STRING,
-                  description: "Country code ISO 3166-1 alpha-2",
+                  description: "Mongodb ID of Country model if exists",
                 },
                 companyId: {
                   type: Type.STRING,
-                  description: "Company name of the invoice",
+                  description: "Mongodb ID of Company model if exists",
                 },
                 address: {
-                  type: Type.STRING,
+                  anyOf: [
+                    {
+                      type: Type.STRING,
+                    },
+                    {
+                      type: Type.NULL,
+                    },
+                  ],
                 },
                 phone: {
-                  type: Type.STRING,
+                  anyOf: [
+                    {
+                      type: Type.STRING,
+                    },
+                    {
+                      type: Type.NULL,
+                    },
+                  ],
                 },
                 email: {
-                  type: Type.STRING,
+                  anyOf: [
+                    {
+                      type: Type.STRING,
+                    },
+                    {
+                      type: Type.NULL,
+                    },
+                  ],
                 },
                 total: {
                   type: Type.NUMBER,
                 },
                 currency: {
-                  type: Type.STRING,
+                  anyOf: [
+                    {
+                      type: Type.STRING,
+                    },
+                    {
+                      type: Type.NULL,
+                    },
+                  ],
                   description: "ISO 4217 currency code",
                 },
               },
@@ -73,78 +103,197 @@ export const invoiceSchema: Schema = {
                   "customsClassification",
                 ],
                 properties: {
-                  lineNumber: { type: Type.STRING },
+                  lineNumber: {
+                    type: Type.STRING,
+                  },
                   countryId: {
                     type: Type.STRING,
-                    description: "Country code ISO 3166-1 alpha-2",
+                    description: "Mongodb ID of Country model",
                   },
                   currency: {
-                    type: Type.STRING,
+                    anyOf: [
+                      {
+                        type: Type.STRING,
+                      },
+                      {
+                        type: Type.NULL,
+                      },
+                    ],
                     description: "ISO 4217 currency code",
                   },
-                  description: { type: Type.STRING },
-                  quantity: { type: Type.NUMBER },
-                  price: { type: Type.NUMBER },
-                  subtotal: { type: Type.NUMBER },
-                  customsClassification: { type: Type.STRING },
-                  hsCode: {
+                  description: {
                     type: Type.STRING,
+                  },
+                  quantity: {
+                    type: Type.NUMBER,
+                  },
+                  price: {
+                    type: Type.NUMBER,
+                  },
+                  subtotal: {
+                    type: Type.NUMBER,
+                  },
+                  customsClassification: {
+                    type: Type.STRING,
+                  },
+                  hsCode: {
+                    anyOf: [
+                      {
+                        type: Type.STRING,
+                      },
+                      {
+                        type: Type.NULL,
+                      },
+                    ],
                     maxLength: "8",
                   },
                   customsChapter: {
-                    type: Type.STRING,
+                    anyOf: [
+                      {
+                        type: Type.STRING,
+                      },
+                      {
+                        type: Type.NULL,
+                      },
+                    ],
                   },
                   customsHeading: {
-                    type: Type.STRING,
+                    anyOf: [
+                      {
+                        type: Type.STRING,
+                      },
+                      {
+                        type: Type.NULL,
+                      },
+                    ],
                   },
                   customsSubheading: {
-                    type: Type.STRING,
+                    anyOf: [
+                      {
+                        type: Type.STRING,
+                      },
+                      {
+                        type: Type.NULL,
+                      },
+                    ],
                   },
                   chapterDescription: {
-                    type: Type.STRING,
+                    anyOf: [
+                      {
+                        type: Type.STRING,
+                      },
+                      {
+                        type: Type.NULL,
+                      },
+                    ],
                   },
                   headingDescription: {
-                    type: Type.STRING,
+                    anyOf: [
+                      {
+                        type: Type.STRING,
+                      },
+                      {
+                        type: Type.NULL,
+                      },
+                    ],
                   },
                   subheadingDescription: {
-                    type: Type.STRING,
+                    anyOf: [
+                      {
+                        type: Type.STRING,
+                      },
+                      {
+                        type: Type.NULL,
+                      },
+                    ],
                   },
                   recordNumber: {
                     type: Type.NUMBER,
                   },
                   tariff: {
-                    type: Type.OBJECT,
-                    required: ["chapter", "heading", "subheading"],
-                    properties: {
-                      code: {
-                        type: Type.STRING,
+                    anyOf: [
+                      {
+                        type: Type.OBJECT,
+                        required: ["chapter", "heading", "subheading"],
+                        properties: {
+                          code: {
+                            anyOf: [
+                              {
+                                type: Type.STRING,
+                              },
+                              {
+                                type: Type.NULL,
+                              },
+                            ],
+                          },
+                          chapter: {
+                            type: Type.STRING,
+                          },
+                          heading: {
+                            type: Type.STRING,
+                          },
+                          subheading: {
+                            type: Type.STRING,
+                          },
+                          userDescription: {
+                            anyOf: [
+                              {
+                                type: Type.STRING,
+                              },
+                              {
+                                type: Type.NULL,
+                              },
+                            ],
+                          },
+                          description: {
+                            anyOf: [
+                              {
+                                type: Type.STRING,
+                              },
+                              {
+                                type: Type.NULL,
+                              },
+                            ],
+                          },
+                          rateOfDuty: {
+                            anyOf: [
+                              {
+                                type: Type.STRING,
+                              },
+                              {
+                                type: Type.NULL,
+                              },
+                            ],
+                          },
+                          unitOfMeasurement: {
+                            anyOf: [
+                              {
+                                type: Type.STRING,
+                              },
+                              {
+                                type: Type.NULL,
+                              },
+                            ],
+                            description: "A unit of measurement",
+                          },
+                          tax: {
+                            anyOf: [
+                              {
+                                type: Type.STRING,
+                              },
+                              {
+                                type: Type.NULL,
+                              },
+                            ],
+                          },
+                        },
                       },
-                      chapter: {
-                        type: Type.STRING,
+                      {
+                        type: Type.NULL,
                       },
-                      heading: {
-                        type: Type.STRING,
-                      },
-                      subheading: {
-                        type: Type.STRING,
-                      },
-                      userDescription: {
-                        type: Type.STRING,
-                      },
-                      description: {
-                        type: Type.STRING,
-                      },
-                      rateOfDuty: {
-                        type: Type.NUMBER,
-                      },
-                      unitOfMeasurement: {
-                        type: Type.STRING,
-                        description: "A unit of measurement",
-                      },
-                      tax: {
-                        type: Type.STRING,
-                      },
-                    },
+                    ],
+                    description:
+                      "If no tariff is found or all properties are empty or null, this field will be null",
                   },
                 },
               },

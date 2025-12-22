@@ -23,14 +23,26 @@ const tariffSchema = new Schema({
   chapter: {
     type: String,
     required: true,
+    validate: {
+      validator: (v: string) => v !== undefined && v !== null,
+      message: "chapter is required (empty string allowed)",
+    },
   },
   heading: {
     type: String,
     required: true,
+    validate: {
+      validator: (v: string) => v !== undefined && v !== null,
+      message: "heading is required (empty string allowed)",
+    },
   },
   subheading: {
     type: String,
     required: true,
+    validate: {
+      validator: (v: string) => v !== undefined && v !== null,
+      message: "subheading is required (empty string allowed)",
+    },
   },
   userDescription: {
     type: String,

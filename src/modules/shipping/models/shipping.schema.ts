@@ -9,11 +9,11 @@ export const shippingSchema: Schema = {
     name: { type: Type.STRING },
     origin: {
       type: Type.STRING,
-      description: "Country code ISO 3166-1 alpha-2",
+      description: "Mongodb ID of Country model if exists",
     },
     destination: {
       type: Type.STRING,
-      description: "Country code ISO 3166-1 alpha-2",
+      description: "Mongodb ID of Country model if exists",
     },
     status: { type: Type.STRING, enum: Object.values(ShippingStatus) },
     stage: { type: Type.STRING, enum: Object.values(ShippingStage) },
