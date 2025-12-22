@@ -1,7 +1,7 @@
 import { Schema, Type } from "@google/genai";
 import { InvoiceStatus } from "./invoice.model";
 
-export const invoiceSchema: Schema = {
+export const invoiceGenAISchema: Schema = {
   type: Type.OBJECT,
   required: ["pdf", "status"],
   properties: {

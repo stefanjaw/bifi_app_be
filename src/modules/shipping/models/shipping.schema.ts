@@ -1,8 +1,8 @@
 import { Schema, Type } from "@google/genai";
 import { ShippingStage, ShippingStatus } from "./shipping.model";
-import { invoiceSchema } from "./invoice.schema";
+import { invoiceGenAISchema } from "./invoice.schema";
 
-export const shippingSchema: Schema = {
+export const shippingGenAISchema: Schema = {
   type: Type.OBJECT,
   required: ["name", "origin", "destination", "status", "stage", "invoices"],
   properties: {
@@ -19,7 +19,7 @@ export const shippingSchema: Schema = {
     stage: { type: Type.STRING, enum: Object.values(ShippingStage) },
     invoices: {
       type: Type.ARRAY,
-      items: invoiceSchema,
+      items: invoiceGenAISchema,
     },
   },
 };

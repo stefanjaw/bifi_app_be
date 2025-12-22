@@ -16,7 +16,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
   override initRoutes() {
     this.initGenerateShippingFromFileRoute();
     this.initRegenerateShippingFromFileRoute();
-    // this.initCloneShippingRoute();
+    this.initGenerateHSCodesForShippingRoute();
     super.initRoutes();
   }
 
@@ -30,11 +30,19 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
   }
 
   initRegenerateShippingFromFileRoute() {
-    this.router.post(
+    this.router.put(
       `${this.endpoint}/from-file/:id`,
       this.upload.single("file"),
-      authorizeMiddleware(`${this.resource}/from-file/:id`, "create"),
+      authorizeMiddleware(`${this.resource}/from-file/:id`, "update"),
       (this.controller as ShippingController).generateShippingFromFile
+    );
+  }
+
+  initGenerateHSCodesForShippingRoute() {
+    this.router.put(
+      `${this.endpoint}/generate-hs-codes/:id`,
+      authorizeMiddleware(`${this.resource}/generate-hs-codes/:id`, "update"),
+      (this.controller as ShippingController).generateHSCodesForShipping
     );
   }
 

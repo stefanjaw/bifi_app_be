@@ -12,7 +12,7 @@ import { ShippingDTO, UpdateShippingDTO } from "../models/shipping.dto";
 import { GenAIService } from "../../genai/services/genai-service";
 import { CountryService } from "../../countries/services/country-service";
 import { CompanyService } from "../../companies/services/company-service";
-import { shippingSchema } from "../models/shipping.schema";
+import { shippingGenAISchema } from "../models/shipping.schema";
 
 export class ShippingService extends BaseService<ShippingDocument> {
   // constants
@@ -22,7 +22,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
       you will have to answer questions based on the input document.
   `;
 
-  private readonly GENAI_MESSAGE = ` 
+  private readonly GENAI_GENERATE_SHIPPING_MESSAGE = ` 
       Your task is to extract structured data from the provided PDF document and return a single JSON object.
 
       Response rules (MANDATORY):
@@ -85,6 +85,69 @@ export class ShippingService extends BaseService<ShippingDocument> {
       - DO NOT wrap the response in \`\`\`json
       - The response MUST strictly follow the provided schema
       - Do not add extra fields
+  `;
+
+  private readonly GENAI_GENERATE_HS_CODE_MESSAGE = ` 
+      You will receive an existing JSON object separately.
+      That JSON MUST be treated as the source of truth.
+
+      Your task is to UPDATE ONLY specific HS-related fields
+      inside EACH line object and return the FULL JSON object.
+
+      --------------------------------------------------
+      STRICT UPDATE RULES
+      --------------------------------------------------
+      - You MUST preserve the original structure.
+      - You MUST NOT remove, rename, or add fields.
+      - You MUST NOT reorder arrays.
+      - You MUST NOT modify values of any field
+        EXCEPT the HS-related fields listed below.
+      - Any field not explicitly listed MUST remain EXACTLY the same
+        as in the input JSON.
+
+      --------------------------------------------------
+      FIELDS YOU ARE ALLOWED TO MODIFY (PER LINE)
+      --------------------------------------------------
+      Only the following fields may be changed:
+
+      - hsCode
+      - customsChapter
+      - customsHeading
+      - customsSubheading
+      - chapterDescription
+      - headingDescription
+      - subheadingDescription
+
+      --------------------------------------------------
+      HS CLASSIFICATION RULES
+      --------------------------------------------------
+      - Infer the HS classification using the existing
+        "customsClassification" field of each line.
+      - "customsClassification" itself MUST NOT be modified.
+      - If you find already hs codes and think they can be improved, do it.
+
+      - hsCode rules:
+        - MUST contain EXACTLY 7 digits.
+        - NO dots, spaces, or letters.
+
+      - If hsCode is present:
+        - customsChapter MUST be present.
+        - customsHeading MUST be present.
+        - customsSubheading MUST be present.
+        - chapterDescription MUST be present.
+        - headingDescription MUST be present.
+        - subheadingDescription MUST be present.
+
+      - If the item cannot be reasonably classified under HS:
+        - ALL HS-related fields MUST be set to null.
+
+      --------------------------------------------------
+      OUTPUT CONSTRAINTS
+      --------------------------------------------------
+      - Return ONLY the updated JSON object.
+      - The output MUST be directly parsable by JSON.parse().
+      - Do NOT include explanations, comments, or markdown.
+      - Do NOT restate the input.
   `;
 
   // services
@@ -210,11 +273,13 @@ export class ShippingService extends BaseService<ShippingDocument> {
         const parts = [this.genAIService.fileToGenerativePart(file)];
 
         const response = await this.genAIService.generate({
-          question: this.GENAI_MESSAGE,
-          context:
-            this.GENAI_CONTEXT + JSON.stringify({ countries, companies }),
+          question: this.GENAI_GENERATE_SHIPPING_MESSAGE,
+          context: `${this.GENAI_CONTEXT} ${JSON.stringify({
+            countries,
+            companies,
+          })}`,
           promptParts: parts,
-          schema: shippingSchema,
+          schema: shippingGenAISchema,
         });
 
         // Parse
@@ -255,6 +320,49 @@ export class ShippingService extends BaseService<ShippingDocument> {
             newSession
           );
         }
+      }
+    );
+  }
+
+  /**
+   * Generates HS codes for shipping record with the given id.
+   *
+   * The function runs within a transaction and returns the updated record.
+   * @param _id - The id of the shipping record to update.
+   * @param session - The optional client session to use for the transaction.
+   * @returns The updated record document.
+   */
+  async generateHSCodesForShipping(
+    _id: string,
+    session?: ClientSession | undefined
+  ): Promise<ShippingDocument> {
+    return await runTransaction<ShippingDocument>(
+      session,
+      async (newSession) => {
+        const shipping = await super.getById(_id, newSession);
+
+        // Check if shipping exists
+        if (!shipping) throw new ValidationException("Shipping does not exist");
+
+        // Generate
+        const response = await this.genAIService.generate({
+          question: this.GENAI_GENERATE_HS_CODE_MESSAGE,
+          context: `${this.GENAI_CONTEXT} ${JSON.stringify({
+            shipping,
+          })}`,
+          schema: shippingGenAISchema,
+        });
+
+        const shippingData = JSON.parse(response.text || "") as ShippingDTO;
+
+        return await super.update(
+          {
+            ...shippingData,
+            updatedBy: UserStore.getInstance().user?.id,
+            _id: _id,
+          },
+          newSession
+        );
       }
     );
   }

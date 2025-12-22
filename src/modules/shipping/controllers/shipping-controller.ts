@@ -45,11 +45,36 @@ export class ShippingController extends BaseController<ShippingDocument> {
       const record = await (
         this.service as ShippingService
       ).generateShippingFromFile(file, id);
+
       this.sendData(res, record);
     } catch (error: any) {
       next(error);
     }
   }
+
+  protected async generateHSCodesForShippingHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const _id = req.params.id;
+
+      if (!_id) throw new ValidationException("_id is required");
+
+      const record = await (
+        this.service as ShippingService
+      ).generateHSCodesForShipping(_id);
+
+      this.sendData(res, record);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  cloneShipping = async (req: Request, res: Response, next: NextFunction) => {
+    await this.cloneShippingHandler(req, res, next);
+  };
 
   generateShippingFromFile = async (
     req: Request,
@@ -59,7 +84,11 @@ export class ShippingController extends BaseController<ShippingDocument> {
     await this.generateShippingFromFileHandler(req, res, next);
   };
 
-  cloneShipping = async (req: Request, res: Response, next: NextFunction) => {
-    await this.cloneShippingHandler(req, res, next);
+  generateHSCodesForShipping = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    await this.generateHSCodesForShippingHandler(req, res, next);
   };
 }
