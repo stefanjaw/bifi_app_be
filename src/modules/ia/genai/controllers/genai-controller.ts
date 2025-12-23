@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { GenAIService } from "./../services/genai-service";
-import { FileValidatorService } from "../../../system";
+import { GenAIService } from "../services/genai-service";
+import { FileValidatorService } from "../../../../system";
 import { Part } from "@google/genai";
 
 export class GenAIController {

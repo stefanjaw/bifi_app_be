@@ -9,9 +9,8 @@ import {
 import { shippingModel } from "../models/shipping.model";
 import { ClientSession } from "mongoose";
 import { ShippingDTO, UpdateShippingDTO } from "../models/shipping.dto";
-import { GenAIService } from "../../genai/services/genai-service";
+import { GenAIService } from "../../ia/genai/services/genai-service";
 import { CountryService } from "../../countries/services/country-service";
-import { CompanyService } from "../../companies/services/company-service";
 import { shippingGenAISchema } from "../models/shipping.schema";
 
 export class ShippingService extends BaseService<ShippingDocument> {
@@ -40,10 +39,8 @@ export class ShippingService extends BaseService<ShippingDocument> {
       - All numeric values must be numbers, not strings.
       - All ObjectId references must be returned as strings.
       - Arrays that are required must never be empty.
-      - For countries and companies, use the _id field based on the countries and companies
+      - For countries, use the _id field based on the countries
         collections provided to you in prompt.
-      - For companies, if not found the correct one, use the first one to appear in the company 
-        list of collections.
 
       Header rules:
       - The header object represents the main invoice metadata.
@@ -153,7 +150,6 @@ export class ShippingService extends BaseService<ShippingDocument> {
   // services
   private readonly genAIService = new GenAIService();
   private readonly countryService = new CountryService();
-  private readonly companyService = new CompanyService();
 
   constructor() {
     super({
@@ -260,15 +256,6 @@ export class ShippingService extends BaseService<ShippingDocument> {
           newSession
         );
 
-        // Get companies
-        const companies = await this.companyService.get(
-          {},
-          undefined,
-          undefined,
-          undefined,
-          newSession
-        );
-
         // Generate
         const parts = [this.genAIService.fileToGenerativePart(file)];
 
@@ -276,7 +263,6 @@ export class ShippingService extends BaseService<ShippingDocument> {
           question: this.GENAI_GENERATE_SHIPPING_MESSAGE,
           context: `${this.GENAI_CONTEXT} ${JSON.stringify({
             countries,
-            companies,
           })}`,
           promptParts: parts,
           schema: shippingGenAISchema,

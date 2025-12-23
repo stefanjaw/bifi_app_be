@@ -10,7 +10,7 @@ export * from "./countries";
 export * from "./crm";
 export * from "./facilities";
 export * from "./files";
-export * from "./genai";
+export * from "./ia";
 export * from "./maintenance-windows";
 export * from "./models";
 export * from "./projects";

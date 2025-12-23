@@ -2114,7 +2114,7 @@ export type ShippingInvoicePdfExtractedDatum = {
     invoiceNumber: string;
     date: Date;
     countryId: Country;
-    companyId: Company;
+    companyId?: Company;
     address?: string | null;
     phone?: string | null;
     email?: string;
@@ -2343,7 +2343,7 @@ export type ShippingInvoicePdfExtractedDatumDocument =
       invoiceNumber: string;
       date: Date;
       countryId: CountryDocument;
-      companyId: CompanyDocument;
+      companyId?: CompanyDocument;
       address?: string | null;
       phone?: string | null;
       email?: string;

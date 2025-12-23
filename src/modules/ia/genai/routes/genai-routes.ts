@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { authorizeMiddleware, validateBodyMiddleware } from "../../../system";
+import { authorizeMiddleware, validateBodyMiddleware } from "../../../../system";
 import { GenAIController } from "../controllers/genai-controller";
 import { GenAIDTO } from "../models/genai.dto";
 

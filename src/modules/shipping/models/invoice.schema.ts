@@ -19,13 +19,7 @@ export const invoiceGenAISchema: Schema = {
           properties: {
             header: {
               type: Type.OBJECT,
-              required: [
-                "invoiceNumber",
-                "date",
-                "countryId",
-                "companyId",
-                "total",
-              ],
+              required: ["invoiceNumber", "date", "countryId", "total"],
               properties: {
                 invoiceNumber: {
                   type: Type.STRING,
@@ -37,10 +31,6 @@ export const invoiceGenAISchema: Schema = {
                 countryId: {
                   type: Type.STRING,
                   description: "Mongodb ID of Country model if exists",
-                },
-                companyId: {
-                  type: Type.STRING,
-                  description: "Mongodb ID of Company model if exists",
                 },
                 address: {
                   anyOf: [

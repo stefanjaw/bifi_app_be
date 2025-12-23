@@ -40,8 +40,8 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
 
   initGenerateHSCodesForShippingRoute() {
     this.router.put(
-      `${this.endpoint}/generate-hs-codes/:id`,
-      authorizeMiddleware(`${this.resource}/generate-hs-codes/:id`, "update"),
+      `${this.endpoint}/hs-code/generate/:id`,
+      authorizeMiddleware(`${this.resource}/hs-code/generate/:id`, "update"),
       (this.controller as ShippingController).generateHSCodesForShipping
     );
   }

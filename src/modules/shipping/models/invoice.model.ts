@@ -163,7 +163,7 @@ const invoiceExtractedDataSchema = new Schema(
         autopopulate: {
           maxDepth: 2,
         },
-        required: true,
+        required: false,
       },
       address: {
         type: String,

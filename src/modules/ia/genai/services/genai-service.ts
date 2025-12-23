@@ -1,5 +1,5 @@
 import { GoogleGenAI, Part, Schema } from "@google/genai";
-import { ValidationException } from "../../../system";
+import { ValidationException } from "../../../../system";
 
 export class GenAIService {
   private readonly MODEL = "gemini-2.5-flash";
