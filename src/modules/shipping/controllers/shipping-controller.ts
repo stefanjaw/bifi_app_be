@@ -36,15 +36,15 @@ export class ShippingController extends BaseController<ShippingDocument> {
     next: NextFunction
   ) {
     try {
-      const file = req.file;
+      const files = req.files as Express.Multer.File[];
       const id: string | undefined = req.params.id;
 
-      if (!file) throw new ValidationException("File is required");
-      this.fileValidatorService.validatePDFFile(file);
+      if (!files) throw new ValidationException("File is required");
+      files.forEach((file) => this.fileValidatorService.validatePDFFile(file));
 
       const record = await (
         this.service as ShippingService
-      ).generateShippingFromFile(file, id);
+      ).generateShippingFromFiles(files, id);
 
       this.sendData(res, record);
     } catch (error: any) {

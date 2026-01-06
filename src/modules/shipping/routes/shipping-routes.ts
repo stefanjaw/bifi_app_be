@@ -23,7 +23,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
   initGenerateShippingFromFileRoute() {
     this.router.post(
       `${this.endpoint}/from-file`,
-      this.upload.single("file"),
+      this.upload.array("files"),
       authorizeMiddleware(`${this.resource}/from-file`, "create"),
       (this.controller as ShippingController).generateShippingFromFile
     );
@@ -32,7 +32,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
   initRegenerateShippingFromFileRoute() {
     this.router.put(
       `${this.endpoint}/from-file/:id`,
-      this.upload.single("file"),
+      this.upload.array("files"),
       authorizeMiddleware(`${this.resource}/from-file/:id`, "update"),
       (this.controller as ShippingController).generateShippingFromFile
     );

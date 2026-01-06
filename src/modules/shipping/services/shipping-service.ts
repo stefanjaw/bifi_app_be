@@ -22,7 +22,8 @@ export class ShippingService extends BaseService<ShippingDocument> {
   `;
 
   private readonly GENAI_GENERATE_SHIPPING_MESSAGE = ` 
-      Your task is to extract structured data from the provided PDF document and return a single JSON object.
+      Your task is to extract structured data from the provided PDF documents and return a single JSON object
+      based on the schema provided to you.
 
       Response rules (MANDATORY):
       - Return ONLY a valid JSON object.
@@ -82,6 +83,10 @@ export class ShippingService extends BaseService<ShippingDocument> {
       - DO NOT wrap the response in \`\`\`json
       - The response MUST strictly follow the provided schema
       - Do not add extra fields
+      - If you understand these instructions, respond with the JSON object only.
+      - If more than one document is provided, combine all information into a single JSON object, where each document 
+        represents a different invoice in the invoice array, this in the order they are provided.
+      - If any required information is missing from the documents, set the corresponding fields to a random value but correct format.
   `;
 
   private readonly GENAI_GENERATE_HS_CODE_MESSAGE = ` 
@@ -234,13 +239,13 @@ export class ShippingService extends BaseService<ShippingDocument> {
    *
    * The function runs a transactional operation.
    *
-   * @param file - The file to generate the shipping record from.
+   * @param files - The files to generate the shipping record from.
    * @param _id - The id of the shipping record to update (if any).
    * @param session - Optional mongoose session.
    * @returns The generated shipping record.
    */
-  async generateShippingFromFile(
-    file: Express.Multer.File,
+  async generateShippingFromFiles(
+    files: Express.Multer.File[],
     _id: string | undefined,
     session?: ClientSession | undefined
   ): Promise<ShippingDocument> {
@@ -257,7 +262,9 @@ export class ShippingService extends BaseService<ShippingDocument> {
         );
 
         // Generate
-        const parts = [this.genAIService.fileToGenerativePart(file)];
+        const parts = files.map((file) =>
+          this.genAIService.fileToGenerativePart(file)
+        );
 
         const response = await this.genAIService.generate({
           question: this.GENAI_GENERATE_SHIPPING_MESSAGE,
@@ -271,17 +278,19 @@ export class ShippingService extends BaseService<ShippingDocument> {
         // Parse
         const shippingData = JSON.parse(response.text || "") as ShippingDTO;
 
-        // Save pdf file to gridFS
-        const gridFSFile = await this.gridFSBucket.uploadFile(file);
+        // Save pdf files to gridFS
+        const gridFSFiles = await Promise.all(
+          files.map(async (file) => await this.gridFSBucket.uploadFile(file))
+        );
 
         // Attach file to shipping
         shippingData.invoices?.forEach(
-          (invoice) =>
+          (invoice, i) =>
             (invoice.pdf.file = {
-              fileId: gridFSFile,
-              name: file.originalname,
-              mimeType: file.mimetype,
-              size: file.size,
+              fileId: gridFSFiles[i],
+              name: files[i].originalname,
+              mimeType: files[i].mimetype,
+              size: files[i].size,
             })
         );
 
