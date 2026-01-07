@@ -58,13 +58,9 @@ export class ShippingController extends BaseController<ShippingDocument> {
     next: NextFunction
   ) {
     try {
-      const _id = req.params.id;
-
-      if (!_id) throw new ValidationException("_id is required");
-
       const record = await (
         this.service as ShippingService
-      ).generateHSCodesForShipping(_id);
+      ).generateHSCodesForShipping(req.body);
 
       this.sendData(res, record);
     } catch (error: any) {

@@ -1,7 +1,12 @@
 import { ShippingDocument } from "@mongodb-types";
-import { authorizeMiddleware, BaseRoutes } from "../../../system";
+import {
+  authorizeMiddleware,
+  BaseRoutes,
+  validateBodyMiddleware,
+} from "../../../system";
 import { ShippingController } from "../controllers/shipping-controller";
 import { ShippingDTO, UpdateShippingDTO } from "../models/shipping.dto";
+import { HScodeDTO } from "../models/hs-code.dto";
 
 export class ShippingRouter extends BaseRoutes<ShippingDocument> {
   constructor() {
@@ -39,18 +44,12 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
   }
 
   initGenerateHSCodesForShippingRoute() {
-    this.router.put(
-      `${this.endpoint}/hs-code/generate/:id`,
+    this.router.post(
+      `${this.endpoint}/hs-code/generate`,
+      this.upload.any(),
+      validateBodyMiddleware(HScodeDTO),
       authorizeMiddleware(`${this.resource}/hs-code/generate/:id`, "update"),
       (this.controller as ShippingController).generateHSCodesForShipping
     );
   }
-
-  // initCloneShippingRoute() {
-  //   this.router.post(
-  //     `${this.endpoint}/clone/:id}`,
-  //     authorizeMiddleware(`${this.resource}/clone/:id`, "create"),
-  //     (this.controller as ShippingController).cloneShipping
-  //   );
-  // }
 }

@@ -1,7 +1,11 @@
-import { ShippingDocument } from "@mongodb-types";
+import {
+  ShippingDocument,
+  ShippingInvoicePdfExtractedDatumLineDocument,
+} from "@mongodb-types";
 import {
   BaseService,
   GridFSBucketService,
+  InternalServerException,
   runTransaction,
   UserStore,
   ValidationException,
@@ -12,6 +16,8 @@ import { ShippingDTO, UpdateShippingDTO } from "../models/shipping.dto";
 import { GenAIService } from "../../ia/genai/services/genai-service";
 import { CountryService } from "../../countries/services/country-service";
 import { shippingGenAISchema } from "../models/shipping.schema";
+import { HScodeDTO } from "../models/hs-code.dto";
+import { linesGenAISchema } from "../models/invoice.schema";
 
 export class ShippingService extends BaseService<ShippingDocument> {
   // constants
@@ -90,11 +96,12 @@ export class ShippingService extends BaseService<ShippingDocument> {
   `;
 
   private readonly GENAI_GENERATE_HS_CODE_MESSAGE = ` 
-      You will receive an existing JSON object separately.
+      You will receive an existing JSON object representing the lines of an invoice.
       That JSON MUST be treated as the source of truth.
 
       Your task is to UPDATE ONLY specific HS-related fields
-      inside EACH line object and return the FULL JSON object.
+      inside EACH line object and return the FULL JSON object as a response 
+      based on the schema provided to you.
 
       --------------------------------------------------
       STRICT UPDATE RULES
@@ -110,7 +117,14 @@ export class ShippingService extends BaseService<ShippingDocument> {
       --------------------------------------------------
       FIELDS YOU ARE ALLOWED TO MODIFY (PER LINE)
       --------------------------------------------------
-      Only the following fields may be changed:
+      Only the following fields may be changed, added, or removed
+      for each line object, if hsCode is applicable for that line
+      you must provide values for ALL of them, use description or classification 
+      if you can't find the hsCode to help you find the correct code, otherwise set them to null.
+      Sometimes you set the hs code but the rest of the fields are blank, avoid that, if you set the hs code
+      you MUST set the rest of the fields too.
+
+      This are the fields you can modify:
 
       - hsCode
       - customsChapter
@@ -150,6 +164,8 @@ export class ShippingService extends BaseService<ShippingDocument> {
       - The output MUST be directly parsable by JSON.parse().
       - Do NOT include explanations, comments, or markdown.
       - Do NOT restate the input.
+      - Do NOT return only the hsCode and leave the rest blank, if the hsCode is present
+        the rest of the fields must be present.
   `;
 
   // services
@@ -320,45 +336,33 @@ export class ShippingService extends BaseService<ShippingDocument> {
   }
 
   /**
-   * Generates HS codes for shipping record with the given id.
-   *
-   * The function runs within a transaction and returns the updated record.
-   * @param _id - The id of the shipping record to update.
-   * @param session - The optional client session to use for the transaction.
-   * @returns The updated record document.
+   * Generate HS codes for shipping using the GEN-AI service
+   * @param data The data to generate HS codes for, including the lines to generate HS codes for
+   * @returns A promise that resolves to an array of ShippingInvoicePdfExtractedDatumLineDocument objects, each containing the generated HS code
+   * @throws InternalServerException If the GEN-AI service fails to generate HS codes
    */
   async generateHSCodesForShipping(
-    _id: string,
-    session?: ClientSession | undefined
-  ): Promise<ShippingDocument> {
-    return await runTransaction<ShippingDocument>(
-      session,
-      async (newSession) => {
-        const shipping = await super.getById(_id, newSession);
+    data: HScodeDTO
+  ): Promise<ShippingInvoicePdfExtractedDatumLineDocument[]> {
+    try {
+      // Generate
+      const response = await this.genAIService.generate({
+        question: this.GENAI_GENERATE_HS_CODE_MESSAGE,
+        context: `${this.GENAI_CONTEXT} ${JSON.stringify({
+          lines: data.lines,
+        })}`,
+        schema: linesGenAISchema,
+      });
 
-        // Check if shipping exists
-        if (!shipping) throw new ValidationException("Shipping does not exist");
+      const linesData = JSON.parse(
+        response.text || ""
+      ) as ShippingInvoicePdfExtractedDatumLineDocument[];
 
-        // Generate
-        const response = await this.genAIService.generate({
-          question: this.GENAI_GENERATE_HS_CODE_MESSAGE,
-          context: `${this.GENAI_CONTEXT} ${JSON.stringify({
-            shipping,
-          })}`,
-          schema: shippingGenAISchema,
-        });
-
-        const shippingData = JSON.parse(response.text || "") as ShippingDTO;
-
-        return await super.update(
-          {
-            ...shippingData,
-            updatedBy: UserStore.getInstance().user?.id,
-            _id: _id,
-          },
-          newSession
-        );
-      }
-    );
+      return linesData;
+    } catch (error) {
+      throw new InternalServerException(
+        "Error generating HS codes for shipping"
+      );
+    }
   }
 }

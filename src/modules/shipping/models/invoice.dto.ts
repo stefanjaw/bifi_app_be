@@ -62,7 +62,7 @@ class ExtractedTariffDTO {
   tax?: number;
 }
 
-class ExtractedLineDTO {
+export class ExtractedLineDTO {
   @IsString()
   @IsNotEmpty()
   lineNumber!: string;
