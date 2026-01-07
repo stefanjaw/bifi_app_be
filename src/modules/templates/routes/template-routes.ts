@@ -14,4 +14,12 @@ export class TemplateRouter extends BaseRoutes<TemplateDocument> {
       dtoUpdateClass: UpdateTemplateDTO,
     });
   }
+
+  /**
+   * Initializes the GET /{endpoint} route.
+   * This route calls the `get` method of the controller and returns a list of records.
+   */
+  protected override initGetRoute(): void {
+    this.router.get(this.endpoint, this.controller.get);
+  }
 }

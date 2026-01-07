@@ -4,11 +4,17 @@ import { UserService } from "../../modules";
 import admin from "firebase-admin";
 import { FirebaseAppError } from "firebase-admin/app";
 
-const ignoreEndpoints: string[] = [];
+const ignoreEndpoints: { endpoint: string; method: string }[] = [
+  { endpoint: "/templates", method: "GET" },
+];
 
 export function authenticateMiddleware(userService: UserService) {
   return async (req: Request, res: Response, next: NextFunction) => {
-    if (ignoreEndpoints.some((x) => req.path.includes(x))) {
+    if (
+      ignoreEndpoints.some(
+        (x) => req.path.includes(x.endpoint) && req.method === x.method
+      )
+    ) {
       next();
       return;
     }
