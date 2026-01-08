@@ -119,14 +119,18 @@ export class ShippingService extends BaseService<ShippingDocument> {
       --------------------------------------------------
       Only the following fields may be changed, added, or removed
       for each line object, if hsCode is applicable for that line
-      you must provide values for ALL of them, use description or classification 
-      if you can't find the hsCode to help you find the correct code, otherwise set them to null.
-      Sometimes you set the hs code but the rest of the fields are blank, avoid that, if you set the hs code
-      you MUST set the rest of the fields too.
+      you must provide values for ALL of them, use description or 
+      classification if you can't find the hsCode to help you find 
+      the correct code, otherwise set them to null. Sometimes you 
+      set the hs code but the rest of the fields are blank, avoid 
+      that, if you set the hs code you MUST set the rest of the fields too.
+      If you consider hsCode and related fields if present are incorrect,
+      you MUST update them with the correct values.
 
       This are the fields you can modify:
 
       - hsCode
+      - customsClassification (if not present, use description to infer it or hsCode if present)
       - customsChapter
       - customsHeading
       - customsSubheading

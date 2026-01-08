@@ -26,15 +26,18 @@ class ExtractedTariffDTO {
 
   @IsString()
   @IsNotEmpty()
-  chapter!: string;
+  @IsOptional()
+  chapter?: string;
 
   @IsString()
   @IsNotEmpty()
-  heading!: string;
+  @IsOptional()
+  heading?: string;
 
   @IsString()
   @IsNotEmpty()
-  subheading!: string;
+  @IsOptional()
+  subheading?: string;
 
   @IsString()
   @IsNotEmpty()
@@ -160,6 +163,10 @@ class ExtractedHeaderDTO {
   @IsOptional()
   @IsString()
   address?: string | null;
+
+  @IsOptional()
+  @IsString()
+  phone?: string | null;
 
   @IsOptional()
   @IsEmail()
