@@ -44,5 +44,8 @@ RUN npx --prefix ./bifi_app_be puppeteer browsers install chrome
 # build app
 RUN npm --prefix ./bifi_app_be run build
 
+# expose port
+EXPOSE 8081
+
 # run app
 CMD ["node", "bifi_app_be/dist/index.js"]
