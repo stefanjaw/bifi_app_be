@@ -36,6 +36,7 @@ import {
   TaskRouter,
   GenAIRouter,
   ShippingRouter,
+  BCDRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -91,6 +92,7 @@ app.use("/api", new ProjectRouter().getRouter);
 app.use("/api", new TaskStageRouter().getRouter);
 app.use("/api", new GenAIRouter().getRouter);
 app.use("/api", new ShippingRouter().getRouter);
+app.use("/api", new BCDRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);

@@ -1,4 +1,11 @@
-// import { BaseService } from "../../../system";
+import { BCDDocument } from "@mongodb-types";
+import { BaseService } from "../../../system";
+import { bcdModel } from "../models/bcd.model";
 
-// export class BcdService extends BaseService<BcdDocument> {
-// }
+export class BCDService extends BaseService<BCDDocument> {
+  constructor() {
+    super({
+      model: bcdModel,
+    });
+  }
+}

@@ -1,26 +1,28 @@
-import { Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   ArrayMinSize,
   Contains,
+  IsArray,
   IsDate,
-  IsDateString,
   IsEnum,
-  IsISO31661Alpha3,
+  IsISO4217CurrencyCode,
   IsMongoId,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   Length,
+  Max,
   MaxLength,
   Min,
-  ValidateIf,
   ValidateNested,
 } from "class-validator";
 import {
-  AdditionalInformationType,
-  BCDType,
-  ValuationMethod,
-} from "./bcd-data.model";
+  AdditionalInformationTypeEnum,
+  BCDTypeEnum,
+  TransportMethodEnum,
+  ValuationMethodEnum,
+} from "./bcd.types";
 import { PartialType } from "../../../system";
 
 //Supplier and importer
@@ -35,11 +37,8 @@ class BCDImporterDTO {
 
 //Transport
 class BCDTransportDTO {
-  @IsEnum({
-    airline: "AIRLINE",
-    vessel: "VESSEL",
-  })
-  type!: "AIRLINE" | "VESSEL";
+  @IsEnum(TransportMethodEnum)
+  type!: TransportMethodEnum;
 
   @IsString()
   @Length(1, 255)
@@ -47,28 +46,29 @@ class BCDTransportDTO {
 
   @IsString()
   @Length(1, 255)
-  voyageOrFlightNo!: string;
+  flightOrVoyage!: string;
 
   @IsString()
   @Length(1, 255)
   port!: string;
 
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   arrivalDate!: string;
 }
 
 //Charge
 class BCDChargeDTO {
-  @IsMongoId()
-  id!: string;
+  @IsNumber()
+  @Min(0)
+  @Max(100)
+  @IsOptional()
+  @Type(() => Number)
+  percentage?: number;
 
   @IsNumber()
   @Min(0)
-  @ValidateIf((object, value) => value !== null)
-  percentage!: number | null;
-
-  @IsNumber()
-  @Min(0)
+  @Type(() => Number)
   amount!: number;
 }
 
@@ -78,6 +78,7 @@ class BCDDeclarantDTO {
   @Length(1, 255)
   name!: string;
 
+  // not mongoid but likely a code
   @IsString()
   @Length(1, 255)
   companyId!: string;
@@ -96,29 +97,31 @@ class BCDDeclarantDTO {
 //Tax
 class TaxEntryDTO {
   @IsString()
+  @Length(3)
   type!: string;
-
-  @IsString()
-  id!: string;
 
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   valueForTax!: number;
 
   @IsNumber()
   @Min(0)
+  @Max(100)
+  @Type(() => Number)
   ratePercentage!: number;
 
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   amount!: number;
 }
 
 //Additional info
 export class AdditionalInformationDTO {
-  @IsEnum(AdditionalInformationType)
+  @IsEnum(AdditionalInformationTypeEnum)
   @Length(3)
-  type!: AdditionalInformationType;
+  type!: AdditionalInformationTypeEnum;
 
   @IsString()
   @MaxLength(70)
@@ -129,18 +132,17 @@ export class AdditionalInformationDTO {
 export class BCDRecordDTO {
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   number!: number;
 
   @IsString()
   @Length(4)
   cpc!: string;
 
-  @IsString()
-  @IsISO31661Alpha3()
+  @IsMongoId()
   origin!: string;
 
   @IsString()
-  @Type(() => String)
   @Contains(".")
   @Length(8)
   tariff!: string;
@@ -151,11 +153,13 @@ export class BCDRecordDTO {
 
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   quantity!: number;
 
   @IsNumber()
-  @ValidateIf((object, value) => value !== null)
-  quantityTwo!: number | null;
+  @IsOptional()
+  @Type(() => Number)
+  quantityTwo?: number;
 
   @IsString()
   @MaxLength(10)
@@ -163,27 +167,38 @@ export class BCDRecordDTO {
 
   @IsString()
   @Length(3)
+  @IsISO4217CurrencyCode()
   currency!: string;
 
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   linesSubtotal!: number;
 
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   exchangeRate!: number;
 
   @ValidateNested({ each: true })
+  @IsArray()
+  @ArrayMinSize(1)
   @Type(() => BCDChargeDTO)
   charges!: BCDChargeDTO[];
 
   @ValidateNested({ each: true })
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsOptional()
   @Type(() => TaxEntryDTO)
   tax!: TaxEntryDTO[];
 
   @ValidateNested({ each: true })
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsOptional()
   @Type(() => AdditionalInformationDTO)
-  additionalInformation!: AdditionalInformationDTO[];
+  additionalInformation?: AdditionalInformationDTO[];
 }
 
 //Ogd
@@ -209,19 +224,25 @@ class BCDOgdDTO {
 
 //BCD
 export class BcdDTO {
-  @IsEnum(BCDType)
-  type!: BCDType;
+  @IsEnum(BCDTypeEnum)
+  type!: BCDTypeEnum;
 
   @ValidateNested()
+  @IsObject()
   @Type(() => BCDSupplierDTO)
+  @Transform(({ value }) => plainToInstance(BCDSupplierDTO, JSON.parse(value)))
   supplier!: BCDSupplierDTO;
 
   @ValidateNested()
+  @IsObject()
   @Type(() => BCDImporterDTO)
+  @Transform(({ value }) => plainToInstance(BCDImporterDTO, JSON.parse(value)))
   importer!: BCDImporterDTO;
 
   @ValidateNested()
+  @IsObject()
   @Type(() => BCDTransportDTO)
+  @Transform(({ value }) => plainToInstance(BCDTransportDTO, JSON.parse(value)))
   transport!: BCDTransportDTO;
 
   @IsString()
@@ -232,64 +253,91 @@ export class BcdDTO {
   @Length(1, 255)
   masterBOLAWB!: string;
 
-  @IsString()
-  @IsISO31661Alpha3()
+  @IsMongoId()
   directShipmentCountry!: string;
 
-  @IsString()
-  @IsISO31661Alpha3()
+  @IsMongoId()
   originalShipmentCountry!: string;
 
   @IsOptional()
   @IsString()
-  @Length(4, 4)
+  @Length(4)
   warehouseId?: string;
 
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => BCDChargeDTO)
+  @ArrayMinSize(1)
+  @Transform(({ value }) =>
+    JSON.parse(value).map((charge: any) =>
+      plainToInstance(BCDChargeDTO, charge)
+    )
+  )
   charges!: BCDChargeDTO[];
 
-  @IsString({
-    each: true,
-  })
+  @IsString({ each: true })
+  @Transform(({ value }) => JSON.parse(value))
+  @IsArray()
+  @ArrayMinSize(1)
   containerIds!: string[];
 
   @IsOptional()
-  @IsString({
-    each: true,
-  })
+  @IsString({ each: true })
+  @IsArray()
+  @ArrayMinSize(1)
+  @Transform(({ value }) => JSON.parse(value))
   houseBOLAWB?: string[];
 
-  @IsEnum(ValuationMethod)
+  @IsEnum(ValuationMethodEnum)
   @Length(1, 255)
-  valuationMethod!: ValuationMethod;
+  valuationMethod!: ValuationMethodEnum;
 
   @IsNumber()
   @Min(0)
+  @Type(() => Number)
   packagesCount!: number;
 
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AdditionalInformationDTO)
+  @ArrayMinSize(1)
+  @Transform(({ value }) =>
+    JSON.parse(value).map((charge: any) =>
+      plainToInstance(AdditionalInformationDTO, charge)
+    )
+  )
   additionalInformation!: AdditionalInformationDTO[];
 
   @ValidateNested()
+  @IsObject()
   @Type(() => BCDOgdDTO)
+  @Transform(({ value }) => plainToInstance(BCDOgdDTO, JSON.parse(value)))
   ogd!: BCDOgdDTO;
 
   @IsString({
     each: true,
   })
-  paymentAccounts!: string[];
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsOptional()
+  @Transform(({ value }) => JSON.parse(value))
+  paymentAccounts?: string[];
 
   @ValidateNested()
+  @IsObject()
   @Type(() => BCDDeclarantDTO)
+  @Transform(({ value }) => plainToInstance(BCDDeclarantDTO, JSON.parse(value)))
   declarant!: BCDDeclarantDTO;
 
+  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => BCDRecordDTO)
-  @ArrayMinSize(1, {
-    message: "At least one record is required",
-  })
+  @ArrayMinSize(1)
+  @Transform(({ value }) =>
+    JSON.parse(value).map((record: any) =>
+      plainToInstance(BCDRecordDTO, record)
+    )
+  )
   records!: BCDRecordDTO[];
 }
 

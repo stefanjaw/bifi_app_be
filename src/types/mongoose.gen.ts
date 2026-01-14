@@ -747,7 +747,7 @@ export type AssetTypeDocument = mongoose.Document<
  * ```
  */
 export type BCDSupplier = {
-  contactId: Contact["_id"] | Contact;
+  contactId: Contact;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -760,7 +760,7 @@ export type BCDSupplier = {
  * ```
  */
 export type BCDImporter = {
-  contactId: Contact["_id"] | Contact;
+  contactId: Contact;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -790,9 +790,8 @@ export type BCDTransport = {
  * ```
  */
 export type BCDCharge = {
-  id: Charge["_id"] | Charge;
   percentage?: number;
-  amount?: number;
+  amount: number;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -805,7 +804,7 @@ export type BCDCharge = {
  * ```
  */
 export type BCDAdditionalInformation = {
-  type: string;
+  type: "TXT" | "INV" | "SUP";
   value: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -820,7 +819,6 @@ export type BCDAdditionalInformation = {
  */
 export type BCDOgd = {
   paymentCode?: string;
-  cost?: number;
   costCode: string;
   objectCode: string;
   subsidiaryCode: string;
@@ -838,7 +836,7 @@ export type BCDOgd = {
  */
 export type BCDDeclarant = {
   name: string;
-  companyId: Company["_id"] | Company;
+  companyId: string;
   date: Date;
   capacity: string;
   traderReference: string;
@@ -854,9 +852,24 @@ export type BCDDeclarant = {
  * ```
  */
 export type BCDRecordCharge = {
-  id: Charge["_id"] | Charge;
   percentage?: number;
-  amount?: number;
+  amount: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDRecordTaxDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDRecordDocument.toObject()`.
+ * ```
+ * const bcdrecordObject = bcdrecord.toObject();
+ * ```
+ */
+export type BCDRecordTax = {
+  type: string;
+  valueForTax: number;
+  ratePercetage: number;
+  amount: number;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -869,7 +882,7 @@ export type BCDRecordCharge = {
  * ```
  */
 export type BCDRecordAdditionalInformation = {
-  type: string;
+  type: "TXT" | "INV" | "SUP";
   value: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -885,16 +898,17 @@ export type BCDRecordAdditionalInformation = {
 export type BCDRecord = {
   number: number;
   cpc: string;
-  origin: string;
+  origin: Country;
   tariff: string;
   description: string;
   quantity: number;
-  quantityTwo?: number | null;
+  quantityTwo?: number;
   supplementaryCode: string;
   currency: string;
   linesSubtotal?: number;
   exchangeRate?: number;
   charges: BCDRecordCharge[];
+  tax: BCDRecordTax[];
   additionalInformation: BCDRecordAdditionalInformation[];
   _id: mongoose.Types.ObjectId;
 };
@@ -919,12 +933,9 @@ export type BCD = {
   charges: BCDCharge[];
   containerIds: string[];
   houseBOLAWBs: string[];
-  valuationMethod: {
-    type?: any;
-    required?: any;
-  }[];
+  valuationMethod: "01" | "02";
   packagesCount: number;
-  additionalInformation: BCDAdditionalInformation;
+  additionalInformation: BCDAdditionalInformation[];
   ogd: BCDOgd;
   paymentAccounts: string[];
   declarant: BCDDeclarant;
@@ -1003,7 +1014,7 @@ export type BCDSchema = mongoose.Schema<
  * ```
  */
 export type BCDSupplierDocument = mongoose.Document<mongoose.Types.ObjectId> & {
-  contactId: ContactDocument["_id"] | ContactDocument;
+  contactId: ContactDocument;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1016,7 +1027,7 @@ export type BCDSupplierDocument = mongoose.Document<mongoose.Types.ObjectId> & {
  * ```
  */
 export type BCDImporterDocument = mongoose.Document<mongoose.Types.ObjectId> & {
-  contactId: ContactDocument["_id"] | ContactDocument;
+  contactId: ContactDocument;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1045,23 +1056,19 @@ export type BCDTransportDocument =
  */
 export type BCDChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    id: ChargeDocument["_id"] | ChargeDocument;
     percentage?: number;
-    amount?: number;
+    amount: number;
     _id: mongoose.Types.ObjectId;
   };
 
 /**
- * Mongoose Document type
+ * Mongoose Subdocument type
  *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
- * ```
+ * Type of `BCDDocument["additionalInformation"]` element.
  */
 export type BCDAdditionalInformationDocument =
-  mongoose.Document<mongoose.Types.ObjectId> & {
-    type: string;
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    type: "TXT" | "INV" | "SUP";
     value: string;
     _id: mongoose.Types.ObjectId;
   };
@@ -1076,7 +1083,6 @@ export type BCDAdditionalInformationDocument =
  */
 export type BCDOgdDocument = mongoose.Document<mongoose.Types.ObjectId> & {
   paymentCode?: string;
-  cost?: number;
   costCode: string;
   objectCode: string;
   subsidiaryCode: string;
@@ -1095,7 +1101,7 @@ export type BCDOgdDocument = mongoose.Document<mongoose.Types.ObjectId> & {
 export type BCDDeclarantDocument =
   mongoose.Document<mongoose.Types.ObjectId> & {
     name: string;
-    companyId: CompanyDocument["_id"] | CompanyDocument;
+    companyId: string;
     date: Date;
     capacity: string;
     traderReference: string;
@@ -1109,9 +1115,22 @@ export type BCDDeclarantDocument =
  */
 export type BCDRecordChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    id: ChargeDocument["_id"] | ChargeDocument;
     percentage?: number;
-    amount?: number;
+    amount: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BCDRecordDocument["tax"]` element.
+ */
+export type BCDRecordTaxDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    type: string;
+    valueForTax: number;
+    ratePercetage: number;
+    amount: number;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -1122,7 +1141,7 @@ export type BCDRecordChargeDocument =
  */
 export type BCDRecordAdditionalInformationDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    type: string;
+    type: "TXT" | "INV" | "SUP";
     value: string;
     _id: mongoose.Types.ObjectId;
   };
@@ -1136,16 +1155,17 @@ export type BCDRecordDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
     number: number;
     cpc: string;
-    origin: string;
+    origin: CountryDocument;
     tariff: string;
     description: string;
     quantity: number;
-    quantityTwo?: number | null;
+    quantityTwo?: number;
     supplementaryCode: string;
     currency: string;
     linesSubtotal?: number;
     exchangeRate?: number;
     charges: mongoose.Types.DocumentArray<BCDRecordChargeDocument>;
+    tax: mongoose.Types.DocumentArray<BCDRecordTaxDocument>;
     additionalInformation: mongoose.Types.DocumentArray<BCDRecordAdditionalInformationDocument>;
     _id: mongoose.Types.ObjectId;
   };
@@ -1174,12 +1194,9 @@ export type BCDDocument = mongoose.Document<
     charges: mongoose.Types.DocumentArray<BCDChargeDocument>;
     containerIds: mongoose.Types.Array<string>;
     houseBOLAWBs: mongoose.Types.Array<string>;
-    valuationMethod: mongoose.Types.Array<{
-      type?: any;
-      required?: any;
-    }>;
+    valuationMethod: "01" | "02";
     packagesCount: number;
-    additionalInformation: BCDAdditionalInformationDocument;
+    additionalInformation: mongoose.Types.DocumentArray<BCDAdditionalInformationDocument>;
     ogd: BCDOgdDocument;
     paymentAccounts: mongoose.Types.Array<string>;
     declarant: BCDDeclarantDocument;

@@ -1,5 +1,10 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
-import { BCDType, ValuationMethod } from "./bcd-data.model";
+import {
+  AdditionalInformationTypeEnum,
+  BCDTypeEnum,
+  TransportMethodEnum,
+  ValuationMethodEnum,
+} from "./bcd.types";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { BCDDocument } from "@mongodb-types";
@@ -10,6 +15,9 @@ const supplierSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Contact",
     required: true,
+    autopopulate: {
+      maxDepth: 1,
+    },
   },
 });
 
@@ -18,13 +26,16 @@ const importerSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Contact",
     required: true,
+    autopopulate: {
+      maxDepth: 1,
+    },
   },
 });
 
 const transportSchema = new Schema({
   type: {
     type: String,
-    enum: ["AIRLINE", "VESSEL"],
+    enum: Object.values(TransportMethodEnum),
     required: true,
   },
   aircraftOrVessel: {
@@ -47,18 +58,12 @@ const transportSchema = new Schema({
 
 //Charge
 const chargeSchema = new Schema({
-  id: {
-    type: Schema.Types.ObjectId,
-    ref: "Charge",
-    required: true,
-  },
   percentage: {
     type: Number,
-    min: 0,
   },
   amount: {
     type: Number,
-    min: 0,
+    required: true,
   },
 });
 
@@ -69,8 +74,8 @@ const declarantSchema = new Schema({
     required: true,
   },
   companyId: {
-    type: Schema.Types.ObjectId,
-    ref: "Company",
+    // !!!: likely a code, not a mongoid or ref
+    type: String,
     required: true,
   },
   date: {
@@ -87,11 +92,31 @@ const declarantSchema = new Schema({
   },
 });
 
+const taxEntrySchema = new Schema({
+  type: {
+    type: String,
+    required: true,
+  },
+  valueForTax: {
+    type: Number,
+    required: true,
+  },
+  ratePercetage: {
+    type: Number,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
+});
+
 //Additional info
 const AdditionalInformationSchema = new Schema({
   //tipe is enum of strings
   type: {
     type: String,
+    enum: Object.values(AdditionalInformationTypeEnum),
     required: true,
   },
   value: {
@@ -103,7 +128,6 @@ const AdditionalInformationSchema = new Schema({
 const bcdRecordSchema = new Schema({
   number: {
     type: Number,
-    min: 0,
     required: true,
   },
   cpc: {
@@ -111,8 +135,10 @@ const bcdRecordSchema = new Schema({
     required: true,
   },
   origin: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "Country",
     required: true,
+    autopopulate: true,
   },
   tariff: {
     type: String,
@@ -124,13 +150,10 @@ const bcdRecordSchema = new Schema({
   },
   quantity: {
     type: Number,
-    min: 0,
     required: true,
   },
   quantityTwo: {
     type: Number,
-    min: 0,
-    default: null,
   },
   supplementaryCode: {
     type: String,
@@ -152,19 +175,17 @@ const bcdRecordSchema = new Schema({
     type: [chargeSchema],
     required: true,
   },
+  tax: {
+    type: [taxEntrySchema],
+  },
   additionalInformation: {
     type: [AdditionalInformationSchema],
-    required: true,
   },
 });
 //Ogd
-const Ogdschema = new Schema({
+const ogdschema = new Schema({
   paymentCode: {
     type: String,
-  },
-  cost: {
-    type: Number,
-    min: 0,
   },
   costCode: {
     type: String,
@@ -187,20 +208,17 @@ const bcdSchema = new Schema({
   //type
   type: {
     type: String,
-    enum: Object.values(BCDType),
+    enum: Object.values(BCDTypeEnum),
     required: true,
   },
-
   supplier: {
     type: supplierSchema,
     required: true,
   },
-
   importer: {
     type: importerSchema,
     required: true,
   },
-
   transport: {
     type: transportSchema,
     required: true,
@@ -214,8 +232,16 @@ const bcdSchema = new Schema({
     required: true,
   },
   directShipmentCountry: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "Country",
     required: true,
+    autopopulate: true,
+  },
+  originalShipmentCountry: {
+    type: Schema.Types.ObjectId,
+    ref: "Country",
+    required: true,
+    autopopulate: true,
   },
   warehouseId: {
     type: String,
@@ -232,9 +258,9 @@ const bcdSchema = new Schema({
   houseBOLAWBs: {
     type: [String],
   },
-
   valuationMethod: {
-    type: Object.values(ValuationMethod),
+    type: String,
+    enum: Object.values(ValuationMethodEnum),
     required: true,
   },
   packagesCount: {
@@ -243,16 +269,15 @@ const bcdSchema = new Schema({
     required: true,
   },
   additionalInformation: {
-    type: AdditionalInformationSchema,
+    type: [AdditionalInformationSchema],
     required: true,
   },
   ogd: {
-    type: Ogdschema,
+    type: ogdschema,
     required: true,
   },
   paymentAccounts: {
     type: [String],
-    required: true,
   },
   declarant: {
     type: declarantSchema,
