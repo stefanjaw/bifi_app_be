@@ -928,7 +928,8 @@ export type BCD = {
   transport: BCDTransport;
   manifest: string;
   masterBOLAWB: string;
-  directShipmentCountry: string;
+  directShipmentCountry: Country;
+  originalShipmentCountry: Country;
   warehouseId?: string;
   charges: BCDCharge[];
   containerIds: string[];
@@ -1189,7 +1190,8 @@ export type BCDDocument = mongoose.Document<
     transport: BCDTransportDocument;
     manifest: string;
     masterBOLAWB: string;
-    directShipmentCountry: string;
+    directShipmentCountry: CountryDocument;
+    originalShipmentCountry: CountryDocument;
     warehouseId?: string;
     charges: mongoose.Types.DocumentArray<BCDChargeDocument>;
     containerIds: mongoose.Types.Array<string>;

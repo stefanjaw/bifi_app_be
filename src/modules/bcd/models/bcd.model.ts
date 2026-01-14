@@ -16,7 +16,7 @@ const supplierSchema = new Schema({
     ref: "Contact",
     required: true,
     autopopulate: {
-      maxDepth: 1,
+      maxDepth: 2,
     },
   },
 });
@@ -27,7 +27,7 @@ const importerSchema = new Schema({
     ref: "Contact",
     required: true,
     autopopulate: {
-      maxDepth: 1,
+      maxDepth: 2,
     },
   },
 });
