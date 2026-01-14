@@ -739,6 +739,455 @@ export type AssetTypeDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of BCDSupplierDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCDSupplier = {
+  contactId: Contact["_id"] | Contact;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDImporterDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCDImporter = {
+  contactId: Contact["_id"] | Contact;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDTransportDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCDTransport = {
+  type: "AIRLINE" | "VESSEL";
+  aircraftOrVessel: string;
+  flightOrVoyage: string;
+  port: string;
+  arrivalDate: Date;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDChargeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCDCharge = {
+  id: Charge["_id"] | Charge;
+  percentage?: number;
+  amount?: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDAdditionalInformationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCDAdditionalInformation = {
+  type: string;
+  value: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDOgdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCDOgd = {
+  paymentCode?: string;
+  cost?: number;
+  costCode: string;
+  objectCode: string;
+  subsidiaryCode: string;
+  explanation?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDDeclarantDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCDDeclarant = {
+  name: string;
+  companyId: Company["_id"] | Company;
+  date: Date;
+  capacity: string;
+  traderReference: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDRecordChargeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDRecordDocument.toObject()`.
+ * ```
+ * const bcdrecordObject = bcdrecord.toObject();
+ * ```
+ */
+export type BCDRecordCharge = {
+  id: Charge["_id"] | Charge;
+  percentage?: number;
+  amount?: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDRecordAdditionalInformationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDRecordDocument.toObject()`.
+ * ```
+ * const bcdrecordObject = bcdrecord.toObject();
+ * ```
+ */
+export type BCDRecordAdditionalInformation = {
+  type: string;
+  value: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDRecordDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCDRecord = {
+  number: number;
+  cpc: string;
+  origin: string;
+  tariff: string;
+  description: string;
+  quantity: number;
+  quantityTwo?: number | null;
+  supplementaryCode: string;
+  currency: string;
+  linesSubtotal?: number;
+  exchangeRate?: number;
+  charges: BCDRecordCharge[];
+  additionalInformation: BCDRecordAdditionalInformation[];
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDObject`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCD = {
+  type: "I" | "E" | "D" | "A";
+  supplier: BCDSupplier;
+  importer: BCDImporter;
+  transport: BCDTransport;
+  manifest: string;
+  masterBOLAWB: string;
+  directShipmentCountry: string;
+  warehouseId?: string;
+  charges: BCDCharge[];
+  containerIds: string[];
+  houseBOLAWBs: string[];
+  valuationMethod: {
+    type?: any;
+    required?: any;
+  }[];
+  packagesCount: number;
+  additionalInformation: BCDAdditionalInformation;
+  ogd: BCDOgd;
+  paymentAccounts: string[];
+  declarant: BCDDeclarant;
+  records: BCDRecord[];
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDDocument (type alias of `BCD`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BCD } from "../models"
+ * import { BCDObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bcdObject: BCDObject = bcd.toObject();
+ * ```
+ */
+export type BCDObject = BCD;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDQuery = mongoose.Query<any, BCDDocument, BCDQueries> &
+  BCDQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BCDSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDQueries = {
+  paginate: (this: BCDQuery, ...args: any[]) => BCDQuery;
+};
+
+export type BCDMethods = {};
+
+export type BCDStatics = {
+  paginate: (this: BCDModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BCDModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
+ * ```
+ */
+export type BCDModel = mongoose.Model<BCDDocument, BCDQueries> & BCDStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BCD schema instances:
+ * ```
+ * const BCDSchema: BCDSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BCDSchema = mongoose.Schema<
+  BCDDocument,
+  BCDModel,
+  BCDMethods,
+  BCDQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
+ * ```
+ */
+export type BCDSupplierDocument = mongoose.Document<mongoose.Types.ObjectId> & {
+  contactId: ContactDocument["_id"] | ContactDocument;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
+ * ```
+ */
+export type BCDImporterDocument = mongoose.Document<mongoose.Types.ObjectId> & {
+  contactId: ContactDocument["_id"] | ContactDocument;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
+ * ```
+ */
+export type BCDTransportDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    type: "AIRLINE" | "VESSEL";
+    aircraftOrVessel: string;
+    flightOrVoyage: string;
+    port: string;
+    arrivalDate: Date;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BCDDocument["charges"]` element.
+ */
+export type BCDChargeDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    id: ChargeDocument["_id"] | ChargeDocument;
+    percentage?: number;
+    amount?: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
+ * ```
+ */
+export type BCDAdditionalInformationDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    type: string;
+    value: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
+ * ```
+ */
+export type BCDOgdDocument = mongoose.Document<mongoose.Types.ObjectId> & {
+  paymentCode?: string;
+  cost?: number;
+  costCode: string;
+  objectCode: string;
+  subsidiaryCode: string;
+  explanation?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
+ * ```
+ */
+export type BCDDeclarantDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    name: string;
+    companyId: CompanyDocument["_id"] | CompanyDocument;
+    date: Date;
+    capacity: string;
+    traderReference: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BCDRecordDocument["charges"]` element.
+ */
+export type BCDRecordChargeDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    id: ChargeDocument["_id"] | ChargeDocument;
+    percentage?: number;
+    amount?: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BCDRecordDocument["additionalInformation"]` element.
+ */
+export type BCDRecordAdditionalInformationDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    type: string;
+    value: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BCDDocument["records"]` element.
+ */
+export type BCDRecordDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    number: number;
+    cpc: string;
+    origin: string;
+    tariff: string;
+    description: string;
+    quantity: number;
+    quantityTwo?: number | null;
+    supplementaryCode: string;
+    currency: string;
+    linesSubtotal?: number;
+    exchangeRate?: number;
+    charges: mongoose.Types.DocumentArray<BCDRecordChargeDocument>;
+    additionalInformation: mongoose.Types.DocumentArray<BCDRecordAdditionalInformationDocument>;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
+ * ```
+ */
+export type BCDDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BCDQueries
+> &
+  BCDMethods & {
+    type: "I" | "E" | "D" | "A";
+    supplier: BCDSupplierDocument;
+    importer: BCDImporterDocument;
+    transport: BCDTransportDocument;
+    manifest: string;
+    masterBOLAWB: string;
+    directShipmentCountry: string;
+    warehouseId?: string;
+    charges: mongoose.Types.DocumentArray<BCDChargeDocument>;
+    containerIds: mongoose.Types.Array<string>;
+    houseBOLAWBs: mongoose.Types.Array<string>;
+    valuationMethod: mongoose.Types.Array<{
+      type?: any;
+      required?: any;
+    }>;
+    packagesCount: number;
+    additionalInformation: BCDAdditionalInformationDocument;
+    ogd: BCDOgdDocument;
+    paymentAccounts: mongoose.Types.Array<string>;
+    declarant: BCDDeclarantDocument;
+    records: mongoose.Types.DocumentArray<BCDRecordDocument>;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Lean version of CompanyDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CompanyDocument.toObject()`. To avoid conflicts with model names, use the type alias `CompanyObject`.
