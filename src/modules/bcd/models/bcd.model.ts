@@ -2,8 +2,11 @@ import mongoose, { PaginateModel, Schema } from "mongoose";
 import {
   AdditionalInformationTypeEnum,
   BCDTypeEnum,
-  TransportMethodEnum,
-  ValuationMethodEnum,
+  ChargeCodeTypeEnum,
+  TaxIdTypeEnum,
+  TaxTypeEnum,
+  TransportMethodTypeEnum,
+  ValuationMethodTypeEnum,
 } from "./bcd.types";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
@@ -35,7 +38,7 @@ const importerSchema = new Schema({
 const transportSchema = new Schema({
   type: {
     type: String,
-    enum: Object.values(TransportMethodEnum),
+    enum: Object.values(TransportMethodTypeEnum),
     required: true,
   },
   aircraftOrVessel: {
@@ -58,6 +61,10 @@ const transportSchema = new Schema({
 
 //Charge
 const chargeSchema = new Schema({
+  code: {
+    type: String,
+    enum: Object.values(ChargeCodeTypeEnum),
+  },
   percentage: {
     type: Number,
   },
@@ -95,13 +102,19 @@ const declarantSchema = new Schema({
 const taxEntrySchema = new Schema({
   type: {
     type: String,
+    enum: Object.values(TaxTypeEnum),
+    required: true,
+  },
+  taxId: {
+    type: String,
+    enum: Object.values(TaxIdTypeEnum),
     required: true,
   },
   valueForTax: {
     type: Number,
     required: true,
   },
-  ratePercetage: {
+  ratePercentage: {
     type: Number,
     required: true,
   },
@@ -260,7 +273,7 @@ const bcdSchema = new Schema({
   },
   valuationMethod: {
     type: String,
-    enum: Object.values(ValuationMethodEnum),
+    enum: Object.values(ValuationMethodTypeEnum),
     required: true,
   },
   packagesCount: {

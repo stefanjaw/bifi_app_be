@@ -790,6 +790,7 @@ export type BCDTransport = {
  * ```
  */
 export type BCDCharge = {
+  code?: "212" | "641" | "640";
   percentage?: number;
   amount: number;
   _id: mongoose.Types.ObjectId;
@@ -852,6 +853,7 @@ export type BCDDeclarant = {
  * ```
  */
 export type BCDRecordCharge = {
+  code?: "212" | "641" | "640";
   percentage?: number;
   amount: number;
   _id: mongoose.Types.ObjectId;
@@ -866,9 +868,10 @@ export type BCDRecordCharge = {
  * ```
  */
 export type BCDRecordTax = {
-  type: string;
+  type: "CUD" | "WHA" | "WSF";
+  taxId: "F" | "E";
   valueForTax: number;
-  ratePercetage: number;
+  ratePercentage: number;
   amount: number;
   _id: mongoose.Types.ObjectId;
 };
@@ -1057,6 +1060,7 @@ export type BCDTransportDocument =
  */
 export type BCDChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    code?: "212" | "641" | "640";
     percentage?: number;
     amount: number;
     _id: mongoose.Types.ObjectId;
@@ -1116,6 +1120,7 @@ export type BCDDeclarantDocument =
  */
 export type BCDRecordChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    code?: "212" | "641" | "640";
     percentage?: number;
     amount: number;
     _id: mongoose.Types.ObjectId;
@@ -1128,9 +1133,10 @@ export type BCDRecordChargeDocument =
  */
 export type BCDRecordTaxDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    type: string;
+    type: "CUD" | "WHA" | "WSF";
+    taxId: "F" | "E";
     valueForTax: number;
-    ratePercetage: number;
+    ratePercentage: number;
     amount: number;
     _id: mongoose.Types.ObjectId;
   };

@@ -11,12 +11,29 @@ export enum AdditionalInformationTypeEnum {
   SUPPLIER = "SUP",
 }
 
-export enum ValuationMethodEnum {
+export enum ValuationMethodTypeEnum {
   TRANSACTIONAL_VALUE = "01",
   OTHER = "02",
 }
 
-export enum TransportMethodEnum {
-  airline = "AIRLINE",
-  vessel = "VESSEL",
+export enum TransportMethodTypeEnum {
+  AIRLINE = "AIRLINE",
+  VESSEL = "VESSEL",
+}
+
+export enum TaxTypeEnum {
+  CUSTOMS = "CUD",
+  WHARFAGE = "WHA",
+  WAREHOUSE = "WSF",
+}
+
+export enum TaxIdTypeEnum {
+  FULL_RATE = "F",
+  EXCHANGE_RATE = "E",
+}
+
+export enum ChargeCodeTypeEnum {
+  CASH_DISCOUNT = "212",
+  FREIGHT_ADDITIONAL = "641",
+  FRIEGHT_STAT = "640",
 }

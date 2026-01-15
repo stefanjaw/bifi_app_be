@@ -20,8 +20,11 @@ import {
 import {
   AdditionalInformationTypeEnum,
   BCDTypeEnum,
-  TransportMethodEnum,
-  ValuationMethodEnum,
+  ChargeCodeTypeEnum,
+  TaxIdTypeEnum,
+  TaxTypeEnum,
+  TransportMethodTypeEnum,
+  ValuationMethodTypeEnum,
 } from "./bcd.types";
 import { PartialType } from "../../../system";
 
@@ -37,8 +40,8 @@ class BCDImporterDTO {
 
 //Transport
 class BCDTransportDTO {
-  @IsEnum(TransportMethodEnum)
-  type!: TransportMethodEnum;
+  @IsEnum(TransportMethodTypeEnum)
+  type!: TransportMethodTypeEnum;
 
   @IsString()
   @Length(1, 255)
@@ -59,6 +62,10 @@ class BCDTransportDTO {
 
 //Charge
 class BCDChargeDTO {
+  @IsEnum(ChargeCodeTypeEnum)
+  @IsOptional()
+  code?: ChargeCodeTypeEnum;
+
   @IsNumber()
   @Min(0)
   @Max(100)
@@ -96,9 +103,11 @@ class BCDDeclarantDTO {
 
 //Tax
 class TaxEntryDTO {
-  @IsString()
-  @Length(3)
-  type!: string;
+  @IsEnum(TaxTypeEnum)
+  type!: TaxTypeEnum;
+
+  @IsEnum(TaxIdTypeEnum)
+  taxId!: TaxIdTypeEnum;
 
   @IsNumber()
   @Min(0)
@@ -288,9 +297,9 @@ export class BcdDTO {
   @Transform(({ value }) => JSON.parse(value))
   houseBOLAWB?: string[];
 
-  @IsEnum(ValuationMethodEnum)
+  @IsEnum(ValuationMethodTypeEnum)
   @Length(1, 255)
-  valuationMethod!: ValuationMethodEnum;
+  valuationMethod!: ValuationMethodTypeEnum;
 
   @IsNumber()
   @Min(0)
