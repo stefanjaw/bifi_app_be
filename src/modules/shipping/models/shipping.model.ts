@@ -71,13 +71,13 @@ const shippingSchema = new Schema(
         required: true,
       },
     ],
-    bcds: [
-      {
-        type: Schema.Types.ObjectId,
-        // ref: "bcd",
-        required: false,
-      },
-    ],
+    // bcds: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "bcd",
+    //     required: false,
+    //   },
+    // ],
     active: {
       type: Boolean,
       default: true,
@@ -85,11 +85,22 @@ const shippingSchema = new Schema(
   },
   {
     timestamps: true,
+    toObject: { virtuals: true }, // Include virtuals in toObject output
+    toJSON: { virtuals: true }, // Include virtuals in toJSON output
   }
 );
 
 shippingSchema.plugin(paginate);
 shippingSchema.plugin(autopopulate);
+
+shippingSchema.virtual("bcds", {
+  ref: "BCD",
+  localField: "_id",
+  foreignField: "shippingId",
+  autopopulate: {
+    maxDepth: 1,
+  },
+});
 
 const shippingModel = mongoose.model<
   ShippingDocument,

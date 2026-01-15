@@ -1,5 +1,5 @@
 import { BCDDocument } from "@mongodb-types";
-import { BaseRoutes } from "../../../system";
+import { authorizeMiddleware, BaseRoutes } from "../../../system";
 import { BCDController } from "../controllers/bcd-controller";
 import { BcdDTO, UpdateBcdDTO } from "../models/bcd.dto";
 
@@ -11,5 +11,18 @@ export class BCDRouter extends BaseRoutes<BCDDocument> {
       dtoCreateClass: BcdDTO,
       dtoUpdateClass: UpdateBcdDTO,
     });
+  }
+
+  protected override initRoutes(): void {
+    this.initUploadBCDDataToFTPRoute();
+    super.initRoutes();
+  }
+
+  initUploadBCDDataToFTPRoute() {
+    this.router.post(
+      `${this.endpoint}/upload-ftp/:id`,
+      authorizeMiddleware(`${this.resource}/upload-ftp/:id`, "create"),
+      (this.controller as BCDController).postUploadBCDDataToFTP
+    );
   }
 }

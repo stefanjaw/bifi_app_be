@@ -85,9 +85,9 @@ class BCDDeclarantDTO {
   @Length(1, 255)
   name!: string;
 
-  // not mongoid but likely a code
+  // !!! not mongoid but likely a code
   @IsString()
-  @Length(1, 255)
+  @Length(5, 255)
   companyId!: string;
 
   @IsDate()
@@ -233,6 +233,9 @@ class BCDOgdDTO {
 
 //BCD
 export class BcdDTO {
+  @IsMongoId()
+  shippingId!: string;
+
   @IsEnum(BCDTypeEnum)
   type!: BCDTypeEnum;
 

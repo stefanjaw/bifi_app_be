@@ -1,8 +1,10 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import {
   AdditionalInformationTypeEnum,
+  BCDStatusTypeEnum,
   BCDTypeEnum,
   ChargeCodeTypeEnum,
+  EBCDTypeEnum,
   TaxIdTypeEnum,
   TaxTypeEnum,
   TransportMethodTypeEnum,
@@ -11,6 +13,7 @@ import {
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { BCDDocument } from "@mongodb-types";
+import { fileSchema } from "../../../system";
 
 // this file values and structure the BCD mongoose model
 const supplierSchema = new Schema({
@@ -125,7 +128,7 @@ const taxEntrySchema = new Schema({
 });
 
 //Additional info
-const AdditionalInformationSchema = new Schema({
+const additionalInformationSchema = new Schema({
   //tipe is enum of strings
   type: {
     type: String,
@@ -192,7 +195,7 @@ const bcdRecordSchema = new Schema({
     type: [taxEntrySchema],
   },
   additionalInformation: {
-    type: [AdditionalInformationSchema],
+    type: [additionalInformationSchema],
   },
 });
 //Ogd
@@ -217,7 +220,32 @@ const ogdschema = new Schema({
   },
 });
 
+const ebcdSchema = new Schema({
+  file: {
+    type: fileSchema,
+    required: true,
+  },
+  type: {
+    type: String,
+    enum: Object.values(EBCDTypeEnum),
+    required: true,
+  },
+});
+
 const bcdSchema = new Schema({
+  shippingId: {
+    type: Schema.Types.ObjectId,
+    ref: "Shipping",
+    required: true,
+    autopopulate: {
+      maxDepth: 1,
+    },
+  },
+  status: {
+    type: String,
+    enum: Object.values(BCDStatusTypeEnum),
+    default: BCDStatusTypeEnum.DRAFT,
+  },
   //type
   type: {
     type: String,
@@ -282,7 +310,7 @@ const bcdSchema = new Schema({
     required: true,
   },
   additionalInformation: {
-    type: [AdditionalInformationSchema],
+    type: [additionalInformationSchema],
     required: true,
   },
   ogd: {
@@ -299,6 +327,10 @@ const bcdSchema = new Schema({
   records: {
     type: [bcdRecordSchema],
     required: true,
+  },
+  // * goverment documents associated with this BCD
+  ebcds: {
+    type: [ebcdSchema],
   },
 });
 

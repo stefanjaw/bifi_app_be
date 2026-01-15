@@ -44,21 +44,35 @@ export class GridFSBucketService {
    * upload process and resolves with the file ID once the upload is complete.
    */
 
-  async uploadFile(file: Express.Multer.File) {
+  async uploadFile(file: Express.Multer.File | File) {
     if (!file || typeof file !== "object")
       throw new ValidationException("Invalid file");
 
-    const stream = this.bucket.openUploadStream(file.originalname, {
-      metadata: {
-        contentType: file.mimetype,
-        mimetype: file.mimetype,
-        originalname: file.originalname,
-        size: file.size,
-      },
-    });
+    const stream =
+      file instanceof File
+        ? this.bucket.openUploadStream(file.name, {
+            metadata: {
+              contentType: file.type,
+              mimetype: file.type,
+              originalname: file.type,
+              size: file.size,
+            },
+          })
+        : this.bucket.openUploadStream(file.originalname, {
+            metadata: {
+              contentType: file.mimetype,
+              mimetype: file.mimetype,
+              originalname: file.originalname,
+              size: file.size,
+            },
+          });
 
-    return new Promise<string>((resolve, reject) => {
-      stream.end(file.buffer);
+    return new Promise<string>(async (resolve, reject) => {
+      stream.end(
+        file instanceof File
+          ? Buffer.from(await file.arrayBuffer())
+          : file.buffer
+      );
 
       // Handle errors during the upload process
       stream.on("error", (err) => {
@@ -129,7 +143,7 @@ export class GridFSBucketService {
    * that resolves once all files have been successfully uploaded.
    */
 
-  async uploadFiles(files: Express.Multer.File[]) {
+  async uploadFiles(files: (Express.Multer.File | File)[]) {
     return Promise.all(files.map((file) => this.uploadFile(file)));
   }
 
@@ -144,7 +158,9 @@ export class GridFSBucketService {
    *
    * This function is a convenience wrapper for the uploadFile and uploadFiles methods.
    */
-  async upload(files: Express.Multer.File[] | Express.Multer.File) {
+  async upload(
+    files: (Express.Multer.File | File)[] | Express.Multer.File | File
+  ) {
     if (Array.isArray(files)) {
       return this.uploadFiles(files);
     } else {

@@ -37,3 +37,18 @@ export enum ChargeCodeTypeEnum {
   FREIGHT_ADDITIONAL = "641",
   FRIEGHT_STAT = "640",
 }
+
+export enum EBCDTypeEnum {
+  CSV = "CSV", // * CSV file sent
+  SQR = "SQR", // * Sent incorrectly
+  REL = "REL", // * Sent correctly
+  TXT = "TXT", // * Electronic receipt
+}
+
+export enum BCDStatusTypeEnum {
+  DRAFT = "DRAFT",
+  PENDING_RESPONSE = "PENDING_RESPONSE",
+  FAILED = "FAILED",
+  PENDING_QUERY = "PENDING_QUERY",
+  SUBMITTED = "SUBMITTED",
+}

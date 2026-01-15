@@ -917,6 +917,39 @@ export type BCDRecord = {
 };
 
 /**
+ * Lean version of BCDEbcdFileDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDEbcdDocument.toObject()`.
+ * ```
+ * const bcdebcdObject = bcdebcd.toObject();
+ * ```
+ */
+export type BCDEbcdFile = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BCDEbcdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
+ * ```
+ * const bcdObject = bcd.toObject();
+ * ```
+ */
+export type BCDEbcd = {
+  file: BCDEbcdFile;
+  type: "CSV" | "SQR" | "REL" | "TXT";
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of BCDDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDObject`.
@@ -925,6 +958,13 @@ export type BCDRecord = {
  * ```
  */
 export type BCD = {
+  shippingId: Shipping;
+  status?:
+    | "DRAFT"
+    | "PENDING_RESPONSE"
+    | "FAILED"
+    | "PENDING_QUERY"
+    | "SUBMITTED";
   type: "I" | "E" | "D" | "A";
   supplier: BCDSupplier;
   importer: BCDImporter;
@@ -944,6 +984,7 @@ export type BCD = {
   paymentAccounts: string[];
   declarant: BCDDeclarant;
   records: BCDRecord[];
+  ebcds: BCDEbcd[];
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1182,6 +1223,37 @@ export type BCDRecordDocument =
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
+ * const BCDEbcd = mongoose.model<BCDEbcdDocument, BCDEbcdModel>("BCDEbcd", BCDEbcdSchema);
+ * ```
+ */
+export type BCDEbcdFileDocument = mongoose.Document<mongoose.Types.ObjectId> & {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BCDDocument["ebcds"]` element.
+ */
+export type BCDEbcdDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    file: BCDEbcdFileDocument;
+    type: "CSV" | "SQR" | "REL" | "TXT";
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
  * const BCD = mongoose.model<BCDDocument, BCDModel>("BCD", BCDSchema);
  * ```
  */
@@ -1190,6 +1262,13 @@ export type BCDDocument = mongoose.Document<
   BCDQueries
 > &
   BCDMethods & {
+    shippingId: ShippingDocument;
+    status?:
+      | "DRAFT"
+      | "PENDING_RESPONSE"
+      | "FAILED"
+      | "PENDING_QUERY"
+      | "SUBMITTED";
     type: "I" | "E" | "D" | "A";
     supplier: BCDSupplierDocument;
     importer: BCDImporterDocument;
@@ -1209,6 +1288,7 @@ export type BCDDocument = mongoose.Document<
     paymentAccounts: mongoose.Types.Array<string>;
     declarant: BCDDeclarantDocument;
     records: mongoose.Types.DocumentArray<BCDRecordDocument>;
+    ebcds: mongoose.Types.DocumentArray<BCDEbcdDocument>;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -2665,11 +2745,11 @@ export type Shipping = {
   status: "UPLOADING" | "ERROR" | "PDF_PROCESSED" | "BCD_SENT";
   stage: "HS_CODES" | "TARIFF_CODES" | "GROUPING" | "SUMMARY" | "COMPLETE";
   invoices: ShippingInvoice[];
-  bcds: mongoose.Types.ObjectId[];
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
+  bcds: any;
 };
 
 /**
@@ -2897,11 +2977,11 @@ export type ShippingDocument = mongoose.Document<
     status: "UPLOADING" | "ERROR" | "PDF_PROCESSED" | "BCD_SENT";
     stage: "HS_CODES" | "TARIFF_CODES" | "GROUPING" | "SUMMARY" | "COMPLETE";
     invoices: mongoose.Types.DocumentArray<ShippingInvoiceDocument>;
-    bcds: mongoose.Types.Array<mongoose.Types.ObjectId>;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
+    bcds: any;
   };
 
 /**
