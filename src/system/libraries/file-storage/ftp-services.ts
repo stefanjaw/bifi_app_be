@@ -159,7 +159,7 @@ export class FTPService {
         },
       });
 
-      await client.downloadTo(writable, path);
+      await client.downloadTo(writable, `${this.options.basePath}/${path}`);
       return Buffer.concat(chunks);
     } catch (error) {
       throw error;
@@ -203,7 +203,7 @@ export class FTPService {
       client = await this.connect();
 
       // get list of files
-      let files = await client.list(path);
+      let files = await client.list(`${this.options.basePath}/${path}`);
 
       // filter files if matchingWord is provided
       files = files.filter(
@@ -227,7 +227,10 @@ export class FTPService {
           },
         });
 
-        await client.downloadTo(writable, `${path}/${file.name}`);
+        await client.downloadTo(
+          writable,
+          `${this.options.basePath}/${path}/${file.name}`
+        );
         buffers.push(Buffer.concat(chunks));
 
         // break if limit is reached
