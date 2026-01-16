@@ -49,20 +49,20 @@ export class GridFSBucketService {
       throw new ValidationException("Invalid file");
 
     const stream =
-      file instanceof File
-        ? this.bucket.openUploadStream(file.name, {
-            metadata: {
-              contentType: file.type,
-              mimetype: file.type,
-              originalname: file.type,
-              size: file.size,
-            },
-          })
-        : this.bucket.openUploadStream(file.originalname, {
+      "buffer" in file
+        ? this.bucket.openUploadStream(file.originalname, {
             metadata: {
               contentType: file.mimetype,
               mimetype: file.mimetype,
               originalname: file.originalname,
+              size: file.size,
+            },
+          })
+        : this.bucket.openUploadStream(file.name, {
+            metadata: {
+              contentType: file.type,
+              mimetype: file.type,
+              originalname: file.name,
               size: file.size,
             },
           });

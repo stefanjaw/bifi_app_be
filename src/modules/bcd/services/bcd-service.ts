@@ -1,20 +1,19 @@
 import { BCDDocument } from "@mongodb-types";
 import {
   BaseService,
+  FTPService,
   GridFSBucketService,
   runTransaction,
   ValidationException,
 } from "../../../system";
 import { bcdModel } from "../models/bcd.model";
 import { CsvBuilderService } from "./csv-builder";
-import { FTPService } from "../../ftp";
 import { ClientSession } from "mongoose";
 import { UpdateBcdDTO } from "../models/bcd.dto";
 import dayjs from "dayjs";
 
 export class BCDService extends BaseService<BCDDocument> {
   private csvBuilder = new CsvBuilderService();
-  private ftpService = new FTPService();
 
   constructor() {
     super({
@@ -24,6 +23,10 @@ export class BCDService extends BaseService<BCDDocument> {
 
   private get gridFSBucket() {
     return GridFSBucketService.getInstance();
+  }
+
+  private get ftpService() {
+    return FTPService.getInstance();
   }
 
   /**
@@ -91,19 +94,19 @@ export class BCDService extends BaseService<BCDDocument> {
       // get sequence
       const filename = `${bcd.declarant.companyId}${this.getBCDDateName(
         bcds
-      )}_${this.getBCDConsecutiveName(bcds)}`;
+      )}.${this.getBCDConsecutiveName(bcds)}`;
 
       // * get csv string
       const csvString = this.csvBuilder.create(bcd);
 
       // * Convert CSV string to a Blob/File
       const csvBlob = new Blob([csvString], { type: "text/csv" });
-      const csvFile = new File([csvBlob], `${filename}.csv`, {
+      const csvFile = new File([csvBlob], `${filename}`, {
         type: "text/csv",
       });
 
       // * Upload CSV file to FTP
-      await this.ftpService.upload(csvFile);
+      await this.ftpService.upload(csvFile, "/inbox", filename);
 
       // * upload file to GridFS
       const fileId = await this.gridFSBucket.uploadFile(csvFile);

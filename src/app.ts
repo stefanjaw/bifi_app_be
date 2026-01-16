@@ -7,6 +7,7 @@ import cors from "cors";
 import {
   authenticateMiddleware,
   catchExceptionMiddleware,
+  FTPService,
   GridFSBucketService,
 } from "./system";
 import {
@@ -119,6 +120,14 @@ const start = async () => {
     // create bucket to save images
     if (mongoose.connection.db)
       GridFSBucketService.initiate(mongoose.connection.db);
+
+    // init ftpservice
+    FTPService.initiate({
+      host: process.env.FTP_HOST || "",
+      basePath: process.env.FTP_BASE_PATH || "",
+      user: process.env.FTP_USER || "",
+      password: process.env.FTP_PASSWORD || "",
+    });
 
     // init app
     app.listen(PORT, () => {

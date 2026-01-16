@@ -12,6 +12,7 @@ export * from './file-storage/file-upload.types';
 export * from './file-storage/file-utils';
 export * from './file-storage/file-validator-service';
 export * from './file-storage/file.model';
+export * from './file-storage/ftp-services';
 export * from './file-storage/grid-fs-bucket-service';
 export * from './partial-types/mapped-type.type';
 export * from './partial-types/partial-type-helpers';
