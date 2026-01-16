@@ -189,14 +189,14 @@ export class FTPService {
   }
 
   /**
-   * Lists files in the given FTP path, optionally filtered by a matching word and limited to a certain number.
+   * Lists files in the given directory on the FTP server, and optionally downloads them.
    * @param path The path on the FTP server where the files should be listed.
-   * @param matchingWord An optional word which the names of the files should include. 20203221022024.0001
-   * @param limit An optional limit to the number of files to be listed.
-   * @throws Error if there is an error connecting to the FTP server, or if there is an error listing the files.
-   * @returns A Promise that resolves to an array of Buffers containing the listed files.
+   * @param [mathingRegex] A regular expression to filter the listed files by name.
+   * @param [limit] The maximum number of files to download.
+   * @throws Error if there is an error connecting to the FTP server, or if there is an error listing or downloading a file.
+   * @returns A Promise that resolves to an array of objects containing the downloaded file buffers and their corresponding file metadata.
    */
-  async list(path: string, matchingWord?: string, limit?: number) {
+  async list(path: string, mathingRegex?: RegExp, limit?: number) {
     let client: ftp.Client | undefined = undefined;
 
     try {
@@ -208,12 +208,11 @@ export class FTPService {
       // filter files if matchingWord is provided
       files = files.filter(
         (file) =>
-          (matchingWord ? file.name.includes(matchingWord) : true) &&
-          file.isFile
+          (mathingRegex ? mathingRegex.test(file.name) : true) && file.isFile
       );
 
       // download files
-      const buffers: Buffer[] = [];
+      const response: { buffer: Buffer; metadata: ftp.FileInfo }[] = [];
 
       for (const file of files) {
         // where the file is downloaded
@@ -231,13 +230,16 @@ export class FTPService {
           writable,
           `${this.options.basePath}/${path}/${file.name}`
         );
-        buffers.push(Buffer.concat(chunks));
+        response.push({
+          buffer: Buffer.concat(chunks),
+          metadata: file,
+        });
 
         // break if limit is reached
-        if (limit && buffers.length >= limit) break;
+        if (limit && response.length >= limit) break;
       }
 
-      return buffers;
+      return response;
     } catch (error) {
       throw error;
     } finally {

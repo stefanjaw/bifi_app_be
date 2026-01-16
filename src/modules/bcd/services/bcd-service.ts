@@ -10,6 +10,7 @@ import { bcdModel } from "../models/bcd.model";
 import { CsvBuilderService } from "./csv-builder";
 import { ClientSession } from "mongoose";
 import { UpdateBcdDTO } from "../models/bcd.dto";
+import mime from "mime-types";
 import dayjs from "dayjs";
 
 export class BCDService extends BaseService<BCDDocument> {
@@ -79,6 +80,12 @@ export class BCDService extends BaseService<BCDDocument> {
       // * Validate BCD data existence
       if (!bcd) throw new ValidationException("BCD data not found");
 
+      // * Validate a file is not already uploaded
+      if (bcd.status !== "DRAFT")
+        throw new ValidationException(
+          "BCD data has already been sent to the government"
+        );
+
       // * Generate name
       const bcds = await this.get(
         {
@@ -124,7 +131,7 @@ export class BCDService extends BaseService<BCDDocument> {
                 mimeType: csvFile.type,
                 size: csvFile.size,
               },
-              type: "CSV",
+              type: "CSV_SENT",
             },
           ],
         },
@@ -132,6 +139,77 @@ export class BCDService extends BaseService<BCDDocument> {
       );
 
       return updatedBCD;
+    });
+  }
+
+  async updateBCDsFromFTP(session?: ClientSession | undefined) {
+    return await runTransaction(session, async (newSession) => {
+      const bcds = await this.get(
+        {
+          status: "PENDING_RESPONSE",
+        },
+        undefined,
+        undefined,
+        undefined,
+        newSession
+      );
+
+      for (const bcd of bcds) {
+        // * get csv name
+        const csvSentName =
+          bcd.ebcds.find((ebcd) => ebcd.type === "CSV_SENT")?.file.name || "";
+
+        // * create regex
+        const csvSentSplitted = csvSentName.split(".");
+
+        const regex = new RegExp(
+          `^(?=.*${csvSentSplitted[0] || ""})(?=.*.${
+            csvSentSplitted[1] || ""
+          }).+$`
+        );
+
+        // * get ftp files and convert them to files
+        const ftpFiles = await this.ftpService.list("/outbox", regex);
+
+        // * upload files
+        const files = await Promise.all(
+          ftpFiles.map(async (ftpFile) => {
+            const buffer = new Uint8Array(ftpFile.buffer);
+            const type = mime.lookup(ftpFile.metadata.name);
+
+            const file = new File([buffer], ftpFile.metadata.name, {
+              lastModified: Date.now(),
+              type: type ? type : "text/csv",
+            });
+
+            return {
+              name: ftpFile.metadata.name,
+              size: ftpFile.metadata.size,
+              mimeType: type ? type : "text/csv",
+              fileId: await this.gridFSBucket.uploadFile(file),
+            };
+          })
+        );
+
+        // const updatedBCD = await super.update(
+        //   {
+        //     _id: bcd._id,
+        //     status: "",
+        //     ebcds: [
+        //       {
+        //         file: {
+        //           fileId: fileId,
+        //           name: filename,
+        //           mimeType: csvFile.type,
+        //           size: csvFile.size,
+        //         },
+        //         type: "CSV_SENT",
+        //       },
+        //     ],
+        //   },
+        //   newSession
+        // );
+      }
     });
   }
 
@@ -147,7 +225,7 @@ export class BCDService extends BaseService<BCDDocument> {
   private getBCDConsecutiveName(bcds: BCDDocument[]) {
     const csvs = bcds
       .flatMap((bcd) => bcd.ebcds)
-      .filter((ebcd) => ebcd.type === "CSV");
+      .filter((ebcd) => ebcd.type === "CSV_SENT");
 
     if (csvs.length < 1) return "0001";
 
@@ -181,7 +259,7 @@ export class BCDService extends BaseService<BCDDocument> {
   private getBCDDateName(bcds: BCDDocument[]) {
     const csvs = bcds
       .flatMap((bcd) => bcd.ebcds)
-      .filter((ebcd) => ebcd.type === "CSV");
+      .filter((ebcd) => ebcd.type === "CSV_SENT");
 
     if (csvs.length < 1) return dayjs().format("DDMMYYYY");
 

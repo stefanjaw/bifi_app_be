@@ -15,6 +15,7 @@ export class BCDRouter extends BaseRoutes<BCDDocument> {
 
   protected override initRoutes(): void {
     this.initUploadBCDDataToFTPRoute();
+    this.initUpdateBCDsFromFTPRoute();
     super.initRoutes();
   }
 
@@ -23,6 +24,14 @@ export class BCDRouter extends BaseRoutes<BCDDocument> {
       `${this.endpoint}/upload-ftp/:id`,
       authorizeMiddleware(`${this.resource}/upload-ftp/:id`, "create"),
       (this.controller as BCDController).postUploadBCDDataToFTP
+    );
+  }
+
+  initUpdateBCDsFromFTPRoute() {
+    this.router.put(
+      `${this.endpoint}/update-ftp`,
+      authorizeMiddleware(`${this.resource}/update-ftp`, "update"),
+      (this.controller as BCDController).putUpdateBCDsFromFTPP
     );
   }
 }
