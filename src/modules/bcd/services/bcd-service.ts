@@ -198,7 +198,7 @@ export class BCDService extends BaseService<BCDDocument> {
         const updatedBCD = await super.update(
           {
             _id: bcd._id,
-            ebcds: [bcd.ebcds, ...files],
+            ebcds: [...bcd.ebcds, ...files],
             status: this.resolveBCDStatus(files.map((f) => f.type)),
           },
           newSession,
@@ -232,19 +232,17 @@ export class BCDService extends BaseService<BCDDocument> {
 
     // * sort by consecutive
     csvs.sort((a, b) => {
-      const consecutiveA = a.file.name.split("_")?.[1]?.split(".")?.[0]; // 0001
-      const consecutiveB = b.file.name.split("_")?.[1]?.split(".")?.[0]; // 0021
+      const consecutiveA = a.file.name?.split(".")?.[1]; // 0001
+      const consecutiveB = b.file.name?.split(".")?.[1]; // 0021
 
       return Number(consecutiveA) - Number(consecutiveB);
     });
 
     // * get consecutive
-    const lastConsecutive = csvs[csvs.length - 1].file.name
-      .split("_")?.[1]
-      ?.split(".")?.[0];
+    const lastConsecutive = csvs[csvs.length - 1].file.name?.split(".")?.[1];
 
     // * get date
-    const lastDate = csvs[0].file.name.split("_")?.[0]?.slice(-8);
+    const lastDate = csvs[0].file.name.split(".")?.[0]?.slice(-8);
 
     return `${companyName}${lastDate}.${String(
       Number(lastConsecutive) + 1,
