@@ -39,11 +39,13 @@ export enum ChargeCodeTypeEnum {
 }
 
 export enum EBCDTypeEnum {
-  CSV_SENT = "CSV_SENT", // * CSV file sent
-  CSV_ERR = "CSV_ERR", // * Sent incorrectly
-  SQR_PDF = "SQR_PDF", // * Sent incorrectly
-  CSV_REL = "CSV_REL", // * Sent correctly
-  TXT_RECEIPT = "TXT_RECEIPT", // * Electronic receipt
+  SENT_CSV = "SENT_CSV", // * Sent CSV from US to GOVERNMENT
+  FILE_ERROR_CSV = "FILE_ERROR_CSV", // * ...E.0001
+  FORMAT_ERROR_PDF = "FORMAT_ERROR_PDF", // * SQR.PDF
+  RELEASE_CSV = "RELEASE_CSV", // * REL.CSV
+  RELEASE_PDF = "RELEASE_PDF", // * REL.PDF
+  RELEASE_TXT = "RELEASE_TXT", // * REL.TXT
+  RECEIPT_TXT = "RECEIPT_TXT", // * REC.TXT
 }
 
 export enum BCDStatusTypeEnum {

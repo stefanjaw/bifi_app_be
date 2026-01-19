@@ -945,7 +945,14 @@ export type BCDEbcdFile = {
  */
 export type BCDEbcd = {
   file: BCDEbcdFile;
-  type: "CSV_SENT" | "CSV_ERR" | "SQR_PDF" | "CSV_REL" | "TXT_RECEIPT";
+  type:
+    | "SENT_CSV"
+    | "FILE_ERROR_CSV"
+    | "FORMAT_ERROR_PDF"
+    | "RELEASE_CSV"
+    | "RELEASE_PDF"
+    | "RELEASE_TXT"
+    | "RECEIPT_TXT";
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1245,7 +1252,14 @@ export type BCDEbcdFileDocument = mongoose.Document<mongoose.Types.ObjectId> & {
 export type BCDEbcdDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
     file: BCDEbcdFileDocument;
-    type: "CSV_SENT" | "CSV_ERR" | "SQR_PDF" | "CSV_REL" | "TXT_RECEIPT";
+    type:
+      | "SENT_CSV"
+      | "FILE_ERROR_CSV"
+      | "FORMAT_ERROR_PDF"
+      | "RELEASE_CSV"
+      | "RELEASE_PDF"
+      | "RELEASE_TXT"
+      | "RECEIPT_TXT";
     _id: mongoose.Types.ObjectId;
   };
 
