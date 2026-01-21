@@ -67,6 +67,7 @@ const chargeSchema = new Schema({
   code: {
     type: String,
     enum: Object.values(ChargeCodeTypeEnum),
+    required: true,
   },
   percentage: {
     type: Number,
@@ -232,113 +233,118 @@ const ebcdSchema = new Schema({
   },
 });
 
-const bcdSchema = new Schema({
-  shippingId: {
-    type: Schema.Types.ObjectId,
-    ref: "Shipping",
-    required: true,
-    autopopulate: {
-      maxDepth: 1,
+const bcdSchema = new Schema(
+  {
+    shippingId: {
+      type: Schema.Types.ObjectId,
+      ref: "Shipping",
+      required: true,
+      autopopulate: {
+        maxDepth: 1,
+      },
+    },
+    status: {
+      type: String,
+      enum: Object.values(BCDStatusTypeEnum),
+      default: BCDStatusTypeEnum.DRAFT,
+    },
+    //type
+    type: {
+      type: String,
+      enum: Object.values(BCDTypeEnum),
+      required: true,
+    },
+    supplier: {
+      type: supplierSchema,
+      required: true,
+    },
+    importer: {
+      type: importerSchema,
+      required: true,
+    },
+    transport: {
+      type: transportSchema,
+      required: true,
+    },
+    manifest: {
+      type: String,
+      required: true,
+    },
+    masterBOLAWB: {
+      type: String,
+      required: true,
+    },
+    directShipmentCountry: {
+      type: Schema.Types.ObjectId,
+      ref: "Country",
+      required: true,
+      autopopulate: true,
+    },
+    originalShipmentCountry: {
+      type: Schema.Types.ObjectId,
+      ref: "Country",
+      required: true,
+      autopopulate: true,
+    },
+    warehouseId: {
+      type: String,
+      length: 4,
+    },
+    charges: {
+      type: [chargeSchema],
+      required: true,
+    },
+    containerIds: {
+      type: [String],
+      required: true,
+    },
+    houseBOLAWBs: {
+      type: [String],
+    },
+    valuationMethod: {
+      type: String,
+      enum: Object.values(ValuationMethodTypeEnum),
+      required: true,
+    },
+    packagesCount: {
+      type: Number,
+      min: 0,
+      required: true,
+    },
+    additionalInformation: {
+      type: [additionalInformationSchema],
+      required: true,
+    },
+    ogd: {
+      type: ogdschema,
+      required: true,
+    },
+    paymentAccounts: {
+      type: [String],
+    },
+    declarant: {
+      type: declarantSchema,
+      required: true,
+    },
+    records: {
+      type: [bcdRecordSchema],
+      required: true,
+    },
+    // * goverment documents associated with this BCD
+    ebcds: {
+      type: [ebcdSchema],
     },
   },
-  status: {
-    type: String,
-    enum: Object.values(BCDStatusTypeEnum),
-    default: BCDStatusTypeEnum.DRAFT,
+  {
+    timestamps: true,
   },
-  //type
-  type: {
-    type: String,
-    enum: Object.values(BCDTypeEnum),
-    required: true,
-  },
-  supplier: {
-    type: supplierSchema,
-    required: true,
-  },
-  importer: {
-    type: importerSchema,
-    required: true,
-  },
-  transport: {
-    type: transportSchema,
-    required: true,
-  },
-  manifest: {
-    type: String,
-    required: true,
-  },
-  masterBOLAWB: {
-    type: String,
-    required: true,
-  },
-  directShipmentCountry: {
-    type: Schema.Types.ObjectId,
-    ref: "Country",
-    required: true,
-    autopopulate: true,
-  },
-  originalShipmentCountry: {
-    type: Schema.Types.ObjectId,
-    ref: "Country",
-    required: true,
-    autopopulate: true,
-  },
-  warehouseId: {
-    type: String,
-    length: 4,
-  },
-  charges: {
-    type: [chargeSchema],
-    required: true,
-  },
-  containerIds: {
-    type: [String],
-    required: true,
-  },
-  houseBOLAWBs: {
-    type: [String],
-  },
-  valuationMethod: {
-    type: String,
-    enum: Object.values(ValuationMethodTypeEnum),
-    required: true,
-  },
-  packagesCount: {
-    type: Number,
-    min: 0,
-    required: true,
-  },
-  additionalInformation: {
-    type: [additionalInformationSchema],
-    required: true,
-  },
-  ogd: {
-    type: ogdschema,
-    required: true,
-  },
-  paymentAccounts: {
-    type: [String],
-  },
-  declarant: {
-    type: declarantSchema,
-    required: true,
-  },
-  records: {
-    type: [bcdRecordSchema],
-    required: true,
-  },
-  // * goverment documents associated with this BCD
-  ebcds: {
-    type: [ebcdSchema],
-  },
-});
+);
 
 bcdSchema.plugin(paginate);
 bcdSchema.plugin(autopopulate);
 
 const bcdModel = mongoose.model<BCDDocument, PaginateModel<BCDDocument>>(
   "BCD",
-  bcdSchema
+  bcdSchema,
 );
 export { bcdModel };

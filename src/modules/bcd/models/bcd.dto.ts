@@ -44,7 +44,7 @@ class BCDTransportDTO {
   type!: TransportMethodTypeEnum;
 
   @IsString()
-  @Length(1, 255)
+  @Length(1, 3)
   aircraftOrVessel!: string;
 
   @IsString()
@@ -52,7 +52,7 @@ class BCDTransportDTO {
   flightOrVoyage!: string;
 
   @IsString()
-  @Length(1, 255)
+  @Length(1, 3)
   port!: string;
 
   @IsDate()
@@ -63,8 +63,7 @@ class BCDTransportDTO {
 //Charge
 class BCDChargeDTO {
   @IsEnum(ChargeCodeTypeEnum)
-  @IsOptional()
-  code?: ChargeCodeTypeEnum;
+  code!: ChargeCodeTypeEnum;
 
   @IsNumber()
   @Min(0)
@@ -153,7 +152,7 @@ export class BCDRecordDTO {
 
   @IsString()
   @Contains(".")
-  @Length(8)
+  @Length(1, 7)
   tariff!: string;
 
   @IsString()
@@ -282,8 +281,8 @@ export class BcdDTO {
   @ArrayMinSize(1)
   @Transform(({ value }) =>
     JSON.parse(value).map((charge: any) =>
-      plainToInstance(BCDChargeDTO, charge)
-    )
+      plainToInstance(BCDChargeDTO, charge),
+    ),
   )
   charges!: BCDChargeDTO[];
 
@@ -315,8 +314,8 @@ export class BcdDTO {
   @ArrayMinSize(1)
   @Transform(({ value }) =>
     JSON.parse(value).map((charge: any) =>
-      plainToInstance(AdditionalInformationDTO, charge)
-    )
+      plainToInstance(AdditionalInformationDTO, charge),
+    ),
   )
   additionalInformation!: AdditionalInformationDTO[];
 
@@ -347,8 +346,8 @@ export class BcdDTO {
   @ArrayMinSize(1)
   @Transform(({ value }) =>
     JSON.parse(value).map((record: any) =>
-      plainToInstance(BCDRecordDTO, record)
-    )
+      plainToInstance(BCDRecordDTO, record),
+    ),
   )
   records!: BCDRecordDTO[];
 }

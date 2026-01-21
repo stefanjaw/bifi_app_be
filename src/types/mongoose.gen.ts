@@ -790,7 +790,7 @@ export type BCDTransport = {
  * ```
  */
 export type BCDCharge = {
-  code?: "212" | "641" | "640";
+  code: "212" | "641" | "640";
   percentage?: number;
   amount: number;
   _id: mongoose.Types.ObjectId;
@@ -853,7 +853,7 @@ export type BCDDeclarant = {
  * ```
  */
 export type BCDRecordCharge = {
-  code?: "212" | "641" | "640";
+  code: "212" | "641" | "640";
   percentage?: number;
   amount: number;
   _id: mongoose.Types.ObjectId;
@@ -949,6 +949,7 @@ export type BCDEbcd = {
     | "SENT_CSV"
     | "FILE_ERROR_CSV"
     | "FORMAT_ERROR_PDF"
+    | "FORMAT_ERROR_TXT"
     | "RELEASE_CSV"
     | "RELEASE_PDF"
     | "RELEASE_TXT"
@@ -993,6 +994,8 @@ export type BCD = {
   records: BCDRecord[];
   ebcds: BCDEbcd[];
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -1108,7 +1111,7 @@ export type BCDTransportDocument =
  */
 export type BCDChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    code?: "212" | "641" | "640";
+    code: "212" | "641" | "640";
     percentage?: number;
     amount: number;
     _id: mongoose.Types.ObjectId;
@@ -1168,7 +1171,7 @@ export type BCDDeclarantDocument =
  */
 export type BCDRecordChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    code?: "212" | "641" | "640";
+    code: "212" | "641" | "640";
     percentage?: number;
     amount: number;
     _id: mongoose.Types.ObjectId;
@@ -1256,6 +1259,7 @@ export type BCDEbcdDocument =
       | "SENT_CSV"
       | "FILE_ERROR_CSV"
       | "FORMAT_ERROR_PDF"
+      | "FORMAT_ERROR_TXT"
       | "RELEASE_CSV"
       | "RELEASE_PDF"
       | "RELEASE_TXT"
@@ -1304,6 +1308,8 @@ export type BCDDocument = mongoose.Document<
     records: mongoose.Types.DocumentArray<BCDRecordDocument>;
     ebcds: mongoose.Types.DocumentArray<BCDEbcdDocument>;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**

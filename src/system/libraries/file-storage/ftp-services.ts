@@ -1,6 +1,13 @@
 import * as ftp from "basic-ftp";
 import { Readable, Writable } from "stream";
 import { ConnectionOptions } from "tls";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import utc from "dayjs/plugin/utc";
+import dayjs from "dayjs";
+import { ftpResponse } from "./ftp.types";
+
+dayjs.extend(isSameOrAfter);
+dayjs.extend(utc);
 
 export interface ftpConfig {
   host: string;
@@ -89,7 +96,7 @@ export class FTPService {
       client = await this.connect();
 
       // check that the path exists
-      if (!(await this.pathExists(client, `${this.options.basePath}/${path}`)))
+      if (!(await this.pathExists(client, this.createPath(path))))
         throw new Error("Path does not exist");
 
       let stream: Readable;
@@ -101,10 +108,7 @@ export class FTPService {
         stream = Readable.from(buffer);
       }
 
-      return await client.uploadFrom(
-        stream,
-        `${this.options.basePath}/${path}/${name}`
-      );
+      await client.uploadFrom(stream, `${this.createPath(path)}/${name}`);
     } catch (error) {
       throw error;
     } finally {
@@ -113,36 +117,13 @@ export class FTPService {
   }
 
   /**
-   * Uploads multiple files to the FTP server at the given path.
-   * @param files An array of objects containing the file to upload and the name of the file.
-   * @param path The path on the FTP server where the files should be uploaded.
-   * @throws Error if there is an error connecting to the FTP server, or if there is an error uploading a file.
-   * @returns A Promise that resolves to an array of FTP responses, each corresponding to a file that was uploaded successfully.
-   */
-  async uploadMany(
-    files: { file: File | Express.Multer.File; name: string }[],
-    path: string
-  ) {
-    try {
-      const results: ftp.FTPResponse[] = [];
-
-      for (const file of files) {
-        results.push(await this.upload(file.file, path, file.name));
-      }
-
-      return results;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  /**
    * Downloads a file from the FTP server at the given path.
    * @param path The path on the FTP server where the file should be downloaded.
-   * @throws Error if there is an error connecting to the FTP server, or if there is an error downloading a file.
+   * @param name The name of the file to be downloaded.
+   * @throws Error if there is an error connecting to the FTP server, or if there is an error downloading the file.
    * @returns A Promise that resolves to a Buffer containing the downloaded file.
    */
-  async download(path: string) {
+  async download(path: string, name: string) {
     let client: ftp.Client | undefined = undefined;
 
     try {
@@ -159,32 +140,12 @@ export class FTPService {
         },
       });
 
-      await client.downloadTo(writable, `${this.options.basePath}/${path}`);
+      await client.downloadTo(writable, `${this.createPath(path)}/${name}`);
       return Buffer.concat(chunks);
     } catch (error) {
       throw error;
     } finally {
       client?.close();
-    }
-  }
-
-  /**
-   * Downloads multiple files from the FTP server at the given paths.
-   * @param paths An array of paths on the FTP server where the files should be downloaded.
-   * @throws Error if there is an error connecting to the FTP server, or if there is an error downloading a file.
-   * @returns A Promise that resolves to an array of Buffers containing the downloaded files.
-   */
-  async downloadMany(paths: string[]) {
-    try {
-      const buffers: Buffer[] = [];
-
-      for (const path of paths) {
-        buffers.push(await this.download(path));
-      }
-
-      return buffers;
-    } catch (error) {
-      throw error;
     }
   }
 
@@ -196,25 +157,38 @@ export class FTPService {
    * @throws Error if there is an error connecting to the FTP server, or if there is an error listing or downloading a file.
    * @returns A Promise that resolves to an array of objects containing the downloaded file buffers and their corresponding file metadata.
    */
-  async list(path: string, mathingRegex?: RegExp, limit?: number) {
+  async list({
+    path,
+    matchingRegex,
+    limit,
+  }: {
+    path: string;
+    matchingRegex?: RegExp;
+    limit?: number;
+  }): Promise<ftpResponse[]> {
     let client: ftp.Client | undefined = undefined;
 
     try {
       client = await this.connect();
 
       // get list of files
-      let files = await client.list(`${this.options.basePath}/${path}`);
+      let metadata = await client.list(this.createPath(path));
 
       // filter files if matchingWord is provided
-      files = files.filter(
-        (file) =>
-          (mathingRegex ? mathingRegex.test(file.name) : true) && file.isFile
-      );
+      const proccessedFiles: ftp.FileInfo[] = metadata.filter((file) => {
+        if (!file.isFile) return false;
+
+        if (matchingRegex) {
+          return matchingRegex.test(file.name);
+        }
+
+        return true;
+      });
 
       // download files
       const response: { buffer: Buffer; metadata: ftp.FileInfo }[] = [];
 
-      for (const file of files) {
+      for (const file of proccessedFiles) {
         // where the file is downloaded
         const chunks: Buffer[] = [];
 
@@ -228,7 +202,7 @@ export class FTPService {
 
         await client.downloadTo(
           writable,
-          `${this.options.basePath}/${path}/${file.name}`
+          `${this.createPath(path)}/${file.name}`,
         );
         response.push({
           buffer: Buffer.concat(chunks),
@@ -248,6 +222,74 @@ export class FTPService {
   }
 
   /**
+   * Moves files from one directory to another in the FTP server.
+   *
+   * @param files - An array of objects containing the path and filename of each file to be moved.
+   * @param newPath - The new path where the files should be moved.
+   * @throws Error if there is an error connecting to the FTP server, or if there is an error during the move process.
+   * @returns A Promise that resolves when the files have been successfully moved.
+   */
+  async moveFiles(
+    files: { path: string; filename: string }[],
+    newPath: string,
+  ) {
+    let client: ftp.Client | undefined = undefined;
+
+    try {
+      client = await this.connect();
+
+      // check that the path exists, if not, create it
+      if (!(await this.pathExists(client, this.createPath(newPath)))) {
+        await client.ensureDir(this.createPath(newPath));
+      }
+
+      for (const file of files) {
+        const from = `${this.createPath(file.path)}/${file.filename}`;
+        const to = `${this.createPath(newPath)}/${file.filename}`;
+
+        try {
+          await client.rename(from, to);
+        } catch {
+          await this.safeMove(client, from, to);
+        }
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      client?.close();
+    }
+  }
+
+  /**
+   * Safely moves a file from one path to another in the FTP server.
+   * First downloads the file from the 'from' path, then uploads it to the 'to' path,
+   * and finally removes the file from the 'from' path.
+   * @param client - The FTP client instance.
+   * @param from - The path and filename of the file to be moved.
+   * @param to - The new path and filename where the file should be moved.
+   * @throws Error if there is an error connecting to the FTP server, or if there is an error during the move process.
+   * @returns A Promise that resolves when the file has been successfully moved.
+   */
+  private async safeMove(client: ftp.Client, from: string, to: string) {
+    const chunks: Buffer[] = [];
+
+    const writable = new Writable({
+      write(chunk, _enc, cb) {
+        chunks.push(chunk);
+        cb();
+      },
+    });
+
+    await client.downloadTo(writable, from);
+
+    const buffer = Buffer.concat(chunks);
+    const readable = Readable.from(buffer);
+
+    await client.uploadFrom(readable, to);
+    await client.remove(from);
+  }
+
+  /**
    * Verifies if a path exists in the FTP server.
    * @param client - The FTP client instance.
    * @param path - The path to verify.
@@ -263,5 +305,14 @@ export class FTPService {
       if (err.code === 550) return false;
       throw err;
     }
+  }
+
+  /**
+   * Creates a full path from the given path by prefixing it with the base path.
+   * @param path - The path to prefix with the base path.
+   * @returns The full path.
+   */
+  private createPath(path: string) {
+    return `${this.options.basePath}/${path}`;
   }
 }

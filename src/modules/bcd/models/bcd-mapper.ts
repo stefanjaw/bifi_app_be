@@ -21,7 +21,7 @@ const headerMapper = (data: BCDDocument) => ({
   supplierAddressLine2: data.supplier?.contactId?.streetAddress2 || "", // 5
   supplierPostCode: data.supplier?.contactId?.zipCode || "", // 6
   supplierCountry: data.supplier?.contactId?.countryId?.name || "", // 7
-  importerId: "", // 8
+  importerId: data.declarant?.companyId || "", // 8
   importerName: data.importer?.contactId?.name || "", // 9
   importerAddressLine1: data.importer?.contactId?.streetAddress || "", // 10
   importerAddressLine2: data.importer?.contactId?.streetAddress2 || "", // 11
@@ -35,8 +35,8 @@ const headerMapper = (data: BCDDocument) => ({
     : "", // 17
   manifest: data.manifest || "", // 18
   masterBOLAWB: data.masterBOLAWB || "", // 19
-  countryDispatch: data.directShipmentCountry?.name || "", // 20
-  countryOrigin: data.originalShipmentCountry?.name || "", // 21
+  countryDispatch: data.directShipmentCountry?.code.substring(0, 2) || "", // 20
+  countryOrigin: data.originalShipmentCountry?.code.substring(0, 2) || "", // 21
   warehouseId: data.warehouseId || "", // 22
   OGDPaymentCode: data.ogd?.paymentCode || "", // 23
   OGDCostCode: data.ogd?.costCode || "", // 24
@@ -50,7 +50,7 @@ const headerMapper = (data: BCDDocument) => ({
     .reduce(
       (acc, record) =>
         acc + (record.linesSubtotal || 0) * (record.exchangeRate || 0),
-      0
+      0,
     )
     .toFixed(2), // 31
   totalPayable: data.records
@@ -58,7 +58,7 @@ const headerMapper = (data: BCDDocument) => ({
       (acc, record) =>
         acc + record.tax?.reduce((totalTax, tax) => totalTax + tax.amount, 0) ||
         0,
-      0
+      0,
     )
     .toFixed(2), // 32
   declarantName: data.declarant?.name || "", // 33
@@ -102,7 +102,7 @@ const containerMapper = (data: string) => ({
  */
 const additionalInfoMapper = (
   data: BCDAdditionalInformationDocument,
-  type: "header" | "record"
+  type: "header" | "record",
 ) => ({
   recordType: type === "header" ? "R26" : "R60", // 1
   infoType: data.type || "", // 2
@@ -127,8 +127,8 @@ const houseBOLMapper = (data: string) => ({
 const recordMapper = (record: BCDRecordDocument) => ({
   recordType: "R30", // 1
   cpc: record.cpc || "", // 2
-  origin: record.origin?.code || "", // 3
-  tariffNUmber: record.tariff || "", // 4
+  origin: record.origin?.code.substring(0, 2) || "", // 3
+  tariffNumber: record.tariff || "", // 4
   description: record.description || "", // 5
   quantity: record.quantity?.toString() || "", // 6
   quantityTwo: record.quantityTwo?.toString() || "", // 7
@@ -137,7 +137,7 @@ const recordMapper = (record: BCDRecordDocument) => ({
   valueInCurrency: record.linesSubtotal?.toFixed(2) || "", // 10
   exchangeRate: record.exchangeRate || "", // 11
   bdaValue: ((record.linesSubtotal || 0) * (record.exchangeRate || 0)).toFixed(
-    2
+    2,
   ), // 12
   totalDue:
     record.tax
