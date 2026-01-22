@@ -13,7 +13,7 @@ const facilitySchema = new Schema(
     contactId: {
       type: Schema.Types.ObjectId,
       ref: "Contact",
-      required: true,
+      required: false,
       // depth must be of one level
       autopopulate: {
         select: "name lastName email", // Fields to select from the parent contact

@@ -25,7 +25,8 @@ export class FacilityDTO {
   name!: string;
 
   @IsMongoId()
-  contactId!: string;
+  @IsOptional()
+  contactId?: string;
 
   @IsArray()
   @ArrayMinSize(1)
