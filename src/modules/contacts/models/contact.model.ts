@@ -100,6 +100,19 @@ contactSchema.virtual("childIds", {
   match: { active: true },
 });
 
+//Similar toString in java
+contactSchema.virtual("fullName", {
+  get() {
+    return `${this.name} ${this.lastName}`;
+  },
+});
+
+contactSchema.virtual("fullAddress", {
+  get() {
+    return `${this.streetAddress}, ${this.streetAddress2}, ${this.city}, ${this.state}, ${this.zipCode}, ${this.countryId.name}`;
+  },
+});
+
 contactSchema.plugin(paginate);
 contactSchema.plugin(autopopulate);
 

@@ -1448,6 +1448,8 @@ export type Contact = {
   createdAt?: Date;
   updatedAt?: Date;
   childIds: any;
+  fullName: any;
+  fullAddress: any;
 };
 
 /**
@@ -1548,6 +1550,8 @@ export type ContactDocument = mongoose.Document<
     createdAt?: Date;
     updatedAt?: Date;
     childIds: any;
+    fullName: any;
+    fullAddress: any;
   };
 
 /**
@@ -1799,7 +1803,7 @@ export type CRMDocument = mongoose.Document<
  */
 export type Facility = {
   name: string;
-  contactId: Contact;
+  contactId?: Contact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -1888,7 +1892,7 @@ export type FacilityDocument = mongoose.Document<
 > &
   FacilityMethods & {
     name: string;
-    contactId: ContactDocument;
+    contactId?: ContactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
