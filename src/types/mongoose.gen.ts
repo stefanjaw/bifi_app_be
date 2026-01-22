@@ -1448,8 +1448,8 @@ export type Contact = {
   createdAt?: Date;
   updatedAt?: Date;
   childIds: any;
-  fullName: any;
-  fullAddress: any;
+  fullName: string;
+  fullAddress: string;
 };
 
 /**
@@ -1550,8 +1550,8 @@ export type ContactDocument = mongoose.Document<
     createdAt?: Date;
     updatedAt?: Date;
     childIds: any;
-    fullName: any;
-    fullAddress: any;
+    fullName: string;
+    fullAddress: string;
   };
 
 /**

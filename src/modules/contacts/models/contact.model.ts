@@ -86,7 +86,7 @@ const contactSchema = new Schema(
     timestamps: true,
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
-  }
+  },
 );
 
 contactSchema.virtual("childIds", {
@@ -101,16 +101,17 @@ contactSchema.virtual("childIds", {
 });
 
 //Similar toString in java
-contactSchema.virtual("fullName", {
-  get() {
-    return `${this.name} ${this.lastName}`;
-  },
+contactSchema.virtual("fullName").get(function (this: ContactDocument) {
+  return `${this.name} ${this.lastName}`;
 });
 
-contactSchema.virtual("fullAddress", {
-  get() {
-    return `${this.streetAddress}, ${this.streetAddress2}, ${this.city}, ${this.state}, ${this.zipCode}, ${this.countryId.name}`;
-  },
+contactSchema.virtual("fullAddress").get(function (this: ContactDocument) {
+  return `${this.streetAddress || "No street"}, 
+          ${this.streetAddress2 || "No street 2"}, 
+          ${this.city || "No city"}, 
+          ${this.state || "No state"}, 
+          ${this.zipCode || "No zip code"}, 
+          ${this.countryId?.name || "No country"}`;
 });
 
 contactSchema.plugin(paginate);
