@@ -56,7 +56,7 @@ export class UserDTO {
   contactId?: string;
 
   @Transform(({ value }) =>
-    plainToInstance(UserContactInformationDTO, JSON.parse(value))
+    plainToInstance(UserContactInformationDTO, JSON.parse(value)),
   )
   @Type(() => UserContactInformationDTO)
   @ValidateNested()
@@ -72,6 +72,11 @@ export class UserDTO {
   @IsOptional()
   @Type(() => Boolean)
   active?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  @Type(() => Boolean)
+  confirmed?: boolean;
 }
 
 export class UpdateUserDTO extends PartialType(UserDTO) {

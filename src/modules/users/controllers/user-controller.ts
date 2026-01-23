@@ -21,7 +21,7 @@ export class UserController extends BaseController<UserDocument> {
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const photo = (req.files as Express.Multer.File[] | undefined)?.[0];
 
@@ -39,12 +39,12 @@ export class UserController extends BaseController<UserDocument> {
     await super.updateHandler(req, res, next);
   }
 
-  // custom controller for profile
+  // custom controller for profile update
   protected async updateProfileHandler(
     req: Request,
     res: Response,
-    next: NextFunction
-  ): Promise<void> {
+    next: NextFunction,
+  ) {
     const photo = (req.files as Express.Multer.File[] | undefined)?.[0];
 
     if (photo) {
@@ -68,6 +68,20 @@ export class UserController extends BaseController<UserDocument> {
 
   updateProfile = async (req: Request, res: Response, next: NextFunction) => {
     await this.updateProfileHandler(req, res, next);
+  };
+
+  // Custom controller for profile get
+  protected async getProfileHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    const userId = UserStore.getInstance().user?.id;
+    this.sendData(res, await this.service.getById(userId || "", undefined));
+  }
+
+  getProfile = (req: Request, res: Response, next: NextFunction) => {
+    this.getProfileHandler(req, res, next);
   };
 
   // custom controller for me handler

@@ -1,9 +1,5 @@
 import { UserDocument } from "@mongodb-types";
-import {
-  authorizeMiddleware,
-  BaseRoutes,
-  validateBodyMiddleware,
-} from "../../../system";
+import { BaseRoutes, validateBodyMiddleware } from "../../../system";
 import { UserController } from "../controllers/user-controller";
 import { UpdateUserDTO, UserDTO } from "../models/user.dto";
 
@@ -21,6 +17,7 @@ export class UserRouter extends BaseRoutes<UserDocument> {
 
   override initRoutes(): void {
     this.initMeRoute();
+    this.initGetProfileRoute();
     this.initPutProfileRoute();
     super.initRoutes();
   }
@@ -29,13 +26,17 @@ export class UserRouter extends BaseRoutes<UserDocument> {
     this.router.get(this.endpoint + "/me", userController.me);
   }
 
+  // !!! wont have authorization, all users can update their profile
+  initGetProfileRoute(): void {
+    this.router.get(this.endpoint + "/profile/", userController.getProfile);
+  }
+
   initPutProfileRoute(): void {
     this.router.put(
       this.endpoint + "/profile",
       this.upload.any(),
       validateBodyMiddleware(this.dtoUpdateClass),
-      authorizeMiddleware(this.resource + "/profile", "update"),
-      userController.updateProfile
+      userController.updateProfile,
     );
   }
 }

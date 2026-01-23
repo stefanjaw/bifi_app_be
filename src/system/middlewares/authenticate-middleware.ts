@@ -12,7 +12,7 @@ export function authenticateMiddleware(userService: UserService) {
   return async (req: Request, res: Response, next: NextFunction) => {
     if (
       ignoreEndpoints.some(
-        (x) => req.path.includes(x.endpoint) && req.method === x.method
+        (x) => req.path.includes(x.endpoint) && req.method === x.method,
       )
     ) {
       next();
@@ -37,14 +37,16 @@ export function authenticateMiddleware(userService: UserService) {
           undefined,
           undefined,
           undefined,
-          undefined
+          undefined,
         )
       )?.[0];
 
       // if user is found but not active, throw an error
       if (user && !user.active) {
         next(
-          new UnauthorizedException("Error authenticating, account is disabled")
+          new UnauthorizedException(
+            "Error authenticating, account is disabled",
+          ),
         );
         return;
       }
@@ -64,11 +66,11 @@ export function authenticateMiddleware(userService: UserService) {
               phoneNumber: firebaseUser.phone_number || "Phone not provided",
               active: true,
               name: fName || "Name not provided",
-              lastName: lName || "Last name not provided",
+              lastName: lName || "last name not provided",
               type: "individual",
             },
           },
-          undefined
+          undefined,
         );
       }
 

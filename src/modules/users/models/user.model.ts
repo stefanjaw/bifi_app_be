@@ -39,6 +39,10 @@ const userSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    confirmed: {
+      type: Boolean,
+      default: false,
+    },
     roles: {
       type: [mongoose.Types.ObjectId],
       ref: "Role",
@@ -58,7 +62,7 @@ const userSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 userSchema.plugin(paginate);
@@ -66,7 +70,7 @@ userSchema.plugin(autopopulate);
 
 const userModel = mongoose.model<UserDocument, PaginateModel<UserDocument>>(
   "User",
-  userSchema
+  userSchema,
 );
 
 export { userModel };

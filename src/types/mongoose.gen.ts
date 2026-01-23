@@ -3423,6 +3423,7 @@ export type User = {
   picture?: string;
   uploadedPictureId?: mongoose.Types.ObjectId;
   active?: boolean;
+  confirmed?: boolean;
   roles: Role[];
   contactId?: Contact;
   _id: mongoose.Types.ObjectId;
@@ -3512,6 +3513,7 @@ export type UserDocument = mongoose.Document<
     picture?: string;
     uploadedPictureId?: mongoose.Types.ObjectId;
     active?: boolean;
+    confirmed?: boolean;
     roles: mongoose.Types.Array<RoleDocument>;
     contactId?: ContactDocument;
     _id: mongoose.Types.ObjectId;
