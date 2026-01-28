@@ -199,7 +199,7 @@ export class BCDRecordDTO {
   @ArrayMinSize(1)
   @IsOptional()
   @Type(() => TaxEntryDTO)
-  tax!: TaxEntryDTO[];
+  tax?: TaxEntryDTO[];
 
   @ValidateNested({ each: true })
   @IsArray()
