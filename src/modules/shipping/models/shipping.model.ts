@@ -87,11 +87,8 @@ const shippingSchema = new Schema(
     timestamps: true,
     toObject: { virtuals: true }, // Include virtuals in toObject output
     toJSON: { virtuals: true }, // Include virtuals in toJSON output
-  }
+  },
 );
-
-shippingSchema.plugin(paginate);
-shippingSchema.plugin(autopopulate);
 
 shippingSchema.virtual("bcds", {
   ref: "BCD",
@@ -101,6 +98,9 @@ shippingSchema.virtual("bcds", {
     maxDepth: 1,
   },
 });
+
+shippingSchema.plugin(paginate);
+shippingSchema.plugin(autopopulate);
 
 const shippingModel = mongoose.model<
   ShippingDocument,

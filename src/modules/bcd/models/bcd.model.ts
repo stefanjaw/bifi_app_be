@@ -313,7 +313,6 @@ const bcdSchema = new Schema(
     },
     additionalInformation: {
       type: [additionalInformationSchema],
-      required: true,
     },
     ogd: {
       type: ogdschema,

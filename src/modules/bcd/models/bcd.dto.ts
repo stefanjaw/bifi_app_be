@@ -196,14 +196,12 @@ export class BCDRecordDTO {
 
   @ValidateNested({ each: true })
   @IsArray()
-  @ArrayMinSize(1)
   @IsOptional()
   @Type(() => TaxEntryDTO)
   tax?: TaxEntryDTO[];
 
   @ValidateNested({ each: true })
   @IsArray()
-  @ArrayMinSize(1)
   @IsOptional()
   @Type(() => AdditionalInformationDTO)
   additionalInformation?: AdditionalInformationDTO[];
@@ -295,7 +293,6 @@ export class BcdDTO {
   @IsOptional()
   @IsString({ each: true })
   @IsArray()
-  @ArrayMinSize(1)
   @Transform(({ value }) => JSON.parse(value))
   houseBOLAWB?: string[];
 
@@ -311,13 +308,13 @@ export class BcdDTO {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AdditionalInformationDTO)
-  @ArrayMinSize(1)
+  @IsOptional()
   @Transform(({ value }) =>
     JSON.parse(value).map((charge: any) =>
       plainToInstance(AdditionalInformationDTO, charge),
     ),
   )
-  additionalInformation!: AdditionalInformationDTO[];
+  additionalInformation?: AdditionalInformationDTO[];
 
   @ValidateNested()
   @IsObject()
@@ -329,7 +326,6 @@ export class BcdDTO {
     each: true,
   })
   @IsArray()
-  @ArrayMinSize(1)
   @IsOptional()
   @Transform(({ value }) => JSON.parse(value))
   paymentAccounts?: string[];
