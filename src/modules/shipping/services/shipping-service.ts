@@ -169,7 +169,58 @@ export class ShippingService extends BaseService<ShippingDocument> {
       - Do NOT include explanations, comments, or markdown.
       - Do NOT restate the input.
       - Do NOT return only the hsCode and leave the rest blank, if the hsCode is present
-        the rest of the fields must be present.
+        the rest of the related fields must be present.
+  `;
+
+  private readonly GENAI_GENERATE_TARIFF_MESSAGE = ` 
+      You will receive an existing JSON object representing the lines of an invoice.
+      That JSON MUST be treated as the source of truth.
+
+      Your task is to UPDATE ONLY specific tariff fields
+      inside EACH line tariff object and return the FULL JSON object as a response 
+      based on the schema provided to you.
+
+      --------------------------------------------------
+      STRICT UPDATE RULES
+      --------------------------------------------------
+      - You MUST preserve the original structure.
+      - You MUST NOT remove, rename, or add fields.
+      - You MUST NOT reorder arrays.
+      - You MUST NOT modify values of any field
+        EXCEPT the tariff fields listed below.
+      - Any field not explicitly listed MUST remain EXACTLY the same
+        as in the input JSON.
+
+      --------------------------------------------------
+      FIELDS YOU ARE ALLOWED TO MODIFY (PER LINE)
+      --------------------------------------------------      
+      Only the following fields may be changed, added, or removed
+      for each line object, if tariff is applicable for that line
+      you must provide values for ALL of tariff fields, use the line hs code or related fields 
+      to infer the tariff field values if applicable, if tariff itself is not blank, use tariff values 
+      to update them if applicable. otherwise set them to null. 
+      Sometimes you set the tariff.code but the rest of the tariff.fields are blank, avoid 
+      that, if you set the tariff.code you MUST set the rest of the fields too.
+      If you consider tariff.code and related fields if present are incorrect,
+      you MUST update them with the correct values.
+
+      This are the fields you can modify:
+
+      - tariff.code
+      - tariff.description
+      - tariff.chapter
+      - tariff.heading
+      - tariff.subheading
+      
+      --------------------------------------------------
+      OUTPUT CONSTRAINTS
+      --------------------------------------------------
+      - Return ONLY the updated JSON object.
+      - The output MUST be directly parsable by JSON.parse().
+      - Do NOT include explanations, comments, or markdown.
+      - Do NOT restate the input.
+      - Do NOT return only the tariff and leave the rest blank, if the code is present
+        the rest of the related fields must be present.
   `;
 
   // services
@@ -196,11 +247,11 @@ export class ShippingService extends BaseService<ShippingDocument> {
    */
   override async create(
     data: ShippingDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     return await super.create(
       { ...data, createdBy: UserStore.getInstance().user?.id },
-      session
+      session,
     );
   }
 
@@ -214,11 +265,11 @@ export class ShippingService extends BaseService<ShippingDocument> {
    */
   override async update(
     data: UpdateShippingDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     return await super.update(
       { ...data, updatedBy: UserStore.getInstance().user?.id },
-      session
+      session,
     );
   }
 
@@ -233,7 +284,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
    */
   async cloneShipping(
     _id: string,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     return await runTransaction<ShippingDocument>(
       session,
@@ -245,9 +296,9 @@ export class ShippingService extends BaseService<ShippingDocument> {
             ...shipping?.toObject(),
             createdBy: UserStore.getInstance().user?.id,
           },
-          newSession
+          newSession,
         );
-      }
+      },
     );
   }
 
@@ -267,7 +318,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
   async generateShippingFromFiles(
     files: Express.Multer.File[],
     _id: string | undefined,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     return await runTransaction<ShippingDocument>(
       session,
@@ -278,12 +329,12 @@ export class ShippingService extends BaseService<ShippingDocument> {
           undefined,
           undefined,
           undefined,
-          newSession
+          newSession,
         );
 
         // Generate
         const parts = files.map((file) =>
-          this.genAIService.fileToGenerativePart(file)
+          this.genAIService.fileToGenerativePart(file),
         );
 
         const response = await this.genAIService.generate({
@@ -300,7 +351,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
 
         // Save pdf files to gridFS
         const gridFSFiles = await Promise.all(
-          files.map(async (file) => await this.gridFSBucket.uploadFile(file))
+          files.map(async (file) => await this.gridFSBucket.uploadFile(file)),
         );
 
         // Attach file to shipping
@@ -311,7 +362,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
               name: files[i].originalname,
               mimeType: files[i].mimetype,
               size: files[i].size,
-            })
+            }),
         );
 
         if (_id) {
@@ -324,7 +375,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
               _id: _id,
               updatedBy: UserStore.getInstance().user?.id,
             },
-            newSession
+            newSession,
           );
         } else {
           return await super.create(
@@ -332,10 +383,10 @@ export class ShippingService extends BaseService<ShippingDocument> {
               ...shippingData,
               createdBy: UserStore.getInstance().user?.id,
             },
-            newSession
+            newSession,
           );
         }
-      }
+      },
     );
   }
 
@@ -346,7 +397,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
    * @throws InternalServerException If the GEN-AI service fails to generate HS codes
    */
   async generateHSCodesForShipping(
-    data: HScodeDTO
+    data: HScodeDTO,
   ): Promise<ShippingInvoicePdfExtractedDatumLineDocument[]> {
     try {
       // Generate
@@ -359,14 +410,43 @@ export class ShippingService extends BaseService<ShippingDocument> {
       });
 
       const linesData = JSON.parse(
-        response.text || ""
+        response.text || "",
       ) as ShippingInvoicePdfExtractedDatumLineDocument[];
 
       return linesData;
     } catch (error) {
       throw new InternalServerException(
-        "Error generating HS codes for shipping"
+        "Error generating HS codes for shipping",
       );
+    }
+  }
+
+  /**
+   * Generate tariff for shipping using the GEN-AI service
+   * @param data The data to generate tariff for, including the lines to generate tariff for
+   * @returns A promise that resolves to an array of ShippingInvoicePdfExtractedDatumLineDocument objects, each containing the generated tariff
+   * @throws InternalServerException If the GEN-AI service fails to generate tariff
+   */
+  async generateTariffForShipping(
+    data: HScodeDTO,
+  ): Promise<ShippingInvoicePdfExtractedDatumLineDocument[]> {
+    try {
+      // Generate
+      const response = await this.genAIService.generate({
+        question: this.GENAI_GENERATE_TARIFF_MESSAGE,
+        context: `${this.GENAI_CONTEXT} ${JSON.stringify({
+          lines: data.lines,
+        })}`,
+        schema: linesGenAISchema,
+      });
+
+      const linesData = JSON.parse(
+        response.text || "",
+      ) as ShippingInvoicePdfExtractedDatumLineDocument[];
+
+      return linesData;
+    } catch (error) {
+      throw new InternalServerException("Error generating tariff for shipping");
     }
   }
 }

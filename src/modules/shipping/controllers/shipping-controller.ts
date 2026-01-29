@@ -19,7 +19,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   protected async cloneShippingHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const id = req.params.id;
@@ -33,7 +33,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   protected async generateShippingFromFileHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const files = req.files as Express.Multer.File[];
@@ -55,12 +55,28 @@ export class ShippingController extends BaseController<ShippingDocument> {
   protected async generateHSCodesForShippingHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const record = await (
         this.service as ShippingService
       ).generateHSCodesForShipping(req.body);
+
+      this.sendData(res, record);
+    } catch (error: any) {
+      next(error);
+    }
+  }
+
+  protected async generateTariffForShippingHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const record = await (
+        this.service as ShippingService
+      ).generateTariffForShipping(req.body);
 
       this.sendData(res, record);
     } catch (error: any) {
@@ -75,7 +91,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   generateShippingFromFile = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.generateShippingFromFileHandler(req, res, next);
   };
@@ -83,8 +99,16 @@ export class ShippingController extends BaseController<ShippingDocument> {
   generateHSCodesForShipping = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.generateHSCodesForShippingHandler(req, res, next);
+  };
+
+  generateTariffForShipping = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    await this.generateTariffForShippingHandler(req, res, next);
   };
 }

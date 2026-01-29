@@ -22,6 +22,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
     this.initGenerateShippingFromFileRoute();
     this.initRegenerateShippingFromFileRoute();
     this.initGenerateHSCodesForShippingRoute();
+    this.initGenerateTariffForShippingRoute();
     super.initRoutes();
   }
 
@@ -30,7 +31,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
       `${this.endpoint}/from-file`,
       this.upload.array("files"),
       authorizeMiddleware(`${this.resource}/from-file`, "create"),
-      (this.controller as ShippingController).generateShippingFromFile
+      (this.controller as ShippingController).generateShippingFromFile,
     );
   }
 
@@ -39,7 +40,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
       `${this.endpoint}/from-file/:id`,
       this.upload.array("files"),
       authorizeMiddleware(`${this.resource}/from-file/:id`, "update"),
-      (this.controller as ShippingController).generateShippingFromFile
+      (this.controller as ShippingController).generateShippingFromFile,
     );
   }
 
@@ -49,7 +50,17 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
       this.upload.any(),
       validateBodyMiddleware(HScodeDTO),
       authorizeMiddleware(`${this.resource}/hs-code/generate/:id`, "update"),
-      (this.controller as ShippingController).generateHSCodesForShipping
+      (this.controller as ShippingController).generateHSCodesForShipping,
+    );
+  }
+
+  initGenerateTariffForShippingRoute() {
+    this.router.post(
+      `${this.endpoint}/tariff/generate`,
+      this.upload.any(),
+      validateBodyMiddleware(HScodeDTO),
+      authorizeMiddleware(`${this.resource}/tariff/generate/:id`, "update"),
+      (this.controller as ShippingController).generateTariffForShipping,
     );
   }
 }
