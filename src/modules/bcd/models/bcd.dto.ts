@@ -1,7 +1,7 @@
 import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   ArrayMinSize,
-  Contains,
+  // Contains,
   IsArray,
   IsDate,
   IsEnum,
@@ -151,8 +151,8 @@ export class BCDRecordDTO {
   origin!: string;
 
   @IsString()
-  @Contains(".")
-  @Length(1, 7)
+  // @Contains(".")
+  @Length(1, 8)
   tariff!: string;
 
   @IsString()
