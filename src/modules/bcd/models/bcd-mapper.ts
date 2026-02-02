@@ -46,21 +46,8 @@ const headerMapper = (data: BCDDocument) => ({
   valuationMethod: data.valuationMethod || "", // 28
   totalPackages: data.packagesCount?.toString() || "", // 29
   totalNumberOfRecords: data.records?.length.toString() || "", // 30
-  totalInvoice: data.records
-    .reduce(
-      (acc, record) =>
-        acc + (record.linesSubtotal || 0) * (record.exchangeRate || 0),
-      0,
-    )
-    .toFixed(2), // 31
-  totalPayable: data.records
-    .reduce(
-      (acc, record) =>
-        acc + record.tax?.reduce((totalTax, tax) => totalTax + tax.amount, 0) ||
-        0,
-      0,
-    )
-    .toFixed(2), // 32
+  totalInvoice: data.invoiceAmount.toFixed(2), // 31
+  totalPayable: data.payableAmount.toFixed(2), // 32
   declarantName: data.declarant?.name || "", // 33
   declarantCompanyId: data.declarant?.companyId || "", // 34
   declarantDate: data.declarant?.date
@@ -136,13 +123,8 @@ const recordMapper = (record: BCDRecordDocument) => ({
   currency: record.currency || "", // 9
   valueInCurrency: record.linesSubtotal?.toFixed(2) || "", // 10
   exchangeRate: record.exchangeRate || "", // 11
-  bdaValue: ((record.linesSubtotal || 0) * (record.exchangeRate || 0)).toFixed(
-    2,
-  ), // 12
-  totalDue:
-    record.tax
-      ?.reduce((totalTax, tax) => totalTax + tax.amount, 0)
-      ?.toFixed(2) || "", // 13
+  bdaValue: record.bdaValue?.toFixed(2) || "", // 12
+  totalDue: record.totalDue?.toFixed(2) || "", // 13
 });
 
 /**

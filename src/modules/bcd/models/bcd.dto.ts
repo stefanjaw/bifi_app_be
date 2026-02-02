@@ -23,7 +23,6 @@ import {
   ChargeCodeTypeEnum,
   TaxIdTypeEnum,
   TaxTypeEnum,
-  TransportMethodTypeEnum,
   ValuationMethodTypeEnum,
 } from "./bcd.types";
 import { PartialType } from "../../../system";
@@ -40,9 +39,6 @@ class BCDImporterDTO {
 
 //Transport
 class BCDTransportDTO {
-  @IsEnum(TransportMethodTypeEnum)
-  type!: TransportMethodTypeEnum;
-
   @IsString()
   @Length(1, 3)
   aircraftOrVessel!: string;
@@ -188,6 +184,16 @@ export class BCDRecordDTO {
   @Type(() => Number)
   exchangeRate!: number;
 
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  bdaValue!: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  totalDue?: number;
+
   @ValidateNested({ each: true })
   @IsArray()
   @ArrayMinSize(1)
@@ -304,6 +310,16 @@ export class BcdDTO {
   @Min(0)
   @Type(() => Number)
   packagesCount!: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  invoiceAmount!: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  payableAmount!: number;
 
   @IsArray()
   @ValidateNested({ each: true })

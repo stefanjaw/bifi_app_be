@@ -16,11 +16,6 @@ export enum ValuationMethodTypeEnum {
   OTHER = "02",
 }
 
-export enum TransportMethodTypeEnum {
-  AIRLINE = "AIRLINE",
-  VESSEL = "VESSEL",
-}
-
 export enum TaxTypeEnum {
   CUSTOMS = "CUD",
   WHARFAGE = "WHA",

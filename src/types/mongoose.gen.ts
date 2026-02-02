@@ -773,7 +773,6 @@ export type BCDImporter = {
  * ```
  */
 export type BCDTransport = {
-  type: "AIRLINE" | "VESSEL";
   aircraftOrVessel: string;
   flightOrVoyage: string;
   port: string;
@@ -910,6 +909,8 @@ export type BCDRecord = {
   currency: string;
   linesSubtotal?: number;
   exchangeRate?: number;
+  bdaValue: number;
+  totalDue: number;
   charges: BCDRecordCharge[];
   tax: BCDRecordTax[];
   additionalInformation: BCDRecordAdditionalInformation[];
@@ -987,6 +988,8 @@ export type BCD = {
   houseBOLAWBs: string[];
   valuationMethod: "01" | "02";
   packagesCount: number;
+  invoiceAmount: number;
+  payableAmount: number;
   additionalInformation: BCDAdditionalInformation[];
   ogd: BCDOgd;
   paymentAccounts: string[];
@@ -1096,7 +1099,6 @@ export type BCDImporterDocument = mongoose.Document<mongoose.Types.ObjectId> & {
  */
 export type BCDTransportDocument =
   mongoose.Document<mongoose.Types.ObjectId> & {
-    type: "AIRLINE" | "VESSEL";
     aircraftOrVessel: string;
     flightOrVoyage: string;
     port: string;
@@ -1222,6 +1224,8 @@ export type BCDRecordDocument =
     currency: string;
     linesSubtotal?: number;
     exchangeRate?: number;
+    bdaValue: number;
+    totalDue: number;
     charges: mongoose.Types.DocumentArray<BCDRecordChargeDocument>;
     tax: mongoose.Types.DocumentArray<BCDRecordTaxDocument>;
     additionalInformation: mongoose.Types.DocumentArray<BCDRecordAdditionalInformationDocument>;
@@ -1301,6 +1305,8 @@ export type BCDDocument = mongoose.Document<
     houseBOLAWBs: mongoose.Types.Array<string>;
     valuationMethod: "01" | "02";
     packagesCount: number;
+    invoiceAmount: number;
+    payableAmount: number;
     additionalInformation: mongoose.Types.DocumentArray<BCDAdditionalInformationDocument>;
     ogd: BCDOgdDocument;
     paymentAccounts: mongoose.Types.Array<string>;

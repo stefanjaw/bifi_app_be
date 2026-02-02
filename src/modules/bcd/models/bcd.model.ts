@@ -7,7 +7,6 @@ import {
   EBCDTypeEnum,
   TaxIdTypeEnum,
   TaxTypeEnum,
-  TransportMethodTypeEnum,
   ValuationMethodTypeEnum,
 } from "./bcd.types";
 import paginate from "mongoose-paginate-v2";
@@ -39,11 +38,6 @@ const importerSchema = new Schema({
 });
 
 const transportSchema = new Schema({
-  type: {
-    type: String,
-    enum: Object.values(TransportMethodTypeEnum),
-    required: true,
-  },
   aircraftOrVessel: {
     type: String,
     required: true,
@@ -188,6 +182,16 @@ const bcdRecordSchema = new Schema({
     type: Number,
     min: 0,
   },
+  bdaValue: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
+  totalDue: {
+    type: Number,
+    min: 0,
+    required: true,
+  },
   charges: {
     type: [chargeSchema],
     required: true,
@@ -307,6 +311,16 @@ const bcdSchema = new Schema(
       required: true,
     },
     packagesCount: {
+      type: Number,
+      min: 0,
+      required: true,
+    },
+    invoiceAmount: {
+      type: Number,
+      min: 0,
+      required: true,
+    },
+    payableAmount: {
       type: Number,
       min: 0,
       required: true,

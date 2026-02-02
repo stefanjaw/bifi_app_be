@@ -14,7 +14,6 @@ import { UpdateBcdDTO } from "../models/bcd.dto";
 import mime from "mime-types";
 import dayjs from "dayjs";
 import { BCDStatusTypeEnum, EBCDTypeEnum } from "../models/bcd.types";
-import { FileInfo } from "basic-ftp";
 
 export class BCDService extends BaseService<BCDDocument> {
   private csvBuilder = new CsvBuilderService();
