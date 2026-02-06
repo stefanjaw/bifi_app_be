@@ -1422,8 +1422,8 @@ export type BCDRecordCharge = {
  * ```
  */
 export type BCDRecordTax = {
-  type: "CUD" | "WHA" | "WSF" | "DEP";
-  taxId: "F" | "H" | "D" | "E" | "S" | "C";
+  type: BCDTaxType;
+  taxId: BCDTaxId;
   valueForTax: number;
   ratePercentage: number;
   amount: number;
@@ -1741,8 +1741,8 @@ export type BCDRecordChargeDocument =
  */
 export type BCDRecordTaxDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    type: "CUD" | "WHA" | "WSF" | "DEP";
-    taxId: "F" | "H" | "D" | "E" | "S" | "C";
+    type: BCDTaxTypeDocument;
+    taxId: BCDTaxIdDocument;
     valueForTax: number;
     ratePercentage: number;
     amount: number;

@@ -17,12 +17,7 @@ import {
   Min,
   ValidateNested,
 } from "class-validator";
-import {
-  ChargeCodeTypeEnum,
-  TaxIdTypeEnum,
-  TaxTypeEnum,
-  ValuationMethodTypeEnum,
-} from "./bcd.types";
+import { ChargeCodeTypeEnum, ValuationMethodTypeEnum } from "./bcd.types";
 import { PartialType } from "../../../system";
 
 //Supplier and importer
@@ -95,11 +90,11 @@ class BCDDeclarantDTO {
 
 //Tax
 class TaxEntryDTO {
-  @IsEnum(TaxTypeEnum)
-  type!: TaxTypeEnum;
+  @IsMongoId()
+  type!: string;
 
-  @IsEnum(TaxIdTypeEnum)
-  taxId!: TaxIdTypeEnum;
+  @IsMongoId()
+  taxId!: string;
 
   @IsNumber()
   @Min(0)

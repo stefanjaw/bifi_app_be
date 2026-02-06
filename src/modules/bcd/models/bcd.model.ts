@@ -3,8 +3,6 @@ import {
   BCDStatusTypeEnum,
   ChargeCodeTypeEnum,
   EBCDTypeEnum,
-  TaxIdTypeEnum,
-  TaxTypeEnum,
   ValuationMethodTypeEnum,
 } from "./bcd.types";
 import paginate from "mongoose-paginate-v2";
@@ -99,13 +97,15 @@ const declarantSchema = new Schema({
 
 const taxEntrySchema = new Schema({
   type: {
-    type: String,
-    enum: Object.values(TaxTypeEnum),
+    type: Schema.Types.ObjectId,
+    ref: "BCDTaxType",
+    autopopulate: true,
     required: true,
   },
   taxId: {
-    type: String,
-    enum: Object.values(TaxIdTypeEnum),
+    type: Schema.Types.ObjectId,
+    ref: "BCDTaxId",
+    autopopulate: true,
     required: true,
   },
   valueForTax: {

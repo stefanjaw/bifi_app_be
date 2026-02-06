@@ -134,8 +134,8 @@ const recordMapper = (record: BCDRecordDocument) => ({
  */
 const recordTaxMapper = (data: BCDRecordTaxDocument) => ({
   recordType: "R50", // 1
-  type: data.type || "", // 2
-  taxId: data.taxId || "", // 3
+  type: data.type?._id || "", // 2
+  taxId: data.taxId?._id || "", // 3
   dutyValue: data.valueForTax?.toFixed(2) || "", // 4
   dutyRate: data.ratePercentage?.toFixed(3) || "", // 5
   amount: data.amount?.toFixed(2) || "", // 6
