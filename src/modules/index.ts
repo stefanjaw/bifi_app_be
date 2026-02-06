@@ -7,6 +7,8 @@ export * from "./bcd";
 export * from "./bcd-types";
 export * from "./bcd-transport-options";
 export * from "./bcd-additional-information-types";
+export * from "./bcd-tax-ids"
+export * from "./bcd-tax-types"
 export * from "./bug-reporting";
 export * from "./companies";
 export * from "./contacts";

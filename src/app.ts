@@ -41,6 +41,8 @@ import {
   BCDRouter,
   BCDTypeRouter,
   BCDAdditionalInformationTypeRouter,
+  BCDTaxIdRouter,
+  BCDTaxTypeRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -100,6 +102,8 @@ app.use("/api", new BCDRouter().getRouter);
 app.use("/api", new BCDTypeRouter().getRouter);
 app.use("/api", new BCDAdditionalInformationTypeRouter().getRouter);
 app.use("/api", new BCDTransportOptionRouter().getRouter);
+app.use("/api", new BCDTaxIdRouter().getRouter);
+app.use("/api", new BCDTaxTypeRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);

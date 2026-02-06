@@ -855,6 +855,223 @@ export type BCDAdditionalInformationTypeDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of BCDTaxIdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDTaxIdDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDTaxIdObject`.
+ * ```
+ * const bcdtaxidObject = bcdtaxid.toObject();
+ * ```
+ */
+export type BCDTaxId = {
+  code: string;
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BCDTaxIdDocument (type alias of `BCDTaxId`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BCDTaxId } from "../models"
+ * import { BCDTaxIdObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bcdtaxidObject: BCDTaxIdObject = bcdtaxid.toObject();
+ * ```
+ */
+export type BCDTaxIdObject = BCDTaxId;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDTaxIdQuery = mongoose.Query<
+  any,
+  BCDTaxIdDocument,
+  BCDTaxIdQueries
+> &
+  BCDTaxIdQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BCDTaxIdSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDTaxIdQueries = {
+  paginate: (this: BCDTaxIdQuery, ...args: any[]) => BCDTaxIdQuery;
+};
+
+export type BCDTaxIdMethods = {};
+
+export type BCDTaxIdStatics = {
+  paginate: (this: BCDTaxIdModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BCDTaxIdModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDTaxId = mongoose.model<BCDTaxIdDocument, BCDTaxIdModel>("BCDTaxId", BCDTaxIdSchema);
+ * ```
+ */
+export type BCDTaxIdModel = mongoose.Model<BCDTaxIdDocument, BCDTaxIdQueries> &
+  BCDTaxIdStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BCDTaxId schema instances:
+ * ```
+ * const BCDTaxIdSchema: BCDTaxIdSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BCDTaxIdSchema = mongoose.Schema<
+  BCDTaxIdDocument,
+  BCDTaxIdModel,
+  BCDTaxIdMethods,
+  BCDTaxIdQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDTaxId = mongoose.model<BCDTaxIdDocument, BCDTaxIdModel>("BCDTaxId", BCDTaxIdSchema);
+ * ```
+ */
+export type BCDTaxIdDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BCDTaxIdQueries
+> &
+  BCDTaxIdMethods & {
+    code: string;
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of BCDTaxTypeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDTaxTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDTaxTypeObject`.
+ * ```
+ * const bcdtaxtypeObject = bcdtaxtype.toObject();
+ * ```
+ */
+export type BCDTaxType = {
+  code: string;
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BCDTaxTypeDocument (type alias of `BCDTaxType`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BCDTaxType } from "../models"
+ * import { BCDTaxTypeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bcdtaxtypeObject: BCDTaxTypeObject = bcdtaxtype.toObject();
+ * ```
+ */
+export type BCDTaxTypeObject = BCDTaxType;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDTaxTypeQuery = mongoose.Query<
+  any,
+  BCDTaxTypeDocument,
+  BCDTaxTypeQueries
+> &
+  BCDTaxTypeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BCDTaxTypeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDTaxTypeQueries = {
+  paginate: (this: BCDTaxTypeQuery, ...args: any[]) => BCDTaxTypeQuery;
+};
+
+export type BCDTaxTypeMethods = {};
+
+export type BCDTaxTypeStatics = {
+  paginate: (this: BCDTaxTypeModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BCDTaxTypeModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDTaxType = mongoose.model<BCDTaxTypeDocument, BCDTaxTypeModel>("BCDTaxType", BCDTaxTypeSchema);
+ * ```
+ */
+export type BCDTaxTypeModel = mongoose.Model<
+  BCDTaxTypeDocument,
+  BCDTaxTypeQueries
+> &
+  BCDTaxTypeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BCDTaxType schema instances:
+ * ```
+ * const BCDTaxTypeSchema: BCDTaxTypeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BCDTaxTypeSchema = mongoose.Schema<
+  BCDTaxTypeDocument,
+  BCDTaxTypeModel,
+  BCDTaxTypeMethods,
+  BCDTaxTypeQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDTaxType = mongoose.model<BCDTaxTypeDocument, BCDTaxTypeModel>("BCDTaxType", BCDTaxTypeSchema);
+ * ```
+ */
+export type BCDTaxTypeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BCDTaxTypeQueries
+> &
+  BCDTaxTypeMethods & {
+    code: string;
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of BCDTransportOptionDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BCDTransportOptionDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDTransportOptionObject`.
