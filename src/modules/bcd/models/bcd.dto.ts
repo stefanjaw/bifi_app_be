@@ -18,8 +18,6 @@ import {
   ValidateNested,
 } from "class-validator";
 import {
-  AdditionalInformationTypeEnum,
-  BCDTypeEnum,
   ChargeCodeTypeEnum,
   TaxIdTypeEnum,
   TaxTypeEnum,
@@ -39,8 +37,7 @@ class BCDImporterDTO {
 
 //Transport
 class BCDTransportDTO {
-  @IsString()
-  @Length(1, 3)
+  @IsMongoId()
   aircraftOrVessel!: string;
 
   @IsString()
@@ -123,9 +120,8 @@ class TaxEntryDTO {
 
 //Additional info
 export class AdditionalInformationDTO {
-  @IsEnum(AdditionalInformationTypeEnum)
-  @Length(3)
-  type!: AdditionalInformationTypeEnum;
+  @IsMongoId()
+  type!: string;
 
   @IsString()
   @MaxLength(70)
@@ -239,8 +235,8 @@ export class BcdDTO {
   @IsMongoId()
   shippingId!: string;
 
-  @IsEnum(BCDTypeEnum)
-  type!: BCDTypeEnum;
+  @IsMongoId()
+  type!: string;
 
   @ValidateNested()
   @IsObject()

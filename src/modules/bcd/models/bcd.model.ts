@@ -1,8 +1,6 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import {
-  AdditionalInformationTypeEnum,
   BCDStatusTypeEnum,
-  BCDTypeEnum,
   ChargeCodeTypeEnum,
   EBCDTypeEnum,
   TaxIdTypeEnum,
@@ -39,7 +37,9 @@ const importerSchema = new Schema({
 
 const transportSchema = new Schema({
   aircraftOrVessel: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "BCDTransportOption",
+    autopopulate: true,
     required: true,
   },
   flightOrVoyage: {
@@ -126,8 +126,9 @@ const taxEntrySchema = new Schema({
 const additionalInformationSchema = new Schema({
   //tipe is enum of strings
   type: {
-    type: String,
-    enum: Object.values(AdditionalInformationTypeEnum),
+    type: Schema.Types.ObjectId,
+    ref: "BCDAdditionalInformationType",
+    autopopulate: true,
     required: true,
   },
   value: {
@@ -254,8 +255,9 @@ const bcdSchema = new Schema(
     },
     //type
     type: {
-      type: String,
-      enum: Object.values(BCDTypeEnum),
+      type: Schema.Types.ObjectId,
+      ref: "BCDType",
+      autopopulate: true,
       required: true,
     },
     supplier: {

@@ -92,7 +92,7 @@ const additionalInfoMapper = (
   type: "header" | "record",
 ) => ({
   recordType: type === "header" ? "R26" : "R60", // 1
-  infoType: data.type || "", // 2
+  infoType: data.type?._id || "", // 2
   value: data.value || "", // 3
 });
 

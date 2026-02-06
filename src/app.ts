@@ -37,7 +37,10 @@ import {
   TaskRouter,
   GenAIRouter,
   ShippingRouter,
+  BCDTransportOptionRouter,
   BCDRouter,
+  BCDTypeRouter,
+  BCDAdditionalInformationTypeRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -62,7 +65,7 @@ app.use(
   cors({
     origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  })
+  }),
 );
 
 app.use(authenticateMiddleware(new UserService()));
@@ -94,6 +97,9 @@ app.use("/api", new TaskStageRouter().getRouter);
 app.use("/api", new GenAIRouter().getRouter);
 app.use("/api", new ShippingRouter().getRouter);
 app.use("/api", new BCDRouter().getRouter);
+app.use("/api", new BCDTypeRouter().getRouter);
+app.use("/api", new BCDAdditionalInformationTypeRouter().getRouter);
+app.use("/api", new BCDTransportOptionRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);

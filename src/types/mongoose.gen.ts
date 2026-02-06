@@ -739,6 +739,344 @@ export type AssetTypeDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of BCDAdditionalInformationTypeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDAdditionalInformationTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDAdditionalInformationTypeObject`.
+ * ```
+ * const bcdadditionalinformationtypeObject = bcdadditionalinformationtype.toObject();
+ * ```
+ */
+export type BCDAdditionalInformationType = {
+  code: string;
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BCDAdditionalInformationTypeDocument (type alias of `BCDAdditionalInformationType`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BCDAdditionalInformationType } from "../models"
+ * import { BCDAdditionalInformationTypeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bcdadditionalinformationtypeObject: BCDAdditionalInformationTypeObject = bcdadditionalinformationtype.toObject();
+ * ```
+ */
+export type BCDAdditionalInformationTypeObject = BCDAdditionalInformationType;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDAdditionalInformationTypeQuery = mongoose.Query<
+  any,
+  BCDAdditionalInformationTypeDocument,
+  BCDAdditionalInformationTypeQueries
+> &
+  BCDAdditionalInformationTypeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BCDAdditionalInformationTypeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDAdditionalInformationTypeQueries = {
+  paginate: (
+    this: BCDAdditionalInformationTypeQuery,
+    ...args: any[]
+  ) => BCDAdditionalInformationTypeQuery;
+};
+
+export type BCDAdditionalInformationTypeMethods = {};
+
+export type BCDAdditionalInformationTypeStatics = {
+  paginate: (this: BCDAdditionalInformationTypeModel, ...args: any[]) => any;
+  paginateSubDocs: (
+    this: BCDAdditionalInformationTypeModel,
+    ...args: any[]
+  ) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDAdditionalInformationType = mongoose.model<BCDAdditionalInformationTypeDocument, BCDAdditionalInformationTypeModel>("BCDAdditionalInformationType", BCDAdditionalInformationTypeSchema);
+ * ```
+ */
+export type BCDAdditionalInformationTypeModel = mongoose.Model<
+  BCDAdditionalInformationTypeDocument,
+  BCDAdditionalInformationTypeQueries
+> &
+  BCDAdditionalInformationTypeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BCDAdditionalInformationType schema instances:
+ * ```
+ * const BCDAdditionalInformationTypeSchema: BCDAdditionalInformationTypeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BCDAdditionalInformationTypeSchema = mongoose.Schema<
+  BCDAdditionalInformationTypeDocument,
+  BCDAdditionalInformationTypeModel,
+  BCDAdditionalInformationTypeMethods,
+  BCDAdditionalInformationTypeQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDAdditionalInformationType = mongoose.model<BCDAdditionalInformationTypeDocument, BCDAdditionalInformationTypeModel>("BCDAdditionalInformationType", BCDAdditionalInformationTypeSchema);
+ * ```
+ */
+export type BCDAdditionalInformationTypeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BCDAdditionalInformationTypeQueries
+> &
+  BCDAdditionalInformationTypeMethods & {
+    code: string;
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of BCDTransportOptionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDTransportOptionDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDTransportOptionObject`.
+ * ```
+ * const bcdtransportoptionObject = bcdtransportoption.toObject();
+ * ```
+ */
+export type BCDTransportOption = {
+  code: string;
+  name: string;
+  description?: string;
+  type: "vessel" | "aircraft";
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BCDTransportOptionDocument (type alias of `BCDTransportOption`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BCDTransportOption } from "../models"
+ * import { BCDTransportOptionObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bcdtransportoptionObject: BCDTransportOptionObject = bcdtransportoption.toObject();
+ * ```
+ */
+export type BCDTransportOptionObject = BCDTransportOption;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDTransportOptionQuery = mongoose.Query<
+  any,
+  BCDTransportOptionDocument,
+  BCDTransportOptionQueries
+> &
+  BCDTransportOptionQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BCDTransportOptionSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDTransportOptionQueries = {
+  paginate: (
+    this: BCDTransportOptionQuery,
+    ...args: any[]
+  ) => BCDTransportOptionQuery;
+};
+
+export type BCDTransportOptionMethods = {};
+
+export type BCDTransportOptionStatics = {
+  paginate: (this: BCDTransportOptionModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BCDTransportOptionModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDTransportOption = mongoose.model<BCDTransportOptionDocument, BCDTransportOptionModel>("BCDTransportOption", BCDTransportOptionSchema);
+ * ```
+ */
+export type BCDTransportOptionModel = mongoose.Model<
+  BCDTransportOptionDocument,
+  BCDTransportOptionQueries
+> &
+  BCDTransportOptionStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BCDTransportOption schema instances:
+ * ```
+ * const BCDTransportOptionSchema: BCDTransportOptionSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BCDTransportOptionSchema = mongoose.Schema<
+  BCDTransportOptionDocument,
+  BCDTransportOptionModel,
+  BCDTransportOptionMethods,
+  BCDTransportOptionQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDTransportOption = mongoose.model<BCDTransportOptionDocument, BCDTransportOptionModel>("BCDTransportOption", BCDTransportOptionSchema);
+ * ```
+ */
+export type BCDTransportOptionDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BCDTransportOptionQueries
+> &
+  BCDTransportOptionMethods & {
+    code: string;
+    name: string;
+    description?: string;
+    type: "vessel" | "aircraft";
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of BCDTypeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDTypeObject`.
+ * ```
+ * const bcdtypeObject = bcdtype.toObject();
+ * ```
+ */
+export type BCDType = {
+  code: string;
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BCDTypeDocument (type alias of `BCDType`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BCDType } from "../models"
+ * import { BCDTypeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bcdtypeObject: BCDTypeObject = bcdtype.toObject();
+ * ```
+ */
+export type BCDTypeObject = BCDType;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDTypeQuery = mongoose.Query<
+  any,
+  BCDTypeDocument,
+  BCDTypeQueries
+> &
+  BCDTypeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BCDTypeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDTypeQueries = {
+  paginate: (this: BCDTypeQuery, ...args: any[]) => BCDTypeQuery;
+};
+
+export type BCDTypeMethods = {};
+
+export type BCDTypeStatics = {
+  paginate: (this: BCDTypeModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BCDTypeModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDType = mongoose.model<BCDTypeDocument, BCDTypeModel>("BCDType", BCDTypeSchema);
+ * ```
+ */
+export type BCDTypeModel = mongoose.Model<BCDTypeDocument, BCDTypeQueries> &
+  BCDTypeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BCDType schema instances:
+ * ```
+ * const BCDTypeSchema: BCDTypeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BCDTypeSchema = mongoose.Schema<
+  BCDTypeDocument,
+  BCDTypeModel,
+  BCDTypeMethods,
+  BCDTypeQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDType = mongoose.model<BCDTypeDocument, BCDTypeModel>("BCDType", BCDTypeSchema);
+ * ```
+ */
+export type BCDTypeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BCDTypeQueries
+> &
+  BCDTypeMethods & {
+    code: string;
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of BCDSupplierDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BCDDocument.toObject()`.
@@ -773,7 +1111,7 @@ export type BCDImporter = {
  * ```
  */
 export type BCDTransport = {
-  aircraftOrVessel: string;
+  aircraftOrVessel: BCDTransportOption;
   flightOrVoyage: string;
   port: string;
   arrivalDate: Date;
@@ -804,7 +1142,7 @@ export type BCDCharge = {
  * ```
  */
 export type BCDAdditionalInformation = {
-  type: "TXT" | "INV" | "SUP";
+  type: BCDAdditionalInformationType;
   value: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -867,8 +1205,8 @@ export type BCDRecordCharge = {
  * ```
  */
 export type BCDRecordTax = {
-  type: "CUD" | "WHA" | "WSF";
-  taxId: "F" | "E";
+  type: "CUD" | "WHA" | "WSF" | "DEP";
+  taxId: "F" | "H" | "D" | "E" | "S" | "C";
   valueForTax: number;
   ratePercentage: number;
   amount: number;
@@ -884,7 +1222,7 @@ export type BCDRecordTax = {
  * ```
  */
 export type BCDRecordAdditionalInformation = {
-  type: "TXT" | "INV" | "SUP";
+  type: BCDAdditionalInformationType;
   value: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -974,7 +1312,7 @@ export type BCD = {
     | "FAILED"
     | "PENDING_QUERY"
     | "SUBMITTED";
-  type: "I" | "E" | "D" | "A";
+  type: BCDType;
   supplier: BCDSupplier;
   importer: BCDImporter;
   transport: BCDTransport;
@@ -1099,7 +1437,7 @@ export type BCDImporterDocument = mongoose.Document<mongoose.Types.ObjectId> & {
  */
 export type BCDTransportDocument =
   mongoose.Document<mongoose.Types.ObjectId> & {
-    aircraftOrVessel: string;
+    aircraftOrVessel: BCDTransportOptionDocument;
     flightOrVoyage: string;
     port: string;
     arrivalDate: Date;
@@ -1126,7 +1464,7 @@ export type BCDChargeDocument =
  */
 export type BCDAdditionalInformationDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    type: "TXT" | "INV" | "SUP";
+    type: BCDAdditionalInformationTypeDocument;
     value: string;
     _id: mongoose.Types.ObjectId;
   };
@@ -1186,8 +1524,8 @@ export type BCDRecordChargeDocument =
  */
 export type BCDRecordTaxDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    type: "CUD" | "WHA" | "WSF";
-    taxId: "F" | "E";
+    type: "CUD" | "WHA" | "WSF" | "DEP";
+    taxId: "F" | "H" | "D" | "E" | "S" | "C";
     valueForTax: number;
     ratePercentage: number;
     amount: number;
@@ -1201,7 +1539,7 @@ export type BCDRecordTaxDocument =
  */
 export type BCDRecordAdditionalInformationDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    type: "TXT" | "INV" | "SUP";
+    type: BCDAdditionalInformationTypeDocument;
     value: string;
     _id: mongoose.Types.ObjectId;
   };
@@ -1291,7 +1629,7 @@ export type BCDDocument = mongoose.Document<
       | "FAILED"
       | "PENDING_QUERY"
       | "SUBMITTED";
-    type: "I" | "E" | "D" | "A";
+    type: BCDTypeDocument;
     supplier: BCDSupplierDocument;
     importer: BCDImporterDocument;
     transport: BCDTransportDocument;

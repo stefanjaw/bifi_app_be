@@ -1,30 +1,22 @@
-export enum BCDTypeEnum {
-  IMPORT = "I",
-  EXPORT = "E",
-  D = "D",
-  A = "A",
-}
-
-export enum AdditionalInformationTypeEnum {
-  TEXT = "TXT",
-  INVOICE = "INV",
-  SUPPLIER = "SUP",
-}
-
 export enum ValuationMethodTypeEnum {
   TRANSACTIONAL_VALUE = "01",
-  OTHER = "02",
+  SIMILAR_GOODS = "02",
 }
 
 export enum TaxTypeEnum {
   CUSTOMS = "CUD",
   WHARFAGE = "WHA",
   WAREHOUSE = "WSF",
+  DEPOSIT = "DEP",
 }
 
 export enum TaxIdTypeEnum {
   FULL_RATE = "F",
-  EXCHANGE_RATE = "E",
+  HIGHER_RATE = "H",
+  DEPOSIT_RATE = "D",
+  EXEMPT_RATE = "E",
+  SUSPENDED_RATE = "S",
+  CONCESSIONAL_RATE = "C",
 }
 
 export enum ChargeCodeTypeEnum {
