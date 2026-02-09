@@ -855,6 +855,115 @@ export type BCDAdditionalInformationTypeDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of BCDCpcsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDCpcsDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDCpcsObject`.
+ * ```
+ * const bcdcpcsObject = bcdcpcs.toObject();
+ * ```
+ */
+export type BCDCpcs = {
+  code: string;
+  description: string;
+  bcdTypes?: BCDTypes[];
+  tax?: BCDTax[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BCDCpcsDocument (type alias of `BCDCpcs`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BCDCpcs } from "../models"
+ * import { BCDCpcsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bcdcpcsObject: BCDCpcsObject = bcdcpcs.toObject();
+ * ```
+ */
+export type BCDCpcsObject = BCDCpcs;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDCpcsQuery = mongoose.Query<
+  any,
+  BCDCpcsDocument,
+  BCDCpcsQueries
+> &
+  BCDCpcsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BCDCpcsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDCpcsQueries = {
+  paginate: (this: BCDCpcsQuery, ...args: any[]) => BCDCpcsQuery;
+};
+
+export type BCDCpcsMethods = {};
+
+export type BCDCpcsStatics = {
+  paginate: (this: BCDCpcsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BCDCpcsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDCpcs = mongoose.model<BCDCpcsDocument, BCDCpcsModel>("BCDCpcs", BCDCpcsSchema);
+ * ```
+ */
+export type BCDCpcsModel = mongoose.Model<BCDCpcsDocument, BCDCpcsQueries> &
+  BCDCpcsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BCDCpcs schema instances:
+ * ```
+ * const BCDCpcsSchema: BCDCpcsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BCDCpcsSchema = mongoose.Schema<
+  BCDCpcsDocument,
+  BCDCpcsModel,
+  BCDCpcsMethods,
+  BCDCpcsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDCpcs = mongoose.model<BCDCpcsDocument, BCDCpcsModel>("BCDCpcs", BCDCpcsSchema);
+ * ```
+ */
+export type BCDCpcsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BCDCpcsQueries
+> &
+  BCDCpcsMethods & {
+    code: string;
+    description: string;
+    bcdTypes?: mongoose.Types.Array<BCDTypesDocument>;
+    tax?: mongoose.Types.Array<BCDTaxDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of BCDTaxIdDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BCDTaxIdDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDTaxIdObject`.

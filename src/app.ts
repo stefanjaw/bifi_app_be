@@ -46,6 +46,7 @@ import {
 } from "./modules";
 
 import admin from "firebase-admin";
+import { BCDCpcsRouter } from "./modules/bcd-cpcs";
 
 // load .env variables
 dotenv.config();
@@ -104,6 +105,7 @@ app.use("/api", new BCDAdditionalInformationTypeRouter().getRouter);
 app.use("/api", new BCDTransportOptionRouter().getRouter);
 app.use("/api", new BCDTaxIdRouter().getRouter);
 app.use("/api", new BCDTaxTypeRouter().getRouter);
+app.use("/api", new BCDCpcsRouter().getRouter);
 
 // middlewares
 app.use(catchExceptionMiddleware);
