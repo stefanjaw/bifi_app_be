@@ -4,7 +4,7 @@ import {
   ChargeCodeTypeEnum,
   EBCDTypeEnum,
   ValuationMethodTypeEnum,
-} from "./bcd.types";
+} from "./bcd-enums";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { BCDDocument } from "@mongodb-types";
@@ -45,7 +45,9 @@ const transportSchema = new Schema({
     required: true,
   },
   port: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "BCDPort",
+    autopopulate: true,
     required: true,
   },
   arrivalDate: {
@@ -206,6 +208,7 @@ const bcdRecordSchema = new Schema({
     type: [additionalInformationSchema],
   },
 });
+
 //Ogd
 const ogdschema = new Schema({
   paymentCode: {

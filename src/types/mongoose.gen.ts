@@ -855,6 +855,118 @@ export type BCDAdditionalInformationTypeDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of BCDChargeCodeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDChargeCodeDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDChargeCodeObject`.
+ * ```
+ * const bcdchargecodeObject = bcdchargecode.toObject();
+ * ```
+ */
+export type BCDChargeCode = {
+  code: string;
+  name: string;
+  description?: string;
+  type: "S" | "D" | "I" | "E" | "A";
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BCDChargeCodeDocument (type alias of `BCDChargeCode`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BCDChargeCode } from "../models"
+ * import { BCDChargeCodeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bcdchargecodeObject: BCDChargeCodeObject = bcdchargecode.toObject();
+ * ```
+ */
+export type BCDChargeCodeObject = BCDChargeCode;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDChargeCodeQuery = mongoose.Query<
+  any,
+  BCDChargeCodeDocument,
+  BCDChargeCodeQueries
+> &
+  BCDChargeCodeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BCDChargeCodeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDChargeCodeQueries = {
+  paginate: (this: BCDChargeCodeQuery, ...args: any[]) => BCDChargeCodeQuery;
+};
+
+export type BCDChargeCodeMethods = {};
+
+export type BCDChargeCodeStatics = {
+  paginate: (this: BCDChargeCodeModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BCDChargeCodeModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDChargeCode = mongoose.model<BCDChargeCodeDocument, BCDChargeCodeModel>("BCDChargeCode", BCDChargeCodeSchema);
+ * ```
+ */
+export type BCDChargeCodeModel = mongoose.Model<
+  BCDChargeCodeDocument,
+  BCDChargeCodeQueries
+> &
+  BCDChargeCodeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BCDChargeCode schema instances:
+ * ```
+ * const BCDChargeCodeSchema: BCDChargeCodeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BCDChargeCodeSchema = mongoose.Schema<
+  BCDChargeCodeDocument,
+  BCDChargeCodeModel,
+  BCDChargeCodeMethods,
+  BCDChargeCodeQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDChargeCode = mongoose.model<BCDChargeCodeDocument, BCDChargeCodeModel>("BCDChargeCode", BCDChargeCodeSchema);
+ * ```
+ */
+export type BCDChargeCodeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BCDChargeCodeQueries
+> &
+  BCDChargeCodeMethods & {
+    code: string;
+    name: string;
+    description?: string;
+    type: "S" | "D" | "I" | "E" | "A";
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of BCDCpcTaxDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BCDCpcDocument.toObject()`.
@@ -987,6 +1099,115 @@ export type BCDCpcDocument = mongoose.Document<
       type: "SPECIFICATION" | "MULTIPLIER";
       value: any;
     };
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of BCDPortDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDPortDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDPortObject`.
+ * ```
+ * const bcdportObject = bcdport.toObject();
+ * ```
+ */
+export type BCDPort = {
+  code: string;
+  name: string;
+  description?: string;
+  wharfageRate: number;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BCDPortDocument (type alias of `BCDPort`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BCDPort } from "../models"
+ * import { BCDPortObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bcdportObject: BCDPortObject = bcdport.toObject();
+ * ```
+ */
+export type BCDPortObject = BCDPort;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDPortQuery = mongoose.Query<
+  any,
+  BCDPortDocument,
+  BCDPortQueries
+> &
+  BCDPortQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BCDPortSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BCDPortQueries = {
+  paginate: (this: BCDPortQuery, ...args: any[]) => BCDPortQuery;
+};
+
+export type BCDPortMethods = {};
+
+export type BCDPortStatics = {
+  paginate: (this: BCDPortModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BCDPortModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDPort = mongoose.model<BCDPortDocument, BCDPortModel>("BCDPort", BCDPortSchema);
+ * ```
+ */
+export type BCDPortModel = mongoose.Model<BCDPortDocument, BCDPortQueries> &
+  BCDPortStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BCDPort schema instances:
+ * ```
+ * const BCDPortSchema: BCDPortSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BCDPortSchema = mongoose.Schema<
+  BCDPortDocument,
+  BCDPortModel,
+  BCDPortMethods,
+  BCDPortQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDPort = mongoose.model<BCDPortDocument, BCDPortModel>("BCDPort", BCDPortSchema);
+ * ```
+ */
+export type BCDPortDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BCDPortQueries
+> &
+  BCDPortMethods & {
+    code: string;
+    name: string;
+    description?: string;
+    wharfageRate: number;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -1469,7 +1690,7 @@ export type BCDImporter = {
 export type BCDTransport = {
   aircraftOrVessel: BCDTransportOption;
   flightOrVoyage: string;
-  port: string;
+  port: BCDPort;
   arrivalDate: Date;
   _id: mongoose.Types.ObjectId;
 };
@@ -1795,7 +2016,7 @@ export type BCDTransportDocument =
   mongoose.Document<mongoose.Types.ObjectId> & {
     aircraftOrVessel: BCDTransportOptionDocument;
     flightOrVoyage: string;
-    port: string;
+    port: BCDPortDocument;
     arrivalDate: Date;
     _id: mongoose.Types.ObjectId;
   };

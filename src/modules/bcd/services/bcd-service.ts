@@ -1,4 +1,4 @@
-import { BCDDocument } from "@mongodb-types";
+import { BCDDocument, BCDRecordDocument } from "@mongodb-types";
 import {
   BaseService,
   ftpResponse,
@@ -13,7 +13,7 @@ import { ClientSession } from "mongoose";
 import { UpdateBcdDTO } from "../models/bcd.dto";
 import mime from "mime-types";
 import dayjs from "dayjs";
-import { BCDStatusTypeEnum, EBCDTypeEnum } from "../models/bcd.types";
+import { BCDStatusTypeEnum, EBCDTypeEnum } from "../models/bcd-enums";
 
 export class BCDService extends BaseService<BCDDocument> {
   private csvBuilder = new CsvBuilderService();
@@ -371,5 +371,11 @@ export class BCDService extends BaseService<BCDDocument> {
     else return BCDStatusTypeEnum.PENDING_RESPONSE;
   }
   // ======================= EBCD UTILS =======================
+  //#endregion
+
+  //#region Calculations
+  private calculateRecord(bcd: BCDRecordDocument) {
+    
+  }
   //#endregion
 }

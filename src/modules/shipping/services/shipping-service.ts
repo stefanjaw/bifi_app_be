@@ -51,16 +51,17 @@ export class ShippingService extends BaseService<ShippingDocument> {
 
       Header rules:
       - The header object represents the main invoice metadata.
-      - The invoice identifier (invoiceNumber or equivalent) MUST always be present and must be transcribed exactly as shown in the document.
-      - Do not generate fake identifiers.
+      - The invoice identifier (invoiceNumber or equivalent) MUST always be present and must 
+        be transcribed exactly as shown in the document.
+      - Do not generate fake identifiers, use correct ones.
 
       Lines rules:
       - The lines array represents every charge, item, fee, or payment present in the document.
       - The lines array MUST NOT be empty.
-      - Every line must include a customsClassification field.
-      - customsClassification must be a short, concrete, human-readable product descriptor suitable for searching in an HS database.
+      - Every line must include a customsClassification field containing a short, concrete, human-readable product descriptor,
+        must infer the most accurate HS customs classification possible.
         Examples: "Fresh apples", "Electric toaster", "Air fryer", "Live horses".
-      - The description must be specific, not generic.
+      - The description must be specific, not generic, for a better matching.
 
       Harmonized System (HS) rules:
       - For each line, infer the most accurate HS classification possible.

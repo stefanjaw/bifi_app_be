@@ -17,7 +17,7 @@ import {
   Min,
   ValidateNested,
 } from "class-validator";
-import { ChargeCodeTypeEnum, ValuationMethodTypeEnum } from "./bcd.types";
+import { ChargeCodeTypeEnum, ValuationMethodTypeEnum } from "./bcd-enums";
 import { PartialType } from "../../../system";
 
 //Supplier and importer
@@ -39,8 +39,7 @@ class BCDTransportDTO {
   @Length(1, 255)
   flightOrVoyage!: string;
 
-  @IsString()
-  @Length(1, 3)
+  @IsMongoId()
   port!: string;
 
   @IsDate()
