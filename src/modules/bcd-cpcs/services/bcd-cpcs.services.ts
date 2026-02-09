@@ -1,12 +1,11 @@
-import { BCDCpcsDocument } from "@mongodb-types";
+import { BCDCpcDocument } from "@mongodb-types";
 import { BaseService } from "../../../system";
-import { bcdCpcsModel } from "../models/bcd-cpcs.model";
+import { bcdCpcModel } from "../models/bcd-cpcs.model";
 
-export class BCDCpcsService extends BaseService<BCDCpcsDocument> {
-
+export class BCDCpcService extends BaseService<BCDCpcDocument> {
   constructor() {
     super({
-      model: bcdCpcsModel,
+      model: bcdCpcModel,
     });
   }
 }

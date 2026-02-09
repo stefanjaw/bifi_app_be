@@ -855,18 +855,36 @@ export type BCDAdditionalInformationTypeDocument = mongoose.Document<
   };
 
 /**
- * Lean version of BCDCpcsDocument
+ * Lean version of BCDCpcTaxDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `BCDCpcsDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDCpcsObject`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDCpcDocument.toObject()`.
  * ```
- * const bcdcpcsObject = bcdcpcs.toObject();
+ * const bcdcpcObject = bcdcpc.toObject();
  * ```
  */
-export type BCDCpcs = {
+export type BCDCpcTax = {
+  taxType: BCDTaxType;
+  taxId: BCDTaxId;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BCDCpcDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDCpcDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDCpcObject`.
+ * ```
+ * const bcdcpcObject = bcdcpc.toObject();
+ * ```
+ */
+export type BCDCpc = {
   code: string;
   description: string;
-  bcdTypes?: BCDTypes[];
-  tax?: BCDTax[];
+  bcdTypes?: BCDType[];
+  tax: BCDCpcTax[];
+  dutyRate: {
+    type: "SPECIFICATION" | "MULTIPLIER";
+    value: any;
+  };
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -874,44 +892,40 @@ export type BCDCpcs = {
 };
 
 /**
- * Lean version of BCDCpcsDocument (type alias of `BCDCpcs`)
+ * Lean version of BCDCpcDocument (type alias of `BCDCpc`)
  *
  * Use this type alias to avoid conflicts with model names:
  * ```
- * import { BCDCpcs } from "../models"
- * import { BCDCpcsObject } from "../interfaces/mongoose.gen.ts"
+ * import { BCDCpc } from "../models"
+ * import { BCDCpcObject } from "../interfaces/mongoose.gen.ts"
  *
- * const bcdcpcsObject: BCDCpcsObject = bcdcpcs.toObject();
+ * const bcdcpcObject: BCDCpcObject = bcdcpc.toObject();
  * ```
  */
-export type BCDCpcsObject = BCDCpcs;
+export type BCDCpcObject = BCDCpc;
 
 /**
  * Mongoose Query type
  *
  * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
  */
-export type BCDCpcsQuery = mongoose.Query<
-  any,
-  BCDCpcsDocument,
-  BCDCpcsQueries
-> &
-  BCDCpcsQueries;
+export type BCDCpcQuery = mongoose.Query<any, BCDCpcDocument, BCDCpcQueries> &
+  BCDCpcQueries;
 
 /**
  * Mongoose Query helper types
  *
- * This type represents `BCDCpcsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ * This type represents `BCDCpcSchema.query`. For most use cases, you should not need to use this type explicitly.
  */
-export type BCDCpcsQueries = {
-  paginate: (this: BCDCpcsQuery, ...args: any[]) => BCDCpcsQuery;
+export type BCDCpcQueries = {
+  paginate: (this: BCDCpcQuery, ...args: any[]) => BCDCpcQuery;
 };
 
-export type BCDCpcsMethods = {};
+export type BCDCpcMethods = {};
 
-export type BCDCpcsStatics = {
-  paginate: (this: BCDCpcsModel, ...args: any[]) => any;
-  paginateSubDocs: (this: BCDCpcsModel, ...args: any[]) => any;
+export type BCDCpcStatics = {
+  paginate: (this: BCDCpcModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BCDCpcModel, ...args: any[]) => any;
 };
 
 /**
@@ -919,44 +933,60 @@ export type BCDCpcsStatics = {
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const BCDCpcs = mongoose.model<BCDCpcsDocument, BCDCpcsModel>("BCDCpcs", BCDCpcsSchema);
+ * const BCDCpc = mongoose.model<BCDCpcDocument, BCDCpcModel>("BCDCpc", BCDCpcSchema);
  * ```
  */
-export type BCDCpcsModel = mongoose.Model<BCDCpcsDocument, BCDCpcsQueries> &
-  BCDCpcsStatics;
+export type BCDCpcModel = mongoose.Model<BCDCpcDocument, BCDCpcQueries> &
+  BCDCpcStatics;
 
 /**
  * Mongoose Schema type
  *
- * Assign this type to new BCDCpcs schema instances:
+ * Assign this type to new BCDCpc schema instances:
  * ```
- * const BCDCpcsSchema: BCDCpcsSchema = new mongoose.Schema({ ... })
+ * const BCDCpcSchema: BCDCpcSchema = new mongoose.Schema({ ... })
  * ```
  */
-export type BCDCpcsSchema = mongoose.Schema<
-  BCDCpcsDocument,
-  BCDCpcsModel,
-  BCDCpcsMethods,
-  BCDCpcsQueries
+export type BCDCpcSchema = mongoose.Schema<
+  BCDCpcDocument,
+  BCDCpcModel,
+  BCDCpcMethods,
+  BCDCpcQueries
 >;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BCDCpcDocument["tax"]` element.
+ */
+export type BCDCpcTaxDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    taxType: BCDTaxTypeDocument;
+    taxId: BCDTaxIdDocument;
+    _id: mongoose.Types.ObjectId;
+  };
 
 /**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const BCDCpcs = mongoose.model<BCDCpcsDocument, BCDCpcsModel>("BCDCpcs", BCDCpcsSchema);
+ * const BCDCpc = mongoose.model<BCDCpcDocument, BCDCpcModel>("BCDCpc", BCDCpcSchema);
  * ```
  */
-export type BCDCpcsDocument = mongoose.Document<
+export type BCDCpcDocument = mongoose.Document<
   mongoose.Types.ObjectId,
-  BCDCpcsQueries
+  BCDCpcQueries
 > &
-  BCDCpcsMethods & {
+  BCDCpcMethods & {
     code: string;
     description: string;
-    bcdTypes?: mongoose.Types.Array<BCDTypesDocument>;
-    tax?: mongoose.Types.Array<BCDTaxDocument>;
+    bcdTypes?: mongoose.Types.Array<BCDTypeDocument>;
+    tax: mongoose.Types.DocumentArray<BCDCpcTaxDocument>;
+    dutyRate: {
+      type: "SPECIFICATION" | "MULTIPLIER";
+      value: any;
+    };
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -1563,7 +1593,7 @@ export type BCDRecordAdditionalInformation = {
  */
 export type BCDRecord = {
   number: number;
-  cpc: string;
+  cpc: BCDCpc;
   origin: Country;
   tariff: string;
   description: string;
@@ -1878,7 +1908,7 @@ export type BCDRecordAdditionalInformationDocument =
 export type BCDRecordDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
     number: number;
-    cpc: string;
+    cpc: BCDCpcDocument;
     origin: CountryDocument;
     tariff: string;
     description: string;

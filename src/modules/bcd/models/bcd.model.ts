@@ -143,7 +143,9 @@ const bcdRecordSchema = new Schema({
     required: true,
   },
   cpc: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref: "BCDCpc",
+    autopopulate: true,
     required: true,
   },
   origin: {

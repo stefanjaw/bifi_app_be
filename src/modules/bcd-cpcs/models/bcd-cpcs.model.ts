@@ -1,9 +1,9 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
-import { BCDCpcsDocument } from "@mongodb-types";
+import { BCDCpcDocument } from "@mongodb-types";
 
-const bcdCpcsSchema = new Schema(
+const bcdCpcSchema = new Schema(
   {
     code: {
       type: String,
@@ -17,15 +17,38 @@ const bcdCpcsSchema = new Schema(
     },
     bcdTypes: {
       type: [Schema.Types.ObjectId],
-      ref: "BCDTypes",
+      ref: "BCDType",
       required: false,
       autopopulate: true,
     },
     tax: {
-      type: [Schema.Types.ObjectId],
-      ref: "BCDTax",
-      required: false,
-      autopopulate: true,
+      type: [
+        {
+          taxType: {
+            type: Schema.Types.ObjectId,
+            ref: "BCDTaxType",
+            required: true,
+            autopopulate: true,
+          },
+          taxId: {
+            type: Schema.Types.ObjectId,
+            ref: "BCDTaxId",
+            required: true,
+            autopopulate: true,
+          },
+        },
+      ],
+    },
+    dutyRate: {
+      type: {
+        type: String,
+        enum: ["SPECIFICATION", "MULTIPLIER"],
+        required: true,
+      },
+      value: {
+        type: Schema.Types.Mixed,
+        required: true,
+      },
     },
     active: {
       type: Boolean,
@@ -38,11 +61,11 @@ const bcdCpcsSchema = new Schema(
   },
 );
 
-bcdCpcsSchema.plugin(paginate);
-bcdCpcsSchema.plugin(autopopulate);
+bcdCpcSchema.plugin(paginate);
+bcdCpcSchema.plugin(autopopulate);
 
-const bcdCpcsModel = mongoose.model<
-  BCDCpcsDocument,
-  PaginateModel<BCDCpcsDocument>
->("BCDCpcs", bcdCpcsSchema);
-export { bcdCpcsModel };
+const bcdCpcModel = mongoose.model<
+  BCDCpcDocument,
+  PaginateModel<BCDCpcDocument>
+>("BCDCpc", bcdCpcSchema);
+export { bcdCpcModel };

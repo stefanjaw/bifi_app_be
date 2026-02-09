@@ -130,8 +130,7 @@ export class BCDRecordDTO {
   @Type(() => Number)
   number!: number;
 
-  @IsString()
-  @Length(4)
+  @IsMongoId()
   cpc!: string;
 
   @IsMongoId()

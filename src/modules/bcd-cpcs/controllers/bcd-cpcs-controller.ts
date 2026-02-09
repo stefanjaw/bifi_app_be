@@ -1,9 +1,9 @@
-import { BCDCpcsDocument } from "@mongodb-types";
+import { BCDCpcDocument } from "@mongodb-types";
 import { BaseController } from "../../../system";
-import { BCDCpcsService } from "../services/bcd-cpcs.services";
+import { BCDCpcService } from "../services/bcd-cpcs.services";
 
-export class BCDCpcsController extends BaseController<BCDCpcsDocument> {
+export class BCDCpcController extends BaseController<BCDCpcDocument> {
   constructor() {
-    super({ service: new BCDCpcsService() });
+    super({ service: new BCDCpcService() });
   }
 }

@@ -1,16 +1,15 @@
-import { BCDCpcsDocument } from "@mongodb-types";
+import { BCDCpcDocument } from "@mongodb-types";
 import { BaseRoutes } from "../../../system";
-import { BCDCpcsController } from "../controllers/bcd-cpcs-controller";
-import { BCDCpcsDTO, UpdateBCDCpcsTO } from "../models/bcd-cpcs.dto";
+import { BCDCpcController } from "../controllers/bcd-cpcs-controller";
+import { BCDCpcDTO, UpdateBCDCpcDTO } from "../models/bcd-cpcs.dto";
 
-export class BCDCpcsRouter extends BaseRoutes<BCDCpcsDocument> {
-constructor() {
-
+export class BCDCpcRouter extends BaseRoutes<BCDCpcDocument> {
+  constructor() {
     super({
-        controller: new BCDCpcsController(),
-        endpoint: "/bcd-cpcs",
-        dtoCreateClass: BCDCpcsDTO,
-        dtoUpdateClass: UpdateBCDCpcsTO
+      controller: new BCDCpcController(),
+      endpoint: "/bcd-cpcs",
+      dtoCreateClass: BCDCpcDTO,
+      dtoUpdateClass: UpdateBCDCpcDTO,
     });
-}
+  }
 }

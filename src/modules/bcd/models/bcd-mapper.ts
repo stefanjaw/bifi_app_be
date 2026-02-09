@@ -113,7 +113,7 @@ const houseBOLMapper = (data: string) => ({
  */
 const recordMapper = (record: BCDRecordDocument) => ({
   recordType: "R30", // 1
-  cpc: record.cpc || "", // 2
+  cpc: record.cpc?.code || "", // 2
   origin: record.origin?.code.substring(0, 2) || "", // 3
   tariffNumber: record.tariff || "", // 4
   description: record.description || "", // 5
