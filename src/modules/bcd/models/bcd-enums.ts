@@ -3,12 +3,6 @@ export enum ValuationMethodTypeEnum {
   SIMILAR_GOODS = "02",
 }
 
-export enum ChargeCodeTypeEnum {
-  CASH_DISCOUNT = "212",
-  FREIGHT_ADDITIONAL = "641",
-  FRIEGHT_STAT = "640",
-}
-
 export enum EBCDTypeEnum {
   SENT_CSV = "SENT_CSV", // * Sent CSV from US to GOVERNMENT
   FILE_ERROR_CSV = "FILE_ERROR_CSV", // * ...E.0001

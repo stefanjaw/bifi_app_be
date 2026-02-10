@@ -1,7 +1,6 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import {
   BCDStatusTypeEnum,
-  ChargeCodeTypeEnum,
   EBCDTypeEnum,
   ValuationMethodTypeEnum,
 } from "./bcd-enums";
@@ -59,8 +58,9 @@ const transportSchema = new Schema({
 //Charge
 const chargeSchema = new Schema({
   code: {
-    type: String,
-    enum: Object.values(ChargeCodeTypeEnum),
+    type: Schema.Types.ObjectId,
+    ref: "BCDChargeCode",
+    autopopulate: true,
     required: true,
   },
   percentage: {
@@ -68,7 +68,7 @@ const chargeSchema = new Schema({
   },
   amount: {
     type: Number,
-    required: true,
+    required: false,
   },
 });
 
@@ -120,7 +120,7 @@ const taxEntrySchema = new Schema({
   },
   amount: {
     type: Number,
-    required: true,
+    required: false,
   },
 });
 

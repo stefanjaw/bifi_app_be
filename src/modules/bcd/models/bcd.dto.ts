@@ -17,21 +17,22 @@ import {
   Min,
   ValidateNested,
 } from "class-validator";
-import { ChargeCodeTypeEnum, ValuationMethodTypeEnum } from "./bcd-enums";
+import { ValuationMethodTypeEnum } from "./bcd-enums";
 import { PartialType } from "../../../system";
 
 //Supplier and importer
-class BCDSupplierDTO {
+export class BCDSupplierDTO {
   @IsMongoId()
   contactId!: string;
 }
-class BCDImporterDTO {
+
+export class BCDImporterDTO {
   @IsMongoId()
   contactId!: string;
 }
 
 //Transport
-class BCDTransportDTO {
+export class BCDTransportDTO {
   @IsMongoId()
   aircraftOrVessel!: string;
 
@@ -48,9 +49,9 @@ class BCDTransportDTO {
 }
 
 //Charge
-class BCDChargeDTO {
-  @IsEnum(ChargeCodeTypeEnum)
-  code!: ChargeCodeTypeEnum;
+export class BCDChargeDTO {
+  @IsMongoId()
+  code!: string;
 
   @IsNumber()
   @Min(0)
@@ -62,11 +63,12 @@ class BCDChargeDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  amount!: number;
+  @IsOptional()
+  amount?: number;
 }
 
 //Declarant
-class BCDDeclarantDTO {
+export class BCDDeclarantDTO {
   @IsString()
   @Length(1, 255)
   name!: string;
@@ -88,7 +90,7 @@ class BCDDeclarantDTO {
 }
 
 //Tax
-class TaxEntryDTO {
+export class TaxEntryDTO {
   @IsMongoId()
   type!: string;
 
@@ -109,7 +111,8 @@ class TaxEntryDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  amount!: number;
+  @IsOptional()
+  amount?: number;
 }
 
 //Additional info
@@ -176,11 +179,13 @@ export class BCDRecordDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  bdaValue!: number;
+  @IsOptional()
+  bdaValue?: number;
 
   @IsNumber()
   @Min(0)
   @Type(() => Number)
+  @IsOptional()
   totalDue?: number;
 
   @ValidateNested({ each: true })
@@ -303,12 +308,14 @@ export class BcdDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  invoiceAmount!: number;
+  @IsOptional()
+  invoiceAmount?: number;
 
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  payableAmount!: number;
+  @IsOptional()
+  payableAmount?: number;
 
   @IsArray()
   @ValidateNested({ each: true })

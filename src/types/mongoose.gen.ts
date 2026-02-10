@@ -1704,9 +1704,9 @@ export type BCDTransport = {
  * ```
  */
 export type BCDCharge = {
-  code: "212" | "641" | "640";
+  code: BCDChargeCode;
   percentage?: number;
-  amount: number;
+  amount?: number;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1767,9 +1767,9 @@ export type BCDDeclarant = {
  * ```
  */
 export type BCDRecordCharge = {
-  code: "212" | "641" | "640";
+  code: BCDChargeCode;
   percentage?: number;
-  amount: number;
+  amount?: number;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1786,7 +1786,7 @@ export type BCDRecordTax = {
   taxId: BCDTaxId;
   valueForTax: number;
   ratePercentage: number;
-  amount: number;
+  amount?: number;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -2028,9 +2028,9 @@ export type BCDTransportDocument =
  */
 export type BCDChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    code: "212" | "641" | "640";
+    code: BCDChargeCodeDocument;
     percentage?: number;
-    amount: number;
+    amount?: number;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -2088,9 +2088,9 @@ export type BCDDeclarantDocument =
  */
 export type BCDRecordChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    code: "212" | "641" | "640";
+    code: BCDChargeCodeDocument;
     percentage?: number;
-    amount: number;
+    amount?: number;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -2105,7 +2105,7 @@ export type BCDRecordTaxDocument =
     taxId: BCDTaxIdDocument;
     valueForTax: number;
     ratePercentage: number;
-    amount: number;
+    amount?: number;
     _id: mongoose.Types.ObjectId;
   };
 

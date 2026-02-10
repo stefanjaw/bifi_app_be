@@ -1,4 +1,4 @@
-import { BCDDocument, BCDRecordDocument } from "@mongodb-types";
+import { BCDDocument } from "@mongodb-types";
 import {
   BaseService,
   ftpResponse,
@@ -10,7 +10,13 @@ import {
 import { bcdModel } from "../models/bcd.model";
 import { CsvBuilderService } from "./csv-builder";
 import { ClientSession } from "mongoose";
-import { UpdateBcdDTO } from "../models/bcd.dto";
+import {
+  BCDChargeDTO,
+  BcdDTO,
+  BCDRecordDTO,
+  TaxEntryDTO,
+  UpdateBcdDTO,
+} from "../models/bcd.dto";
 import mime from "mime-types";
 import dayjs from "dayjs";
 import { BCDStatusTypeEnum, EBCDTypeEnum } from "../models/bcd-enums";
@@ -33,6 +39,18 @@ export class BCDService extends BaseService<BCDDocument> {
   }
 
   /**
+   * Creates a new BCD document with the given data.
+   * The function calculates the duties and taxes of the BCD data and then calls the base create function to create the document.
+   * @param data - The BCD data to create.
+   * @param session - The optional client session to use for the transaction.
+   * @returns The created BCD document.
+   */
+  override async create(data: BcdDTO, session?: ClientSession | undefined) {
+    this.calculateBCD(data);
+    return await super.create(data, session);
+  }
+
+  /**
    * Updates a BCD document with the given data.
    * The function runs within a transaction and returns the updated record.
    * The function first checks if the BCD data exists and its status is "DRAFT".
@@ -48,6 +66,7 @@ export class BCDService extends BaseService<BCDDocument> {
   ) {
     // Fetch BCD data by ID
     const bcd = await this.getById(data._id, undefined);
+    this.calculateBCD(data);
 
     // Validate BCD data existence
     if (!bcd) throw new ValidationException("BCD data not found");
@@ -374,8 +393,105 @@ export class BCDService extends BaseService<BCDDocument> {
   //#endregion
 
   //#region Calculations
-  private calculateRecord(bcd: BCDRecordDocument) {
-    
+
+  /**
+   * Calculates the BDA value, charges, taxes and total due of a BCD record.
+   * This function takes a BCD record and calculates the BDA value, charges, taxes and total due.
+   * The calculated values are then set on the record object.
+   * @param {BcdDTO | UpdateBcdDTO} bcd - The BCD record to calculate the values for.
+   */
+  private calculateBCD(bcd: BcdDTO | UpdateBcdDTO) {
+    // get records and charges or set to empty array if not present
+    const records = bcd.records || [];
+    const charges = bcd.charges || [];
+
+    // calculate each record
+    records.forEach((r) => this.calculateRecord(r));
+
+    // calculate invoice amount
+    if (!records || records.length === 0) {
+      bcd.invoiceAmount = bcd.invoiceAmount ?? 0;
+    } else {
+      bcd.invoiceAmount = records.reduce(
+        (acc, r) => acc + (r.bdaValue ?? 0),
+        0,
+      );
+    }
+
+    // calculate charges
+    charges.forEach((c) => {
+      c.amount = this.calculateCharge(c, bcd.invoiceAmount ?? 0);
+    });
+
+    // calculate payable amount
+    if (
+      (!charges || charges.length === 0) &&
+      (!records || records.length === 0)
+    ) {
+      bcd.payableAmount = bcd.invoiceAmount ?? 0;
+    } else {
+      bcd.payableAmount =
+        (records.reduce((acc, record) => acc + (record.totalDue ?? 0), 0) ??
+          0) +
+        (charges.reduce((acc, charge) => acc + (charge.amount ?? 0), 0) ?? 0);
+    }
   }
+
+  /**
+   * Calculates the BDA value, charges, taxes and total due of a BCD record.
+   *
+   * This function takes a BCD record and calculates the BDA value by multiplying the lines subtotal by the exchange rate.
+   * It then calculates the charges by calling the calculateCharge function and updates the charge amount on the charge object.
+   * The function then calculates the taxes by calling the calculateTax function and updates the tax amount on the tax object.
+   * Finally, the function calculates the total due by summing up the amounts of all tax entries and sets the total due on the BCD record.
+   * @param bcd - The BCD record to calculate the BDA value, charges, taxes and total due of.
+   */
+  private calculateRecord(bcd: BCDRecordDTO) {
+    // Calculate the BDA value by multiplying the lines subtotal by the exchange rate
+    bcd.bdaValue = bcd.linesSubtotal * bcd.exchangeRate;
+
+    // calculate charges
+    bcd.charges.forEach(
+      (c) => (c.amount = this.calculateCharge(c, bcd.bdaValue ?? 0)),
+    );
+
+    // calculate taxes
+    bcd.tax?.forEach((tax) => (tax.amount = this.calculateTax(tax)));
+
+    // calculate total due
+    if (!bcd.tax || bcd.tax.length === 0) {
+      bcd.totalDue = bcd.totalDue ?? 0;
+    } else {
+      bcd.totalDue = bcd.tax.reduce((acc, tax) => acc + (tax.amount ?? 0), 0);
+    }
+  }
+
+  /**
+   * Calculates the amount of a charge based on the given form values.
+   * If the amount value is not null, it returns the amount value.
+   * If the percentage value is not null and the charge code does not allow percentage, it ignores the percentage value.
+   * If the percentage value is not null, it calculates the charge amount by multiplying the base value by the percentage divided by 100, and returns the calculated value.
+   * @param charge The charge object containing the code, percentage and amount values.
+   * @param base The base value to multiply the percentage by.
+   * @returns The calculated charge amount, or the amount value if no percentage is provided.
+   */
+  calculateCharge(charge: BCDChargeDTO, base: number) {
+    if (charge.amount !== undefined) return charge.amount;
+    if (charge.percentage === undefined || charge.percentage <= 0) return 0;
+    else return (charge.percentage / 100) * base;
+  }
+
+  /**
+   * Calculates the amount of a tax entry based on the given form values.
+   * If the amount value is not null, it returns the amount value.
+   * If the amount value is null, it calculates the tax amount by multiplying the value for tax by the rate percentage divided by 100, and returns the calculated value.
+   * @param tax The tax entry object containing the code, value for tax, rate percentage and amount values.
+   * @returns The calculated tax amount, or the amount value if no percentage is provided.
+   */
+  calculateTax(tax: TaxEntryDTO) {
+    if (tax.amount !== undefined) return tax.amount;
+    return tax.valueForTax * (tax.ratePercentage / 100);
+  }
+
   //#endregion
 }

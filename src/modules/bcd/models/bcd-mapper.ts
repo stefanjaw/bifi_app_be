@@ -66,7 +66,7 @@ const headerMapper = (data: BCDDocument) => ({
  */
 const chargesMapper = (data: BCDChargeDocument, type: "header" | "record") => ({
   recordType: type === "header" ? "R20" : "R40", // 1
-  chargeCode: data.code || "", // 2
+  chargeCode: data.code?.code || "", // 2
   percentage: data.percentage?.toFixed(2) || "", // 3
   amount: data.amount?.toFixed(2) || "", // 4
 });
