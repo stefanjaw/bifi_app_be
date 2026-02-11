@@ -66,7 +66,6 @@ export class BCDService extends BaseService<BCDDocument> {
   ) {
     // Fetch BCD data by ID
     const bcd = await this.getById(data._id, undefined);
-    this.calculateBCD(data);
 
     // Validate BCD data existence
     if (!bcd) throw new ValidationException("BCD data not found");
@@ -74,6 +73,9 @@ export class BCDService extends BaseService<BCDDocument> {
       throw new ValidationException(
         "BCD data has already been sent to the government",
       );
+
+    // Calculate duties and taxes
+    this.calculateBCD(data);
 
     return await super.update(data, session);
   }
@@ -395,75 +397,70 @@ export class BCDService extends BaseService<BCDDocument> {
   //#region Calculations
 
   /**
-   * Calculates the BDA value, charges, taxes and total due of a BCD record.
-   * This function takes a BCD record and calculates the BDA value, charges, taxes and total due.
-   * The calculated values are then set on the record object.
-   * @param {BcdDTO | UpdateBcdDTO} bcd - The BCD record to calculate the values for.
+   * Calculates the BCD document values.
+   * This function takes a BCD document and calculates the values for recordsCount, invoiceAmount, charges, payableAmount.
+   * @param bcd - The BCD document to calculate the values for.
    */
   private calculateBCD(bcd: BcdDTO | UpdateBcdDTO) {
     // get records and charges or set to empty array if not present
     const records = bcd.records || [];
     const charges = bcd.charges || [];
 
+    // set recrords count
+    bcd.recordsCount = records.length;
+
     // calculate each record
     records.forEach((r) => this.calculateRecord(r));
 
     // calculate invoice amount
-    if (!records || records.length === 0) {
-      bcd.invoiceAmount = bcd.invoiceAmount ?? 0;
-    } else {
-      bcd.invoiceAmount = records.reduce(
-        (acc, r) => acc + (r.bdaValue ?? 0),
-        0,
-      );
-    }
+    bcd.invoiceAmount = records.reduce((acc, r) => acc + (r.bdaValue ?? 0), 0);
 
     // calculate charges
     charges.forEach((c) => {
       c.amount = this.calculateCharge(c, bcd.invoiceAmount ?? 0);
     });
 
+    // total charges && records
+    const chargeAmount = charges.reduce((acc, c) => acc + (c.amount ?? 0), 0);
+    const recordsDueAmount = records.reduce(
+      (acc, r) => acc + (r.totalDue ?? 0),
+      0,
+    );
+
     // calculate payable amount
-    if (
-      (!charges || charges.length === 0) &&
-      (!records || records.length === 0)
-    ) {
-      bcd.payableAmount = bcd.invoiceAmount ?? 0;
-    } else {
-      bcd.payableAmount =
-        (records.reduce((acc, record) => acc + (record.totalDue ?? 0), 0) ??
-          0) +
-        (charges.reduce((acc, charge) => acc + (charge.amount ?? 0), 0) ?? 0);
-    }
+    bcd.payableAmount = chargeAmount + recordsDueAmount;
   }
 
   /**
    * Calculates the BDA value, charges, taxes and total due of a BCD record.
-   *
-   * This function takes a BCD record and calculates the BDA value by multiplying the lines subtotal by the exchange rate.
-   * It then calculates the charges by calling the calculateCharge function and updates the charge amount on the charge object.
-   * The function then calculates the taxes by calling the calculateTax function and updates the tax amount on the tax object.
-   * Finally, the function calculates the total due by summing up the amounts of all tax entries and sets the total due on the BCD record.
-   * @param bcd - The BCD record to calculate the BDA value, charges, taxes and total due of.
+   * This function takes a BCD record and calculates the BDA value, charges, taxes and total due.
+   * The calculated values are then set on the record object.
+   * @param {BCDRecordDTO} record - The BCD record to calculate the values for.
    */
-  private calculateRecord(bcd: BCDRecordDTO) {
-    // Calculate the BDA value by multiplying the lines subtotal by the exchange rate
-    bcd.bdaValue = bcd.linesSubtotal * bcd.exchangeRate;
+  private calculateRecord(record: BCDRecordDTO) {
+    // Calculate base
+    const base = record.linesSubtotal * record.exchangeRate;
 
     // calculate charges
-    bcd.charges.forEach(
-      (c) => (c.amount = this.calculateCharge(c, bcd.bdaValue ?? 0)),
+    record.charges.forEach((c) => (c.amount = this.calculateCharge(c, base)));
+
+    // total charges
+    const chargeAmount = record.charges.reduce(
+      (acc, c) => acc + (c.amount ?? 0),
+      0,
     );
 
+    // BDA value
+    record.bdaValue = base + chargeAmount;
+
     // calculate taxes
-    bcd.tax?.forEach((tax) => (tax.amount = this.calculateTax(tax)));
+    record.tax?.forEach((t) => (t.amount = this.calculateTax(t)));
+
+    // total taxes
+    const taxAmount = record.tax?.reduce((acc, t) => acc + (t.amount ?? 0), 0);
 
     // calculate total due
-    if (!bcd.tax || bcd.tax.length === 0) {
-      bcd.totalDue = bcd.totalDue ?? 0;
-    } else {
-      bcd.totalDue = bcd.tax.reduce((acc, tax) => acc + (tax.amount ?? 0), 0);
-    }
+    record.totalDue = (record.bdaValue ?? 0) + (taxAmount ?? 0);
   }
 
   /**
@@ -475,7 +472,7 @@ export class BCDService extends BaseService<BCDDocument> {
    * @param base The base value to multiply the percentage by.
    * @returns The calculated charge amount, or the amount value if no percentage is provided.
    */
-  calculateCharge(charge: BCDChargeDTO, base: number) {
+  private calculateCharge(charge: BCDChargeDTO, base: number) {
     if (charge.amount !== undefined) return charge.amount;
     if (charge.percentage === undefined || charge.percentage <= 0) return 0;
     else return (charge.percentage / 100) * base;
@@ -488,7 +485,7 @@ export class BCDService extends BaseService<BCDDocument> {
    * @param tax The tax entry object containing the code, value for tax, rate percentage and amount values.
    * @returns The calculated tax amount, or the amount value if no percentage is provided.
    */
-  calculateTax(tax: TaxEntryDTO) {
+  private calculateTax(tax: TaxEntryDTO) {
     if (tax.amount !== undefined) return tax.amount;
     return tax.valueForTax * (tax.ratePercentage / 100);
   }

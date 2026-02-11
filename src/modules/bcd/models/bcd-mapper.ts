@@ -27,9 +27,9 @@ const headerMapper = (data: BCDDocument) => ({
   importerAddressLine2: data.importer?.contactId?.streetAddress2 || "", // 11
   importerPostCode: data.importer?.contactId?.zipCode || "", // 12
   importerCountry: data.importer?.contactId?.countryId?.name || "", // 13
-  vesselOrAirline: data.transport?.aircraftOrVessel || "", // 14
+  vesselOrAirline: data.transport?.aircraftOrVessel?.code || "", // 14
   voyageOrFlightNumber: data.transport?.flightOrVoyage || "", // 15
-  portOfArrival: data.transport?.port || "", // 16
+  portOfArrival: data.transport?.port?.code || "", // 16
   dateOfArrival: data.transport?.arrivalDate
     ? dayjs(data.transport?.arrivalDate).format("YYYY-MM-DD")
     : "", // 17
@@ -55,7 +55,7 @@ const headerMapper = (data: BCDDocument) => ({
     : "", // 35
   declarantCapacity: data.declarant?.capacity || "", // 36
   declarantTraderReference: data.declarant?.traderReference || "", // 37
-  BCDType: data.type || "", // 38
+  BCDType: data.type?.code || "", // 38
 });
 
 /**
@@ -92,7 +92,7 @@ const additionalInfoMapper = (
   type: "header" | "record",
 ) => ({
   recordType: type === "header" ? "R26" : "R60", // 1
-  infoType: data.type?._id || "", // 2
+  infoType: data.type?.code || "", // 2
   value: data.value || "", // 3
 });
 
@@ -134,8 +134,8 @@ const recordMapper = (record: BCDRecordDocument) => ({
  */
 const recordTaxMapper = (data: BCDRecordTaxDocument) => ({
   recordType: "R50", // 1
-  type: data.type?._id || "", // 2
-  taxId: data.taxId?._id || "", // 3
+  type: data.type?.code || "", // 2
+  taxId: data.taxId?.code || "", // 3
   dutyValue: data.valueForTax?.toFixed(2) || "", // 4
   dutyRate: data.ratePercentage?.toFixed(3) || "", // 5
   amount: data.amount?.toFixed(2) || "", // 6

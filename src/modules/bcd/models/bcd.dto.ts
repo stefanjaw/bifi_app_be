@@ -307,6 +307,12 @@ export class BcdDTO {
 
   @IsNumber()
   @Min(0)
+  @IsOptional()
+  @Type(() => Number)
+  recordsCount?: number;
+
+  @IsNumber()
+  @Min(0)
   @Type(() => Number)
   @IsOptional()
   invoiceAmount?: number;
