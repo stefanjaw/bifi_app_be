@@ -8,6 +8,28 @@ import {
 import dayjs from "dayjs";
 
 /**
+ * Compute a value based on its type and a given fixation
+ * @param {string | number | null | undefined} value - The value to compute
+ * @param {number} fixation - The number of decimal places to fix the value to
+ * @returns {string} The computed value
+ */
+const computeValue = (
+  value: string | number | null | undefined | dayjs.Dayjs,
+  fixation = 2,
+) => {
+  switch (typeof value) {
+    case "string":
+      return value.replace(",", " ");
+    case "number":
+      return value.toFixed(fixation);
+    case "object":
+      return value?.format("YYYY-MM-DD") || "";
+    default:
+      return "";
+  }
+};
+
+/**
  * Maps a BCDDocument to a header object for generating a BCD file.
  *
  * @param {BCDDocument} data - The BCDDocument to be mapped.
@@ -16,46 +38,50 @@ import dayjs from "dayjs";
 const headerMapper = (data: BCDDocument) => ({
   recordType: "R10", // 1
   supplierId: "", // 2
-  supplierName: data.supplier?.contactId?.name || "", // 3
-  supplierAddressLine1: data.supplier?.contactId?.streetAddress || "", // 4
-  supplierAddressLine2: data.supplier?.contactId?.streetAddress2 || "", // 5
-  supplierPostCode: data.supplier?.contactId?.zipCode || "", // 6
-  supplierCountry: data.supplier?.contactId?.countryId?.name || "", // 7
-  importerId: data.declarant?.companyId || "", // 8
-  importerName: data.importer?.contactId?.name || "", // 9
-  importerAddressLine1: data.importer?.contactId?.streetAddress || "", // 10
-  importerAddressLine2: data.importer?.contactId?.streetAddress2 || "", // 11
-  importerPostCode: data.importer?.contactId?.zipCode || "", // 12
-  importerCountry: data.importer?.contactId?.countryId?.name || "", // 13
-  vesselOrAirline: data.transport?.aircraftOrVessel?.code || "", // 14
-  voyageOrFlightNumber: data.transport?.flightOrVoyage || "", // 15
-  portOfArrival: data.transport?.port?.code || "", // 16
-  dateOfArrival: data.transport?.arrivalDate
-    ? dayjs(data.transport?.arrivalDate).format("YYYY-MM-DD")
-    : "", // 17
-  manifest: data.manifest || "", // 18
-  masterBOLAWB: data.masterBOLAWB || "", // 19
-  countryDispatch: data.directShipmentCountry?.code.substring(0, 2) || "", // 20
-  countryOrigin: data.originalShipmentCountry?.code.substring(0, 2) || "", // 21
-  warehouseId: data.warehouseId || "", // 22
-  OGDPaymentCode: data.ogd?.paymentCode || "", // 23
-  OGDCostCode: data.ogd?.costCode || "", // 24
-  OGDObjectCode: data.ogd?.objectCode || "", // 25
-  OGDSubsidiaryCode: data.ogd?.subsidiaryCode || "", // 26
-  OGDExplanation: data.ogd?.explanation || "", // 27
-  valuationMethod: data.valuationMethod || "", // 28
-  totalPackages: data.packagesCount?.toString() || "", // 29
-  totalNumberOfRecords: data.records?.length.toString() || "", // 30
+  supplierName: computeValue(data.supplier?.contactId?.name), // 3
+  supplierAddressLine1: computeValue(data.supplier?.contactId?.streetAddress), // 4
+  supplierAddressLine2: computeValue(data.supplier?.contactId?.streetAddress2), // 5
+  supplierPostCode: computeValue(data.supplier?.contactId?.zipCode), // 6
+  supplierCountry: computeValue(data.supplier?.contactId?.countryId?.name), // 7
+  importerId: computeValue(data.declarant?.companyId), // 8
+  importerName: computeValue(data.importer?.contactId?.name), // 9
+  importerAddressLine1: computeValue(data.importer?.contactId?.streetAddress), // 10
+  importerAddressLine2: computeValue(data.importer?.contactId?.streetAddress2), // 11
+  importerPostCode: computeValue(data.importer?.contactId?.zipCode), // 12
+  importerCountry: computeValue(data.importer?.contactId?.countryId?.name), // 13
+  vesselOrAirline: computeValue(data.transport?.aircraftOrVessel?.code), // 14
+  voyageOrFlightNumber: computeValue(data.transport?.flightOrVoyage), // 15
+  portOfArrival: computeValue(data.transport?.port?.code), // 16
+  dateOfArrival: computeValue(
+    data.transport?.arrivalDate ? dayjs(data.transport.arrivalDate) : null,
+  ), // 17
+  manifest: computeValue(data.manifest), // 18
+  masterBOLAWB: computeValue(data.masterBOLAWB), // 19
+  countryDispatch: computeValue(
+    data.directShipmentCountry?.code.substring(0, 2),
+  ), // 20
+  countryOrigin: computeValue(
+    data.originalShipmentCountry?.code.substring(0, 2),
+  ), // 21
+  warehouseId: computeValue(data.warehouseId), // 22
+  OGDPaymentCode: computeValue(data.ogd?.paymentCode), // 23
+  OGDCostCode: computeValue(data.ogd?.costCode), // 24
+  OGDObjectCode: computeValue(data.ogd?.objectCode), // 25
+  OGDSubsidiaryCode: computeValue(data.ogd?.subsidiaryCode), // 26
+  OGDExplanation: computeValue(data.ogd?.explanation), // 27
+  valuationMethod: computeValue(data.valuationMethod), // 28
+  totalPackages: computeValue(data.packagesCount), // 29
+  totalNumberOfRecords: computeValue(data.records?.length), // 30
   totalInvoice: data.invoiceAmount.toFixed(2), // 31
   totalPayable: data.payableAmount.toFixed(2), // 32
-  declarantName: data.declarant?.name || "", // 33
-  declarantCompanyId: data.declarant?.companyId || "", // 34
-  declarantDate: data.declarant?.date
-    ? dayjs(data.declarant?.date).format("YYYY-MM-DD")
-    : "", // 35
-  declarantCapacity: data.declarant?.capacity || "", // 36
-  declarantTraderReference: data.declarant?.traderReference || "", // 37
-  BCDType: data.type?.code || "", // 38
+  declarantName: computeValue(data.declarant?.name), // 33
+  declarantCompanyId: computeValue(data.declarant?.companyId), // 34
+  declarantDate: computeValue(
+    data.declarant?.date ? dayjs(data.declarant?.date) : null,
+  ), // 35
+  declarantCapacity: computeValue(data.declarant?.capacity), // 36
+  declarantTraderReference: computeValue(data.declarant?.traderReference), // 37
+  BCDType: computeValue(data.type?.code), // 38
 });
 
 /**
@@ -66,9 +92,9 @@ const headerMapper = (data: BCDDocument) => ({
  */
 const chargesMapper = (data: BCDChargeDocument, type: "header" | "record") => ({
   recordType: type === "header" ? "R20" : "R40", // 1
-  chargeCode: data.code?.code || "", // 2
-  percentage: data.percentage?.toFixed(2) || "", // 3
-  amount: data.amount?.toFixed(2) || "", // 4
+  chargeCode: computeValue(data.code?.code), // 2
+  percentage: computeValue(data.percentage), // 3
+  amount: computeValue(data.amount), // 4
 });
 
 /**
@@ -78,7 +104,7 @@ const chargesMapper = (data: BCDChargeDocument, type: "header" | "record") => ({
  */
 const containerMapper = (data: string) => ({
   recordType: "R25", // 1
-  containerId: data || "", // 2
+  containerId: computeValue(data), // 2
 });
 
 /**
@@ -92,8 +118,8 @@ const additionalInfoMapper = (
   type: "header" | "record",
 ) => ({
   recordType: type === "header" ? "R26" : "R60", // 1
-  infoType: data.type?.code || "", // 2
-  value: data.value || "", // 3
+  infoType: computeValue(data.type?.code), // 2
+  value: computeValue(data.value), // 3
 });
 
 /**
@@ -103,7 +129,7 @@ const additionalInfoMapper = (
  */
 const houseBOLMapper = (data: string) => ({
   recordType: "R28", // 1
-  houseBOLAWB: data || "", // 2
+  houseBOLAWB: computeValue(data), // 2
 });
 
 /**
@@ -113,18 +139,18 @@ const houseBOLMapper = (data: string) => ({
  */
 const recordMapper = (record: BCDRecordDocument) => ({
   recordType: "R30", // 1
-  cpc: record.cpc?.code || "", // 2
-  origin: record.origin?.code.substring(0, 2) || "", // 3
-  tariffNumber: record.tariff || "", // 4
-  description: record.description || "", // 5
-  quantity: record.quantity?.toString() || "", // 6
-  quantityTwo: record.quantityTwo?.toString() || "", // 7
-  supplementaryCode: record.supplementaryCode || "", // 8
-  currency: record.currency || "", // 9
-  valueInCurrency: record.linesSubtotal?.toFixed(2) || "", // 10
-  exchangeRate: record.exchangeRate || "", // 11
-  bdaValue: record.bdaValue?.toFixed(2) || "", // 12
-  totalDue: record.totalDue?.toFixed(2) || "", // 13
+  cpc: computeValue(record.cpc?.code), // 2
+  origin: computeValue(record.origin?.code.substring(0, 2)), // 3
+  tariffNumber: computeValue(record.tariff), // 4
+  description: computeValue(record.description), // 5
+  quantity: computeValue(record.quantity), // 6
+  quantityTwo: computeValue(record.quantityTwo), // 7
+  supplementaryCode: computeValue(record.supplementaryCode), // 8
+  currency: computeValue(record.currency), // 9
+  valueInCurrency: computeValue(record.linesSubtotal), // 10
+  exchangeRate: computeValue(record.exchangeRate), // 11
+  bdaValue: computeValue(record.bdaValue), // 12
+  totalDue: computeValue(record.totalDue), // 13
 });
 
 /**
@@ -134,11 +160,11 @@ const recordMapper = (record: BCDRecordDocument) => ({
  */
 const recordTaxMapper = (data: BCDRecordTaxDocument) => ({
   recordType: "R50", // 1
-  type: data.type?.code || "", // 2
-  taxId: data.taxId?.code || "", // 3
-  dutyValue: data.valueForTax?.toFixed(2) || "", // 4
-  dutyRate: data.ratePercentage?.toFixed(3) || "", // 5
-  amount: data.amount?.toFixed(2) || "", // 6
+  type: computeValue(data.type?.code), // 2
+  taxId: computeValue(data.taxId?.code), // 3
+  dutyValue: computeValue(data.valueForTax), // 4
+  dutyRate: computeValue(data.ratePercentage, 3), // 5
+  amount: computeValue(data.amount), // 6
 });
 
 export {
