@@ -70,8 +70,8 @@ const headerMapper = (data: BCDDocument) => ({
   OGDSubsidiaryCode: computeValue(data.ogd?.subsidiaryCode), // 26
   OGDExplanation: computeValue(data.ogd?.explanation), // 27
   valuationMethod: computeValue(data.valuationMethod), // 28
-  totalPackages: computeValue(data.packagesCount), // 29
-  totalNumberOfRecords: computeValue(data.records?.length), // 30
+  totalPackages: computeValue(data.packagesCount, 0), // 29
+  totalNumberOfRecords: computeValue(data.records?.length, 0), // 30
   totalInvoice: data.invoiceAmount.toFixed(2), // 31
   totalPayable: data.payableAmount.toFixed(2), // 32
   declarantName: computeValue(data.declarant?.name), // 33

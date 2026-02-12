@@ -855,6 +855,20 @@ export type BCDAdditionalInformationTypeDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of BCDChargeCodeImpactDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDChargeCodeDocument.toObject()`.
+ * ```
+ * const bcdchargecodeObject = bcdchargecode.toObject();
+ * ```
+ */
+export type BCDChargeCodeImpact = {
+  customsValue?: boolean;
+  payable?: boolean;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of BCDChargeCodeDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BCDChargeCodeDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDChargeCodeObject`.
@@ -867,6 +881,8 @@ export type BCDChargeCode = {
   name: string;
   description?: string;
   type: "S" | "D" | "I" | "E" | "A";
+  levels: string[];
+  impact?: BCDChargeCodeImpact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -951,6 +967,21 @@ export type BCDChargeCodeSchema = mongoose.Schema<
  * const BCDChargeCode = mongoose.model<BCDChargeCodeDocument, BCDChargeCodeModel>("BCDChargeCode", BCDChargeCodeSchema);
  * ```
  */
+export type BCDChargeCodeImpactDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    customsValue?: boolean;
+    payable?: boolean;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDChargeCode = mongoose.model<BCDChargeCodeDocument, BCDChargeCodeModel>("BCDChargeCode", BCDChargeCodeSchema);
+ * ```
+ */
 export type BCDChargeCodeDocument = mongoose.Document<
   mongoose.Types.ObjectId,
   BCDChargeCodeQueries
@@ -960,6 +991,8 @@ export type BCDChargeCodeDocument = mongoose.Document<
     name: string;
     description?: string;
     type: "S" | "D" | "I" | "E" | "A";
+    levels: mongoose.Types.Array<string>;
+    impact?: BCDChargeCodeImpactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;

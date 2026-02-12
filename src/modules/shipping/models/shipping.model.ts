@@ -95,7 +95,7 @@ shippingSchema.virtual("bcds", {
   localField: "_id",
   foreignField: "shippingId",
   autopopulate: {
-    maxDepth: 1,
+    select: "-shippingId",
   },
 });
 
