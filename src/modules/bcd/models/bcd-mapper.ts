@@ -19,7 +19,7 @@ const computeValue = (
 ) => {
   switch (typeof value) {
     case "string":
-      return value.replace(",", " ");
+      return value.replaceAll(",", " ");
     case "number":
       return value.toFixed(fixation);
     case "object":
