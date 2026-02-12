@@ -10,17 +10,12 @@ import {
 import { bcdModel } from "../models/bcd.model";
 import { CsvBuilderService } from "./csv-builder";
 import { ClientSession } from "mongoose";
-import {
-  BCDChargeDTO,
-  BcdDTO,
-  BCDRecordDTO,
-  TaxEntryDTO,
-  UpdateBcdDTO,
-} from "../models/bcd.dto";
+import { BcdDTO, UpdateBcdDTO } from "../models/bcd.dto";
 import mime from "mime-types";
 import dayjs from "dayjs";
 import { BCDStatusTypeEnum, EBCDTypeEnum } from "../models/bcd-enums";
 import { BCDChargeCodeService } from "../../bcd-charge-codes";
+import { calculateBCD } from "./bcd-calculator";
 
 export class BCDService extends BaseService<BCDDocument> {
   private csvBuilder = new CsvBuilderService();
@@ -49,7 +44,8 @@ export class BCDService extends BaseService<BCDDocument> {
    */
   override async create(data: BcdDTO, session?: ClientSession | undefined) {
     try {
-      this.calculateBCD(data);
+      const chargeCodesRecord = await this.loadChargeCodesRecord(data);
+      calculateBCD(data, chargeCodesRecord);
     } catch (err) {
       throw err;
     }
@@ -76,14 +72,16 @@ export class BCDService extends BaseService<BCDDocument> {
 
     // Validate BCD data existence
     if (!bcd) throw new ValidationException("BCD data not found");
-    if (bcd.status !== "DRAFT")
+    if (bcd.status !== "DRAFT") {
       throw new ValidationException(
         "BCD data has already been sent to the government",
       );
+    }
 
     // Calculate duties and taxes
     try {
-      this.calculateBCD(data);
+      const chargeCodesRecord = await this.loadChargeCodesRecord(data);
+      calculateBCD(data, chargeCodesRecord);
     } catch (err) {
       throw err;
     }
@@ -405,14 +403,14 @@ export class BCDService extends BaseService<BCDDocument> {
   // ======================= EBCD UTILS =======================
   //#endregion
 
-  //#region Calculations
-
   /**
-   * Calculates the BCD document values.
-   * This function takes a BCD document and calculates the values for recordsCount, invoiceAmount, charges, payableAmount.
-   * @param bcd - The BCD document to calculate the values for.
+   * Loads the custom charge codes from the database.
+   * This function takes a BCD document and returns a Record containing the custom charge codes.
+   * The Record is indexed by the charge code and contains the charge code document.
+   * @param bcd - The BCD document to load the custom charge codes for.
+   * @returns A Record containing the custom charge codes.
    */
-  private async calculateBCD(bcd: BcdDTO | UpdateBcdDTO) {
+  private async loadChargeCodesRecord(bcd: BcdDTO | UpdateBcdDTO) {
     try {
       // 1. Get charge codes
       const customChargeIds = new Set<string>([
@@ -437,139 +435,9 @@ export class BCDService extends BaseService<BCDDocument> {
           {},
         );
 
-      const records = bcd.records || [];
-      const charges = bcd.charges || [];
-
-      bcd.recordsCount = records.length;
-
-      // 3. Calculate records
-      records.forEach((r) => this.calculateRecord(r, customChargesRecord));
-
-      // 4. Invoice amount (sum of customs values)
-      bcd.invoiceAmount = Number(
-        records.reduce((acc, r) => acc + (r.bdaValue ?? 0), 0).toFixed(2),
-      );
-
-      // 5. Document charges (like R20 = 500)
-      charges.forEach((c) => {
-        c.amount = this.calculateCharge(c, bcd.invoiceAmount ?? 0);
-      });
-
-      // 6. Total charges based on custom like (R20 = 500)
-      const chargeAmount = Number(
-        charges
-          .filter((c) => customChargesRecord[c.code]?.impact?.payable)
-          .reduce((acc, c) => acc + (c.amount ?? 0), 0)
-          .toFixed(2),
-      );
-
-      // 7. Records due
-      const recordsDueAmount = Number(
-        records.reduce((acc, r) => acc + (r.totalDue ?? 0), 0).toFixed(2),
-      );
-
-      // 8 Final payable
-      bcd.payableAmount = Number((chargeAmount + recordsDueAmount).toFixed(2));
+      return customChargesRecord;
     } catch (err) {
       throw err;
     }
   }
-
-  /**
-   * Calculates the values of a BCD record.
-   * It calculates the base value, charges, BDA value, taxes and total due.
-   * @param record - The BCD record object containing the linesSubtotal, exchangeRate, charges, taxes and total due values.
-   */
-  private calculateRecord(
-    record: BCDRecordDTO,
-    customCharges: Record<string, BCDChargeCodeDocument>,
-  ) {
-    // 1. Base
-    const base = Number(
-      (record.linesSubtotal * record.exchangeRate).toFixed(2),
-    );
-
-    // 2. Charges
-    record.charges.forEach((c) => {
-      c.amount = this.calculateCharge(c, base);
-    });
-
-    // 3. Calculate charge amount based on custom charges impact
-    const chargeAmount = Number(
-      record.charges
-        .filter((c) => customCharges[c.code]?.impact?.customsValue)
-        .reduce((acc, c) => acc + (c.amount ?? 0), 0)
-        .toFixed(2),
-    );
-
-    // 4. Customs value
-    record.bdaValue = Number((base + chargeAmount).toFixed(2));
-
-    // 4. Taxes (all use customs value)
-    record.tax?.forEach((t) => {
-      t.valueForTax = t.valueForTax ? t.valueForTax : record.bdaValue ?? 0;
-
-      t.amount = this.calculateTax(t);
-    });
-
-    // 5. Total taxes
-    const taxAmount = Number(
-      (record.tax?.reduce((acc, t) => acc + (t.amount ?? 0), 0) ?? 0).toFixed(
-        2,
-      ),
-    );
-
-    // 6. Calculate charge amount based on custom charges impact
-    const chargePayableAmount = Number(
-      record.charges
-        .filter((c) => customCharges[c.code]?.impact?.payable)
-        .reduce((acc, c) => acc + (c.amount ?? 0), 0)
-        .toFixed(2),
-    );
-
-    // 7. Total due = sum of taxes
-    record.totalDue = Number(
-      ((taxAmount ?? 0) + chargePayableAmount).toFixed(2),
-    );
-  }
-
-  /**
-   * Calculates the charge amount based on the given charge and base.
-   * If the charge has a percentage value, it will be used to calculate the charge amount.
-   * Otherwise, the charge amount will be used.
-   * @param {BCDChargeDTO} charge - The charge to calculate the amount for.
-   * @param {number} base - The base value to calculate the charge amount from.
-   * @returns {number} The calculated charge amount.
-   */
-  private calculateCharge(charge: BCDChargeDTO, base: number) {
-    const percentage = charge.percentage ?? 0;
-    const amount = charge.amount;
-
-    if (percentage > 0) {
-      return Number(((percentage / 100) * base).toFixed(2));
-    }
-
-    return amount ?? 0;
-  }
-
-  /**
-   * Calculates the amount of a tax entry based on the given form values.
-   * If the rate percentage value is not null, it returns the calculated tax amount by multiplying the value for tax by the rate percentage divided by 100.
-   * If the rate percentage value is null, it returns the amount value, or 0 if no amount value is provided.
-   * @param tax The tax entry object containing the code, value for tax, rate percentage and amount values.
-   * @returns The calculated tax amount, or the amount value if no rate percentage is provided.
-   */
-  private calculateTax(tax: TaxEntryDTO) {
-    const valueForTax = tax.valueForTax ?? 0;
-    const rate = tax.ratePercentage ?? 0;
-    const amount = tax.amount;
-
-    if (rate > 0) {
-      return Number((valueForTax * (rate / 100)).toFixed(2));
-    }
-
-    return amount ?? 0;
-  }
-
-  //#endregion
 }
