@@ -1,7 +1,6 @@
 import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   ArrayMinSize,
-  // Contains,
   IsArray,
   IsDate,
   IsEnum,
@@ -37,7 +36,7 @@ export class BCDTransportDTO {
   aircraftOrVessel!: string;
 
   @IsString()
-  @Length(1, 255)
+  @MaxLength(10)
   flightOrVoyage!: string;
 
   @IsMongoId()
@@ -51,7 +50,9 @@ export class BCDTransportDTO {
 //Charge
 export class BCDChargeDTO {
   @IsMongoId()
-  code!: string;
+  @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
+  code?: string;
 
   @IsNumber()
   @Min(0)
@@ -63,19 +64,18 @@ export class BCDChargeDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  @IsOptional()
-  amount?: number;
+  amount!: number;
 }
 
 //Declarant
 export class BCDDeclarantDTO {
   @IsString()
-  @Length(1, 255)
+  @MaxLength(30)
   name!: string;
 
   // !!! not mongoid but likely a code
   @IsString()
-  @Length(5, 255)
+  @Length(6)
   companyId!: string;
 
   @IsDate()
@@ -83,9 +83,11 @@ export class BCDDeclarantDTO {
   date!: Date;
 
   @IsString()
+  @MaxLength(20)
   capacity!: string;
 
   @IsString()
+  @MaxLength(40)
   traderReference!: string;
 }
 
@@ -111,14 +113,15 @@ export class TaxEntryDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  @IsOptional()
-  amount?: number;
+  amount!: number;
 }
 
 //Additional info
 export class AdditionalInformationDTO {
   @IsMongoId()
-  type!: string;
+  @IsOptional()
+  @Transform(({ value }) => value === '' ? undefined : value)
+  type?: string;
 
   @IsString()
   @MaxLength(70)
@@ -139,8 +142,7 @@ export class BCDRecordDTO {
   origin!: string;
 
   @IsString()
-  // @Contains(".")
-  @Length(1, 8)
+  @MaxLength(7)
   tariff!: string;
 
   @IsString()
@@ -153,6 +155,7 @@ export class BCDRecordDTO {
   quantity!: number;
 
   @IsNumber()
+  @Min(0)
   @IsOptional()
   @Type(() => Number)
   quantityTwo?: number;
@@ -179,14 +182,12 @@ export class BCDRecordDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  @IsOptional()
-  bdaValue?: number;
+  bdaValue!: number;
 
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  @IsOptional()
-  totalDue?: number;
+  totalDue!: number;
 
   @ValidateNested({ each: true })
   @IsArray()
@@ -209,23 +210,31 @@ export class BCDRecordDTO {
 
 //Ogd
 class BCDOgdDTO {
+  @IsString()
+  @MaxLength(3)
+  paymentCode!: string;
+
+  @IsString()
   @IsOptional()
-  @IsString()
-  @Length(1, 255)
-  paymentCode?: string;
+  @Length(5)
+  @Transform(({ value }) => value === '' ? undefined : value)
+  costCode?: string;
 
   @IsString()
-  costCode!: string;
-
-  @IsString()
-  objectCode!: string;
-
-  @IsString()
-  subsidiaryCode!: string;
-
   @IsOptional()
+  @Length(4)
+  @Transform(({ value }) => value === '' ? undefined : value)
+  objectCode?: string;
+
   @IsString()
-  explanation?: string;
+  @IsOptional()
+  @Length(5)
+  @Transform(({ value }) => value === '' ? undefined : value)
+  subsidiaryCode?: string;
+
+  @IsString()
+  @MaxLength(30)
+  explanation!: string;
 }
 
 //BCD
@@ -255,11 +264,11 @@ export class BcdDTO {
   transport!: BCDTransportDTO;
 
   @IsString()
-  @MaxLength(255)
+  @MaxLength(20)
   manifest!: string;
 
   @IsString()
-  @Length(1, 255)
+  @MaxLength(20)
   masterBOLAWB!: string;
 
   @IsMongoId()
@@ -271,6 +280,7 @@ export class BcdDTO {
   @IsOptional()
   @IsString()
   @Length(4)
+  @Transform(({ value }) => value === '' ? undefined : value)
   warehouseId?: string;
 
   @IsArray()
@@ -285,6 +295,7 @@ export class BcdDTO {
   charges!: BCDChargeDTO[];
 
   @IsString({ each: true })
+  @MaxLength(20, { each: true })
   @Transform(({ value }) => JSON.parse(value))
   @IsArray()
   @ArrayMinSize(1)
@@ -292,12 +303,13 @@ export class BcdDTO {
 
   @IsOptional()
   @IsString({ each: true })
+  @MaxLength(20, { each: true })
   @IsArray()
   @Transform(({ value }) => JSON.parse(value))
   houseBOLAWB?: string[];
 
   @IsEnum(ValuationMethodTypeEnum)
-  @Length(1, 255)
+  @Length(3)
   valuationMethod!: ValuationMethodTypeEnum;
 
   @IsNumber()
@@ -307,21 +319,18 @@ export class BcdDTO {
 
   @IsNumber()
   @Min(0)
-  @IsOptional()
   @Type(() => Number)
-  recordsCount?: number;
+  recordsCount!: number;
 
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  @IsOptional()
-  invoiceAmount?: number;
+  invoiceAmount!: number;
 
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  @IsOptional()
-  payableAmount?: number;
+  payableAmount!: number;
 
   @IsArray()
   @ValidateNested({ each: true })

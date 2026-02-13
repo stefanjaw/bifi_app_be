@@ -12,47 +12,55 @@ import {
  * This function takes a BCD document and calculates the values for recordsCount, invoiceAmount, charges, payableAmount.
  * @param bcd - The BCD document to calculate the values for.
  */
-export async function calculateBCD(
+export function calculateBCD(
   bcd: BcdDTO | UpdateBcdDTO,
   customCharges: Record<string, BCDChargeCodeDocument>,
 ) {
-  try {
-    const records = bcd.records || [];
-    const charges = bcd.charges || [];
+  const records = bcd.records || [];
+  const charges = bcd.charges || [];
 
-    bcd.recordsCount = records.length;
+  bcd.recordsCount = records.length;
 
-    // 3. Calculate records
-    records.forEach((r) => calculateRecord(r, customCharges));
+  // 3. Calculate records
+  records.forEach((r) => calculateRecord(r, customCharges));
 
-    // 4. Invoice amount (sum of customs values)
-    bcd.invoiceAmount = Number(
-      records.reduce((acc, r) => acc + (r.bdaValue ?? 0), 0).toFixed(2),
-    );
+  // 4. Invoice amount (sum of customs values)
+  bcd.invoiceAmount = Number(
+    records.reduce((acc, r) => acc + (r.bdaValue ?? 0), 0).toFixed(2),
+  );
 
-    // 5. Document charges (like R20 = 500)
-    charges.forEach((c) => {
-      c.amount = calculateCharge(c, bcd.invoiceAmount ?? 0);
-    });
+  // 5. Document charges (like R20 = 500)
+  charges.forEach((c) => {
+    c.amount = calculateCharge(c, bcd.invoiceAmount ?? 0);
+  });
 
-    // 6. Total charges based on custom like (R20 = 500)
-    const chargeAmount = Number(
-      charges
-        .filter((c) => customCharges[c.code]?.impact?.payable)
-        .reduce((acc, c) => acc + (c.amount ?? 0), 0)
-        .toFixed(2),
-    );
+  // 6. Total charges based on custom like (R20 = 500)
+  const chargeAmount = Number(
+    charges
+      .filter(
+        (c) =>
+          customCharges[c.code || ""] &&
+          customCharges[c.code || ""]?.impact?.payable &&
+          customCharges[c.code || ""]?.type !== "S",
+      )
+      .reduce((acc, c) => {
+        if (customCharges[c.code || ""]?.type === "D")
+          return acc - (c.amount ?? 0);
+        else return acc + (c.amount ?? 0);
+      }, 0)
+      .toFixed(2),
+  );
 
-    // 7. Records due
-    const recordsDueAmount = Number(
-      records.reduce((acc, r) => acc + (r.totalDue ?? 0), 0).toFixed(2),
-    );
+  // 7. Records due
+  const recordsDueAmount = Number(
+    records.reduce((acc, r) => acc + (r.totalDue ?? 0), 0).toFixed(2),
+  );
 
-    // 8 Final payable
-    bcd.payableAmount = Number((chargeAmount + recordsDueAmount).toFixed(2));
-  } catch (err) {
-    throw err;
-  }
+  // 8 Final payable
+  bcd.payableAmount = Math.max(
+    0,
+    Number((recordsDueAmount + chargeAmount).toFixed(2)),
+  );
 }
 
 /**
@@ -75,18 +83,26 @@ export function calculateRecord(
   // 3. Calculate charge amount based on custom charges impact
   const chargeAmount = Number(
     record.charges
-      .filter((c) => customCharges[c.code]?.impact?.customsValue)
-      .reduce((acc, c) => acc + (c.amount ?? 0), 0)
+      .filter(
+        (c) =>
+          customCharges[c.code || ""] &&
+          customCharges[c.code || ""]?.impact?.customsValue &&
+          customCharges[c.code || ""]?.type !== "S",
+      )
+      .reduce((acc, c) => {
+        if (customCharges[c.code || ""]?.type === "D")
+          return acc - (c.amount ?? 0);
+        else return acc + (c.amount ?? 0);
+      }, 0)
       .toFixed(2),
   );
 
   // 4. Customs value
-  record.bdaValue = Number((base + chargeAmount).toFixed(2));
+  record.bdaValue = Math.max(0, Number((base + chargeAmount).toFixed(2)));
 
   // 4. Taxes (all use customs value)
   record.tax?.forEach((t) => {
-    t.valueForTax = t.valueForTax ? t.valueForTax : record.bdaValue ?? 0;
-
+    t.valueForTax = record.bdaValue ?? 0;
     t.amount = calculateTax(t);
   });
 
@@ -98,13 +114,25 @@ export function calculateRecord(
   // 6. Calculate charge amount based on custom charges impact
   const chargePayableAmount = Number(
     record.charges
-      .filter((c) => customCharges[c.code]?.impact?.payable)
-      .reduce((acc, c) => acc + (c.amount ?? 0), 0)
+      .filter(
+        (c) =>
+          customCharges[c.code || ""] &&
+          customCharges[c.code || ""]?.impact?.payable &&
+          customCharges[c.code || ""]?.type !== "S",
+      )
+      .reduce((acc, c) => {
+        if (customCharges[c.code || ""]?.type === "D")
+          return acc - (c.amount ?? 0);
+        else return acc + (c.amount ?? 0);
+      }, 0)
       .toFixed(2),
   );
 
   // 7. Total due = sum of taxes
-  record.totalDue = Number(((taxAmount ?? 0) + chargePayableAmount).toFixed(2));
+  record.totalDue = Math.max(
+    0,
+    Number(((taxAmount ?? 0) + chargePayableAmount).toFixed(2)),
+  );
 }
 
 /**

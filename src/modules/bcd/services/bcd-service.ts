@@ -414,9 +414,11 @@ export class BCDService extends BaseService<BCDDocument> {
     try {
       // 1. Get charge codes
       const customChargeIds = new Set<string>([
-        ...(bcd.charges?.map((c) => c.code) || []),
-        ...(bcd.records?.flatMap((r) => r.charges?.map((c) => c.code) || []) ||
-          []),
+        ...(bcd.charges?.filter((c) => c.code)?.map((c) => c.code || "") || []),
+        ...(bcd.records?.flatMap(
+          (r) =>
+            r.charges.filter((c) => c.code)?.map((c) => c.code || "") || [],
+        ) || []),
       ]);
 
       // 2. Get charge codes

@@ -1,6 +1,6 @@
 export enum ValuationMethodTypeEnum {
-  TRANSACTIONAL_VALUE = "01",
-  SIMILAR_GOODS = "02",
+  TRANSACTIONAL_VALUE = "001",
+  SIMILAR_GOODS = "002",
 }
 
 export enum EBCDTypeEnum {

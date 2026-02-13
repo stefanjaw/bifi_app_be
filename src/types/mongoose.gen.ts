@@ -863,8 +863,8 @@ export type BCDAdditionalInformationTypeDocument = mongoose.Document<
  * ```
  */
 export type BCDChargeCodeImpact = {
-  customsValue?: boolean;
-  payable?: boolean;
+  customsValue: boolean;
+  payable: boolean;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -880,7 +880,7 @@ export type BCDChargeCode = {
   code: string;
   name: string;
   description?: string;
-  type: "S" | "D" | "I" | "E" | "A";
+  type: "S" | "D" | "A";
   levels: string[];
   impact?: BCDChargeCodeImpact;
   active?: boolean;
@@ -969,8 +969,8 @@ export type BCDChargeCodeSchema = mongoose.Schema<
  */
 export type BCDChargeCodeImpactDocument =
   mongoose.Document<mongoose.Types.ObjectId> & {
-    customsValue?: boolean;
-    payable?: boolean;
+    customsValue: boolean;
+    payable: boolean;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -990,7 +990,7 @@ export type BCDChargeCodeDocument = mongoose.Document<
     code: string;
     name: string;
     description?: string;
-    type: "S" | "D" | "I" | "E" | "A";
+    type: "S" | "D" | "A";
     levels: mongoose.Types.Array<string>;
     impact?: BCDChargeCodeImpactDocument;
     active?: boolean;
@@ -1737,9 +1737,9 @@ export type BCDTransport = {
  * ```
  */
 export type BCDCharge = {
-  code: BCDChargeCode;
+  code?: BCDChargeCode;
   percentage?: number;
-  amount?: number;
+  amount: number;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1752,7 +1752,7 @@ export type BCDCharge = {
  * ```
  */
 export type BCDAdditionalInformation = {
-  type: BCDAdditionalInformationType;
+  type?: BCDAdditionalInformationType;
   value: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -1766,11 +1766,11 @@ export type BCDAdditionalInformation = {
  * ```
  */
 export type BCDOgd = {
-  paymentCode?: string;
-  costCode: string;
-  objectCode: string;
-  subsidiaryCode: string;
-  explanation?: string;
+  paymentCode: string;
+  costCode?: string;
+  objectCode?: string;
+  subsidiaryCode?: string;
+  explanation: string;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1800,9 +1800,9 @@ export type BCDDeclarant = {
  * ```
  */
 export type BCDRecordCharge = {
-  code: BCDChargeCode;
+  code?: BCDChargeCode;
   percentage?: number;
-  amount?: number;
+  amount: number;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1819,7 +1819,7 @@ export type BCDRecordTax = {
   taxId: BCDTaxId;
   valueForTax: number;
   ratePercentage: number;
-  amount?: number;
+  amount: number;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1832,7 +1832,7 @@ export type BCDRecordTax = {
  * ```
  */
 export type BCDRecordAdditionalInformation = {
-  type: BCDAdditionalInformationType;
+  type?: BCDAdditionalInformationType;
   value: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -1855,8 +1855,8 @@ export type BCDRecord = {
   quantityTwo?: number;
   supplementaryCode: string;
   currency: string;
-  linesSubtotal?: number;
-  exchangeRate?: number;
+  linesSubtotal: number;
+  exchangeRate: number;
   bdaValue: number;
   totalDue: number;
   charges: BCDRecordCharge[];
@@ -1934,13 +1934,13 @@ export type BCD = {
   charges: BCDCharge[];
   containerIds: string[];
   houseBOLAWBs: string[];
-  valuationMethod: "01" | "02";
+  valuationMethod: "001" | "002";
   packagesCount: number;
   invoiceAmount: number;
   payableAmount: number;
   additionalInformation: BCDAdditionalInformation[];
   ogd: BCDOgd;
-  paymentAccounts: string[];
+  paymentAccounts?: string[];
   declarant: BCDDeclarant;
   records: BCDRecord[];
   ebcds: BCDEbcd[];
@@ -2061,9 +2061,9 @@ export type BCDTransportDocument =
  */
 export type BCDChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    code: BCDChargeCodeDocument;
+    code?: BCDChargeCodeDocument;
     percentage?: number;
-    amount?: number;
+    amount: number;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -2074,7 +2074,7 @@ export type BCDChargeDocument =
  */
 export type BCDAdditionalInformationDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    type: BCDAdditionalInformationTypeDocument;
+    type?: BCDAdditionalInformationTypeDocument;
     value: string;
     _id: mongoose.Types.ObjectId;
   };
@@ -2088,11 +2088,11 @@ export type BCDAdditionalInformationDocument =
  * ```
  */
 export type BCDOgdDocument = mongoose.Document<mongoose.Types.ObjectId> & {
-  paymentCode?: string;
-  costCode: string;
-  objectCode: string;
-  subsidiaryCode: string;
-  explanation?: string;
+  paymentCode: string;
+  costCode?: string;
+  objectCode?: string;
+  subsidiaryCode?: string;
+  explanation: string;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -2121,9 +2121,9 @@ export type BCDDeclarantDocument =
  */
 export type BCDRecordChargeDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    code: BCDChargeCodeDocument;
+    code?: BCDChargeCodeDocument;
     percentage?: number;
-    amount?: number;
+    amount: number;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -2138,7 +2138,7 @@ export type BCDRecordTaxDocument =
     taxId: BCDTaxIdDocument;
     valueForTax: number;
     ratePercentage: number;
-    amount?: number;
+    amount: number;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -2149,7 +2149,7 @@ export type BCDRecordTaxDocument =
  */
 export type BCDRecordAdditionalInformationDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    type: BCDAdditionalInformationTypeDocument;
+    type?: BCDAdditionalInformationTypeDocument;
     value: string;
     _id: mongoose.Types.ObjectId;
   };
@@ -2170,8 +2170,8 @@ export type BCDRecordDocument =
     quantityTwo?: number;
     supplementaryCode: string;
     currency: string;
-    linesSubtotal?: number;
-    exchangeRate?: number;
+    linesSubtotal: number;
+    exchangeRate: number;
     bdaValue: number;
     totalDue: number;
     charges: mongoose.Types.DocumentArray<BCDRecordChargeDocument>;
@@ -2251,13 +2251,13 @@ export type BCDDocument = mongoose.Document<
     charges: mongoose.Types.DocumentArray<BCDChargeDocument>;
     containerIds: mongoose.Types.Array<string>;
     houseBOLAWBs: mongoose.Types.Array<string>;
-    valuationMethod: "01" | "02";
+    valuationMethod: "001" | "002";
     packagesCount: number;
     invoiceAmount: number;
     payableAmount: number;
     additionalInformation: mongoose.Types.DocumentArray<BCDAdditionalInformationDocument>;
     ogd: BCDOgdDocument;
-    paymentAccounts: mongoose.Types.Array<string>;
+    paymentAccounts?: mongoose.Types.Array<string>;
     declarant: BCDDeclarantDocument;
     records: mongoose.Types.DocumentArray<BCDRecordDocument>;
     ebcds: mongoose.Types.DocumentArray<BCDEbcdDocument>;

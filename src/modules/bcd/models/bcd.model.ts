@@ -61,14 +61,29 @@ const chargeSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "BCDChargeCode",
     autopopulate: true,
-    required: true,
+    required: false,
+    validate: {
+      validator: function (this: any, value: any) {
+        // Check if this charge is part of a record
+        // 'this' refers to the charge document
+        // We need to check if the parent path contains 'records'
+        const isInRecord =
+          this.$__.parent?.()?.constructor?.modelName.toLowerCase() ===
+          "bcdrecord";
+
+        if (isInRecord && !value) return false; // Code is required when in a record
+        return true; // Not in a record or code exists
+      },
+      message: "Charge code is required when the charge is part of a record",
+    },
   },
   percentage: {
     type: Number,
+    required: false,
   },
   amount: {
     type: Number,
-    required: false,
+    required: true,
   },
 });
 
@@ -120,7 +135,7 @@ const taxEntrySchema = new Schema({
   },
   amount: {
     type: Number,
-    required: false,
+    required: true,
   },
 });
 
@@ -131,7 +146,7 @@ const additionalInformationSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "BCDAdditionalInformationType",
     autopopulate: true,
-    required: true,
+    required: false,
   },
   value: {
     type: String,
@@ -170,6 +185,7 @@ const bcdRecordSchema = new Schema({
   },
   quantityTwo: {
     type: Number,
+    required: false,
   },
   supplementaryCode: {
     type: String,
@@ -181,20 +197,18 @@ const bcdRecordSchema = new Schema({
   },
   linesSubtotal: {
     type: Number,
-    min: 0,
+    required: true,
   },
   exchangeRate: {
     type: Number,
-    min: 0,
+    required: true,
   },
   bdaValue: {
     type: Number,
-    min: 0,
     required: true,
   },
   totalDue: {
     type: Number,
-    min: 0,
     required: true,
   },
   charges: {
@@ -213,21 +227,23 @@ const bcdRecordSchema = new Schema({
 const ogdschema = new Schema({
   paymentCode: {
     type: String,
+    required: true,
   },
   costCode: {
     type: String,
-    required: true,
+    required: false,
   },
   objectCode: {
     type: String,
-    required: true,
+    required: false,
   },
   subsidiaryCode: {
     type: String,
-    required: true,
+    required: false,
   },
   explanation: {
     type: String,
+    required: true,
   },
 });
 
@@ -299,7 +315,7 @@ const bcdSchema = new Schema(
     },
     warehouseId: {
       type: String,
-      length: 4,
+      required: false,
     },
     charges: {
       type: [chargeSchema],
@@ -319,21 +335,19 @@ const bcdSchema = new Schema(
     },
     packagesCount: {
       type: Number,
-      min: 0,
       required: true,
     },
     invoiceAmount: {
       type: Number,
-      min: 0,
       required: true,
     },
     payableAmount: {
       type: Number,
-      min: 0,
       required: true,
     },
     additionalInformation: {
       type: [additionalInformationSchema],
+      required: false,
     },
     ogd: {
       type: ogdschema,
@@ -341,6 +355,7 @@ const bcdSchema = new Schema(
     },
     paymentAccounts: {
       type: [String],
+      required: false,
     },
     declarant: {
       type: declarantSchema,
@@ -353,6 +368,7 @@ const bcdSchema = new Schema(
     // * goverment documents associated with this BCD
     ebcds: {
       type: [ebcdSchema],
+      required: false,
     },
   },
   {

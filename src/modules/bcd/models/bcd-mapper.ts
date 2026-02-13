@@ -19,11 +19,11 @@ const computeValue = (
 ) => {
   switch (typeof value) {
     case "string":
-      return value.replaceAll(",", " ");
+      return value.replaceAll(",", " ").trim();
     case "number":
       return value.toFixed(fixation);
     case "object":
-      return value?.format("YYYY-MM-DD") || "";
+      return value?.format("DD/MM/YYYY") || "";
     default:
       return "";
   }
@@ -43,7 +43,7 @@ const headerMapper = (data: BCDDocument) => ({
   supplierAddressLine2: computeValue(data.supplier?.contactId?.streetAddress2), // 5
   supplierPostCode: computeValue(data.supplier?.contactId?.zipCode), // 6
   supplierCountry: computeValue(data.supplier?.contactId?.countryId?.name), // 7
-  importerId: computeValue(data.declarant?.companyId), // 8
+  importerId: "", // 8
   importerName: computeValue(data.importer?.contactId?.name), // 9
   importerAddressLine1: computeValue(data.importer?.contactId?.streetAddress), // 10
   importerAddressLine2: computeValue(data.importer?.contactId?.streetAddress2), // 11
