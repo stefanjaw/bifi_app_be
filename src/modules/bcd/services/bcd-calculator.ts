@@ -22,20 +22,20 @@ export function calculateBCD(
 
   bcd.recordsCount = records.length;
 
-  // 1️⃣ Records
+  // 1️ Records
   records.forEach((r) => calculateRecord(r, customCharges));
 
-  // 2️⃣ Invoice amount (sumar bda ya redondeado)
+  // 2️ Invoice amount - sum of all records
   bcd.invoiceAmount = round2(
     records.reduce((acc, r) => acc + (r.bdaValue ?? 0), 0),
   );
 
-  // 3️⃣ Header charges
+  // 3️ Header charges
   charges.forEach((c) => {
     c.amount = round2(calculateCharge(c, bcd.invoiceAmount ?? 0));
   });
 
-  // 4️⃣ Header payable
+  // 4️ Header payable
   const headerChargeAmount = charges
     .filter(
       (c) =>
@@ -64,19 +64,19 @@ export function calculateRecord(
   record: BCDRecordDTO,
   customCharges: Record<string, BCDChargeCodeDocument>,
 ) {
-  // 1️⃣ Base (redondear inmediatamente)
+  // 1️ Base value
   const base = round2(record.linesSubtotal * record.exchangeRate);
   const charges = record.charges || [];
   const taxes = record.tax || [];
 
-  // 2️⃣ Charges (calcular y redondear inmediatamente)
+  // 2️ Charges - calculate each charge
   charges.forEach((c) => {
     c.amount = round2(calculateCharge(c, base));
   });
 
   record.bdaValue = base;
 
-  // 4️⃣ Taxes (usar customs ya redondeado)
+  // 4️ Taxes - calculate each tax
   taxes.forEach((t) => {
     t.valueForTax = record.bdaValue;
     t.amount = round2(calculateTax(t));
@@ -86,7 +86,7 @@ export function calculateRecord(
     taxes.reduce((acc, t) => acc + (t.amount ?? 0), 0) ?? 0,
   );
 
-  // 5️⃣ Charges que afectan payable
+  // 5️ Charges that effect payable
   const chargePayable = charges
     .filter(
       (c) =>

@@ -18,6 +18,14 @@ const bcdTaxTypeSchema = new Schema(
       type: String,
       required: false,
     },
+    impact: {
+      type: {
+        wharfageRate: {
+          type: Boolean,
+          required: true,
+        },
+      },
+    },
     active: {
       type: Boolean,
       default: true,

@@ -1355,6 +1355,19 @@ export type BCDTaxIdDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of BCDTaxTypeImpactDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BCDTaxTypeDocument.toObject()`.
+ * ```
+ * const bcdtaxtypeObject = bcdtaxtype.toObject();
+ * ```
+ */
+export type BCDTaxTypeImpact = {
+  wharfageRate: boolean;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of BCDTaxTypeDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BCDTaxTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `BCDTaxTypeObject`.
@@ -1366,6 +1379,7 @@ export type BCDTaxType = {
   code: string;
   name: string;
   description?: string;
+  impact?: BCDTaxTypeImpact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -1450,6 +1464,20 @@ export type BCDTaxTypeSchema = mongoose.Schema<
  * const BCDTaxType = mongoose.model<BCDTaxTypeDocument, BCDTaxTypeModel>("BCDTaxType", BCDTaxTypeSchema);
  * ```
  */
+export type BCDTaxTypeImpactDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    wharfageRate: boolean;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BCDTaxType = mongoose.model<BCDTaxTypeDocument, BCDTaxTypeModel>("BCDTaxType", BCDTaxTypeSchema);
+ * ```
+ */
 export type BCDTaxTypeDocument = mongoose.Document<
   mongoose.Types.ObjectId,
   BCDTaxTypeQueries
@@ -1458,6 +1486,7 @@ export type BCDTaxTypeDocument = mongoose.Document<
     code: string;
     name: string;
     description?: string;
+    impact?: BCDTaxTypeImpactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;

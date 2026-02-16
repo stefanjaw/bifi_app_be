@@ -1,12 +1,19 @@
-import { Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   IsBoolean,
   IsMongoId,
   IsOptional,
   IsString,
   Length,
+  ValidateNested,
 } from "class-validator";
 import { PartialType } from "../../../system";
+
+export class BCDTaxTypeImpactDTO {
+  @IsBoolean()
+  @Type(() => Boolean)
+  wharfageRate!: boolean;
+}
 
 export class BCDTaxTypeDTO {
   @IsString()
@@ -19,6 +26,14 @@ export class BCDTaxTypeDTO {
   @IsString()
   @IsOptional()
   description?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => BCDTaxTypeImpactDTO)
+  @Transform(({ value }) =>
+    plainToInstance(BCDTaxTypeImpactDTO, JSON.parse(value)),
+  )
+  impact?: BCDTaxTypeImpactDTO;
 
   @IsBoolean()
   @IsOptional()
