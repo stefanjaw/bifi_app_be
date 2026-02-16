@@ -218,6 +218,12 @@ export class BCDService extends BaseService<BCDDocument> {
             f.buffer.toString("utf-8").includes(this.getSentCSVName(bcd)),
         );
 
+        if (recFile && ftpFiles.length === 1) {
+          throw new ValidationException(
+            "REC.TXT file found but no other files found",
+          );
+        }
+
         const proccessedFTPFiles: ftpResponse[] = [];
 
         if (recFile) {
@@ -417,7 +423,7 @@ export class BCDService extends BaseService<BCDDocument> {
         ...(bcd.charges?.filter((c) => c.code)?.map((c) => c.code || "") || []),
         ...(bcd.records?.flatMap(
           (r) =>
-            r.charges.filter((c) => c.code)?.map((c) => c.code || "") || [],
+            r.charges?.filter((c) => c.code)?.map((c) => c.code || "") || [],
         ) || []),
       ]);
 

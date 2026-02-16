@@ -8,9 +8,10 @@ import {
 } from "../models/bcd.dto";
 
 /**
- * Calculates the BCD document values.
- * This function takes a BCD document and calculates the values for recordsCount, invoiceAmount, charges, payableAmount.
- * @param bcd - The BCD document to calculate the values for.
+ * Calculates the values of a BCD.
+ * It calculates the records count, invoice amount, header charges, total header charges payable, records due and final payable amount.
+ * @param bcd - The BCD document object containing the records, charges, invoice amount, payable amount values.
+ * @param customCharges - A Record containing the custom charge codes.
  */
 export function calculateBCD(
   bcd: BcdDTO | UpdateBcdDTO,
@@ -21,154 +22,124 @@ export function calculateBCD(
 
   bcd.recordsCount = records.length;
 
-  // 3. Calculate records
+  // 1️⃣ Records
   records.forEach((r) => calculateRecord(r, customCharges));
 
-  // 4. Invoice amount (sum of customs values)
-  bcd.invoiceAmount = Number(
-    records.reduce((acc, r) => acc + (r.bdaValue ?? 0), 0).toFixed(2),
+  // 2️⃣ Invoice amount (sumar bda ya redondeado)
+  bcd.invoiceAmount = round2(
+    records.reduce((acc, r) => acc + (r.bdaValue ?? 0), 0),
   );
 
-  // 5. Document charges (like R20 = 500)
+  // 3️⃣ Header charges
   charges.forEach((c) => {
-    c.amount = calculateCharge(c, bcd.invoiceAmount ?? 0);
+    c.amount = round2(calculateCharge(c, bcd.invoiceAmount ?? 0));
   });
 
-  // 6. Total charges based on custom like (R20 = 500)
-  const chargeAmount = Number(
-    charges
-      .filter(
-        (c) =>
-          customCharges[c.code || ""] &&
-          customCharges[c.code || ""]?.impact?.payable &&
-          customCharges[c.code || ""]?.type !== "S",
-      )
-      .reduce((acc, c) => {
-        if (customCharges[c.code || ""]?.type === "D")
-          return acc - (c.amount ?? 0);
-        else return acc + (c.amount ?? 0);
-      }, 0)
-      .toFixed(2),
+  // 4️⃣ Header payable
+  const headerChargeAmount = charges
+    .filter(
+      (c) =>
+        customCharges[c.code || ""]?.impact?.payable &&
+        customCharges[c.code || ""]?.type !== "S",
+    )
+    .reduce((acc, c) => {
+      const type = customCharges[c.code || ""]?.type;
+      return type === "D" ? acc - (c.amount ?? 0) : acc + (c.amount ?? 0);
+    }, 0);
+
+  const recordsDue = round2(
+    records.reduce((acc, r) => acc + (r.totalDue ?? 0), 0),
   );
 
-  // 7. Records due
-  const recordsDueAmount = Number(
-    records.reduce((acc, r) => acc + (r.totalDue ?? 0), 0).toFixed(2),
-  );
-
-  // 8 Final payable
-  bcd.payableAmount = Math.max(
-    0,
-    Number((recordsDueAmount + chargeAmount).toFixed(2)),
-  );
+  bcd.payableAmount = Math.max(0, round2(recordsDue + headerChargeAmount));
 }
 
 /**
- * Calculates the values of a BCD record.
- * It calculates the base value, charges, BDA value, taxes and total due.
- * @param record - The BCD record object containing the linesSubtotal, exchangeRate, charges, taxes and total due values.
+ * Calculate the values of a BCD record.
+ * It calculates the base value, charges, customs value, taxes and total due.
+ * @param record - The BCD record object containing the lines subtotal, exchange rate, charges, taxes and total due values.
+ * @param customCharges - A Record containing the custom charge codes.
  */
 export function calculateRecord(
   record: BCDRecordDTO,
   customCharges: Record<string, BCDChargeCodeDocument>,
 ) {
-  // 1. Base
-  const base = Number((record.linesSubtotal * record.exchangeRate).toFixed(2));
+  // 1️⃣ Base (redondear inmediatamente)
+  const base = round2(record.linesSubtotal * record.exchangeRate);
+  const charges = record.charges || [];
+  const taxes = record.tax || [];
 
-  // 2. Charges
-  record.charges.forEach((c) => {
-    c.amount = calculateCharge(c, base);
+  // 2️⃣ Charges (calcular y redondear inmediatamente)
+  charges.forEach((c) => {
+    c.amount = round2(calculateCharge(c, base));
   });
 
-  // 3. Calculate charge amount based on custom charges impact
-  const chargeAmount = Number(
-    record.charges
-      .filter(
-        (c) =>
-          customCharges[c.code || ""] &&
-          customCharges[c.code || ""]?.impact?.customsValue &&
-          customCharges[c.code || ""]?.type !== "S",
-      )
-      .reduce((acc, c) => {
-        if (customCharges[c.code || ""]?.type === "D")
-          return acc - (c.amount ?? 0);
-        else return acc + (c.amount ?? 0);
-      }, 0)
-      .toFixed(2),
-  );
+  record.bdaValue = base;
 
-  // 4. Customs value
-  record.bdaValue = Math.max(0, Number((base + chargeAmount).toFixed(2)));
-
-  // 4. Taxes (all use customs value)
-  record.tax?.forEach((t) => {
-    t.valueForTax = record.bdaValue ?? 0;
-    t.amount = calculateTax(t);
+  // 4️⃣ Taxes (usar customs ya redondeado)
+  taxes.forEach((t) => {
+    t.valueForTax = record.bdaValue;
+    t.amount = round2(calculateTax(t));
   });
 
-  // 5. Total taxes
-  const taxAmount = Number(
-    (record.tax?.reduce((acc, t) => acc + (t.amount ?? 0), 0) ?? 0).toFixed(2),
+  const taxAmount = round2(
+    taxes.reduce((acc, t) => acc + (t.amount ?? 0), 0) ?? 0,
   );
 
-  // 6. Calculate charge amount based on custom charges impact
-  const chargePayableAmount = Number(
-    record.charges
-      .filter(
-        (c) =>
-          customCharges[c.code || ""] &&
-          customCharges[c.code || ""]?.impact?.payable &&
-          customCharges[c.code || ""]?.type !== "S",
-      )
-      .reduce((acc, c) => {
-        if (customCharges[c.code || ""]?.type === "D")
-          return acc - (c.amount ?? 0);
-        else return acc + (c.amount ?? 0);
-      }, 0)
-      .toFixed(2),
-  );
+  // 5️⃣ Charges que afectan payable
+  const chargePayable = charges
+    .filter(
+      (c) =>
+        customCharges[c.code || ""]?.impact?.payable &&
+        customCharges[c.code || ""]?.type !== "S",
+    )
+    .reduce((acc, c) => {
+      const type = customCharges[c.code || ""]?.type;
+      return type === "D" ? acc - (c.amount ?? 0) : acc + (c.amount ?? 0);
+    }, 0);
 
-  // 7. Total due = sum of taxes
-  record.totalDue = Math.max(
-    0,
-    Number(((taxAmount ?? 0) + chargePayableAmount).toFixed(2)),
-  );
+  record.totalDue = Math.max(0, round2(taxAmount + chargePayable));
 }
 
 /**
- * Calculates the charge amount based on the given charge and base.
- * If the charge has a percentage value, it will be used to calculate the charge amount.
- * Otherwise, the charge amount will be used.
- * @param {BCDChargeDTO} charge - The charge to calculate the amount for.
- * @param {number} base - The base value to calculate the charge amount from.
- * @returns {number} The calculated charge amount.
+ * Calculates the charge amount based on the given form values.
+ * If the percentage value is not null, it returns the calculated charge amount by multiplying the base amount by the percentage divided by 100.
+ * If the percentage value is null, it returns the amount value, or 0 if no amount value is provided.
+ * @param charge The charge object containing the percentage and amount values.
+ * @param base The base amount to multiply the percentage by.
+ * @returns The calculated charge amount, or the amount value if no percentage is provided.
  */
 export function calculateCharge(charge: BCDChargeDTO, base: number) {
-  const percentage = charge.percentage ?? 0;
-  const amount = charge.amount;
-
-  if (percentage > 0) {
-    return Number(((percentage / 100) * base).toFixed(2));
+  if (charge.percentage && charge.percentage > 0) {
+    return (charge.percentage / 100) * base; // 👈 sin toFixed aquí
   }
 
-  return amount ?? 0;
+  return charge.amount ?? 0;
 }
 
 /**
- * Calculates the amount of a tax entry based on the given form values.
- * If the rate percentage value is not null, it returns the calculated tax amount by multiplying the value for tax by the rate percentage divided by 100.
- * If the rate percentage value is null, it returns the amount value, or 0 if no amount value is provided.
- * @param tax The tax entry object containing the code, value for tax, rate percentage and amount values.
- * @returns The calculated tax amount, or the amount value if no rate percentage is provided.
+ * Calculates the tax amount based on the given tax entry.
+ * If the tax entry has a percentage value, it will be used to calculate the tax amount.
+ * Otherwise, the tax amount will be used.
+ * @param {TaxEntryDTO} tax - The tax entry to calculate the amount for.
+ * @returns {number} The calculated tax amount.
  */
 export function calculateTax(tax: TaxEntryDTO) {
-  const valueForTax = tax.valueForTax ?? 0;
-  const rate = tax.ratePercentage ?? 0;
-  const amount = tax.amount;
-
-  if (rate > 0) {
-    return Number((valueForTax * (rate / 100)).toFixed(2));
+  if (tax.ratePercentage && tax.ratePercentage > 0) {
+    return tax.valueForTax * (tax.ratePercentage / 100); // 👈 sin toFixed
   }
 
-  return amount ?? 0;
+  return tax.amount ?? 0;
+}
+
+/**
+ * Rounds a number to 2 decimal places.
+ * This function uses the built-in Math.round() function to round the number,
+ * but first adds a small value (Number.EPSILON) to the number to avoid
+ * rounding errors due to floating point precision.
+ * @param {number} value - The number to round.
+ * @returns {number} The rounded number.
+ */
+function round2(value: number) {
+  return Math.round((value + Number.EPSILON) * 100) / 100;
 }

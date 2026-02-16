@@ -51,7 +51,7 @@ export class BCDTransportDTO {
 export class BCDChargeDTO {
   @IsMongoId()
   @IsOptional()
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @Transform(({ value }) => (value === "" ? undefined : value))
   code?: string;
 
   @IsNumber()
@@ -120,7 +120,7 @@ export class TaxEntryDTO {
 export class AdditionalInformationDTO {
   @IsMongoId()
   @IsOptional()
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @Transform(({ value }) => (value === "" ? undefined : value))
   type?: string;
 
   @IsString()
@@ -191,9 +191,9 @@ export class BCDRecordDTO {
 
   @ValidateNested({ each: true })
   @IsArray()
-  @ArrayMinSize(1)
+  @IsOptional()
   @Type(() => BCDChargeDTO)
-  charges!: BCDChargeDTO[];
+  charges?: BCDChargeDTO[];
 
   @ValidateNested({ each: true })
   @IsArray()
@@ -217,19 +217,19 @@ class BCDOgdDTO {
   @IsString()
   @IsOptional()
   @Length(5)
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @Transform(({ value }) => (value === "" ? undefined : value))
   costCode?: string;
 
   @IsString()
   @IsOptional()
   @Length(4)
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @Transform(({ value }) => (value === "" ? undefined : value))
   objectCode?: string;
 
   @IsString()
   @IsOptional()
   @Length(5)
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @Transform(({ value }) => (value === "" ? undefined : value))
   subsidiaryCode?: string;
 
   @IsString()
@@ -277,11 +277,9 @@ export class BcdDTO {
   @IsMongoId()
   originalShipmentCountry!: string;
 
-  @IsOptional()
   @IsString()
   @Length(4)
-  @Transform(({ value }) => value === '' ? undefined : value)
-  warehouseId?: string;
+  warehouseId!: string;
 
   @IsArray()
   @ValidateNested({ each: true })

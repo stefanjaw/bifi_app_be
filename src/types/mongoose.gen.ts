@@ -1930,7 +1930,7 @@ export type BCD = {
   masterBOLAWB: string;
   directShipmentCountry: Country;
   originalShipmentCountry: Country;
-  warehouseId?: string;
+  warehouseId: string;
   charges: BCDCharge[];
   containerIds: string[];
   houseBOLAWBs: string[];
@@ -2247,7 +2247,7 @@ export type BCDDocument = mongoose.Document<
     masterBOLAWB: string;
     directShipmentCountry: CountryDocument;
     originalShipmentCountry: CountryDocument;
-    warehouseId?: string;
+    warehouseId: string;
     charges: mongoose.Types.DocumentArray<BCDChargeDocument>;
     containerIds: mongoose.Types.Array<string>;
     houseBOLAWBs: mongoose.Types.Array<string>;

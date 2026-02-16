@@ -43,7 +43,7 @@ const headerMapper = (data: BCDDocument) => ({
   supplierAddressLine2: computeValue(data.supplier?.contactId?.streetAddress2), // 5
   supplierPostCode: computeValue(data.supplier?.contactId?.zipCode), // 6
   supplierCountry: computeValue(data.supplier?.contactId?.countryId?.name), // 7
-  importerId: "", // 8
+  importerId: computeValue(data.declarant.companyId), // 8
   importerName: computeValue(data.importer?.contactId?.name), // 9
   importerAddressLine1: computeValue(data.importer?.contactId?.streetAddress), // 10
   importerAddressLine2: computeValue(data.importer?.contactId?.streetAddress2), // 11
@@ -148,7 +148,7 @@ const recordMapper = (record: BCDRecordDocument) => ({
   supplementaryCode: computeValue(record.supplementaryCode), // 8
   currency: computeValue(record.currency), // 9
   valueInCurrency: computeValue(record.linesSubtotal), // 10
-  exchangeRate: computeValue(record.exchangeRate), // 11
+  exchangeRate: computeValue(record.exchangeRate, 6), // 11
   bdaValue: computeValue(record.bdaValue), // 12
   totalDue: computeValue(record.totalDue), // 13
 });

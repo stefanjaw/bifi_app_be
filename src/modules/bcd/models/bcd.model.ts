@@ -213,13 +213,15 @@ const bcdRecordSchema = new Schema({
   },
   charges: {
     type: [chargeSchema],
-    required: true,
+    required: false,
   },
   tax: {
     type: [taxEntrySchema],
+    required: false,
   },
   additionalInformation: {
     type: [additionalInformationSchema],
+    required: false,
   },
 });
 
@@ -315,7 +317,7 @@ const bcdSchema = new Schema(
     },
     warehouseId: {
       type: String,
-      required: false,
+      required: true,
     },
     charges: {
       type: [chargeSchema],
