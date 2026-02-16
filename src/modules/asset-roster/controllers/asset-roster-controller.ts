@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { BaseController, FileValidatorService } from "../../../system";
+import { BaseController, FileValidatorService, ValidationException } from "../../../system";
 import { AssetRosterService } from "../services/asset-roster-service";
 import { AssetRosterDocument } from "@mongodb-types";
 
@@ -130,4 +130,43 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
   ) => {
     await this.updateSkipAssetPMHandler(req, res, next);
   };
+
+protected async readDocumentsHandler(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> {
+  try {
+    const files = req.files as Express.Multer.File[];
+    const question: string | undefined = req.body.question;
+
+    if (!files || files.length === 0) {
+      throw new ValidationException("At least one file is required");
+    }
+
+    for (const attachment of files) {
+      this.fileValidator.validateFileType(
+        attachment,
+        this.acceptedAttarchmentTypes
+      );
+    }
+
+    const result = await (
+      this.service as AssetRosterService
+    ).readMaintenanceDocuments(files, question);
+
+    this.sendData(res, result);
+
+  } catch (error: any) {
+    next(error);
+  }
+}
+ readDocuments = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  await this.readDocumentsHandler(req, res, next);
+};
+
 }

@@ -2,6 +2,7 @@ import mongoose, { ClientSession, PaginateModel } from "mongoose";
 import {
   BaseService,
   GridFSBucketService,
+  InternalServerException,
   NotFoundException,
   runTransaction,
   ValidationException,
@@ -25,12 +26,14 @@ import {
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 import { AssetRosterStatusService } from "./asset-roster-status-service";
 import { AssetTypeService } from "../../asset-types/services/asset-type-service";
+import { GenAIService } from "../../ia/genai/services/genai-service";
 
 export class AssetRosterService extends BaseService<AssetRosterDocument> {
   private assetRosterStatusService = new AssetRosterStatusService();
   private assetTypeService = new AssetTypeService();
   private contactsService = new ContactService();
   private activityHistoryService = new ActivityHistoryService();
+  private readonly genAIService = new GenAIService();
 
   constructor() {
     super({
@@ -432,5 +435,36 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         return await super.importCSV(assetRosters, newSession);
       }
     );
+  }
+
+
+  async readMaintenanceDocuments(
+    files: Express.Multer.File[],
+    question?: string,
+  ): Promise<any> {
+    try {
+      const parts = files.map((file) =>
+        this.genAIService.fileToGenerativePart(file),
+      );
+  
+      const response = await this.genAIService.generate({
+        question: question || "What are the maintenance documents?",
+        context: `
+          You are an expert document assistant.
+          If a question is provided, answer it strictly using the document.
+          If no question is provided, extract structured information.
+          Do not invent data.
+          Return only valid output.
+        `,
+        promptParts: parts,
+      });
+
+      return response.text || "";
+    } catch (error: any) {
+  console.error("GenAI error:", error);
+  throw new InternalServerException(
+    "Error processing maintenance documents"
+  );
+    }
   }
 }

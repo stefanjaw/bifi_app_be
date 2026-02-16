@@ -31,6 +31,8 @@ export class GenAIService {
     schema?: Schema;
   }) {
     try {
+        console.log("GOOGLE_GENAI_API_KEY", process.env.GOOGLE_GENAI_API_KEY);
+
       return this.genAI.models.generateContent({
         model: this.MODEL,
         contents: [question, context, ...promptParts],
