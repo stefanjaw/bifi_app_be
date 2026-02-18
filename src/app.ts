@@ -1,6 +1,8 @@
 import "reflect-metadata";
 import express from "express";
 import dotenv from "dotenv";
+dotenv.config();
+
 import mongoose from "mongoose";
 import morgan from "morgan";
 import cors from "cors";
@@ -51,7 +53,6 @@ import admin from "firebase-admin";
 import { BCDCpcRouter } from "./modules/bcd-cpcs";
 
 // load .env variables
-dotenv.config();
 const PORT = process.env.SERVER_PORT || 8080;
 const MONGO_DB_URL =
   process.env.MONGO_DB_URL || "mongodb://localhost:27017/bifi_app_db"; // default MongoDB URL for local development

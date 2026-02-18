@@ -479,7 +479,7 @@ export type AssetRoster = {
   photo?: mongoose.Types.ObjectId;
   locationId?: Room;
   warrantyDate?: Date;
-  remarks?: string;
+  remarks: string[];
   status?:
     | "active"
     | "awaiting-commissioning"
@@ -611,7 +611,7 @@ export type AssetRosterDocument = mongoose.Document<
     photo?: mongoose.Types.ObjectId;
     locationId?: RoomDocument;
     warrantyDate?: Date;
-    remarks?: string;
+    remarks: mongoose.Types.Array<string>;
     status?:
       | "active"
       | "awaiting-commissioning"
