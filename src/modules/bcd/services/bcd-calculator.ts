@@ -126,7 +126,7 @@ export function calculateCharge(charge: BCDChargeDTO, base: number) {
  */
 export function calculateTax(tax: TaxEntryDTO) {
   if (tax.ratePercentage && tax.ratePercentage > 0) {
-    return tax.valueForTax * (tax.ratePercentage / 100); // 👈 sin toFixed
+    return tax.valueForTax * (tax.ratePercentage / 100);
   }
 
   return tax.amount ?? 0;
