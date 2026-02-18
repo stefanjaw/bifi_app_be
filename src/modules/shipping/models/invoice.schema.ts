@@ -142,15 +142,20 @@ export const linesGenAISchema: Schema = {
                     type: Type.NULL,
                   },
                 ],
+                description:
+                  "if existing, it must be a value of number having a lenght of 7 characters",
               },
               chapter: {
                 type: Type.STRING,
+                description: "Is the chapter part of the code",
               },
               heading: {
                 type: Type.STRING,
+                description: "Is the heading part of the code",
               },
               subheading: {
                 type: Type.STRING,
+                description: "Is the subheading part of the code",
               },
               userDescription: {
                 anyOf: [

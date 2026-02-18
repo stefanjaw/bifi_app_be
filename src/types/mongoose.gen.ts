@@ -1795,11 +1795,11 @@ export type BCDAdditionalInformation = {
  * ```
  */
 export type BCDOgd = {
-  paymentCode: string;
+  paymentCode?: string;
   costCode?: string;
   objectCode?: string;
   subsidiaryCode?: string;
-  explanation: string;
+  explanation?: string;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -1959,11 +1959,11 @@ export type BCD = {
   masterBOLAWB: string;
   directShipmentCountry: Country;
   originalShipmentCountry: Country;
-  warehouseId: string;
+  warehouseId?: string;
   charges: BCDCharge[];
   containerIds: string[];
   houseBOLAWBs: string[];
-  valuationMethod: "001" | "002";
+  valuationMethod: "01" | "02";
   packagesCount: number;
   invoiceAmount: number;
   payableAmount: number;
@@ -2117,11 +2117,11 @@ export type BCDAdditionalInformationDocument =
  * ```
  */
 export type BCDOgdDocument = mongoose.Document<mongoose.Types.ObjectId> & {
-  paymentCode: string;
+  paymentCode?: string;
   costCode?: string;
   objectCode?: string;
   subsidiaryCode?: string;
-  explanation: string;
+  explanation?: string;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -2276,11 +2276,11 @@ export type BCDDocument = mongoose.Document<
     masterBOLAWB: string;
     directShipmentCountry: CountryDocument;
     originalShipmentCountry: CountryDocument;
-    warehouseId: string;
+    warehouseId?: string;
     charges: mongoose.Types.DocumentArray<BCDChargeDocument>;
     containerIds: mongoose.Types.Array<string>;
     houseBOLAWBs: mongoose.Types.Array<string>;
-    valuationMethod: "001" | "002";
+    valuationMethod: "01" | "02";
     packagesCount: number;
     invoiceAmount: number;
     payableAmount: number;

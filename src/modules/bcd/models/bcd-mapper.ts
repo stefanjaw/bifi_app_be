@@ -163,7 +163,7 @@ const recordTaxMapper = (data: BCDRecordTaxDocument) => ({
   type: computeValue(data.type?.code), // 2
   taxId: computeValue(data.taxId?.code), // 3
   dutyValue: computeValue(data.valueForTax), // 4
-  dutyRate: computeValue(data.ratePercentage, 3), // 5
+  dutyRate: computeValue(data.ratePercentage), // 5
   amount: computeValue(data.amount), // 6
 });
 

@@ -1,6 +1,7 @@
 import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   ArrayMinSize,
+  Contains,
   IsArray,
   IsDate,
   IsEnum,
@@ -51,7 +52,7 @@ export class BCDTransportDTO {
 export class BCDChargeDTO {
   @IsMongoId()
   @IsOptional()
-  @Transform(({ value }) => (value === "" ? undefined : value))
+  @Transform(({ value }) => (value === "" ? null : value))
   code?: string;
 
   @IsNumber()
@@ -120,7 +121,7 @@ export class TaxEntryDTO {
 export class AdditionalInformationDTO {
   @IsMongoId()
   @IsOptional()
-  @Transform(({ value }) => (value === "" ? undefined : value))
+  @Transform(({ value }) => (value === "" ? null : value))
   type?: string;
 
   @IsString()
@@ -142,7 +143,7 @@ export class BCDRecordDTO {
   origin!: string;
 
   @IsString()
-  @MaxLength(7)
+  @Length(7)
   tariff!: string;
 
   @IsString()
@@ -212,29 +213,34 @@ export class BCDRecordDTO {
 class BCDOgdDTO {
   @IsString()
   @MaxLength(3)
-  paymentCode!: string;
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? null : value))
+  paymentCode?: string;
 
   @IsString()
   @IsOptional()
   @Length(5)
-  @Transform(({ value }) => (value === "" ? undefined : value))
+  @Transform(({ value }) => (value === "" ? null : value))
   costCode?: string;
 
   @IsString()
   @IsOptional()
   @Length(4)
-  @Transform(({ value }) => (value === "" ? undefined : value))
+  @Transform(({ value }) => (value === "" ? null : value))
   objectCode?: string;
 
   @IsString()
   @IsOptional()
   @Length(5)
-  @Transform(({ value }) => (value === "" ? undefined : value))
+  @Transform(({ value }) => (value === "" ? null : value))
   subsidiaryCode?: string;
 
   @IsString()
+  @IsOptional()
   @MaxLength(30)
-  explanation!: string;
+  @Length(5)
+  @Transform(({ value }) => (value === "" ? null : value))
+  explanation?: string;
 }
 
 //BCD
@@ -279,7 +285,9 @@ export class BcdDTO {
 
   @IsString()
   @Length(4)
-  warehouseId!: string;
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? null : value))
+  warehouseId?: string;
 
   @IsArray()
   @ValidateNested({ each: true })
@@ -304,10 +312,10 @@ export class BcdDTO {
   @MaxLength(20, { each: true })
   @IsArray()
   @Transform(({ value }) => JSON.parse(value))
-  houseBOLAWB?: string[];
+  houseBOLAWBs?: string[];
 
   @IsEnum(ValuationMethodTypeEnum)
-  @Length(3)
+  @Length(2, 3)
   valuationMethod!: ValuationMethodTypeEnum;
 
   @IsNumber()

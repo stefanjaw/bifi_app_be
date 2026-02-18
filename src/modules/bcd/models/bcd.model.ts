@@ -229,7 +229,7 @@ const bcdRecordSchema = new Schema({
 const ogdschema = new Schema({
   paymentCode: {
     type: String,
-    required: true,
+    required: false,
   },
   costCode: {
     type: String,
@@ -245,7 +245,7 @@ const ogdschema = new Schema({
   },
   explanation: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 
@@ -317,7 +317,7 @@ const bcdSchema = new Schema(
     },
     warehouseId: {
       type: String,
-      required: true,
+      required: false,
     },
     charges: {
       type: [chargeSchema],

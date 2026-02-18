@@ -207,7 +207,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
 
       This are the fields you can modify:
 
-      - tariff.code
+      - tariff.code (8 lenght characters)
       - tariff.description
       - tariff.chapter
       - tariff.heading
