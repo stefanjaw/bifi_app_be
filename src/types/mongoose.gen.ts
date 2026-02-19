@@ -1882,7 +1882,7 @@ export type BCDRecord = {
   description: string;
   quantity: number;
   quantityTwo?: number;
-  supplementaryCode: string;
+  supplementaryCode?: string;
   currency: string;
   linesSubtotal: number;
   exchangeRate: number;
@@ -2197,7 +2197,7 @@ export type BCDRecordDocument =
     description: string;
     quantity: number;
     quantityTwo?: number;
-    supplementaryCode: string;
+    supplementaryCode?: string;
     currency: string;
     linesSubtotal: number;
     exchangeRate: number;

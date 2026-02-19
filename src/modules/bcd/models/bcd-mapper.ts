@@ -37,18 +37,18 @@ const computeValue = (
  */
 const headerMapper = (data: BCDDocument) => ({
   recordType: "R10", // 1
-  supplierId: "", // 2
+  supplierId: computeValue(data.declarant.companyId), // 2
   supplierName: computeValue(data.supplier?.contactId?.name), // 3
   supplierAddressLine1: computeValue(data.supplier?.contactId?.streetAddress), // 4
   supplierAddressLine2: computeValue(data.supplier?.contactId?.streetAddress2), // 5
   supplierPostCode: computeValue(data.supplier?.contactId?.zipCode), // 6
-  supplierCountry: computeValue(data.supplier?.contactId?.countryId?.name), // 7
+  supplierCountry: computeValue(data.supplier?.contactId?.countryId?.code), // 7
   importerId: computeValue(data.declarant.companyId), // 8
   importerName: computeValue(data.importer?.contactId?.name), // 9
   importerAddressLine1: computeValue(data.importer?.contactId?.streetAddress), // 10
   importerAddressLine2: computeValue(data.importer?.contactId?.streetAddress2), // 11
   importerPostCode: computeValue(data.importer?.contactId?.zipCode), // 12
-  importerCountry: computeValue(data.importer?.contactId?.countryId?.name), // 13
+  importerCountry: computeValue(data.importer?.contactId?.countryId?.code), // 13
   vesselOrAirline: computeValue(data.transport?.aircraftOrVessel?.code), // 14
   voyageOrFlightNumber: computeValue(data.transport?.flightOrVoyage), // 15
   portOfArrival: computeValue(data.transport?.port?.code), // 16

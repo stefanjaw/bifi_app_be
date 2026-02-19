@@ -189,7 +189,7 @@ const bcdRecordSchema = new Schema({
   },
   supplementaryCode: {
     type: String,
-    required: true,
+    required: false,
   },
   currency: {
     type: String,

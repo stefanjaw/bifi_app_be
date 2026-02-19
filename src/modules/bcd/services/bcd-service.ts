@@ -218,12 +218,6 @@ export class BCDService extends BaseService<BCDDocument> {
             f.buffer.toString("utf-8").includes(this.getSentCSVName(bcd)),
         );
 
-        if (recFile && ftpFiles.length === 1) {
-          throw new ValidationException(
-            "REC.TXT file found but no other files found",
-          );
-        }
-
         const proccessedFTPFiles: ftpResponse[] = [];
 
         if (recFile) {
@@ -391,20 +385,23 @@ export class BCDService extends BaseService<BCDDocument> {
    * @returns The resolved BCD status.
    */
   private resolveBCDStatus(types: EBCDTypeEnum[]) {
-    if (types.includes(EBCDTypeEnum.FILE_ERROR_CSV))
+    if (types.includes(EBCDTypeEnum.FILE_ERROR_CSV)) {
       return BCDStatusTypeEnum.FAILED;
-    else if (
+    } else if (
       types.includes(EBCDTypeEnum.FORMAT_ERROR_PDF) ||
       types.includes(EBCDTypeEnum.FORMAT_ERROR_TXT)
-    )
+    ) {
       return BCDStatusTypeEnum.PENDING_QUERY;
-    else if (
+    } else if (
       types.includes(EBCDTypeEnum.RELEASE_CSV) ||
       types.includes(EBCDTypeEnum.RELEASE_PDF) ||
-      types.includes(EBCDTypeEnum.RELEASE_TXT)
-    )
+      types.includes(EBCDTypeEnum.RELEASE_TXT) ||
+      (types.includes(EBCDTypeEnum.RECEIPT_TXT) && types.length === 1)
+    ) {
       return BCDStatusTypeEnum.SUBMITTED;
-    else return BCDStatusTypeEnum.PENDING_RESPONSE;
+    } else {
+      return BCDStatusTypeEnum.PENDING_RESPONSE;
+    }
   }
   // ======================= EBCD UTILS =======================
   //#endregion

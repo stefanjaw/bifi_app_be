@@ -163,7 +163,9 @@ export class BCDRecordDTO {
 
   @IsString()
   @MaxLength(10)
-  supplementaryCode!: string;
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? null : value))
+  supplementaryCode?: string;
 
   @IsString()
   @Length(3)
