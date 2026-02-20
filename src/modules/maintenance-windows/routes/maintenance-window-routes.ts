@@ -1,4 +1,4 @@
-import { authorizeMiddleware, BaseRoutes } from "../../../system";
+import { BaseRoutes } from "../../../system";
 import { MaintenanceWindowDocument } from "../../../types/mongoose.gen";
 import { MaintenanceWindowController } from "../controllers/maintenance-window-controller";
 import {
