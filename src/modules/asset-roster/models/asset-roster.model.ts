@@ -90,8 +90,8 @@ const assetRosterSchema = new Schema(
       required: false,
     },
     remarks: {
-      type: String,
-      default: "",
+      type: [String],
+      default: [],
     },
     status: {
       type: String,
@@ -128,7 +128,7 @@ const assetRosterSchema = new Schema(
     toObject: { virtuals: true }, // Include virtuals in toObject output
     toJSON: { virtuals: true }, // Include virtuals in toJSON output
     timestamps: true,
-  }
+  },
 );
 
 assetRosterSchema.virtual("assetCommission", {

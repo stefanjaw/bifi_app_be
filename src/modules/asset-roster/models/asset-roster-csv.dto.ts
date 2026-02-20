@@ -1,6 +1,7 @@
 import { AssetRosterDocument } from "@mongodb-types";
 import { CSVStringSeparator } from "../../../system";
 import {
+  IsArray,
   IsBoolean,
   IsDate,
   IsEnum,
@@ -65,9 +66,10 @@ export class AssetRosterCSVDTO {
   @IsOptional()
   warrantyDate?: Date;
 
-  @IsString()
+  @IsArray()
+  @IsString({ each: true })
   @IsOptional()
-  remarks?: string;
+  remarks?: string[];
 
   @IsBoolean()
   @IsOptional()

@@ -42,7 +42,7 @@ export class AssetRosterDTO {
 
   // when assetTypeInformation is passed, creation or update of asset types will be done
   @Transform(({ value }) =>
-    plainToInstance(assetTypeInformationDTO, JSON.parse(value))
+    plainToInstance(assetTypeInformationDTO, JSON.parse(value)),
   )
   @Type(() => assetTypeInformationDTO)
   @ValidateNested()
@@ -65,7 +65,7 @@ export class AssetRosterDTO {
 
   // when makeInformation is passed, creation or update of makes will be done
   @Transform(({ value }) =>
-    plainToInstance(makeInformationDTO, JSON.parse(value))
+    plainToInstance(makeInformationDTO, JSON.parse(value)),
   )
   @Type(() => makeInformationDTO)
   @ValidateNested()
@@ -119,12 +119,21 @@ export class AssetRosterDTO {
   @IsOptional()
   warrantyDate?: Date;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
   @IsOptional()
-  remarks?: string | undefined;
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  remarks?: string[];
 
-  @IsEnum(["active", "awaiting-commissioning", "under-service", "decommissioned"])
+  @IsEnum([
+    "active",
+    "awaiting-commissioning",
+    "under-service",
+    "decommissioned",
+  ])
   @IsOptional()
   status?: string;
 
@@ -158,4 +167,22 @@ export class SkipAssetRosterPMDTO {
   @IsOptional()
   @IsString()
   notes!: string;
+}
+
+
+//model for the notes
+export class NotesDTO {
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  remark?: string;
+
+  @IsMongoId({ each: true })
+  @Transform(({ value }) => JSON.parse(value))
+  userId?: string;
+
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  performDate?: Date;
 }
