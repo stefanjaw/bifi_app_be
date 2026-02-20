@@ -15,7 +15,7 @@ export class CompanyService extends BaseService<CompanyDocument> {
         {
           path: "countryId",
           getModel: () =>
-            mongoose.model("Country") as PaginateModel<CountryDocument>,
+            this.connectionManager.getModelByDB<CountryDocument>("Country"),
           isArray: false,
         },
         {

@@ -9,8 +9,10 @@ import cors from "cors";
 import {
   authenticateMiddleware,
   catchExceptionMiddleware,
+  dbNameStorage,
   FTPService,
   GridFSBucketService,
+  userStorage,
 } from "./system";
 import {
   ActivityHistoryRouter,
@@ -66,7 +68,26 @@ admin.initializeApp({
 
 // create app
 const app = express();
+
+// storages
+app.use((req, res, next) => {
+  userStorage.run(
+    {
+      user: undefined,
+      token: req.headers.authorization || "",
+    },
+    () => {
+      dbNameStorage.run(undefined, () => {
+        next();
+      });
+    },
+  );
+});
+
+// enable morgan
 app.use(morgan("dev"));
+
+// enable cors
 app.use(
   cors({
     origin: "*",

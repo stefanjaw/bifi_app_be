@@ -10,11 +10,11 @@ import {
   InnerFile,
   isValidFileUpload,
   runTransaction,
-  UserStore,
+  userStorage,
   ValidationException,
 } from "../../../system";
 import { taskModel } from "../models/task.model";
-import mongoose, { PaginateModel } from "mongoose";
+import mongoose from "mongoose";
 import { TaskDTO, UpdateTaskDTO } from "../models/task.dto";
 import { TaskStageService } from "../../task-stages/services/task-stage-service";
 import dayjs from "dayjs";
@@ -29,38 +29,43 @@ export class TaskService extends BaseService<TaskDocument> {
         {
           path: "stage",
           getModel: () =>
-            mongoose.model("TaskStage") as PaginateModel<TaskStageDocument>,
+            this.connectionManager.getModelByDB<TaskStageDocument>("TaskStage"),
           isArray: false,
         },
         {
           path: "projectId",
           getModel: () =>
-            mongoose.model("TaskProject") as PaginateModel<ProjectDocument>,
+            this.connectionManager.getModelByDB<ProjectDocument>("TaskProject"),
           isArray: false,
         },
         {
           path: "dependencyIds",
-          getModel: () => taskModel,
+          getModel: () =>
+            this.connectionManager.getModelByDB<TaskDocument>("Task"),
           isArray: true,
         },
         {
           path: "parentId",
-          getModel: () => taskModel,
+          getModel: () =>
+            this.connectionManager.getModelByDB<TaskDocument>("Task"),
           isArray: false,
         },
         {
           path: "createdBy",
-          getModel: () => mongoose.model("User") as PaginateModel<UserDocument>,
+          getModel: () =>
+            this.connectionManager.getModelByDB<UserDocument>("User"),
           isArray: false,
         },
         {
           path: "updatedBy",
-          getModel: () => mongoose.model("User") as PaginateModel<UserDocument>,
+          getModel: () =>
+            this.connectionManager.getModelByDB<UserDocument>("User"),
           isArray: false,
         },
         {
           path: "assigned",
-          getModel: () => mongoose.model("User") as PaginateModel<UserDocument>,
+          getModel: () =>
+            this.connectionManager.getModelByDB<UserDocument>("User"),
           isArray: false,
         },
       ],
@@ -73,7 +78,7 @@ export class TaskService extends BaseService<TaskDocument> {
 
   override async create(
     data: TaskDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<TaskDocument> {
     return await runTransaction<TaskDocument>(session, async (newSession) => {
       // HANDLE FILES IF PROVIDED
@@ -87,7 +92,7 @@ export class TaskService extends BaseService<TaskDocument> {
             name: file.originalname,
             mimeType: file.mimetype,
             size: file.size,
-          }))
+          })),
         );
       }
 
@@ -98,12 +103,12 @@ export class TaskService extends BaseService<TaskDocument> {
           undefined,
           undefined,
           undefined,
-          newSession
+          newSession,
         );
 
         if (!stages || stages.length === 0)
           throw new ValidationException(
-            "No default stage found, please create one"
+            "No default stage found, please create one",
           );
 
         data.stage = stages[0]._id.toString();
@@ -123,14 +128,14 @@ export class TaskService extends BaseService<TaskDocument> {
 
       return await super.create({
         ...data,
-        createdBy: UserStore.getInstance().user?.id,
+        createdBy: userStorage.getStore()?.user?._id,
       });
     });
   }
 
   override async update(
     data: UpdateTaskDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<TaskDocument> {
     return await runTransaction<TaskDocument>(session, async (newSession) => {
       // HANDLE FILES IF PROVIDED
@@ -144,27 +149,29 @@ export class TaskService extends BaseService<TaskDocument> {
             name: file.originalname,
             mimeType: file.mimetype,
             size: file.size,
-          }))
+          })),
         );
       }
 
       return await super.update({
         ...data,
-        updatedBy: UserStore.getInstance().user?.id,
+        updatedBy: userStorage.getStore()?.user?._id,
       });
     });
   }
 
   override async delete(
     _id: string,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<boolean> {
     return await runTransaction<boolean>(session, async (newSession) => {
+      const model = this.connectionManager.bindModelToDb(this.model);
+
       // when a task is deleted, all subtasks where parentId is the deleted task, should be removed from parentId
-      await taskModel.updateMany(
+      await model.updateMany(
         { parentId: _id },
         { parentId: null },
-        { session: newSession }
+        { session: newSession },
       );
 
       return await super.delete(_id, newSession);

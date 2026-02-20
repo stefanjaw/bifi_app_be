@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { ValidationException } from "../exceptions/service-exception";
 import { BaseService } from "./base-service";
 import { NextFunction, Request, Response } from "express";
@@ -23,7 +24,7 @@ export class BaseController<T> {
   protected async getByIdHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const id = req.params.id;
@@ -62,7 +63,7 @@ export class BaseController<T> {
         paginationOptions,
         orderBy,
         count,
-        undefined
+        undefined,
       );
 
       this.sendData(res, records);
@@ -82,11 +83,11 @@ export class BaseController<T> {
   protected async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const body = { ...req.body };
-      const record = await this.service.create(body);
+      const record = await this.service.create(body, undefined);
 
       this.sendData(res, record);
     } catch (error: any) {
@@ -106,11 +107,11 @@ export class BaseController<T> {
   protected async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const body = { ...req.body };
-      const record = await this.service.update(body);
+      const record = await this.service.update(body, undefined);
 
       this.sendData(res, record);
     } catch (error: any) {
@@ -131,13 +132,14 @@ export class BaseController<T> {
   protected async deleteHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
-      if (!req.query._id)
+      const _id = req.query._id;
+      if (typeof _id !== "string")
         throw new ValidationException("_id is required for deletion");
 
-      const result = await this.service.delete(req.query._id as string);
+      const result = await this.service.delete(_id, undefined);
 
       this.sendData(res, result);
     } catch (error: any) {
@@ -156,7 +158,7 @@ export class BaseController<T> {
   protected async exportCSVHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const data = await this.service.exportCSV();
@@ -184,10 +186,10 @@ export class BaseController<T> {
   protected async importCSVHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
-      const records = await this.service.importCSV(req.body);
+      const records = await this.service.importCSV(req.body, undefined);
       this.sendData(res, records);
     } catch (error: any) {
       next(error);

@@ -11,7 +11,7 @@ export class RoleService extends BaseService<RoleDocument> {
         {
           path: "policies",
           getModel: () =>
-            mongoose.model("Policy") as mongoose.PaginateModel<PolicyDocument>,
+            this.connectionManager.getModelByDB<PolicyDocument>("Policy"),
           isArray: true,
         },
       ],

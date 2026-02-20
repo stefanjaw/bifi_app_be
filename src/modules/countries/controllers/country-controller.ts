@@ -10,11 +10,17 @@ export class CountryController extends BaseController<CountryDocument> {
     super({ service: countryService });
   }
 
-  // Protected method to handle the populate countries request
+  /**
+   * Endpoint handler to populate countries from a remote source.
+   * @param {Request} req - The incoming request.
+   * @param {Response} res - The outgoing response.
+   * @param {NextFunction} next - The next middleware to call.
+   * @returns {Promise<void>} - A promise that resolves when the operation completes.
+   */
   protected async createPopulateCountriesHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const records = await countryService.populateCountries(undefined);
@@ -28,7 +34,7 @@ export class CountryController extends BaseController<CountryDocument> {
   createPopulateCountries = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.createPopulateCountriesHandler(req, res, next);
   };

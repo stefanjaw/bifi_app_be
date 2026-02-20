@@ -10,18 +10,20 @@ export class PolicyService extends BaseService<PolicyDocument> {
 
   override async create(
     data: Record<string, any>,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<PolicyDocument> {
     return await runTransaction<PolicyDocument>(session, async (newSession) => {
       // check that no other policy exists with the same resource and action
-      const existingPolicy = await this.model.findOne({
-        resource: data.resource,
-        action: data.action,
-      });
+      const existingPolicy = await this.connectionManager
+        .bindModelToDb(this.model)
+        .findOne({
+          resource: data.resource,
+          action: data.action,
+        });
 
       if (existingPolicy) {
         throw new Error(
-          "A policy already exists for this resource and action."
+          "A policy already exists for this resource and action.",
         );
       }
 
@@ -31,20 +33,22 @@ export class PolicyService extends BaseService<PolicyDocument> {
 
   override async update(
     data: Record<string, any>,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<PolicyDocument> {
     return await runTransaction<PolicyDocument>(session, async (newSession) => {
       // check that no other policy exists with the same resource and action
       // do it removing the current policy
-      const existingPolicy = await this.model.findOne({
-        resource: data.resource,
-        action: data.action,
-        _id: { $ne: data._id }, // exclude the current policy
-      });
+      const existingPolicy = await this.connectionManager
+        .bindModelToDb(this.model)
+        .findOne({
+          resource: data.resource,
+          action: data.action,
+          _id: { $ne: data._id }, // exclude the current policy
+        });
 
       if (existingPolicy) {
         throw new Error(
-          "A policy already exists for this resource and action."
+          "A policy already exists for this resource and action.",
         );
       }
 

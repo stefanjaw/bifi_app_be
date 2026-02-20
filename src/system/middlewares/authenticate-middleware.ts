@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UnauthorizedException, UserStore } from "../libraries";
+import { UnauthorizedException, userStorage } from "../libraries";
 import { UserService } from "../../modules";
 import admin from "firebase-admin";
 import { FirebaseAppError } from "firebase-admin/app";
@@ -75,8 +75,12 @@ export function authenticateMiddleware(userService: UserService) {
       }
 
       // Set the user and token in the UserStore
-      UserStore.getInstance().user = user;
-      UserStore.getInstance().token = token;
+      const storage = userStorage.getStore();
+
+      if (storage) {
+        storage.user = user;
+        storage.token = token;
+      }
 
       next();
     } catch (error) {

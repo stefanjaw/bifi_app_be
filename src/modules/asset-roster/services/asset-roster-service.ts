@@ -1,4 +1,4 @@
-import mongoose, { ClientSession, PaginateModel } from "mongoose";
+import { ClientSession } from "mongoose";
 import {
   BaseService,
   GridFSBucketService,
@@ -42,24 +42,25 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         {
           path: "assetTypeIds",
           getModel: () =>
-            mongoose.model("AssetType") as PaginateModel<AssetTypeDocument>,
+            this.connectionManager.getModelByDB<AssetTypeDocument>("AssetType"),
           isArray: true,
         },
         {
           path: "vendorIds",
           getModel: () =>
-            mongoose.model("Contact") as PaginateModel<ContactDocument>,
+            this.connectionManager.getModelByDB<ContactDocument>("Contact"),
           isArray: true,
         },
         {
           path: "makeIds",
           getModel: () =>
-            mongoose.model("Contact") as PaginateModel<ContactDocument>,
+            this.connectionManager.getModelByDB<ContactDocument>("Contact"),
           isArray: true,
         },
         {
           path: "locationId",
-          getModel: () => mongoose.model("Room") as PaginateModel<RoomDocument>,
+          getModel: () =>
+            this.connectionManager.getModelByDB<RoomDocument>("Room"),
           isArray: false,
         },
       ],
@@ -106,12 +107,19 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
     });
   }
 
+  /**
+   * Update an existing asset roster.
+   * @param {UpdateAssetRosterDTO} data - The data to update the asset roster with.
+   * @param {ClientSession} [session] - The client session to use for the update.
+   * @returns {Promise<AssetRosterDocument>} - The updated asset roster document.
+   * @throws {NotFoundException} - If the asset roster does not exist.
+   */
   override async update(
     data: UpdateAssetRosterDTO,
     session?: ClientSession | undefined,
   ): Promise<AssetRosterDocument> {
     return runTransaction<AssetRosterDocument>(session, async (newSession) => {
-      const existing = await this.model.findById(data._id);
+      const existing = await this.getById(data._id.toString(), newSession);
       if (!existing) throw new NotFoundException("Asset Roster does not exist");
 
       // Handle file upload if provided
@@ -279,7 +287,13 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
 
   override async exportCSV(data?: Record<string, any>[]): Promise<Buffer> {
     return runTransaction<Buffer>(undefined, async (newSession) => {
-      const assetRosters = await this.model.find().session(newSession);
+      const assetRosters = await this.get(
+        { active: true },
+        undefined,
+        undefined,
+        undefined,
+        newSession,
+      );
 
       const json = assetRosters.map((p) => ({
         productModel: p.productModel,

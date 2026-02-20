@@ -36,8 +36,8 @@ export class BCDService extends BaseService<BCDDocument> {
   }
 
   /**
-   * Creates a new BCD document with the given data.
-   * The function calculates the duties and taxes of the BCD data and then calls the base create function to create the document.
+   * Creates a new BCD document.
+   * It calculates the BCD values (records count, invoice amount, header charges, total header charges payable, records due and final payable amount) before creating the document.
    * @param data - The BCD data to create.
    * @param session - The optional client session to use for the transaction.
    * @returns The created BCD document.
@@ -54,14 +54,15 @@ export class BCDService extends BaseService<BCDDocument> {
   }
 
   /**
-   * Updates a BCD document with the given data.
-   * The function runs within a transaction and returns the updated record.
-   * The function first checks if the BCD data exists and its status is "DRAFT".
-   * If the data does not exist or its status is not "DRAFT", a ValidationException is thrown.
-   *
-   * @param data - The data to update the record with.
+   * Updates an existing BCD document.
+   * It fetches the BCD document by the provided `_id` and validates its existence.
+   * If the BCD document has already been sent to the government (status !== "DRAFT"),
+   * a ValidationException is thrown.
+   * It calculates the BCD values (records count, invoice amount, header charges, total header charges payable, records due and final payable amount) before updating the document.
+   * @param data - The BCD data to update.
    * @param session - The optional client session to use for the transaction.
-   * @returns The updated record document.
+   * @returns The updated BCD document.
+   * @throws {ValidationException} If the BCD document has already been sent to the government.
    */
   override async update(
     data: UpdateBcdDTO,
@@ -184,8 +185,7 @@ export class BCDService extends BaseService<BCDDocument> {
    * If an error file is found, the function adds it to the array of files to process.
    * The function then uploads the files to GridFS and updates the BCD documents with the uploaded files.
    * The function then moves the files from the FTP folder "/outbox" to "/outbox/proccessed".
-   * @param {ClientSession | undefined} session - The optional client session to use for the transaction.
-   * @returns {Promise<BCDDocument[]>} - An array of updated BCD documents.
+   * @returns {Promise<bcd[]>} - An array of updated BCD documents.
    */
   async updateBCDsFromFTP(session?: ClientSession | undefined) {
     return await runTransaction(session, async (newSession) => {
@@ -204,6 +204,9 @@ export class BCDService extends BaseService<BCDDocument> {
       const ftpFiles = await this.ftpService.list({
         path: "/outbox",
       });
+
+      // * proccessed ftp files
+      const ftpFilesProcessed: ftpResponse[] = [];
 
       // * if no files found
       if (ftpFiles.length === 0) return [];
@@ -272,11 +275,15 @@ export class BCDService extends BaseService<BCDDocument> {
         );
 
         updatedBCDs.push(updatedBCD);
+        ftpFilesProcessed.push(...proccessedFTPFiles);
       }
 
       // * move files
       await this.ftpService.moveFiles(
-        ftpFiles.map((f) => ({ path: "/outbox", filename: f.metadata.name })),
+        ftpFilesProcessed.map((f) => ({
+          path: "/outbox",
+          filename: f.metadata.name,
+        })),
         "/outbox/proccessed",
       );
 

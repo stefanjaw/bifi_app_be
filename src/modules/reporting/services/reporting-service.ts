@@ -90,30 +90,52 @@ export class ReportingService extends BaseService<ReportingDocument> {
     });
   }
 
+  /**
+   * Generate a PDF report based on the template, model and search parameters provided.
+   *
+   * If reportId is sent, the template will be fetched from the database. If modelName is sent, the first template with the matching model will be used.
+   *
+   * If searchParams is sent, the data will be fetched from the database based on the search parameters provided.
+   *
+   * If orderBy is sent, the data will be sorted based on the order by query provided.
+   *
+   * If session is sent, the operation will be run in a transaction with the provided session.
+   *
+   * @param {string | undefined} modelName - Name of the model to fetch the template from.
+   * @param {string | undefined} reportId - Id of the template to fetch from the database.
+   * @param {Record<string, any> | undefined} searchParams - Search parameters to fetch the data from the database.
+   * @param {orderByQuery["orderBy"] | undefined} orderBy - Order by query to sort the data.
+   * @param {ClientSession | undefined} session - Session to run the operation in a transaction with.
+   * @returns {Promise<Uint8Array<ArrayBufferLike>>} A promise that resolves with the generated PDF report buffer.
+   */
   async generatePDFReport(
     modelName: string | undefined,
     reportId: string | undefined,
     searchParams: Record<string, any> | undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ) {
     return await runTransaction<Uint8Array<ArrayBufferLike>>(
       session,
       async (newSession) => {
         // get template based on model or id, if model is sent
         const reportingTemplate = reportId
-          ? await reportingModel.findById(reportId).session(newSession)
+          ? await this.getById(reportId, newSession)
           : modelName
           ? (
-              await reportingModel
-                .find({ model: modelName })
-                .session(newSession)
+              await this.get(
+                { model: modelName },
+                undefined,
+                undefined,
+                undefined,
+                newSession,
+              )
             )[0]
           : undefined;
 
         if (!reportingTemplate)
           throw new ValidationException(
-            "No reporting template matches the configuration sent"
+            "No reporting template matches the configuration sent",
           );
 
         // check that model is valid and get model
@@ -174,41 +196,41 @@ export class ReportingService extends BaseService<ReportingDocument> {
         await browser.close();
 
         return pdfBuffer;
-      }
+      },
     );
   }
 
   override async create(
     data: ReportingDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ReportingDocument> {
     return await runTransaction<ReportingDocument>(
       session,
       async (newSession) => {
         if (!mongoose.modelNames().includes(data.model))
           throw new ValidationException(
-            "Model is not valid and included in models list"
+            "Model is not valid and included in models list",
           );
 
         return await super.create(data, newSession);
-      }
+      },
     );
   }
 
   override async update(
     data: UpdateReportingDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ReportingDocument> {
     return await runTransaction<ReportingDocument>(
       session,
       async (newSession) => {
         if (data.model && !mongoose.modelNames().includes(data.model))
           throw new ValidationException(
-            "Model is not valid and included in models list"
+            "Model is not valid and included in models list",
           );
 
         return await super.update(data, newSession);
-      }
+      },
     );
   }
 }

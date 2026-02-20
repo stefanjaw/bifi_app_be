@@ -7,7 +7,7 @@ import {
   GridFSBucketService,
   InternalServerException,
   runTransaction,
-  UserStore,
+  userStorage,
   ValidationException,
 } from "../../../system";
 import { shippingModel } from "../models/shipping.model";
@@ -251,7 +251,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
     session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     return await super.create(
-      { ...data, createdBy: UserStore.getInstance().user?.id },
+      { ...data, createdBy: userStorage.getStore()?.user?._id },
       session,
     );
   }
@@ -269,7 +269,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
     session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     return await super.update(
-      { ...data, updatedBy: UserStore.getInstance().user?.id },
+      { ...data, updatedBy: userStorage.getStore()?.user?._id },
       session,
     );
   }
@@ -295,7 +295,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
         return await super.create(
           {
             ...shipping?.toObject(),
-            createdBy: UserStore.getInstance().user?.id,
+            createdBy: userStorage.getStore()?.user?._id,
           },
           newSession,
         );
@@ -367,14 +367,14 @@ export class ShippingService extends BaseService<ShippingDocument> {
         );
 
         if (_id) {
-          if (!(await shippingModel.findById(_id).session(newSession)))
+          if (!(await this.getById(_id, newSession)))
             throw new ValidationException("Shipping does not exist");
 
           return await super.update(
             {
               ...shippingData,
               _id: _id,
-              updatedBy: UserStore.getInstance().user?.id,
+              updatedBy: userStorage.getStore()?.user?._id,
             },
             newSession,
           );
@@ -382,7 +382,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
           return await super.create(
             {
               ...shippingData,
-              createdBy: UserStore.getInstance().user?.id,
+              createdBy: userStorage.getStore()?.user?._id,
             },
             newSession,
           );

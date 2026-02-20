@@ -1,4 +1,4 @@
-import mongoose, { ClientSession, PaginateModel } from "mongoose";
+import { ClientSession } from "mongoose";
 import { BaseService, runTransaction } from "../../../system";
 import { facilityModel } from "../models/facility.model";
 import { RoomService } from "./room-service";
@@ -15,7 +15,7 @@ export class FacilityService extends BaseService<FacilityDocument> {
         {
           path: "contactId",
           getModel: () =>
-            mongoose.model("Contact") as PaginateModel<ContactDocument>,
+            this.connectionManager.getModelByDB<ContactDocument>("Contact"),
           isArray: false,
         },
       ],
@@ -23,9 +23,15 @@ export class FacilityService extends BaseService<FacilityDocument> {
     // super.setPopulatingFields = ["rooms"];
   }
 
+  /**
+   * Creates a new facility, creates or updates rooms if they exist in the data.
+   * @param {FacilityDTO} data - The data to create the facility with.
+   * @param {ClientSession} [session] - The session to perform the transaction in.
+   * @returns {Promise<FacilityDocument>} - The created facility document.
+   */
   override async create(
     data: FacilityDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<FacilityDocument> {
     return runTransaction<FacilityDocument>(session, async (newSession) => {
       // create facility first
@@ -53,9 +59,16 @@ export class FacilityService extends BaseService<FacilityDocument> {
     });
   }
 
+  /**
+   * Updates a facility, updates or creates rooms if they exist in the data.
+   * If a room has an _id, it is updated; otherwise, a new room is created.
+   * @param {UpdateFacilityDTO} data - The data to update the facility with.
+   * @param {ClientSession} [session] - The session to perform the transaction in.
+   * @returns {Promise<FacilityDocument>} - The updated facility document.
+   */
   override async update(
     data: UpdateFacilityDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<FacilityDocument> {
     return runTransaction<FacilityDocument>(session, async (newSession) => {
       // create, update rooms if they exist in the data

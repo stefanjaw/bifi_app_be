@@ -4,7 +4,7 @@ import {
   GridFSBucketService,
   isValidFileUpload,
   runTransaction,
-  UserStore,
+  userStorage,
   ValidationException,
 } from "../../../system";
 import { userModel } from "../models/user.model";
@@ -23,13 +23,14 @@ export class UserService extends BaseService<UserDocument> {
       refFields: [
         {
           path: "roles",
-          getModel: () => mongoose.model("Role") as PaginateModel<RoleDocument>,
+          getModel: () =>
+            this.connectionManager.getModelByDB<RoleDocument>("Role"),
           isArray: true,
         },
         {
           path: "contactId",
           getModel: () =>
-            mongoose.model("Contact") as PaginateModel<ContactDocument>,
+            this.connectionManager.getModelByDB<ContactDocument>("Contact"),
           isArray: false,
         },
       ],
@@ -51,7 +52,7 @@ export class UserService extends BaseService<UserDocument> {
    */
   override async create(
     data: UserDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<UserDocument> {
     return await runTransaction<UserDocument>(session, async (newSession) => {
       let contactId: string | undefined = data.contactId;
@@ -60,7 +61,7 @@ export class UserService extends BaseService<UserDocument> {
       if (data.contactInformation && !data.contactInformation._id) {
         const newContact = await this.contactService.create(
           data.contactInformation,
-          newSession
+          newSession,
         );
 
         contactId = newContact._id.toString();
@@ -72,7 +73,7 @@ export class UserService extends BaseService<UserDocument> {
             type: "individual",
             _id: data.contactInformation._id,
           },
-          newSession
+          newSession,
         );
         contactId = updatedContact._id.toString();
       }
@@ -99,9 +100,20 @@ export class UserService extends BaseService<UserDocument> {
     });
   }
 
+  /**
+   * Updates a user with the given data.
+   * Prevents updating authId through this method.
+   * If contact information is provided without an _id, creates a new contact.
+   * If contact information with an _id is provided, updates the existing contact.
+   * And the contactId field of the user will be set to the created/updated contact's _id.
+   *
+   * @param data The user data to update. If contact information is provided without an _id, a new contact will be created.
+   * @param session
+   * @returns The updated user document.
+   */
   override async update(
     data: UpdateUserDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<UserDocument> {
     return await runTransaction<UserDocument>(session, async (newSession) => {
       // Prevent updating authId through this method
@@ -113,7 +125,7 @@ export class UserService extends BaseService<UserDocument> {
       if (data.contactInformation && !data.contactInformation._id) {
         const newContact = await this.contactService.create(
           data.contactInformation,
-          newSession
+          newSession,
         );
 
         contactId = newContact._id.toString();
@@ -125,14 +137,14 @@ export class UserService extends BaseService<UserDocument> {
             type: "individual",
             _id: data.contactInformation._id,
           },
-          newSession
+          newSession,
         );
         contactId = updatedContact._id.toString();
       }
 
       if (isValidFileUpload(data.uploadedPictureId)) {
         const fileId = await this.gridFSBucket.uploadFile(
-          data.uploadedPictureId as Express.Multer.File
+          data.uploadedPictureId as Express.Multer.File,
         );
 
         data.uploadedPictureId = fileId;
@@ -149,14 +161,21 @@ export class UserService extends BaseService<UserDocument> {
     });
   }
 
+  /**
+   * Updates the profile of the logged user.
+   * @param data The user data to update.
+   * @param session The optional client session to use for the transaction.
+   * @returns A promise resolving to the updated user document.
+   * @throws ValidationException If the logged user tries to update a different user's profile.
+   */
   async updateProfile(
     data: UpdateUserDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<UserDocument> {
     return await runTransaction<UserDocument>(session, async (newSession) => {
-      if (data._id !== UserStore.getInstance().user?._id.toString())
+      if (data._id !== userStorage.getStore()?.user?._id.toString())
         throw new ValidationException(
-          "The logged user can update only the own profile"
+          "The logged user can update only the own profile",
         );
 
       return this.update(data, newSession);

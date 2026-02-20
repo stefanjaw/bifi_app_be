@@ -13,13 +13,13 @@ export class BCDController extends BaseController<BCDDocument> {
   protected async postUploadBCDDataToFTPHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const id = req.params.id;
       const record = await (this.service as BCDService).uploadBCDDataToFTP(
         id,
-        undefined
+        undefined,
       );
 
       this.sendData(res, record);
@@ -31,11 +31,11 @@ export class BCDController extends BaseController<BCDDocument> {
   protected async putUpdateBCDsFromFTPPHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const record = await (this.service as BCDService).updateBCDsFromFTP(
-        undefined
+        undefined,
       );
 
       this.sendData(res, record);
@@ -47,7 +47,7 @@ export class BCDController extends BaseController<BCDDocument> {
   postUploadBCDDataToFTP = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.postUploadBCDDataToFTPHandler(req, res, next);
   };
@@ -55,7 +55,7 @@ export class BCDController extends BaseController<BCDDocument> {
   putUpdateBCDsFromFTPP = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.putUpdateBCDsFromFTPPHandler(req, res, next);
   };

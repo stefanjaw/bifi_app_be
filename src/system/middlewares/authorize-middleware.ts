@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UnauthorizedException, UserStore } from "../libraries";
+import { UnauthorizedException, userStorage } from "../libraries";
 import { PolicyDocument, RolePolicy, UserDocument } from "@mongodb-types";
 
 /**
@@ -17,7 +17,7 @@ export function authorizeMiddleware(
   resource: string,
   action: RolePolicy["actions"][number],
   getDocument: (req: Request) => Promise<Record<string, any>> = () =>
-    Promise.resolve({})
+    Promise.resolve({}),
 ) {
   const RBAC_ENABLE = process.env.RBAC_ENABLE
     ? process.env.RBAC_ENABLE === "true"
@@ -30,7 +30,7 @@ export function authorizeMiddleware(
     }
 
     try {
-      const user = UserStore.getInstance().user;
+      const user = userStorage.getStore()?.user;
       const document = await getDocument(req);
 
       // Check if user exists, if not, throw an error
@@ -45,7 +45,7 @@ export function authorizeMiddleware(
             (policy) =>
               policy.policyId.resource === resource &&
               policy.actions.includes(action) &&
-              policy.policyId.type === "model"
+              policy.policyId.type === "model",
           ) || [];
 
       // Check if policies exist, if not, throw an error
@@ -87,7 +87,7 @@ function evaluateCondition(
   resourceData: Record<string, any>,
   condition: PolicyDocument["conditions"][0],
   user: UserDocument | undefined,
-  context = {}
+  context = {},
 ): boolean {
   const key = condition.key;
   const operator = condition.operator;
@@ -97,7 +97,7 @@ function evaluateCondition(
     condition.value,
     user,
     resourceData,
-    context
+    context,
   );
 
   if (!(key in document)) return false;
@@ -137,7 +137,7 @@ function resolveConditionValue(
   value: any,
   user: UserDocument | undefined,
   resourceData: Record<string, any>,
-  context: object = {}
+  context: object = {},
 ) {
   // Ejemplo {{user.id}}
   if (

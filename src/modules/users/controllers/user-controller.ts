@@ -2,8 +2,7 @@ import { UserDocument } from "@mongodb-types";
 import {
   BaseController,
   FileValidatorService,
-  runTransaction,
-  UserStore,
+  userStorage,
 } from "../../../system";
 import { UserService } from "../services/user-service";
 import { NextFunction, Request, Response } from "express";
@@ -76,7 +75,7 @@ export class UserController extends BaseController<UserDocument> {
     res: Response,
     next: NextFunction,
   ) {
-    const userId = UserStore.getInstance().user?.id;
+    const userId = userStorage.getStore()?.user?._id.toString();
     this.sendData(res, await this.service.getById(userId || "", undefined));
   }
 
@@ -86,7 +85,7 @@ export class UserController extends BaseController<UserDocument> {
 
   // custom controller for me handler
   protected async meHandler(req: Request, res: Response) {
-    this.sendData(res, UserStore.getInstance().user);
+    this.sendData(res, userStorage.getStore());
   }
 
   me = async (req: Request, res: Response) => {

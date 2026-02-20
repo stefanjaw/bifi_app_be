@@ -1,16 +1,15 @@
-import {
-  ClientSession,
-  FilterQuery,
-  PaginateModel,
-  PaginateResult,
-  Types,
-} from "mongoose";
 import { orderByQuery, paginationOptions } from "./query-options.type";
 import { runTransaction } from "./transaction-utils";
 import { json2csv } from "json-2-csv";
 import { refModelMap } from "./ref-model-map";
+import { ConnectionManager } from "./connection-manager";
+import { ClientSession, FilterQuery, PaginateModel } from "mongoose";
+import { PaginateResult } from "mongoose";
 
 export class BaseService<T> {
+  protected connectionManager = new ConnectionManager();
+
+  // Mongoose model
   model!: PaginateModel<T>;
   refFields?: refModelMap<T>[];
 
@@ -19,80 +18,73 @@ export class BaseService<T> {
   }
 
   //#region GET METHODS
+
   /**
-   * Retrieves a single document by its id.
-   *
-   * This function runs a transactional operation.
-   * @param id - The id of the document to retrieve.
-   * @param session - Optional mongoose session.
-   * @returns The retrieved document or undefined if not found.
+   * Get a record by id.
+   * @param {string} id - The id of the record to retrieve.
+   * @param {ClientSession | undefined} session - The optional client session to use for the transaction.
+   * @returns {Promise<T | undefined>} - A promise resolving to the retrieved record document, or undefined if no record exists.
    */
   async getById(
     id: string,
-    session: ClientSession | undefined
+    session: ClientSession | undefined,
   ): Promise<T | undefined> {
     return await runTransaction<T | undefined>(session, async (newSession) => {
-      const document = await this.model.findById(id).session(newSession); // This is a mongoose session
+      const model = this.connectionManager.bindModelToDb(this.model);
+
+      // return record by id
+      const document = await model.findById(id).session(newSession); // This is a mongoose session
       return document as T | undefined;
     });
   }
 
-  /**
-   * Retrieve records from the database.
-   * @param searchParams - The search params as key value pair.
-   * @param orderBy - The order by query.
-   * @param count - Whether to count the number of records.
-   * @param session - Optional mongoose session.
-   * @returns An array of records.
-   */
   async get(
     searchParams: Record<string, any>,
     paginationOptions: undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
     count: boolean | undefined,
-    session: ClientSession | undefined
+    session: ClientSession | undefined,
   ): Promise<T[]>;
 
-  /**
-   * Retrieve records from the database.
-   * @param searchParams - The search params as key value pair.
-   * @param paginationOptions - The pagination options with `paginate` set to `true`.
-   * @param orderBy - The order by query.
-   * @param count - Whether to count the number of records.
-   * @param session - Optional mongoose session.
-   * @returns A mongoose paginate result.
-   */
   async get(
     searchParams: Record<string, any>,
     paginationOptions: paginationOptions & { paginate: true },
     orderBy: orderByQuery["orderBy"] | undefined,
     count: boolean | undefined,
-    session: ClientSession | undefined
+    session: ClientSession | undefined,
   ): Promise<PaginateResult<T>>;
 
   /**
-   * Retrieve records from the database.
+   * Retrieves records from the database.
    * @param searchParams - The search params as key value pair.
-   * @param paginationOptions - The pagination options.
+   * @param paginationOptions - The pagination options with `paginate` set to `true` or `false`.
+   * If `paginate` is `true`, the function will return a PaginateResult object with the records and pagination metadata.
+   * If `paginate` is `false`, the function will return an array of records.
    * @param orderBy - The order by query.
+   * If `orderBy` is provided, the function will use it to sort the records.
    * @param count - Whether to count the number of records.
-   * @param session - The mongoose transaction session.
-   * @returns A promise that resolves to the retrieved records.
+   * If `count` is `true`, the function will return the count of records in the PaginateResult object.
+   * If `count` is `false` or `undefined`, the function will not return the count of records.
+   * @param dbName - The name of the database to use.
+   * @param session - Optional mongoose session to use for the transaction.
+   * @returns A promise resolving to a PaginateResult object if `paginate` is `true`, or an array of records if `paginate` is `false`.
    */
   async get(
     searchParams: Record<string, any>,
     paginationOptions: paginationOptions | undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
     count: boolean | undefined,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<PaginateResult<T> | T[]> {
     return await runTransaction<PaginateResult<T> | T[]>(
       session,
       async (newSession) => {
+        const model = this.connectionManager.bindModelToDb(this.model);
+
         if (this.refFields && this.refFields.length > 0) {
           searchParams = await this.transformReferenceFilters(
             searchParams,
-            newSession
+            newSession,
           );
         }
 
@@ -109,7 +101,7 @@ export class BaseService<T> {
 
         if (paginationOptions && paginationOptions?.paginate) {
           // if paginated
-          records = await this.model.paginate(searchParams, {
+          records = await model.paginate(searchParams, {
             page: paginationOptions.page,
             limit: paginationOptions.limit,
             session: newSession,
@@ -117,27 +109,39 @@ export class BaseService<T> {
           });
         } else if (count) {
           // count
-          records = await this.model
+          records = await model
             .countDocuments(searchParams)
             .session(newSession);
         } else {
           // non paginated
           records = orderByObject
-            ? await this.model
+            ? await model
                 .find(searchParams)
                 .session(newSession)
                 .sort(orderByObject)
-            : await this.model.find(searchParams).session(newSession);
+            : await model.find(searchParams).session(newSession);
         }
 
         return records as PaginateResult<T> | T[];
-      }
+      },
     );
   }
 
+  /**
+   * Transforms filters that reference other models into MongoDB compatible filters.
+   *
+   * This function takes the given searchParams and recursively processes each key-value pair.
+   * If the key corresponds to a configured reference, it extracts the actual field name,
+   * finds the matching documents in the referenced model, and replaces the original filter with
+   * an $in operator for arrays, or a single value for non-arrays.
+   *
+   * @param searchParams The search parameters to transform.
+   * @param session The mongoose session to use for the transformation.
+   * @returns A promise resolving to the transformed search parameters.
+   */
   protected async transformReferenceFilters(
     searchParams: Record<string, any>,
-    session: ClientSession
+    session: ClientSession,
   ) {
     // Make a deep copy to avoid mutating the original object
     const newFilters = Array.isArray(searchParams)
@@ -156,7 +160,7 @@ export class BaseService<T> {
         for (const key of Object.keys(obj)) {
           // Check if the key corresponds to a configured reference
           const refField = (this.refFields || []).find((rf) =>
-            key.startsWith(rf.path + ".")
+            key.startsWith(rf.path + "."),
           );
 
           if (refField) {
@@ -167,8 +171,8 @@ export class BaseService<T> {
             // Find IDs in the referenced model that match the filter
             const filter: FilterQuery<any> = { [fieldName]: filterValue };
 
-            const matchingDocs = await refField
-              .getModel()
+            const matchingDocs = await this.connectionManager
+              .bindModelToDb(refField.getModel())
               .find(filter)
               .select("_id")
               .session(session);
@@ -199,44 +203,46 @@ export class BaseService<T> {
   //#endregion
 
   /**
-   * Creates a record in the database.
-   * @param data The data to create the record with.
-   * @param session The optional client session to use for the transaction.
-   * @returns The created record document.
+   * Creates a new record in the database with the given data.
+   * The function runs within a transaction and returns the created record.
+   * @param data - The data to create the record with.
+   * @param session - The optional client session to use for the transaction.
+   * @returns A promise resolving to the created record document.
    */
   async create(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<T> {
     return await runTransaction<T>(session, async (newSession) => {
-      const record = (
-        await this.model.create([data], { session: newSession })
-      )[0];
+      const model = this.connectionManager.bindModelToDb(this.model);
 
+      // create record
+      const record = (await model.create([data], { session: newSession }))[0];
       return record as T;
     });
   }
 
   /**
-   * Updates a record in the database with the given data.
-   * The record is identified by the `_id` field in the provided data,
-   * which is removed from the update data before performing the update.
+   * Updates an existing record in the database with the given data.
+   * The function first checks if an _id is present in the data and removes it.
+   * Then it calls the findByIdAndUpdate method of the model with the _id, data and the session.
    * The function runs within a transaction and returns the updated record.
-   *
-   * @param data - The data to update the record with. Must include the `_id` of the record to update.
+   * @param data - The data to update the record with.
    * @param session - The optional client session to use for the transaction.
-   * @returns The updated record document.
+   * @returns A promise resolving to the updated record document.
    */
   async update(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<T> {
     return await runTransaction<T>(session, async (newSession) => {
+      const model = this.connectionManager.bindModelToDb(this.model);
+
       // check _id and get it
       const _id = data._id;
       delete data._id;
 
-      const record = await this.model.findByIdAndUpdate(_id, data, {
+      const record = await model.findByIdAndUpdate(_id, data, {
         session: newSession,
         new: true,
       });
@@ -246,17 +252,21 @@ export class BaseService<T> {
   }
 
   /**
-   * Soft deletes a record from the database.
-   * @param _id The _id of the record to delete.
-   * @param session The optional client session to use for the transaction.
-   * @returns A boolean indicating if the deletion was successful.
+   * Deletes a record in the database by setting the active field to false.
+   * The function runs within a transaction and returns a boolean indicating whether the deletion was successful.
+   * @param _id - The ID of the record to delete.
+   * @param session - The optional client session to use for the transaction.
+   * @returns A promise resolving to a boolean indicating whether the deletion was successful.
    */
   async delete(
     _id: string,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<boolean> {
     return await runTransaction<boolean>(session, async (newSession) => {
-      const record = await this.model.findByIdAndUpdate(
+      const model = this.connectionManager.bindModelToDb(this.model);
+
+      // check _id and update
+      const record = await model.findByIdAndUpdate(
         _id,
         {
           active: false,
@@ -264,7 +274,7 @@ export class BaseService<T> {
         {
           session: newSession,
           new: true,
-        }
+        },
       );
 
       if (!session) await newSession.commitTransaction();
@@ -275,15 +285,19 @@ export class BaseService<T> {
   }
 
   /**
-   * Converts the given data into a CSV and returns it as a Buffer.
-   * @param data The data to convert into a CSV. Defaults to an empty array.
-   * @returns A Buffer containing the CSV data.
+   * Exports all documents of the collection in CSV format to a file.
+   * If data is not provided, it will fetch all documents from the database.
+   * The function will return a Promise resolving to a Buffer containing the CSV data.
+   * @param data - Optional array of objects to export as CSV.
+   * @returns A Promise resolving to a Buffer containing the CSV data.
    */
   async exportCSV(data: Record<string, any>[] = []): Promise<Buffer> {
     try {
+      const model = this.connectionManager.bindModelToDb(this.model);
+
       if (data.length === 0) {
-        data = (await this.model.find().lean()).map((item) =>
-          JSON.parse(JSON.stringify(item))
+        data = (await model.find().lean()).map((item) =>
+          JSON.parse(JSON.stringify(item)),
         );
       }
 
@@ -295,17 +309,24 @@ export class BaseService<T> {
   }
 
   /**
-   * Imports the given data as a record in the database.
-   * @param data The data to import as records.
-   * @param session The optional client session to use for the transaction.
-   * @returns The created record document.
+   * Imports a CSV file into the database.
+   * The function expects a plain array of objects to be passed as the first argument.
+   * The objects should have the same structure as the records in the database.
+   * The function runs within a transaction and returns the imported records as an array of documents.
+   *
+   * @param data - The data to import as a CSV file.
+   * @param session - The optional client session to use for the transaction.
+   * @returns A promise resolving to the imported records as an array of documents.
    */
   async importCSV(
     data: Record<string, any>[], // previously sent as a csv file
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<T[]> {
     return await runTransaction<T[]>(session, async (newSession) => {
-      const records = await this.model.create([...data], {
+      const model = this.connectionManager.bindModelToDb(this.model);
+
+      // create record
+      const records = await model.create([...data], {
         session: newSession,
         ordered: true,
       });
@@ -314,6 +335,16 @@ export class BaseService<T> {
     });
   }
 
+  /**
+   * Checks if the given data is a pagination result.
+   * This function is useful for typeguards and distinguishing between plain arrays and pagination results.
+   * @example
+   * const someData: any = [...];
+   * if (isPagination(someData)) {
+   *   // code that knows someData is a pagination result
+   * }
+   * @returns {boolean} True if the given data is a pagination result, false otherwise.
+   */
   isPagination(data: T[] | PaginateResult<T>): data is PaginateResult<T> {
     return (data as PaginateResult<T>).docs !== undefined;
   }
