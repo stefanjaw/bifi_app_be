@@ -12,13 +12,13 @@ export class ContactService extends BaseService<ContactDocument> {
         {
           path: "parentId",
           getModel: () =>
-            this.connectionManager.getModelByDB<ContactDocument>("Contact"),
+            this.connectionManager.getModel<ContactDocument>("Contact"),
           isArray: false,
         },
         {
           path: "countryId",
           getModel: () =>
-            this.connectionManager.getModelByDB<CountryDocument>("Country"),
+            this.connectionManager.getModel<CountryDocument>("Country"),
           isArray: false,
         },
       ],

@@ -1,7 +1,6 @@
 import { ContactDocument, RoleDocument, UserDocument } from "@mongodb-types";
 import {
   BaseService,
-  GridFSBucketService,
   isValidFileUpload,
   runTransaction,
   userStorage,
@@ -10,7 +9,6 @@ import {
 import { userModel } from "../models/user.model";
 import mongoose from "mongoose";
 import admin from "firebase-admin";
-import { PaginateModel } from "mongoose";
 import { UpdateUserDTO, UserDTO } from "../models/user.dto";
 import { ContactService } from "../../contacts/services/contact-service";
 
@@ -23,32 +21,27 @@ export class UserService extends BaseService<UserDocument> {
       refFields: [
         {
           path: "roles",
-          getModel: () =>
-            this.connectionManager.getModelByDB<RoleDocument>("Role"),
+          getModel: () => this.connectionManager.getModel<RoleDocument>("Role"),
           isArray: true,
         },
         {
           path: "contactId",
           getModel: () =>
-            this.connectionManager.getModelByDB<ContactDocument>("Contact"),
+            this.connectionManager.getModel<ContactDocument>("Contact"),
           isArray: false,
         },
       ],
     });
   }
 
-  private get gridFSBucket() {
-    return GridFSBucketService.getInstance();
-  }
-
   /**
-   * Creates a new user. If contact information is provided without an _id, a new contact will be created.
-   * If contact information with an _id is provided, the existing contact will be updated.
-   * And the contactId field of the user will be set to the created/updated contact's _id.
-   *
-   * @param data The user data to create. If contact information is provided without an _id, a new contact will be created.
-   * @param session
-   * @returns The created user document.
+   * Creates a new user.
+   * If contact information is provided without an _id, creates a new contact.
+   * If contact information with an _id is provided, updates the existing contact.
+   * If authId is not provided, and email and password are provided, creates user in firebase auth.
+   * @param data The user data to create.
+   * @param session The optional client session to use for the transaction.
+   * @returns A promise resolving to the created user document.
    */
   override async create(
     data: UserDTO,
@@ -101,21 +94,21 @@ export class UserService extends BaseService<UserDocument> {
   }
 
   /**
-   * Updates a user with the given data.
-   * Prevents updating authId through this method.
+   * Updates an existing user.
    * If contact information is provided without an _id, creates a new contact.
    * If contact information with an _id is provided, updates the existing contact.
-   * And the contactId field of the user will be set to the created/updated contact's _id.
-   *
-   * @param data The user data to update. If contact information is provided without an _id, a new contact will be created.
-   * @param session
-   * @returns The updated user document.
+   * If a file is provided for uploadedPictureId, uploads it and stores the file ID in the user data.
+   * @param data The user data to update.
+   * @param session The optional client session to use for the transaction.
+   * @returns A promise resolving to the updated user document.
    */
   override async update(
     data: UpdateUserDTO,
     session?: mongoose.ClientSession | undefined,
   ): Promise<UserDocument> {
     return await runTransaction<UserDocument>(session, async (newSession) => {
+      const bucket = this.connectionManager.bindBucketToDb();
+
       // Prevent updating authId through this method
       if (data.authId) delete data.authId;
 
@@ -143,7 +136,7 @@ export class UserService extends BaseService<UserDocument> {
       }
 
       if (isValidFileUpload(data.uploadedPictureId)) {
-        const fileId = await this.gridFSBucket.uploadFile(
+        const fileId = await bucket.uploadFile(
           data.uploadedPictureId as Express.Multer.File,
         );
 

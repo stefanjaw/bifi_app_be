@@ -10,7 +10,7 @@ export class RoomService extends BaseService<RoomDocument> {
         {
           path: "facilityId",
           getModel: () =>
-            this.connectionManager.getModelByDB<FacilityDocument>("Facility"),
+            this.connectionManager.getModel<FacilityDocument>("Facility"),
           isArray: false,
         },
       ],

@@ -155,10 +155,6 @@ const start = async () => {
 
     console.log("Connected to MongoDB successfully!");
 
-    // create bucket to save images
-    if (mongoose.connection.db)
-      GridFSBucketService.initiate(mongoose.connection.db);
-
     // init ftpservice
     FTPService.initiate({
       host: process.env.FTP_HOST || "",

@@ -1,5 +1,6 @@
 import mongoose, { PaginateModel } from "mongoose";
 import { dbNameStorage } from "../auth/db-name-store";
+import { GridFSBucketService } from "../file-storage/grid-fs-bucket-service";
 
 export class ConnectionManager {
   private static dbCache: Record<string, mongoose.Connection> = {};
@@ -15,7 +16,7 @@ export class ConnectionManager {
    * @returns The mongoose database connection for the given database name.
    * @private
    */
-  private getDb(dbName: string) {
+  private getDbByName(dbName: string) {
     if (!ConnectionManager.dbCache[dbName]) {
       ConnectionManager.dbCache[dbName] = mongoose.connection.useDb(dbName);
     }
@@ -38,12 +39,33 @@ export class ConnectionManager {
 
     if (!dbName) throw new Error("No database name provided");
 
-    const db = this.getDb(dbName);
+    const db = this.getDbByName(dbName);
 
     return (
       (db.models[model.modelName] as PaginateModel<T>) ||
       (db.model(model.modelName, model.schema) as PaginateModel<T>)
     );
+  }
+
+  /**
+   * Binds a GridFSBucketService to the current database connection.
+   * If no database name is provided, it will use the current database name.
+   * @returns A GridFSBucketService instance bound to the current database connection.
+   */
+  bindBucketToDb() {
+    let dbName = dbNameStorage.getStore();
+
+    const defaultDBName = this.getDefaultDBName();
+
+    if (!dbName && defaultDBName) dbName = defaultDBName;
+
+    if (!dbName) throw new Error("No database name provided");
+
+    const db = this.getDbByName(dbName).db;
+
+    if (!db) throw new Error("No database found");
+
+    return new GridFSBucketService(db);
   }
 
   /**
@@ -53,7 +75,7 @@ export class ConnectionManager {
    * @returns {PaginateModel<T>} The retrieved mongoose model.
    * @throws {Error} If no database name is provided.
    */
-  getModelByDB<T>(modelName: string) {
+  getModel<T>(modelName: string) {
     let dbName = dbNameStorage.getStore();
 
     const defaultDBName = this.getDefaultDBName();
@@ -62,7 +84,7 @@ export class ConnectionManager {
 
     if (!dbName) throw new Error("No database name provided");
 
-    const db = this.getDb(dbName);
+    const db = this.getDbByName(dbName);
 
     return (
       (db.models[modelName] as PaginateModel<T>) ||
@@ -85,6 +107,6 @@ export class ConnectionManager {
 
     if (!dbName) throw new Error("No database name provided");
 
-    return this.getDb(dbName).modelNames();
+    return this.getDbByName(dbName).modelNames();
   }
 }

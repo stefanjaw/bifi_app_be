@@ -12,7 +12,7 @@ export class ProjectService extends BaseService<ProjectDocument> {
         {
           path: "createdBy",
           getModel: () =>
-            this.connectionManager.getModelByDB<UserDocument>("User"),
+            this.connectionManager.getModel<UserDocument>("User"),
           isArray: false,
         },
       ],

@@ -4,7 +4,6 @@ import {
 } from "@mongodb-types";
 import {
   BaseService,
-  GridFSBucketService,
   InternalServerException,
   runTransaction,
   userStorage,
@@ -234,10 +233,6 @@ export class ShippingService extends BaseService<ShippingDocument> {
     });
   }
 
-  private get gridFSBucket() {
-    return GridFSBucketService.getInstance();
-  }
-
   /**
    * Creates a new shipping record.
    * The record is created with the user who made the request as the createdBy user.
@@ -304,17 +299,13 @@ export class ShippingService extends BaseService<ShippingDocument> {
   }
 
   /**
-   * Generates a shipping record from a file and saves it to the database.
-   *
-   * This function uses the Gen AI service to generate a shipping record from a file.
-   * The generated shipping record is then parsed and saved to the database.
-   *
-   * The function runs a transactional operation.
-   *
+   * Generates a shipping record from the given files.
+   * The function runs within a transaction and returns the created record.
+   * If the shipping record with the given id already exists, it will be updated instead.
    * @param files - The files to generate the shipping record from.
-   * @param _id - The id of the shipping record to update (if any).
-   * @param session - Optional mongoose session.
-   * @returns The generated shipping record.
+   * @param _id - The optional id of the shipping record to update.
+   * @param session - The optional client session to use for the transaction.
+   * @returns The created shipping record document.
    */
   async generateShippingFromFiles(
     files: Express.Multer.File[],
@@ -324,6 +315,8 @@ export class ShippingService extends BaseService<ShippingDocument> {
     return await runTransaction<ShippingDocument>(
       session,
       async (newSession) => {
+        const bucket = this.connectionManager.bindBucketToDb();
+
         // Get countries
         const countries = await this.countryService.get(
           {},
@@ -352,7 +345,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
 
         // Save pdf files to gridFS
         const gridFSFiles = await Promise.all(
-          files.map(async (file) => await this.gridFSBucket.uploadFile(file)),
+          files.map(async (file) => await bucket.uploadFile(file)),
         );
 
         // Attach file to shipping

@@ -15,7 +15,7 @@ export class CompanyService extends BaseService<CompanyDocument> {
         {
           path: "countryId",
           getModel: () =>
-            this.connectionManager.getModelByDB<CountryDocument>("Country"),
+            this.connectionManager.getModel<CountryDocument>("Country"),
           isArray: false,
         },
         {

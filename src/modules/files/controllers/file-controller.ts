@@ -1,19 +1,27 @@
 import { Request, Response, NextFunction } from "express";
-import { BadRequestException, GridFSBucketService } from "../../../system";
+import { BadRequestException, ConnectionManager } from "../../../system";
 import { isValidObjectId } from "mongoose";
 import sharp from "sharp";
 
 export class FileController {
+  private connectionManager = new ConnectionManager();
+
   /**
-   * Downloads a file from the database by id
-   * @param req - The express Request object containing the id parameter
-   * @param res - The express Response object to send the file
-   * @param next - The express NextFunction callback to pass control to the next middleware on error
-   * @throws {BadRequestException} - If id is not provided
-   * @throws {NotFoundException} - If the file is not found
+   * Retrieves a file from the database by its id.
+   * If the request includes an "imageSize" parameter with a value of "icon", "full", or "preview",
+   * the file is resized accordingly before being sent to the client.
+   * If the file is not an image, the "imageSize" parameter is ignored.
+   *
+   * @param req The express Request object, which should contain the "id" parameter.
+   * @param res The express Response object.
+   * @param next The express NextFunction callback to pass control to the next middleware on error.
+   * @throws BadRequestException if no "id" parameter is provided or if the id is invalid.
+   * @throws BadRequestException if the "imageSize" parameter is provided and is not "icon", "full", or "preview".
    */
-  async getById(req: Request, res: Response, next: NextFunction) {
+  async getByIdHandler(req: Request, res: Response, next: NextFunction) {
     try {
+      const bucket = this.connectionManager.bindBucketToDb();
+
       const id = req.params.id;
       const imageSize = req.query.imageSize as
         | ("icon" | "full" | "preview")
@@ -25,19 +33,18 @@ export class FileController {
 
       if (imageSize && !["icon", "full", "preview"].includes(imageSize))
         throw new BadRequestException(
-          "Invalid image size parameter, must be 'icon', 'full' or 'preview'"
+          "Invalid image size parameter, must be 'icon', 'full' or 'preview'",
         );
 
-      const { file, bufferDownload } =
-        await GridFSBucketService.getInstance().downloadFile(id);
+      const { file, bufferDownload } = await bucket.downloadFile(id);
 
       res.setHeader(
         "Content-Type",
-        file.metadata?.mimetype || "application/octet-stream"
+        file.metadata?.mimetype || "application/octet-stream",
       );
       res.setHeader(
         "Content-Disposition",
-        `inline; filename="${file.filename}"`
+        `inline; filename="${file.filename}"`,
       );
 
       // Write the buffer to the response
@@ -64,20 +71,32 @@ export class FileController {
     }
   }
 
+  getById = (req: Request, res: Response, next: NextFunction) => {
+    return this.getByIdHandler(req, res, next);
+  };
+
   /**
-   * Uploads multiple files to the database
-   * @param req - The express Request object containing the files in the "files" field
+   * Uploads one or more files to the GridFS bucket.
+   *
+   * The request must include the "files" property, which is an array of Express.Multer.File objects.
+   * The response will contain the "fileIds" property, which is an array of strings representing the IDs of the uploaded files.
+   *
+   * @throws InternalServerException if there is an error during the upload process.
    */
-  async uploadFiles(req: Request, res: Response, next: NextFunction) {
+  async uploadFilesHandler(req: Request, res: Response, next: NextFunction) {
     try {
+      const bucket = this.connectionManager.bindBucketToDb();
+
       const files = req.files as Express.Multer.File[];
-      const fileIds = await GridFSBucketService.getInstance().uploadFiles(
-        files
-      );
+      const fileIds = await bucket.uploadFiles(files);
 
       res.status(201).json({ fileIds });
     } catch (error) {
       next(error);
     }
   }
+
+  uploadFiles = (req: Request, res: Response, next: NextFunction) => {
+    return this.uploadFilesHandler(req, res, next);
+  };
 }

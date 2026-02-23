@@ -1,7 +1,6 @@
 import { ClientSession } from "mongoose";
 import {
   BaseService,
-  GridFSBucketService,
   runTransaction,
   ValidationException,
 } from "../../../system";
@@ -26,26 +25,33 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
     super({ model: assetCommissioningModel });
   }
 
-  private get gridFSBucket() {
-    return GridFSBucketService.getInstance();
-  }
-
+  /**
+   * Creates a new asset commissioning. This will check if a commissioning already exists for the asset roster and is active.
+   * If so, it will throw a ValidationException. It will also handle any file uploads and set all other commissionings for the asset roster as inactive except the one being created.
+   * It will also handle asset roster status and add activity history.
+   * @param {AssetCommissioningDTO} data - The asset commissioning data to create.
+   * @param {ClientSession} [session] - The client session to use for the create.
+   * @returns {Promise<AssetCommissioningDocument>} - The created asset commissioning document.
+   * @throws {ValidationException} - If a commissioning already exists for the asset roster and has passed.
+   */
   override async create(
     data: AssetCommissioningDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<AssetCommissioningDocument> {
     return runTransaction<AssetCommissioningDocument>(
       session,
       async (newSession) => {
+        const bucket = this.connectionManager.bindBucketToDb();
+
         // CHECK THAT NO OTHER COMMISSION WAS ISSUED FOR THE ASSET ROSTER AND IS ACTIVE
         if (
           await this.assetRosterStatusService.assetRosterHasActiveCommissioning(
             data.assetRosterId,
-            newSession
+            newSession,
           )
         ) {
           throw new ValidationException(
-            "A commissioning already exists for this asset roster and has passed."
+            "A commissioning already exists for this asset roster and has passed.",
           );
         }
 
@@ -56,11 +62,11 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
         ) {
           data.attachments = await Promise.all(
             data.attachments.map<Promise<InnerFile>>(async (file) => ({
-              fileId: await this.gridFSBucket.uploadFile(file),
+              fileId: await bucket.uploadFile(file),
               name: file.originalname,
               mimeType: file.mimetype,
               size: file.size,
-            }))
+            })),
           );
         }
 
@@ -70,7 +76,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
           undefined,
           undefined,
           false,
-          newSession
+          newSession,
         );
 
         // SET ALL COMMISSIONS AS INACTIVE EXCEPT THE ONE BEING CREATED
@@ -78,7 +84,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
           commissions.map(async (commission) => {
             commission.active = false;
             await commission.save({ session: newSession });
-          })
+          }),
         );
 
         // SAVE COMMISSION
@@ -87,7 +93,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
         // HANDLE ASSET ROSTER STATUS
         await this.assetRosterStatusService.updateAssetRosterStatus(
           commission.assetRosterId._id,
-          newSession
+          newSession,
         );
 
         // ADD ACTIVITY HISTORY
@@ -109,21 +115,30 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
               assetRosterId: commission.assetRosterId._id.toString(),
             },
           },
-          newSession
+          newSession,
         );
 
         return commission;
-      }
+      },
     );
   }
 
+  /**
+   * Updates an existing asset commissioning record.
+   * Handles file uploads if provided and updates the asset roster status.
+   * @param {UpdateAssetCommissioningDTO} data - The data to update the asset commissioning record with.
+   * @param {ClientSession} [session] - The client session to use for the update.
+   * @returns {Promise<AssetCommissioningDocument>} - The updated asset commissioning record document.
+   */
   override async update(
     data: UpdateAssetCommissioningDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<AssetCommissioningDocument> {
     return runTransaction<AssetCommissioningDocument>(
       session,
       async (newSession) => {
+        const bucket = this.connectionManager.bindBucketToDb();
+
         // HANDLE FILES IF PROVIDED
         if (
           isValidFileUpload(data.attachments) &&
@@ -131,11 +146,11 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
         ) {
           data.attachments = await Promise.all(
             data.attachments.map<Promise<InnerFile>>(async (file) => ({
-              fileId: await this.gridFSBucket.uploadFile(file),
+              fileId: await bucket.uploadFile(file),
               name: file.originalname,
               mimeType: file.mimetype,
               size: file.size,
-            }))
+            })),
           );
         }
 
@@ -145,29 +160,37 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
         // HANDLE ASSET ROSTER STATUS
         await this.assetRosterStatusService.updateAssetRosterStatus(
           commission.assetRosterId._id,
-          newSession
+          newSession,
         );
 
         return commission;
-      }
+      },
     );
   }
 
+  /**
+   * Updates an existing asset commissioning record to decommissioned.
+   * Sets the active field to false and updates the asset roster status to decommissioned.
+   * Adds an activity history record with the details of the decommissioning.
+   * @param {UpdateAssetCommissioningDTO} data - The data to update the asset commissioning record with.
+   * @param {ClientSession} [session] - The client session to use for the update.
+   * @returns {Promise<AssetCommissioningDocument>} - The updated asset commissioning record document.
+   */
   async updateDecommission(
     data: UpdateAssetCommissioningDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ) {
     return runTransaction<AssetCommissioningDocument>(
       session,
       async (newSession) => {
         const commission = await this.update(
           { ...data, active: false },
-          newSession
+          newSession,
         );
 
         await this.assetRosterService.update(
           { _id: commission.assetRosterId._id, status: "decommissioned" },
-          newSession
+          newSession,
         );
 
         // ADD ACTIVITY HISTORY
@@ -184,17 +207,24 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
               assetRosterId: commission.assetRosterId._id.toString(),
             },
           },
-          newSession
+          newSession,
         );
 
         return commission;
-      }
+      },
     );
   }
 
+  /**
+   * Deletes an existing asset commissioning record.
+   * Handles the deletion of the asset commissioning record and updates the asset roster status.
+   * @param {string} _id - The ID of the asset commissioning record to delete.
+   * @param {ClientSession} [session] - The client session to use for the deletion.
+   * @returns {Promise<boolean>} - A promise resolving to a boolean indicating whether the deletion was successful.
+   */
   override async delete(
     _id: string,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<boolean> {
     return runTransaction<boolean>(session, async (newSession) => {
       const commission = (
@@ -205,7 +235,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
 
       await this.assetRosterStatusService.updateAssetRosterStatus(
         commission.assetRosterId._id,
-        newSession
+        newSession,
       );
 
       return deleted;

@@ -85,7 +85,7 @@ export class UserController extends BaseController<UserDocument> {
 
   // custom controller for me handler
   protected async meHandler(req: Request, res: Response) {
-    this.sendData(res, userStorage.getStore());
+    this.sendData(res, userStorage.getStore()?.user);
   }
 
   me = async (req: Request, res: Response) => {

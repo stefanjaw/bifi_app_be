@@ -3,7 +3,6 @@ import {
   BaseService,
   ftpResponse,
   FTPService,
-  GridFSBucketService,
   runTransaction,
   ValidationException,
 } from "../../../system";
@@ -27,20 +26,16 @@ export class BCDService extends BaseService<BCDDocument> {
     });
   }
 
-  private get gridFSBucket() {
-    return GridFSBucketService.getInstance();
-  }
-
   private get ftpService() {
     return FTPService.getInstance();
   }
 
   /**
    * Creates a new BCD document.
-   * It calculates the BCD values (records count, invoice amount, header charges, total header charges payable, records due and final payable amount) before creating the document.
-   * @param data - The BCD data to create.
-   * @param session - The optional client session to use for the transaction.
-   * @returns The created BCD document.
+   * Before creating the document, it loads the charge codes record from the database and uses it to calculate the BCD values.
+   * @param data The BCD data to create.
+   * @param session The optional client session to use for the transaction.
+   * @returns A promise resolving to the created BCD document.
    */
   override async create(data: BcdDTO, session?: ClientSession | undefined) {
     try {
@@ -91,20 +86,23 @@ export class BCDService extends BaseService<BCDDocument> {
   }
 
   //#region EBCD FILE TREATMENTS
+
   /**
-   * Uploads a BCD record as a CSV file to the FTP server.
-   * The function fetches the BCD record by the provided `_id` and validates its existence.
-   * If the BCD record has already been sent to the government (status !== "DRAFT"),
+   * Uploads a BCD document as a CSV file to the FTP server.
+   * The function fetches the BCD document by the provided `_id` and validates its existence.
+   * If the BCD document has already been sent to the government (status !== "DRAFT"),
    * a ValidationException is thrown.
    * The function generates a new filename for the CSV file and uploads the file to the FTP server.
-   * The function also uploads the file to GridFS and updates the BCD record with the uploaded file information.
-   * The function returns the updated BCD record document.
-   *
-   * @param _id - The ID of the BCD record to upload as a CSV file.
+   * The function also uploads the file to GridFS and updates the BCD document with the uploaded file information.
+   * The function returns the updated BCD document.
+   * @param _id - The ID of the BCD document to upload as a CSV file.
    * @param session - The optional client session to use for the transaction.
+   * @returns The updated BCD document.
    */
   async uploadBCDDataToFTP(_id: string, session?: ClientSession | undefined) {
     return await runTransaction(session, async (newSession) => {
+      const bucket = this.connectionManager.bindBucketToDb();
+
       // * Fetch BCD data by ID
       const bcd = await this.getById(_id, newSession);
 
@@ -147,7 +145,7 @@ export class BCDService extends BaseService<BCDDocument> {
       await this.ftpService.upload(csvFile, "/inbox", filename);
 
       // * upload file to GridFS
-      const fileId = await this.gridFSBucket.uploadFile(csvFile);
+      const fileId = await bucket.uploadFile(csvFile);
 
       // * if uploaded correctly
       const updatedBCD = await super.update(
@@ -185,10 +183,12 @@ export class BCDService extends BaseService<BCDDocument> {
    * If an error file is found, the function adds it to the array of files to process.
    * The function then uploads the files to GridFS and updates the BCD documents with the uploaded files.
    * The function then moves the files from the FTP folder "/outbox" to "/outbox/proccessed".
-   * @returns {Promise<bcd[]>} - An array of updated BCD documents.
+   * @returns {Promise<BCDDocument[]>} - An array of updated BCD documents.
    */
   async updateBCDsFromFTP(session?: ClientSession | undefined) {
     return await runTransaction(session, async (newSession) => {
+      const bucket = this.connectionManager.bindBucketToDb();
+
       // * get bcds
       const bcds = await this.get(
         {
@@ -258,7 +258,7 @@ export class BCDService extends BaseService<BCDDocument> {
                 name: ftpFile.metadata.name,
                 size: ftpFile.metadata.size,
                 mimeType: mimeType ? mimeType : "text/csv",
-                fileId: await this.gridFSBucket.uploadFile(file),
+                fileId: await bucket.uploadFile(file),
               },
               type: this.resolveEBCDType(ftpFile.metadata.name),
             };
@@ -292,6 +292,7 @@ export class BCDService extends BaseService<BCDDocument> {
   }
 
   // ======================= EBCD UTILS =======================
+
   /**
    * Generates a new filename for a SENT_CSV EBCD document, given an array of BCD documents.
    * The filename will be in the format {companyName}{date}.{consecutive number}.

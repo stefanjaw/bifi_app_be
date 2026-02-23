@@ -6,30 +6,12 @@ import {
   ValidationException,
 } from "../exceptions/service-exception";
 
-// Will apply singleton pattern to this service for preserving the GridFSBucket instance
-// This service is used to interact with GridFS for file storage in MongoDB
 export class GridFSBucketService {
-  private static instance: GridFSBucketService | null = null;
   private bucket: GridFSBucket;
   private bucketName = "bifi_app_files";
 
   constructor(db: Db) {
     this.bucket = new GridFSBucket(db, { bucketName: this.bucketName });
-  }
-
-  static initiate(db: Db) {
-    GridFSBucketService.instance = new GridFSBucketService(db);
-    return GridFSBucketService.instance;
-  }
-
-  static getInstance() {
-    if (!GridFSBucketService.instance) {
-      throw new Error(
-        "GridFSBucketService is not initialized. Call initiate first."
-      );
-    }
-
-    return GridFSBucketService.instance;
   }
 
   /**
@@ -71,7 +53,7 @@ export class GridFSBucketService {
       stream.end(
         file instanceof File
           ? Buffer.from(await file.arrayBuffer())
-          : file.buffer
+          : file.buffer,
       );
 
       // Handle errors during the upload process
@@ -121,7 +103,7 @@ export class GridFSBucketService {
 
         downloadStream.on("error", (err) => {
           reject(
-            new InternalServerException(`File download failed: ${err.message}`)
+            new InternalServerException(`File download failed: ${err.message}`),
           );
         });
 
@@ -159,7 +141,7 @@ export class GridFSBucketService {
    * This function is a convenience wrapper for the uploadFile and uploadFiles methods.
    */
   async upload(
-    files: (Express.Multer.File | File)[] | Express.Multer.File | File
+    files: (Express.Multer.File | File)[] | Express.Multer.File | File,
   ) {
     if (Array.isArray(files)) {
       return this.uploadFiles(files);

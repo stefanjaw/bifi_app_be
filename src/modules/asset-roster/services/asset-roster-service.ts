@@ -1,7 +1,6 @@
 import { ClientSession } from "mongoose";
 import {
   BaseService,
-  GridFSBucketService,
   InternalServerException,
   NotFoundException,
   runTransaction,
@@ -42,43 +41,48 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         {
           path: "assetTypeIds",
           getModel: () =>
-            this.connectionManager.getModelByDB<AssetTypeDocument>("AssetType"),
+            this.connectionManager.getModel<AssetTypeDocument>("AssetType"),
           isArray: true,
         },
         {
           path: "vendorIds",
           getModel: () =>
-            this.connectionManager.getModelByDB<ContactDocument>("Contact"),
+            this.connectionManager.getModel<ContactDocument>("Contact"),
           isArray: true,
         },
         {
           path: "makeIds",
           getModel: () =>
-            this.connectionManager.getModelByDB<ContactDocument>("Contact"),
+            this.connectionManager.getModel<ContactDocument>("Contact"),
           isArray: true,
         },
         {
           path: "locationId",
-          getModel: () =>
-            this.connectionManager.getModelByDB<RoomDocument>("Room"),
+          getModel: () => this.connectionManager.getModel<RoomDocument>("Room"),
           isArray: false,
         },
       ],
     });
   }
 
-  private get gridFSBucket() {
-    return GridFSBucketService.getInstance();
-  }
-
+  /**
+   * Creates a new asset roster.
+   * Handles file uploads if provided and creates the make and asset type IDs.
+   * If maintenance date is provided, then updates the maintenance dates.
+   * @param {AssetRosterDTO} data - The asset roster data to create.
+   * @param {ClientSession} [session] - The client session to use for the create.
+   * @returns {Promise<AssetRosterDocument>} - The created asset roster document.
+   */
   override async create(
     data: AssetRosterDTO,
     session?: ClientSession | undefined,
   ): Promise<AssetRosterDocument> {
     return runTransaction<AssetRosterDocument>(session, async (newSession) => {
+      const bucket = this.connectionManager.bindBucketToDb();
+
       // Handle file upload if provided
       if (isValidFileUpload(data.photo)) {
-        const fileId = await this.gridFSBucket.uploadFile(
+        const fileId = await bucket.uploadFile(
           Array.isArray(data.photo) ? data.photo[0] : data.photo,
         );
         data.photo = fileId; // Store the file ID in the assetRoster data
@@ -108,18 +112,22 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
   }
 
   /**
-   * Update an existing asset roster.
-   * @param {UpdateAssetRosterDTO} data - The data to update the asset roster with.
+   * Updates an existing asset roster.
+   * Handles file uploads if provided and updates the asset type and make IDs.
+   * If maintenance date is provided, then updates the maintenance dates.
+   * @param {UpdateAssetRosterDTO} data - The asset roster data to update.
    * @param {ClientSession} [session] - The client session to use for the update.
    * @returns {Promise<AssetRosterDocument>} - The updated asset roster document.
-   * @throws {NotFoundException} - If the asset roster does not exist.
+   * @throws {NotFoundException} - If the assetRoster does not exist.
    */
   override async update(
     data: UpdateAssetRosterDTO,
     session?: ClientSession | undefined,
   ): Promise<AssetRosterDocument> {
     return runTransaction<AssetRosterDocument>(session, async (newSession) => {
+      const bucket = this.connectionManager.bindBucketToDb();
       const existing = await this.getById(data._id.toString(), newSession);
+
       if (!existing) throw new NotFoundException("Asset Roster does not exist");
 
       // Handle file upload if provided
@@ -127,7 +135,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
 
       // If a file is provided, upload it and store the file ID in the assetRoster data
       if (isValidFileUpload(photo)) {
-        const fileId = await this.gridFSBucket.uploadFile(
+        const fileId = await bucket.uploadFile(
           Array.isArray(photo) ? photo[0] : photo,
         );
         photo = fileId; // Store the file ID in the assetRoster data
@@ -143,7 +151,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
       if (isValidFileUpload(attachments) && Array.isArray(attachments)) {
         attachments = await Promise.all(
           attachments.map<Promise<InnerFile>>(async (file, i) => ({
-            fileId: await this.gridFSBucket.uploadFile(file),
+            fileId: await bucket.uploadFile(file),
             name: file.originalname,
             mimeType: file.mimetype,
             size: file.size,
@@ -184,6 +192,13 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
     });
   }
 
+  /**
+   * Skips the PM for an asset roster.
+   * Updates the maintenance dates for the asset roster and adds an activity history.
+   * @param {SkipAssetRosterPMDTO} data - The asset roster data to skip PM for.
+   * @param {ClientSession} [session] - The client session to use for the update.
+   * @returns {Promise<AssetRosterDocument>} - The updated asset roster document.
+   */
   async skipAssetPM(
     data: SkipAssetRosterPMDTO,
     session?: ClientSession | undefined,
@@ -213,6 +228,15 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
     );
   }
 
+  /**
+   * Creates an asset type if it does not exist, otherwise updates the existing asset type.
+   * If the asset type is not provided, it throws a ValidationException if the asset roster is being created.
+   * @param {AssetRosterDTO | UpdateAssetRosterDTO} data - The asset roster data.
+   * @param {boolean} isUpdate - Whether the asset roster is being updated or created.
+   * @param {ClientSession} session - The client session to use for the transaction.
+   * @returns {Promise<string | undefined>} - A promise resolving to the ID of the asset type or undefined if the asset type was not created or updated.
+   * @throws {ValidationException} - If the asset type is required but not provided.
+   */
   private async createAssetTypeId(
     data: AssetRosterDTO | UpdateAssetRosterDTO,
     isUpdate: boolean,
@@ -249,6 +273,16 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
     );
   }
 
+  /**
+   * Creates or updates a make based on the provided make information.
+   * If the make information is provided and the make ID is not, it creates a new make.
+   * If the make information is not provided and the make ID is not, it throws a ValidationException.
+   * @param {AssetRosterDTO | UpdateAssetRosterDTO} data - The asset roster data to create or update.
+   * @param {boolean} isUpdate - Whether the function is being called to update an asset roster.
+   * @param {ClientSession} session - The client session to use for the transaction.
+   * @returns {Promise<string | undefined>} - A promise resolving to the ID of the make or undefined if the make was not created or updated.
+   * @throws {ValidationException} - If the make is required but not provided.
+   */
   private async createMakeId(
     data: AssetRosterDTO | UpdateAssetRosterDTO,
     isUpdate: boolean,
@@ -285,6 +319,29 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
     );
   }
 
+  /**
+   * Exports all asset rosters in CSV format.
+   * The function will return a Promise resolving to a Buffer containing the CSV data.
+   * The CSV data will contain the following columns:
+   * - productModel
+   * - serialNumber
+   * - acquiredDate
+   * - acquiredPrice
+   * - currentPrice
+   * - condition
+   * - assetTypes
+   * - vendors
+   * - makes
+   * - maintenanceWindows
+   * - location
+   * - warrantyDate
+   * - remarks
+   * - status
+   * - maintenanceDate
+   * - active
+   * @param {Record<string, any>[]} [data] - The data to export as a CSV file.
+   * @returns {Promise<Buffer>} - A promise resolving to a Buffer containing the CSV data.
+   */
   override async exportCSV(data?: Record<string, any>[]): Promise<Buffer> {
     return runTransaction<Buffer>(undefined, async (newSession) => {
       const assetRosters = await this.get(
@@ -325,6 +382,15 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
     });
   }
 
+  /**
+   * Imports a CSV file into the database.
+   * The function expects a plain array of objects to be passed as the first argument.
+   * The objects should have the same structure as the records in the database.
+   * The function runs within a transaction and returns the imported records as an array of documents.
+   * @param data - The data to import as a CSV file.
+   * @param session - The optional client session to use for the transaction.
+   * @returns A promise resolving to the imported records as an array of documents.
+   */
   override async importCSV(
     data: AssetRosterCSVDTO[],
     session?: ClientSession,
@@ -451,6 +517,15 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
     );
   }
 
+  /**
+   * Reads maintenance documents and generates a response based on the contents of the documents.
+   * If a question is provided, the response will be an answer to the question based on the document contents.
+   * If no question is provided, the response will be structured information extracted from the documents.
+   * @param {Express.Multer.File[]} files - The maintenance documents to read.
+   * @param {string} [question] - The question to answer based on the document contents.
+   * @returns {Promise<any>} - A promise resolving to the generated response.
+   * @throws {InternalServerException} - If there is an error processing the maintenance documents.
+   */
   async readMaintenanceDocuments(
     files: Express.Multer.File[],
     question?: string,

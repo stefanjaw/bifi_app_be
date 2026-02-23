@@ -6,7 +6,6 @@ import {
 } from "@mongodb-types";
 import {
   BaseService,
-  GridFSBucketService,
   InnerFile,
   isValidFileUpload,
   runTransaction,
@@ -29,58 +28,58 @@ export class TaskService extends BaseService<TaskDocument> {
         {
           path: "stage",
           getModel: () =>
-            this.connectionManager.getModelByDB<TaskStageDocument>("TaskStage"),
+            this.connectionManager.getModel<TaskStageDocument>("TaskStage"),
           isArray: false,
         },
         {
           path: "projectId",
           getModel: () =>
-            this.connectionManager.getModelByDB<ProjectDocument>("TaskProject"),
+            this.connectionManager.getModel<ProjectDocument>("TaskProject"),
           isArray: false,
         },
         {
           path: "dependencyIds",
-          getModel: () =>
-            this.connectionManager.getModelByDB<TaskDocument>("Task"),
+          getModel: () => this.connectionManager.getModel<TaskDocument>("Task"),
           isArray: true,
         },
         {
           path: "parentId",
-          getModel: () =>
-            this.connectionManager.getModelByDB<TaskDocument>("Task"),
+          getModel: () => this.connectionManager.getModel<TaskDocument>("Task"),
           isArray: false,
         },
         {
           path: "createdBy",
-          getModel: () =>
-            this.connectionManager.getModelByDB<UserDocument>("User"),
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
           isArray: false,
         },
         {
           path: "updatedBy",
-          getModel: () =>
-            this.connectionManager.getModelByDB<UserDocument>("User"),
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
           isArray: false,
         },
         {
           path: "assigned",
-          getModel: () =>
-            this.connectionManager.getModelByDB<UserDocument>("User"),
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
           isArray: false,
         },
       ],
     });
   }
 
-  private get gridFSBucket() {
-    return GridFSBucketService.getInstance();
-  }
-
+  /**
+   * Creates a new task document.
+   * If isDefault is true, sets all other task stages to false.
+   * @param data - The task data to create.
+   * @param session - The optional client session to use for the transaction.
+   * @returns A promise resolving to the created task document.
+   */
   override async create(
     data: TaskDTO,
     session?: mongoose.ClientSession | undefined,
   ): Promise<TaskDocument> {
     return await runTransaction<TaskDocument>(session, async (newSession) => {
+      const bucket = this.connectionManager.bindBucketToDb();
+
       // HANDLE FILES IF PROVIDED
       if (
         isValidFileUpload(data.attachments) &&
@@ -88,7 +87,7 @@ export class TaskService extends BaseService<TaskDocument> {
       ) {
         data.attachments = await Promise.all(
           data.attachments.map<Promise<InnerFile>>(async (file) => ({
-            fileId: await this.gridFSBucket.uploadFile(file),
+            fileId: await bucket.uploadFile(file),
             name: file.originalname,
             mimeType: file.mimetype,
             size: file.size,
@@ -133,11 +132,20 @@ export class TaskService extends BaseService<TaskDocument> {
     });
   }
 
+  /**
+   * Updates an existing task.
+   * Handles file uploads if provided and updates the updatedBy field.
+   * @param data The task data to update.
+   * @param session The optional client session to use for the transaction.
+   * @returns A promise resolving to the updated task document.
+   */
   override async update(
     data: UpdateTaskDTO,
     session?: mongoose.ClientSession | undefined,
   ): Promise<TaskDocument> {
     return await runTransaction<TaskDocument>(session, async (newSession) => {
+      const bucket = this.connectionManager.bindBucketToDb();
+
       // HANDLE FILES IF PROVIDED
       if (
         isValidFileUpload(data.attachments) &&
@@ -145,7 +153,7 @@ export class TaskService extends BaseService<TaskDocument> {
       ) {
         data.attachments = await Promise.all(
           data.attachments.map<Promise<InnerFile>>(async (file) => ({
-            fileId: await this.gridFSBucket.uploadFile(file),
+            fileId: await bucket.uploadFile(file),
             name: file.originalname,
             mimeType: file.mimetype,
             size: file.size,
@@ -160,6 +168,13 @@ export class TaskService extends BaseService<TaskDocument> {
     });
   }
 
+  /**
+   * Deletes an existing task.
+   * When a task is deleted, all subtasks where parentId is the deleted task, should be removed from parentId.
+   * @param _id - The ID of the task to delete.
+   * @param session - The optional client session to use for the deletion.
+   * @returns A promise resolving to a boolean indicating whether the deletion was successful.
+   */
   override async delete(
     _id: string,
     session?: mongoose.ClientSession | undefined,

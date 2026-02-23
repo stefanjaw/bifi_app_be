@@ -15,7 +15,7 @@ export class FacilityService extends BaseService<FacilityDocument> {
         {
           path: "contactId",
           getModel: () =>
-            this.connectionManager.getModelByDB<ContactDocument>("Contact"),
+            this.connectionManager.getModel<ContactDocument>("Contact"),
           isArray: false,
         },
       ],
