@@ -1,5 +1,5 @@
 import mongoose, { PaginateModel } from "mongoose";
-import { dbNameStorage } from "../auth/db-name-store";
+import { userStorage } from "../auth/user-storage";
 import { GridFSBucketService } from "../file-storage/grid-fs-bucket-service";
 
 export class ConnectionManager {
@@ -19,6 +19,17 @@ export class ConnectionManager {
   private getDbByName(dbName: string) {
     if (!ConnectionManager.dbCache[dbName]) {
       ConnectionManager.dbCache[dbName] = mongoose.connection.useDb(dbName);
+
+      const db = ConnectionManager.dbCache[dbName];
+
+      // * Auto register models if not present
+      const defaultModels = mongoose.connection.models;
+
+      Object.keys(defaultModels).forEach((modelName) => {
+        if (!db.models[modelName]) {
+          db.model(modelName, defaultModels[modelName].schema);
+        }
+      });
     }
 
     return ConnectionManager.dbCache[dbName];
@@ -31,7 +42,7 @@ export class ConnectionManager {
    * @returns {PaginateModel<T>} The bound mongoose model.
    */
   bindModelToDb<T>(model: PaginateModel<T>) {
-    let dbName = dbNameStorage.getStore();
+    let dbName = userStorage.getStore()?.dbName;
 
     const defaultDBName = this.getDefaultDBName();
 
@@ -53,7 +64,7 @@ export class ConnectionManager {
    * @returns A GridFSBucketService instance bound to the current database connection.
    */
   bindBucketToDb() {
-    let dbName = dbNameStorage.getStore();
+    let dbName = userStorage.getStore()?.dbName;
 
     const defaultDBName = this.getDefaultDBName();
 
@@ -76,7 +87,7 @@ export class ConnectionManager {
    * @throws {Error} If no database name is provided.
    */
   getModel<T>(modelName: string) {
-    let dbName = dbNameStorage.getStore();
+    let dbName = userStorage.getStore()?.dbName;
 
     const defaultDBName = this.getDefaultDBName();
 
@@ -99,7 +110,7 @@ export class ConnectionManager {
    * @returns {string[]} A list of mongoose model names.
    */
   getModeList() {
-    let dbName = dbNameStorage.getStore();
+    let dbName = userStorage.getStore()?.dbName;
 
     const defaultDBName = this.getDefaultDBName();
 

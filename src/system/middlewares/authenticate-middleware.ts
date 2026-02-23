@@ -8,8 +8,19 @@ const ignoreEndpoints: { endpoint: string; method: string }[] = [
   { endpoint: "/templates", method: "GET" },
 ];
 
+/**
+ * Middleware to authenticate requests using a Firebase Authentication token.
+ * If the token is invalid, expired, or revoked, it will throw an UnauthorizedException.
+ * If the user associated with the token is not found, it will create a new user with the provided information.
+ * If the user is found but not active, it will throw an UnauthorizedException.
+ * @param {UserService} userService - The UserService instance to use for authentication.
+ * @returns {(req: Request, res: Response, next: NextFunction) => Promise<void>}
+ */
 export function authenticateMiddleware(userService: UserService) {
   return async (req: Request, res: Response, next: NextFunction) => {
+    // Set the user and token in the UserStore
+    const storage = userStorage.getStore();
+
     if (
       ignoreEndpoints.some(
         (x) => req.path.includes(x.endpoint) && req.method === x.method,
@@ -19,7 +30,16 @@ export function authenticateMiddleware(userService: UserService) {
       return;
     }
 
+    // TODO: this is momentary
+    const dbNameHeader: string = req.headers["dbname"] as string;
+
+    if (dbNameHeader && storage) {
+      storage.dbName = dbNameHeader;
+    }
+
+    // Get the token from the request headers
     const authHeader = req.headers.authorization;
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       next(new UnauthorizedException("Unauthorized"));
       return;
@@ -73,9 +93,6 @@ export function authenticateMiddleware(userService: UserService) {
           undefined,
         );
       }
-
-      // Set the user and token in the UserStore
-      const storage = userStorage.getStore();
 
       if (storage) {
         storage.user = user;

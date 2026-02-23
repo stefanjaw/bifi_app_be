@@ -9,9 +9,7 @@ import cors from "cors";
 import {
   authenticateMiddleware,
   catchExceptionMiddleware,
-  dbNameStorage,
   FTPService,
-  GridFSBucketService,
   userStorage,
 } from "./system";
 import {
@@ -74,13 +72,10 @@ app.use((req, res, next) => {
   userStorage.run(
     {
       user: undefined,
-      token: req.headers.authorization || "",
+      token: undefined,
+      dbName: undefined,
     },
-    () => {
-      dbNameStorage.run(undefined, () => {
-        next();
-      });
-    },
+    () => next(),
   );
 });
 
