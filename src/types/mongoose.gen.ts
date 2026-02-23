@@ -439,6 +439,21 @@ export type AssetMaintenanceDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of AssetRosterRemarkDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetRosterDocument.toObject()`.
+ * ```
+ * const assetrosterObject = assetroster.toObject();
+ * ```
+ */
+export type AssetRosterRemark = {
+  remark?: string;
+  createdBy: User;
+  performDate: Date;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of AssetRosterAttachmentDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `AssetRosterDocument.toObject()`.
@@ -479,7 +494,7 @@ export type AssetRoster = {
   photo?: mongoose.Types.ObjectId;
   locationId?: Room;
   warrantyDate?: Date;
-  remarks: string[];
+  remarks: AssetRosterRemark[];
   status?:
     | "active"
     | "awaiting-commissioning"
@@ -571,6 +586,19 @@ export type AssetRosterSchema = mongoose.Schema<
 /**
  * Mongoose Subdocument type
  *
+ * Type of `AssetRosterDocument["remarks"]` element.
+ */
+export type AssetRosterRemarkDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    remark?: string;
+    createdBy: UserDocument;
+    performDate: Date;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
  * Type of `AssetRosterDocument["attachments"]` element.
  */
 export type AssetRosterAttachmentDocument =
@@ -611,7 +639,7 @@ export type AssetRosterDocument = mongoose.Document<
     photo?: mongoose.Types.ObjectId;
     locationId?: RoomDocument;
     warrantyDate?: Date;
-    remarks: mongoose.Types.Array<string>;
+    remarks: mongoose.Types.DocumentArray<AssetRosterRemarkDocument>;
     status?:
       | "active"
       | "awaiting-commissioning"

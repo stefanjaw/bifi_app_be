@@ -8,6 +8,26 @@ import dayjs from "dayjs";
 import { fileSchema } from "../../../system";
 
 dayjs.extend(isBetween);
+const notesModel = new Schema({
+  remark: {
+    type: String,
+    required: false,
+  },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    autopopulate: {
+      select: "username name email contactId",
+      maxDepth: 1,
+    },
+    required: true,
+  },
+
+  performDate: {
+    type: Date,
+    required: true,
+  },
+});
 
 const assetRosterSchema = new Schema(
   {
@@ -90,7 +110,7 @@ const assetRosterSchema = new Schema(
       required: false,
     },
     remarks: {
-      type: [String],
+      type: [notesModel],
       default: [],
     },
     status: {

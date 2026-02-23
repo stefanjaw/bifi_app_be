@@ -22,6 +22,7 @@ import {
   AssetRosterDocument,
   RoomDocument,
   AssetTypeDocument,
+  UserDocument,
 } from "@mongodb-types";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 import { AssetRosterStatusService } from "./asset-roster-status-service";
@@ -51,6 +52,11 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
             mongoose.model("Contact") as PaginateModel<ContactDocument>,
           isArray: true,
         },
+                {
+                  path: "createdBy",
+                  getModel: () => mongoose.model("User") as PaginateModel<UserDocument>,
+                  isArray: false,
+                },
         {
           path: "makeIds",
           getModel: () =>

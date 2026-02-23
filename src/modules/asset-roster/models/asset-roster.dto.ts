@@ -4,6 +4,7 @@ import {
   IsDate,
   IsEnum,
   IsIn,
+  isMongoId,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
@@ -19,6 +20,7 @@ import { Types } from "mongoose";
 import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
 import { ContactDTO } from "../../contacts/models/contact.dto";
 import { AssetTypeDTO } from "../../asset-types/models/asset-type.dto";
+import { User } from "@mongodb-types";
 
 export class makeInformationDTO extends ContactDTO {
   @IsMongoId()
@@ -119,14 +121,15 @@ export class AssetRosterDTO {
   @IsOptional()
   warrantyDate?: Date;
 
-  @IsArray()
-  @IsString({ each: true })
-  @IsNotEmpty({ each: true })
   @IsOptional()
-  @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value,
-  )
-  remarks?: string[];
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => NotesDTO)
+  @Transform(({ value }) => {
+    const parsed = typeof value === "string" ? JSON.parse(value) : value;
+    return parsed.map((note: any) => plainToInstance(NotesDTO, note));
+  })
+  remarks?: NotesDTO[];
 
   @IsEnum([
     "active",
@@ -169,20 +172,18 @@ export class SkipAssetRosterPMDTO {
   notes!: string;
 }
 
-
 //model for the notes
 export class NotesDTO {
-  @IsString()
-  @IsNotEmpty()
   @IsOptional()
+  @IsString()
   remark?: string;
 
-  @IsMongoId({ each: true })
-  @Transform(({ value }) => JSON.parse(value))
-  userId?: string;
+  @IsOptional()
+  @IsMongoId()
+  createdBy?: string;
 
+  @IsOptional()
   @IsDate()
   @Type(() => Date)
-  @IsOptional()
   performDate?: Date;
 }
