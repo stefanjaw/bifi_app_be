@@ -80,22 +80,6 @@ export class AssetRosterDTO {
   @IsNotEmpty()
   serialNumber!: string;
 
-  @IsDate()
-  @Type(() => Date)
-  acquiredDate!: Date;
-
-  @IsNumber()
-  @IsPositive()
-  @Type(() => Number)
-  @IsOptional()
-  acquiredPrice?: number;
-
-  @IsNumber()
-  @IsPositive()
-  @Type(() => Number)
-  @IsOptional()
-  currentPrice?: number;
-
   @IsIn(["excellent", "good", "fair", "poor"])
   @IsOptional()
   condition?: string;
@@ -142,6 +126,47 @@ export class AssetRosterDTO {
   @IsOptional()
   @Type(() => Date)
   maintenanceDate?: Date;
+
+  //Financial details
+  @IsDate()
+  @Type(() => Date)
+  acquiredDate!: Date;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  @IsOptional()
+  acquiredPrice?: number;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  @IsOptional()
+  currentPrice?: number;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  @IsOptional()
+  yearsOfUse?: number;
+  
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  @IsOptional()
+  depreciationCalculator?: number;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  @IsOptional()
+  depreciationValue?: number;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  @IsOptional()
+  totalCostOfOwnership?: number;
 
   @IsOptional()
   active?: boolean;

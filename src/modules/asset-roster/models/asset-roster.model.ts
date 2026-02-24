@@ -66,20 +66,7 @@ const assetRosterSchema = new Schema(
       type: String,
       required: true,
     },
-    acquiredDate: {
-      type: Date,
-      required: true,
-    },
-    acquiredPrice: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
-    currentPrice: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
+
     condition: {
       type: String,
       enum: ["excellent", "good", "fair", "poor"],
@@ -138,7 +125,41 @@ const assetRosterSchema = new Schema(
       type: [fileSchema],
       required: false,
     },
-    // ================
+    // Financial ================
+    acquiredDate: {
+      type: Date,
+      required: true,
+    },
+    acquiredPrice: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    currentPrice: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    yearsOfUse: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    depreciationCalculator: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    depreciationValue: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    totalCostOfOwnership: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
     active: {
       type: Boolean,
       default: true,
