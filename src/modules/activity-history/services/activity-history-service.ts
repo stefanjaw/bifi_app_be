@@ -37,7 +37,9 @@ export class ActivityHistoryService extends BaseService<ActivityHistoryDocument>
    */
   override async exportCSV(data?: Record<string, any>[]): Promise<Buffer> {
     return runTransaction<Buffer>(undefined, async (newSession) => {
-      const activityHistory = await this.model
+      const model = this.connectionManager.bindModelToDb(this.model);
+
+      const activityHistory = await model
         .find()
         .populate("userId")
         .session(newSession);
