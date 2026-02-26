@@ -486,9 +486,6 @@ export type AssetRoster = {
   makeIds: Contact[];
   productModel: string;
   serialNumber: string;
-  acquiredDate: Date;
-  acquiredPrice?: number;
-  currentPrice?: number;
   condition?: "excellent" | "good" | "fair" | "poor";
   maintenanceWindowIds: MaintenanceWindow[];
   photo?: mongoose.Types.ObjectId;
@@ -505,6 +502,13 @@ export type AssetRoster = {
   maintenanceDate?: Date;
   maxMaintenanceDate?: Date;
   attachments: AssetRosterAttachment[];
+  acquiredDate: Date;
+  acquiredPrice?: number;
+  currentPrice?: number;
+  yearsOfUse?: number;
+  depreciationCalculator?: number;
+  depreciationValue?: number;
+  totalCostOfOwnership?: number;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -631,9 +635,6 @@ export type AssetRosterDocument = mongoose.Document<
     makeIds: mongoose.Types.Array<ContactDocument>;
     productModel: string;
     serialNumber: string;
-    acquiredDate: Date;
-    acquiredPrice?: number;
-    currentPrice?: number;
     condition?: "excellent" | "good" | "fair" | "poor";
     maintenanceWindowIds: mongoose.Types.Array<MaintenanceWindowDocument>;
     photo?: mongoose.Types.ObjectId;
@@ -650,6 +651,13 @@ export type AssetRosterDocument = mongoose.Document<
     maintenanceDate?: Date;
     maxMaintenanceDate?: Date;
     attachments: mongoose.Types.DocumentArray<AssetRosterAttachmentDocument>;
+    acquiredDate: Date;
+    acquiredPrice?: number;
+    currentPrice?: number;
+    yearsOfUse?: number;
+    depreciationCalculator?: number;
+    depreciationValue?: number;
+    totalCostOfOwnership?: number;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
