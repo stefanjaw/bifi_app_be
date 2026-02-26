@@ -128,16 +128,16 @@ app.use("/api", new BCDCpcRouter().getRouter);
 app.use("/api", new BCDPortRouter().getRouter);
 app.use("/api", new BCDChargeCodeRouter().getRouter);
 
-// middlewares
-app.use(catchExceptionMiddleware);
-
-// default route
-app.get("api/", (req, res) => {
+// health check route
+app.get("api/health-check", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
     version: "202602261428",
   });
 });
+
+// middlewares
+app.use(catchExceptionMiddleware);
 
 // start function
 const start = async () => {
