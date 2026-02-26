@@ -132,10 +132,10 @@ app.use("/api", new BCDChargeCodeRouter().getRouter);
 app.use(catchExceptionMiddleware);
 
 // default route
-app.get("/", (req, res) => {
+app.get("api/", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
-    version: "202602231517",
+    version: "202602261428",
   });
 });
 
