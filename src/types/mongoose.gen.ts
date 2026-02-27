@@ -2683,6 +2683,121 @@ export type CountryDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of CrmStageDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CrmStageDocument.toObject()`. To avoid conflicts with model names, use the type alias `CrmStageObject`.
+ * ```
+ * const crmstageObject = crmstage.toObject();
+ * ```
+ */
+export type CrmStage = {
+  name: string;
+  description?: string;
+  color?: string;
+  order?: number;
+  probability?: number;
+  isWon?: boolean;
+  isLost?: boolean;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CrmStageDocument (type alias of `CrmStage`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CrmStage } from "../models"
+ * import { CrmStageObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const crmstageObject: CrmStageObject = crmstage.toObject();
+ * ```
+ */
+export type CrmStageObject = CrmStage;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CrmStageQuery = mongoose.Query<
+  any,
+  CrmStageDocument,
+  CrmStageQueries
+> &
+  CrmStageQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CrmStageSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CrmStageQueries = {
+  paginate: (this: CrmStageQuery, ...args: any[]) => CrmStageQuery;
+};
+
+export type CrmStageMethods = {};
+
+export type CrmStageStatics = {
+  paginate: (this: CrmStageModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CrmStageModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CrmStage = mongoose.model<CrmStageDocument, CrmStageModel>("CrmStage", CrmStageSchema);
+ * ```
+ */
+export type CrmStageModel = mongoose.Model<CrmStageDocument, CrmStageQueries> &
+  CrmStageStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CrmStage schema instances:
+ * ```
+ * const CrmStageSchema: CrmStageSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CrmStageSchema = mongoose.Schema<
+  CrmStageDocument,
+  CrmStageModel,
+  CrmStageMethods,
+  CrmStageQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CrmStage = mongoose.model<CrmStageDocument, CrmStageModel>("CrmStage", CrmStageSchema);
+ * ```
+ */
+export type CrmStageDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CrmStageQueries
+> &
+  CrmStageMethods & {
+    name: string;
+    description?: string;
+    color?: string;
+    order?: number;
+    probability?: number;
+    isWon?: boolean;
+    isLost?: boolean;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of CRMDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CRMDocument.toObject()`. To avoid conflicts with model names, use the type alias `CRMObject`.
@@ -2694,13 +2809,7 @@ export type CRM = {
   title: string;
   amount: number;
   currency?: string;
-  stage?:
-    | "prospecting"
-    | "qualification"
-    | "proposal"
-    | "negotiation"
-    | "closed-won"
-    | "closed-lost";
+  stage?: CrmStage;
   probability?: number;
   expectedCloseDate?: Date;
   actualCloseDate?: Date;
@@ -2709,6 +2818,7 @@ export type CRM = {
   owner?: User;
   description?: string;
   notes?: string;
+  active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -2792,13 +2902,7 @@ export type CRMDocument = mongoose.Document<
     title: string;
     amount: number;
     currency?: string;
-    stage?:
-      | "prospecting"
-      | "qualification"
-      | "proposal"
-      | "negotiation"
-      | "closed-won"
-      | "closed-lost";
+    stage?: CrmStageDocument;
     probability?: number;
     expectedCloseDate?: Date;
     actualCloseDate?: Date;
@@ -2807,6 +2911,7 @@ export type CRMDocument = mongoose.Document<
     owner?: UserDocument;
     description?: string;
     notes?: string;
+    active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

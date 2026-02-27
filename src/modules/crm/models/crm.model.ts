@@ -9,16 +9,11 @@ const crmSchema = new Schema(
     amount: { type: Number, required: true, min: 0 },
     currency: { type: String, default: "USD", uppercase: true },
     stage: {
-      type: String,
-      enum: [
-        "prospecting",
-        "qualification",
-        "proposal",
-        "negotiation",
-        "closed-won",
-        "closed-lost",
-      ],
-      default: "prospecting",
+      type: Schema.Types.ObjectId,
+      ref: "CrmStage",
+      autopopulate: {
+        maxDepth: 1,
+      },
     },
     probability: { type: Number, min: 0, max: 100, default: 10 },
     expectedCloseDate: Date,
@@ -50,19 +45,13 @@ const crmSchema = new Schema(
     },
     description: String,
     notes: String,
+    active: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );
-
-// Auto-update actualCloseDate when stage becomes closed-won/lost
-crmSchema.pre("save", function (next) {
-  if (this.isModified("stage")) {
-    if (this.stage === "closed-won" || this.stage === "closed-lost") {
-      if (!this.actualCloseDate) this.actualCloseDate = new Date();
-    }
-  }
-  next();
-});
 
 crmSchema.plugin(autopopulate);
 crmSchema.plugin(paginate);

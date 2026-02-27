@@ -19,6 +19,7 @@ import {
   ContactRouter,
   CountryRouter,
   CRMRouter,
+  CrmStageRouter,
   FacilityRouter,
   FileRouter,
   MaintenanceWindowRouter,
@@ -110,6 +111,7 @@ app.use("/api", new RoleRouter().getRouter);
 app.use("/api", new PolicyRouter().getRouter);
 app.use("/api", new BugReportingRouter().getRouter);
 app.use("/api", new CRMRouter().getRouter);
+app.use("/api", new CrmStageRouter().getRouter);
 app.use("/api", new ReportingRouter().getRouter);
 app.use("/api", new TemplateRouter().getRouter);
 app.use("/api", new ModelRouter().getRouter);
@@ -132,7 +134,7 @@ app.use("/api", new BCDChargeCodeRouter().getRouter);
 app.get("/api/health-check", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
-    version: "202602261428",
+    version: "202602271200",
     status: "OK",
   });
 });

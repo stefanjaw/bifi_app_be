@@ -17,6 +17,7 @@ export * from "./companies";
 export * from "./contacts";
 export * from "./countries";
 export * from "./crm";
+export * from "./crm-stages";
 export * from "./facilities";
 export * from "./files";
 export * from "./ia";

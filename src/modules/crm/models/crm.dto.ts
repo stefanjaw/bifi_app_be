@@ -1,7 +1,6 @@
 import { Type } from "class-transformer";
 import {
   IsDate,
-  IsEnum,
   IsISO4217CurrencyCode,
   IsMongoId,
   IsNotEmpty,
@@ -28,14 +27,7 @@ export class CRMDTO {
   @IsOptional()
   currency?: string;
 
-  @IsEnum([
-    "prospecting",
-    "qualification",
-    "proposal",
-    "negotiation",
-    "closed-won",
-    "closed-lost",
-  ])
+  @IsMongoId()
   @IsOptional()
   stage?: string;
 
@@ -63,7 +55,8 @@ export class CRMDTO {
   company!: string;
 
   @IsMongoId()
-  owner!: string;
+  @IsOptional()
+  owner?: string;
 
   @IsString()
   @IsNotEmpty()
