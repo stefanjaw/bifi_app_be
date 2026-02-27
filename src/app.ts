@@ -160,9 +160,9 @@ const start = async () => {
     });
 
     // init app
-    app.listen(PORT, () => {
+    app.listen(Number(PORT), "0.0.0.0", () => {
       //  get current url
-      console.log(`Server running successfully on http://localhost:${PORT}`);
+      console.log(`Server running successfully on http://0.0.0.0:${PORT}`);
     });
   } catch (error) {
     console.error("Error starting the server:", error);
