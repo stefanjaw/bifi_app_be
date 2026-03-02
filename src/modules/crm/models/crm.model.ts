@@ -23,7 +23,7 @@ const crmSchema = new Schema(
       ref: "Contact",
       required: true,
       autopopulate: {
-        select: "name lastName email phoneNumber type", // Fields to select from the child contacts
+        select: "name lastName email phoneNumber type",
         maxDepth: 1,
       },
     },
@@ -43,6 +43,15 @@ const crmSchema = new Schema(
         maxDepth: 1,
       },
     },
+    salesperson: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      autopopulate: {
+        select: "username email contactId",
+        maxDepth: 1,
+      },
+    },
+    tags: [{ type: String, trim: true }],
     description: String,
     notes: String,
     active: {

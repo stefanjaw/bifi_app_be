@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
 import {
+  IsArray,
   IsDate,
   IsISO4217CurrencyCode,
   IsMongoId,
@@ -57,6 +58,15 @@ export class CRMDTO {
   @IsMongoId()
   @IsOptional()
   owner?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  salesperson?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  tags?: string[];
 
   @IsString()
   @IsNotEmpty()

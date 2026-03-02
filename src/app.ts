@@ -20,6 +20,9 @@ import {
   CountryRouter,
   CRMRouter,
   CrmStageRouter,
+  SalesRouter,
+  SalesOrderRouter,
+  SalesTargetRouter,
   FacilityRouter,
   FileRouter,
   MaintenanceWindowRouter,
@@ -112,6 +115,9 @@ app.use("/api", new PolicyRouter().getRouter);
 app.use("/api", new BugReportingRouter().getRouter);
 app.use("/api", new CRMRouter().getRouter);
 app.use("/api", new CrmStageRouter().getRouter);
+app.use("/api", new SalesOrderRouter().getRouter);
+app.use("/api", new SalesTargetRouter().getRouter);
+app.use("/api", new SalesRouter().getRouter);
 app.use("/api", new ReportingRouter().getRouter);
 app.use("/api", new TemplateRouter().getRouter);
 app.use("/api", new ModelRouter().getRouter);

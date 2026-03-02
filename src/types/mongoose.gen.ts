@@ -2816,6 +2816,8 @@ export type CRM = {
   contact: Contact;
   company: Company;
   owner?: User;
+  salesperson?: User;
+  tags: string[];
   description?: string;
   notes?: string;
   active?: boolean;
@@ -2909,6 +2911,8 @@ export type CRMDocument = mongoose.Document<
     contact: ContactDocument;
     company: CompanyDocument;
     owner?: UserDocument;
+    salesperson?: UserDocument;
+    tags: mongoose.Types.Array<string>;
     description?: string;
     notes?: string;
     active?: boolean;
@@ -3730,6 +3734,242 @@ export type RoleDocument = mongoose.Document<
   RoleMethods & {
     name: string;
     policies: mongoose.Types.DocumentArray<RolePolicyDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of SalesOrderDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SalesOrderDocument.toObject()`. To avoid conflicts with model names, use the type alias `SalesOrderObject`.
+ * ```
+ * const salesorderObject = salesorder.toObject();
+ * ```
+ */
+export type SalesOrder = {
+  crmId: CRM;
+  contact: Contact;
+  company: Company;
+  salesperson?: User;
+  amount: number;
+  currency?: string;
+  closeDate: Date;
+  notes?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of SalesOrderDocument (type alias of `SalesOrder`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { SalesOrder } from "../models"
+ * import { SalesOrderObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const salesorderObject: SalesOrderObject = salesorder.toObject();
+ * ```
+ */
+export type SalesOrderObject = SalesOrder;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type SalesOrderQuery = mongoose.Query<
+  any,
+  SalesOrderDocument,
+  SalesOrderQueries
+> &
+  SalesOrderQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `SalesOrderSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type SalesOrderQueries = {
+  paginate: (this: SalesOrderQuery, ...args: any[]) => SalesOrderQuery;
+};
+
+export type SalesOrderMethods = {};
+
+export type SalesOrderStatics = {
+  paginate: (this: SalesOrderModel, ...args: any[]) => any;
+  paginateSubDocs: (this: SalesOrderModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesOrder = mongoose.model<SalesOrderDocument, SalesOrderModel>("SalesOrder", SalesOrderSchema);
+ * ```
+ */
+export type SalesOrderModel = mongoose.Model<
+  SalesOrderDocument,
+  SalesOrderQueries
+> &
+  SalesOrderStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new SalesOrder schema instances:
+ * ```
+ * const SalesOrderSchema: SalesOrderSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type SalesOrderSchema = mongoose.Schema<
+  SalesOrderDocument,
+  SalesOrderModel,
+  SalesOrderMethods,
+  SalesOrderQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesOrder = mongoose.model<SalesOrderDocument, SalesOrderModel>("SalesOrder", SalesOrderSchema);
+ * ```
+ */
+export type SalesOrderDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  SalesOrderQueries
+> &
+  SalesOrderMethods & {
+    crmId: CRMDocument;
+    contact: ContactDocument;
+    company: CompanyDocument;
+    salesperson?: UserDocument;
+    amount: number;
+    currency?: string;
+    closeDate: Date;
+    notes?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of SalesTargetDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SalesTargetDocument.toObject()`. To avoid conflicts with model names, use the type alias `SalesTargetObject`.
+ * ```
+ * const salestargetObject = salestarget.toObject();
+ * ```
+ */
+export type SalesTarget = {
+  name: string;
+  year: number;
+  month: number;
+  targetAmount: number;
+  currency?: string;
+  salesperson?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of SalesTargetDocument (type alias of `SalesTarget`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { SalesTarget } from "../models"
+ * import { SalesTargetObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const salestargetObject: SalesTargetObject = salestarget.toObject();
+ * ```
+ */
+export type SalesTargetObject = SalesTarget;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type SalesTargetQuery = mongoose.Query<
+  any,
+  SalesTargetDocument,
+  SalesTargetQueries
+> &
+  SalesTargetQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `SalesTargetSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type SalesTargetQueries = {
+  paginate: (this: SalesTargetQuery, ...args: any[]) => SalesTargetQuery;
+};
+
+export type SalesTargetMethods = {};
+
+export type SalesTargetStatics = {
+  paginate: (this: SalesTargetModel, ...args: any[]) => any;
+  paginateSubDocs: (this: SalesTargetModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesTarget = mongoose.model<SalesTargetDocument, SalesTargetModel>("SalesTarget", SalesTargetSchema);
+ * ```
+ */
+export type SalesTargetModel = mongoose.Model<
+  SalesTargetDocument,
+  SalesTargetQueries
+> &
+  SalesTargetStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new SalesTarget schema instances:
+ * ```
+ * const SalesTargetSchema: SalesTargetSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type SalesTargetSchema = mongoose.Schema<
+  SalesTargetDocument,
+  SalesTargetModel,
+  SalesTargetMethods,
+  SalesTargetQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesTarget = mongoose.model<SalesTargetDocument, SalesTargetModel>("SalesTarget", SalesTargetSchema);
+ * ```
+ */
+export type SalesTargetDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  SalesTargetQueries
+> &
+  SalesTargetMethods & {
+    name: string;
+    year: number;
+    month: number;
+    targetAmount: number;
+    currency?: string;
+    salesperson?: UserDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
