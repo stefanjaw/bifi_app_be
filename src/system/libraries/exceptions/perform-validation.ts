@@ -8,12 +8,38 @@ interface ValidationErrorDetail {
   value?: any;
 }
 
+/**
+ * Parses string values in a FormData-parsed body back to their
+ * original types. When the frontend sends FormData, objects/arrays
+ * are JSON.stringify'd and dates become quoted ISO strings. This
+ * function reverses that so class-transformer decorators work correctly.
+ */
+function parseFormDataBody(data: any): any {
+  if (typeof data !== "object" || data === null) return data;
+  if (Array.isArray(data)) return data.map(parseFormDataBody);
+
+  const result: Record<string, any> = {};
+  for (const [key, value] of Object.entries(data)) {
+    if (typeof value === "string") {
+      try {
+        result[key] = JSON.parse(value);
+      } catch {
+        result[key] = value;
+      }
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
 export async function performValidation<T extends object>(
   dto: new () => T,
   data: any,
   forbidNonWhitelisted: boolean = true
 ) {
-  const object = plainToInstance(dto, data);
+  const parsed = parseFormDataBody(data);
+  const object = plainToInstance(dto, parsed);
   const errors = await validate(object, {
     whitelist: true,
     forbidNonWhitelisted: forbidNonWhitelisted,

@@ -1,0 +1,17 @@
+import { BaseRoutes } from "../../../system";
+import { ProductDocument } from "../models/product.model";
+import { ProductController } from "../controllers/product-controller";
+import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
+
+const productController = new ProductController();
+
+export class ProductRouter extends BaseRoutes<ProductDocument> {
+  constructor() {
+    super({
+      controller: productController,
+      endpoint: "/inventory/products",
+      dtoCreateClass: ProductDTO,
+      dtoUpdateClass: UpdateProductDTO,
+    });
+  }
+}

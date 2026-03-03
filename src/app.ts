@@ -48,9 +48,19 @@ import {
   BCDTypeRouter,
   BCDAdditionalInformationTypeRouter,
   BCDTaxIdRouter,
+  SupplierRouter,
+  PurchaseOrderRouter,
+  PurchaseStageRouter,
   BCDTaxTypeRouter,
   BCDPortRouter,
   BCDChargeCodeRouter,
+  WarehouseRouter,
+  LocationRouter,
+  ProductRouter,
+  StockBalanceRouter,
+  StockMovementRouter,
+  UomCategoryRouter,
+  UomRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -135,6 +145,16 @@ app.use("/api", new BCDTaxTypeRouter().getRouter);
 app.use("/api", new BCDCpcRouter().getRouter);
 app.use("/api", new BCDPortRouter().getRouter);
 app.use("/api", new BCDChargeCodeRouter().getRouter);
+app.use("/api", new SupplierRouter().getRouter);
+app.use("/api", new PurchaseOrderRouter().getRouter);
+app.use("/api", new PurchaseStageRouter().getRouter);
+app.use("/api", new WarehouseRouter().getRouter);
+app.use("/api", new LocationRouter().getRouter);
+app.use("/api", new ProductRouter().getRouter);
+app.use("/api", new StockBalanceRouter().getRouter);
+app.use("/api", new StockMovementRouter().getRouter);
+app.use("/api", new UomCategoryRouter().getRouter);
+app.use("/api", new UomRouter().getRouter);
 
 // health check route
 app.get("/api/health-check", (req, res) => {
