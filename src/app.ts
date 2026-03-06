@@ -61,6 +61,18 @@ import {
   StockMovementRouter,
   UomCategoryRouter,
   UomRouter,
+  CurrencyRouter,
+  ExchangeRateRouter,
+  BranchOfficeRouter,
+  AccountRouter,
+  TaxRouter,
+  DiscountRouter,
+  PaymentTermRouter,
+  FiscalPositionRouter,
+  JournalRouter,
+  JournalEntryRouter,
+  PaymentRouter,
+  InvoiceRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -155,6 +167,18 @@ app.use("/api", new StockBalanceRouter().getRouter);
 app.use("/api", new StockMovementRouter().getRouter);
 app.use("/api", new UomCategoryRouter().getRouter);
 app.use("/api", new UomRouter().getRouter);
+app.use("/api", new CurrencyRouter().getRouter);
+app.use("/api", new ExchangeRateRouter().getRouter);
+app.use("/api", new BranchOfficeRouter().getRouter);
+app.use("/api", new AccountRouter().getRouter);
+app.use("/api", new TaxRouter().getRouter);
+app.use("/api", new DiscountRouter().getRouter);
+app.use("/api", new PaymentTermRouter().getRouter);
+app.use("/api", new FiscalPositionRouter().getRouter);
+app.use("/api", new JournalRouter().getRouter);
+app.use("/api", new JournalEntryRouter().getRouter);
+app.use("/api", new PaymentRouter().getRouter);
+app.use("/api", new InvoiceRouter().getRouter);
 
 // health check route
 app.get("/api/health-check", (req, res) => {

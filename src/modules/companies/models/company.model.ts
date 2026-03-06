@@ -30,6 +30,15 @@ const companySchema = new Schema(
         maxDepth: 1, // Limit depth to one level
       },
     },
+    defaultCurrencyId: {
+      type: Schema.Types.ObjectId,
+      ref: "Currency",
+      required: false,
+      autopopulate: {
+        select: "name code symbol",
+        maxDepth: 1,
+      },
+    },
     active: {
       type: Boolean,
       default: true,

@@ -17,6 +17,10 @@ export class CompanyDTO {
   @IsOptional()
   contactId?: string;
 
+  @IsMongoId()
+  @IsOptional()
+  defaultCurrencyId?: string;
+
   @IsOptional()
   active?: boolean;
 }

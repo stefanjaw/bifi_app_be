@@ -21,9 +21,21 @@ function parseFormDataBody(data: any): any {
   const result: Record<string, any> = {};
   for (const [key, value] of Object.entries(data)) {
     if (typeof value === "string") {
-      try {
-        result[key] = JSON.parse(value);
-      } catch {
+      const trimmed = value.trim();
+      const isJsonStructure =
+        trimmed.startsWith("{") ||
+        trimmed.startsWith("[") ||
+        trimmed.startsWith('"') ||
+        trimmed === "true" ||
+        trimmed === "false" ||
+        trimmed === "null";
+      if (isJsonStructure) {
+        try {
+          result[key] = JSON.parse(trimmed);
+        } catch {
+          result[key] = value;
+        }
+      } else {
         result[key] = value;
       }
     } else {
