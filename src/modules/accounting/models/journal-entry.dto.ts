@@ -1,5 +1,5 @@
-import { IsArray, IsDateString, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from "class-validator";
-import { Type } from "class-transformer";
+import { IsArray, IsDate, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from "class-validator";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import { PartialType } from "../../../system";
 import { JournalEntryStatus } from "./journal-entry.model";
 
@@ -58,8 +58,9 @@ export class JournalEntryDTO {
   @IsMongoId()
   journalId!: string;
 
-  @IsDateString()
-  date!: string;
+  @IsDate()
+  @Type(() => Date)
+  date!: Date;
 
   @IsString()
   @IsOptional()
@@ -79,6 +80,11 @@ export class JournalEntryDTO {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => JournalEntryLineDTO)
+  @Transform(({ value }) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
+      plainToInstance(JournalEntryLineDTO, item)
+    )
+  )
   @IsNotEmpty()
   lines!: JournalEntryLineDTO[];
 }

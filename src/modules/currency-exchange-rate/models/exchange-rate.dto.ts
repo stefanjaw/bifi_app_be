@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import {
   IsBoolean,
-  IsDateString,
+  IsDate,
   IsMongoId,
   IsNumber,
   IsOptional,
@@ -21,8 +21,9 @@ export class ExchangeRateDTO {
   @Type(() => Number)
   rate!: number;
 
-  @IsDateString()
-  effectiveDate!: string;
+  @IsDate()
+  @Type(() => Date)
+  effectiveDate!: Date;
 
   @IsBoolean()
   @Type(() => Boolean)

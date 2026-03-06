@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { IsDate, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
 import { Type } from "class-transformer";
 import { PartialType } from "../../../system";
 import { PaymentType } from "./payment.model";
@@ -23,8 +23,9 @@ export class PaymentDTO {
   @IsMongoId()
   currencyId!: string;
 
-  @IsDateString()
-  paymentDate!: string;
+  @IsDate()
+  @Type(() => Date)
+  paymentDate!: Date;
 
   @IsString()
   @IsOptional()

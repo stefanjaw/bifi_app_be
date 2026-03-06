@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsArray,
   IsDate,
@@ -65,6 +65,7 @@ export class CRMDTO {
 
   @IsArray()
   @IsString({ each: true })
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   @IsOptional()
   tags?: string[];
 

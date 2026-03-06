@@ -9,49 +9,19 @@ interface ValidationErrorDetail {
 }
 
 /**
- * Parses string values in a FormData-parsed body back to their
- * original types. When the frontend sends FormData, objects/arrays
- * are JSON.stringify'd and dates become quoted ISO strings. This
- * function reverses that so class-transformer decorators work correctly.
+ * Validates an object against a given DTO class.
+ *
+ * @param {new ()=>T} dto The DTO class to validate against.
+ * @param {any} data The data to validate.
+ * @param {boolean} [forbidNonWhitelisted=true] Whether to forbid the validation of non-whitelisted properties.
+ * @returns {Promise<T>} A promise that resolves to the validated object if the validation was successful, or rejects with a ValidationException if the validation failed.
  */
-function parseFormDataBody(data: any): any {
-  if (typeof data !== "object" || data === null) return data;
-  if (Array.isArray(data)) return data.map(parseFormDataBody);
-
-  const result: Record<string, any> = {};
-  for (const [key, value] of Object.entries(data)) {
-    if (typeof value === "string") {
-      const trimmed = value.trim();
-      const isJsonStructure =
-        trimmed.startsWith("{") ||
-        trimmed.startsWith("[") ||
-        trimmed.startsWith('"') ||
-        trimmed === "true" ||
-        trimmed === "false" ||
-        trimmed === "null";
-      if (isJsonStructure) {
-        try {
-          result[key] = JSON.parse(trimmed);
-        } catch {
-          result[key] = value;
-        }
-      } else {
-        result[key] = value;
-      }
-    } else {
-      result[key] = value;
-    }
-  }
-  return result;
-}
-
 export async function performValidation<T extends object>(
   dto: new () => T,
   data: any,
-  forbidNonWhitelisted: boolean = true
+  forbidNonWhitelisted: boolean = true,
 ) {
-  const parsed = parseFormDataBody(data);
-  const object = plainToInstance(dto, parsed);
+  const object = plainToInstance(dto, data);
   const errors = await validate(object, {
     whitelist: true,
     forbidNonWhitelisted: forbidNonWhitelisted,

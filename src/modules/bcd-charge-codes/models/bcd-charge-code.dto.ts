@@ -52,7 +52,7 @@ export class BCDChargeCodeDTO {
   @ValidateNested()
   @Type(() => BCDChargeCodeImpactDTO)
   @Transform(({ value }) =>
-    plainToInstance(BCDChargeCodeImpactDTO, JSON.parse(value)),
+    plainToInstance(BCDChargeCodeImpactDTO, typeof value === "string" ? JSON.parse(value) : value),
   )
   impact?: BCDChargeCodeImpactDTO;
 

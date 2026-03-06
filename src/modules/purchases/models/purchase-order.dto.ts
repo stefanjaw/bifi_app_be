@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   IsArray,
   IsDate,
@@ -55,6 +55,11 @@ export class PurchaseOrderDTO {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => LineItemDTO)
+  @Transform(({ value }) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
+      plainToInstance(LineItemDTO, item)
+    )
+  )
   @IsOptional()
   lineItems?: LineItemDTO[];
 

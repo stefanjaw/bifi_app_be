@@ -58,7 +58,7 @@ export class TaskDTO {
 
   @IsOptional()
   @IsMongoId({ each: true })
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   dependencyIds?: string[];
 
   @IsOptional()

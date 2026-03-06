@@ -31,7 +31,7 @@ export class BCDTaxTypeDTO {
   @ValidateNested()
   @Type(() => BCDTaxTypeImpactDTO)
   @Transform(({ value }) =>
-    plainToInstance(BCDTaxTypeImpactDTO, JSON.parse(value)),
+    plainToInstance(BCDTaxTypeImpactDTO, typeof value === "string" ? JSON.parse(value) : value),
   )
   impact?: BCDTaxTypeImpactDTO;
 

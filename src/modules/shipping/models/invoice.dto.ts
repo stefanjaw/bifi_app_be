@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   ArrayMinSize,
   IsArray,
@@ -232,10 +232,18 @@ export class InvoiceDTO {
   @ValidateNested()
   @IsObject()
   @Type(() => InvoicePDFDTO)
+  @Transform(({ value }) =>
+    plainToInstance(InvoicePDFDTO, typeof value === "string" ? JSON.parse(value) : value)
+  )
   pdf!: InvoicePDFDTO;
 
   @ValidateNested({ each: true })
   @Type(() => InvoiceCommentDTO)
+  @Transform(({ value }) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
+      plainToInstance(InvoiceCommentDTO, item)
+    )
+  )
   @IsArray()
   @IsOptional()
   comments?: InvoiceCommentDTO[];

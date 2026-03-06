@@ -1,6 +1,6 @@
 import {
   IsArray,
-  IsDateString,
+  IsDate,
   IsMongoId,
   IsNumber,
   IsOptional,
@@ -8,7 +8,7 @@ import {
   Min,
   ValidateNested,
 } from "class-validator";
-import { Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import { PartialType } from "../../../system";
 
 export class AccountingInvoiceLineDTO {
@@ -56,12 +56,14 @@ export class AccountingInvoiceDTO {
   @IsOptional()
   paymentTermId?: string;
 
-  @IsDateString()
-  invoiceDate!: string;
+  @IsDate()
+  @Type(() => Date)
+  invoiceDate!: Date;
 
-  @IsDateString()
+  @IsDate()
+  @Type(() => Date)
   @IsOptional()
-  dueDate?: string;
+  dueDate?: Date;
 
   @IsMongoId()
   journalId!: string;
@@ -88,6 +90,11 @@ export class AccountingInvoiceDTO {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AccountingInvoiceLineDTO)
+  @Transform(({ value }) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
+      plainToInstance(AccountingInvoiceLineDTO, item)
+    )
+  )
   @IsOptional()
   lines?: AccountingInvoiceLineDTO[];
 }
@@ -103,8 +110,9 @@ export class RegisterPaymentDTO {
   @Type(() => Number)
   amount!: number;
 
-  @IsDateString()
-  paymentDate!: string;
+  @IsDate()
+  @Type(() => Date)
+  paymentDate!: Date;
 
   @IsMongoId()
   journalId!: string;

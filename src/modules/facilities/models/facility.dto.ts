@@ -32,7 +32,7 @@ export class FacilityDTO {
   @ArrayMinSize(1)
   @IsOptional()
   @Transform(({ value }) =>
-    JSON.parse(value).map((room: any) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((room: any) =>
       plainToInstance(FacilityRoomInformationDTO, room)
     )
   )

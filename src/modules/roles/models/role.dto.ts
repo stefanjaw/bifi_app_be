@@ -31,7 +31,7 @@ export class RoleDTO {
   @IsArray()
   @ArrayMinSize(1)
   @Transform(({ value }) =>
-    JSON.parse(value).map((policy: any) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((policy: any) =>
       plainToInstance(RolePolicyDTO, policy)
     )
   )

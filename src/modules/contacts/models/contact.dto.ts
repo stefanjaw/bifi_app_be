@@ -68,7 +68,7 @@ export class ContactDTO {
   streetAddress2?: string;
 
   @IsMongoId({ each: true })
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   @IsOptional()
   childIds?: string[];
 

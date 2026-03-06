@@ -36,13 +36,13 @@ export class AssetRosterDTO {
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   @IsOptional()
   assetTypeIds?: string[];
 
   // when assetTypeInformation is passed, creation or update of asset types will be done
   @Transform(({ value }) =>
-    plainToInstance(assetTypeInformationDTO, JSON.parse(value)),
+    plainToInstance(assetTypeInformationDTO, typeof value === "string" ? JSON.parse(value) : value),
   )
   @Type(() => assetTypeInformationDTO)
   @ValidateNested()
@@ -52,20 +52,20 @@ export class AssetRosterDTO {
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   @IsOptional()
   vendorIds?: string[];
 
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   @IsOptional()
   makeIds?: string[];
 
   // when makeInformation is passed, creation or update of makes will be done
   @Transform(({ value }) =>
-    plainToInstance(makeInformationDTO, JSON.parse(value)),
+    plainToInstance(makeInformationDTO, typeof value === "string" ? JSON.parse(value) : value),
   )
   @Type(() => makeInformationDTO)
   @ValidateNested()
@@ -88,7 +88,7 @@ export class AssetRosterDTO {
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @IsOptional()
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   maintenanceWindowIds?: string[];
 
   @IsOptional()
@@ -182,7 +182,7 @@ export class UpdateAssetRosterDTO extends PartialType(AssetRosterDTO) {
   @IsOptional()
   @IsArray()
   @IsObject({ each: true })
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   attachmentsMetadata?: object[];
 }
 

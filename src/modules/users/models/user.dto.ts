@@ -47,7 +47,7 @@ export class UserDTO {
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   @IsOptional()
   roles?: string[];
 
@@ -56,7 +56,7 @@ export class UserDTO {
   contactId?: string;
 
   @Transform(({ value }) =>
-    plainToInstance(UserContactInformationDTO, JSON.parse(value)),
+    plainToInstance(UserContactInformationDTO, typeof value === "string" ? JSON.parse(value) : value),
   )
   @Type(() => UserContactInformationDTO)
   @ValidateNested()

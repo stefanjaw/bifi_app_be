@@ -256,19 +256,19 @@ export class BcdDTO {
   @ValidateNested()
   @IsObject()
   @Type(() => BCDSupplierDTO)
-  @Transform(({ value }) => plainToInstance(BCDSupplierDTO, JSON.parse(value)))
+  @Transform(({ value }) => plainToInstance(BCDSupplierDTO, typeof value === "string" ? JSON.parse(value) : value))
   supplier!: BCDSupplierDTO;
 
   @ValidateNested()
   @IsObject()
   @Type(() => BCDImporterDTO)
-  @Transform(({ value }) => plainToInstance(BCDImporterDTO, JSON.parse(value)))
+  @Transform(({ value }) => plainToInstance(BCDImporterDTO, typeof value === "string" ? JSON.parse(value) : value))
   importer!: BCDImporterDTO;
 
   @ValidateNested()
   @IsObject()
   @Type(() => BCDTransportDTO)
-  @Transform(({ value }) => plainToInstance(BCDTransportDTO, JSON.parse(value)))
+  @Transform(({ value }) => plainToInstance(BCDTransportDTO, typeof value === "string" ? JSON.parse(value) : value))
   transport!: BCDTransportDTO;
 
   @IsString()
@@ -296,7 +296,7 @@ export class BcdDTO {
   @Type(() => BCDChargeDTO)
   @ArrayMinSize(1)
   @Transform(({ value }) =>
-    JSON.parse(value).map((charge: any) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((charge: any) =>
       plainToInstance(BCDChargeDTO, charge),
     ),
   )
@@ -304,7 +304,7 @@ export class BcdDTO {
 
   @IsString({ each: true })
   @MaxLength(20, { each: true })
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   @IsArray()
   @ArrayMinSize(1)
   containerIds!: string[];
@@ -313,7 +313,7 @@ export class BcdDTO {
   @IsString({ each: true })
   @MaxLength(20, { each: true })
   @IsArray()
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   houseBOLAWBs?: string[];
 
   @IsEnum(ValuationMethodTypeEnum)
@@ -345,7 +345,7 @@ export class BcdDTO {
   @Type(() => AdditionalInformationDTO)
   @IsOptional()
   @Transform(({ value }) =>
-    JSON.parse(value).map((charge: any) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((charge: any) =>
       plainToInstance(AdditionalInformationDTO, charge),
     ),
   )
@@ -354,7 +354,7 @@ export class BcdDTO {
   @ValidateNested()
   @IsObject()
   @Type(() => BCDOgdDTO)
-  @Transform(({ value }) => plainToInstance(BCDOgdDTO, JSON.parse(value)))
+  @Transform(({ value }) => plainToInstance(BCDOgdDTO, typeof value === "string" ? JSON.parse(value) : value))
   ogd!: BCDOgdDTO;
 
   @IsString({
@@ -362,13 +362,13 @@ export class BcdDTO {
   })
   @IsArray()
   @IsOptional()
-  @Transform(({ value }) => JSON.parse(value))
+  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   paymentAccounts?: string[];
 
   @ValidateNested()
   @IsObject()
   @Type(() => BCDDeclarantDTO)
-  @Transform(({ value }) => plainToInstance(BCDDeclarantDTO, JSON.parse(value)))
+  @Transform(({ value }) => plainToInstance(BCDDeclarantDTO, typeof value === "string" ? JSON.parse(value) : value))
   declarant!: BCDDeclarantDTO;
 
   @IsArray()
@@ -376,7 +376,7 @@ export class BcdDTO {
   @Type(() => BCDRecordDTO)
   @ArrayMinSize(1)
   @Transform(({ value }) =>
-    JSON.parse(value).map((record: any) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((record: any) =>
       plainToInstance(BCDRecordDTO, record),
     ),
   )

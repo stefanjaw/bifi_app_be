@@ -1,5 +1,5 @@
 import { IsArray, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
-import { Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import { PartialType } from "../../../system";
 
 export class TaxMappingDTO {
@@ -29,12 +29,22 @@ export class FiscalPositionDTO {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TaxMappingDTO)
+  @Transform(({ value }) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
+      plainToInstance(TaxMappingDTO, item)
+    )
+  )
   @IsOptional()
   taxMappings?: TaxMappingDTO[];
 
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => AccountMappingDTO)
+  @Transform(({ value }) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
+      plainToInstance(AccountMappingDTO, item)
+    )
+  )
   @IsOptional()
   accountMappings?: AccountMappingDTO[];
 }

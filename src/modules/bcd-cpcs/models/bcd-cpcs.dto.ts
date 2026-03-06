@@ -69,7 +69,7 @@ export class BCDCpcDTO {
   @Type(() => BCDCpcTaxDTO)
   @IsOptional()
   @Transform(({ value }) =>
-    JSON.parse(value).map((tax: any) => plainToInstance(BCDCpcTaxDTO, tax)),
+    (typeof value === "string" ? JSON.parse(value) : value).map((tax: any) => plainToInstance(BCDCpcTaxDTO, tax)),
   )
   tax?: BCDCpcTaxDTO[];
 
@@ -77,7 +77,7 @@ export class BCDCpcDTO {
   @IsObject()
   @Type(() => BCDCpcDutyRateDTO)
   @Transform(({ value }) =>
-    plainToInstance(BCDCpcDutyRateDTO, JSON.parse(value)),
+    plainToInstance(BCDCpcDutyRateDTO, typeof value === "string" ? JSON.parse(value) : value),
   )
   @IsOptional()
   dutyRate?: BCDCpcDutyRateDTO;
