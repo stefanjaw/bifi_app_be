@@ -63,7 +63,6 @@ import {
   UomRouter,
   CurrencyRouter,
   ExchangeRateRouter,
-  BranchOfficeRouter,
   AccountRouter,
   TaxRouter,
   DiscountRouter,
@@ -169,7 +168,6 @@ app.use("/api", new UomCategoryRouter().getRouter);
 app.use("/api", new UomRouter().getRouter);
 app.use("/api", new CurrencyRouter().getRouter);
 app.use("/api", new ExchangeRateRouter().getRouter);
-app.use("/api", new BranchOfficeRouter().getRouter);
 app.use("/api", new AccountRouter().getRouter);
 app.use("/api", new TaxRouter().getRouter);
 app.use("/api", new DiscountRouter().getRouter);

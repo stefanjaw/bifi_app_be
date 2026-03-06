@@ -6,6 +6,12 @@ import { CompanyDocument } from "@mongodb-types";
 
 const companySchema = new Schema(
   {
+    type: {
+      type: String,
+      enum: ["company", "branch-office"],
+      required: true,
+      default: "company",
+    },
     name: {
       type: String,
       required: true,
@@ -13,21 +19,20 @@ const companySchema = new Schema(
     countryId: {
       type: Schema.Types.ObjectId,
       ref: "Country",
-      required: true,
+      required: false,
       autopopulate: true,
     },
     address: {
       type: String,
-      required: true,
+      required: false,
     },
     contactId: {
       type: Schema.Types.ObjectId,
       ref: "Contact",
-      required: true,
-      // depth must be of one level
+      required: false,
       autopopulate: {
-        select: "name lastName email", // Fields to select from the parent contact
-        maxDepth: 1, // Limit depth to one level
+        select: "name lastName email",
+        maxDepth: 1,
       },
     },
     defaultCurrencyId: {
@@ -38,6 +43,23 @@ const companySchema = new Schema(
         select: "name code symbol",
         maxDepth: 1,
       },
+    },
+    parentCompany: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
+      required: false,
+      autopopulate: {
+        select: "name",
+        maxDepth: 1,
+      },
+    },
+    branchCode: {
+      type: String,
+      trim: true,
+    },
+    isDefault: {
+      type: Boolean,
+      default: false,
     },
     active: {
       type: Boolean,

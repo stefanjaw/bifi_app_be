@@ -1,17 +1,36 @@
-import { IsString, IsNotEmpty, IsMongoId, IsOptional } from "class-validator";
+import {
+  IsString,
+  IsNotEmpty,
+  IsMongoId,
+  IsOptional,
+  IsIn,
+  IsBoolean,
+  ValidateIf,
+} from "class-validator";
+import { Type } from "class-transformer";
 import { PartialType } from "../../../system";
 
 export class CompanyDTO {
+  @IsString()
+  @IsIn(["company", "branch-office"])
+  @IsOptional()
+  type?: string;
+
+  @IsMongoId()
+  @ValidateIf((o) => o.type === "branch-office")
+  parentCompany?: string;
+
   @IsString()
   @IsNotEmpty()
   name!: string;
 
   @IsMongoId()
-  countryId!: string;
+  @IsOptional()
+  countryId?: string;
 
   @IsString()
-  @IsNotEmpty()
-  address!: string;
+  @IsOptional()
+  address?: string;
 
   @IsMongoId()
   @IsOptional()
@@ -20,6 +39,15 @@ export class CompanyDTO {
   @IsMongoId()
   @IsOptional()
   defaultCurrencyId?: string;
+
+  @IsString()
+  @IsOptional()
+  branchCode?: string;
+
+  @IsBoolean()
+  @Type(() => Boolean)
+  @IsOptional()
+  isDefault?: boolean;
 
   @IsOptional()
   active?: boolean;

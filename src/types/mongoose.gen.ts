@@ -8,6 +8,1138 @@
 import mongoose from "mongoose";
 
 /**
+ * Lean version of AccountDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AccountDocument.toObject()`. To avoid conflicts with model names, use the type alias `AccountObject`.
+ * ```
+ * const accountObject = account.toObject();
+ * ```
+ */
+export type Account = {
+  companyId?: Company;
+  code: string;
+  name: string;
+  type: "asset" | "liability" | "equity" | "income" | "expense";
+  parentAccountId?: Account;
+  currencyId?: Currency;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AccountDocument (type alias of `Account`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Account } from "../models"
+ * import { AccountObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const accountObject: AccountObject = account.toObject();
+ * ```
+ */
+export type AccountObject = Account;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type AccountQuery = mongoose.Query<
+  any,
+  AccountDocument,
+  AccountQueries
+> &
+  AccountQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `AccountSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type AccountQueries = {
+  paginate: (this: AccountQuery, ...args: any[]) => AccountQuery;
+};
+
+export type AccountMethods = {};
+
+export type AccountStatics = {
+  paginate: (this: AccountModel, ...args: any[]) => any;
+  paginateSubDocs: (this: AccountModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Account = mongoose.model<AccountDocument, AccountModel>("Account", AccountSchema);
+ * ```
+ */
+export type AccountModel = mongoose.Model<AccountDocument, AccountQueries> &
+  AccountStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Account schema instances:
+ * ```
+ * const AccountSchema: AccountSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type AccountSchema = mongoose.Schema<
+  AccountDocument,
+  AccountModel,
+  AccountMethods,
+  AccountQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Account = mongoose.model<AccountDocument, AccountModel>("Account", AccountSchema);
+ * ```
+ */
+export type AccountDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  AccountQueries
+> &
+  AccountMethods & {
+    companyId?: CompanyDocument;
+    code: string;
+    name: string;
+    type: "asset" | "liability" | "equity" | "income" | "expense";
+    parentAccountId?: AccountDocument;
+    currencyId?: CurrencyDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of DiscountDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `DiscountDocument.toObject()`. To avoid conflicts with model names, use the type alias `DiscountObject`.
+ * ```
+ * const discountObject = discount.toObject();
+ * ```
+ */
+export type Discount = {
+  name: string;
+  discountType: "percentage" | "fixed";
+  value: number;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of DiscountDocument (type alias of `Discount`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Discount } from "../models"
+ * import { DiscountObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const discountObject: DiscountObject = discount.toObject();
+ * ```
+ */
+export type DiscountObject = Discount;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type DiscountQuery = mongoose.Query<
+  any,
+  DiscountDocument,
+  DiscountQueries
+> &
+  DiscountQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `DiscountSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type DiscountQueries = {
+  paginate: (this: DiscountQuery, ...args: any[]) => DiscountQuery;
+};
+
+export type DiscountMethods = {};
+
+export type DiscountStatics = {
+  paginate: (this: DiscountModel, ...args: any[]) => any;
+  paginateSubDocs: (this: DiscountModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Discount = mongoose.model<DiscountDocument, DiscountModel>("Discount", DiscountSchema);
+ * ```
+ */
+export type DiscountModel = mongoose.Model<DiscountDocument, DiscountQueries> &
+  DiscountStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Discount schema instances:
+ * ```
+ * const DiscountSchema: DiscountSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type DiscountSchema = mongoose.Schema<
+  DiscountDocument,
+  DiscountModel,
+  DiscountMethods,
+  DiscountQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Discount = mongoose.model<DiscountDocument, DiscountModel>("Discount", DiscountSchema);
+ * ```
+ */
+export type DiscountDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  DiscountQueries
+> &
+  DiscountMethods & {
+    name: string;
+    discountType: "percentage" | "fixed";
+    value: number;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of FiscalPositionTaxMappingDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `FiscalPositionDocument.toObject()`.
+ * ```
+ * const fiscalpositionObject = fiscalposition.toObject();
+ * ```
+ */
+export type FiscalPositionTaxMapping = {
+  fromTaxId: Tax["_id"] | Tax;
+  toTaxId: Tax["_id"] | Tax;
+};
+
+/**
+ * Lean version of FiscalPositionAccountMappingDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `FiscalPositionDocument.toObject()`.
+ * ```
+ * const fiscalpositionObject = fiscalposition.toObject();
+ * ```
+ */
+export type FiscalPositionAccountMapping = {
+  fromAccountId: Account["_id"] | Account;
+  toAccountId: Account["_id"] | Account;
+};
+
+/**
+ * Lean version of FiscalPositionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `FiscalPositionDocument.toObject()`. To avoid conflicts with model names, use the type alias `FiscalPositionObject`.
+ * ```
+ * const fiscalpositionObject = fiscalposition.toObject();
+ * ```
+ */
+export type FiscalPosition = {
+  name: string;
+  active?: boolean;
+  taxMappings: FiscalPositionTaxMapping[];
+  accountMappings: FiscalPositionAccountMapping[];
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of FiscalPositionDocument (type alias of `FiscalPosition`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { FiscalPosition } from "../models"
+ * import { FiscalPositionObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const fiscalpositionObject: FiscalPositionObject = fiscalposition.toObject();
+ * ```
+ */
+export type FiscalPositionObject = FiscalPosition;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type FiscalPositionQuery = mongoose.Query<
+  any,
+  FiscalPositionDocument,
+  FiscalPositionQueries
+> &
+  FiscalPositionQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `FiscalPositionSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type FiscalPositionQueries = {
+  paginate: (this: FiscalPositionQuery, ...args: any[]) => FiscalPositionQuery;
+};
+
+export type FiscalPositionMethods = {};
+
+export type FiscalPositionStatics = {
+  paginate: (this: FiscalPositionModel, ...args: any[]) => any;
+  paginateSubDocs: (this: FiscalPositionModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const FiscalPosition = mongoose.model<FiscalPositionDocument, FiscalPositionModel>("FiscalPosition", FiscalPositionSchema);
+ * ```
+ */
+export type FiscalPositionModel = mongoose.Model<
+  FiscalPositionDocument,
+  FiscalPositionQueries
+> &
+  FiscalPositionStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new FiscalPosition schema instances:
+ * ```
+ * const FiscalPositionSchema: FiscalPositionSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type FiscalPositionSchema = mongoose.Schema<
+  FiscalPositionDocument,
+  FiscalPositionModel,
+  FiscalPositionMethods,
+  FiscalPositionQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `FiscalPositionDocument["taxMappings"]` element.
+ */
+export type FiscalPositionTaxMappingDocument =
+  mongoose.Types.Subdocument<any> & {
+    fromTaxId: TaxDocument["_id"] | TaxDocument;
+    toTaxId: TaxDocument["_id"] | TaxDocument;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `FiscalPositionDocument["accountMappings"]` element.
+ */
+export type FiscalPositionAccountMappingDocument =
+  mongoose.Types.Subdocument<any> & {
+    fromAccountId: AccountDocument["_id"] | AccountDocument;
+    toAccountId: AccountDocument["_id"] | AccountDocument;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const FiscalPosition = mongoose.model<FiscalPositionDocument, FiscalPositionModel>("FiscalPosition", FiscalPositionSchema);
+ * ```
+ */
+export type FiscalPositionDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  FiscalPositionQueries
+> &
+  FiscalPositionMethods & {
+    name: string;
+    active?: boolean;
+    taxMappings: mongoose.Types.DocumentArray<FiscalPositionTaxMappingDocument>;
+    accountMappings: mongoose.Types.DocumentArray<FiscalPositionAccountMappingDocument>;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of InvoiceSequenceDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `InvoiceSequenceDocument.toObject()`. To avoid conflicts with model names, use the type alias `InvoiceSequenceObject`.
+ * ```
+ * const invoicesequenceObject = invoicesequence.toObject();
+ * ```
+ */
+export type InvoiceSequence = {
+  year: number;
+  counter?: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of InvoiceSequenceDocument (type alias of `InvoiceSequence`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { InvoiceSequence } from "../models"
+ * import { InvoiceSequenceObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const invoicesequenceObject: InvoiceSequenceObject = invoicesequence.toObject();
+ * ```
+ */
+export type InvoiceSequenceObject = InvoiceSequence;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type InvoiceSequenceQuery = mongoose.Query<
+  any,
+  InvoiceSequenceDocument,
+  InvoiceSequenceQueries
+> &
+  InvoiceSequenceQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `InvoiceSequenceSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type InvoiceSequenceQueries = {};
+
+export type InvoiceSequenceMethods = {};
+
+export type InvoiceSequenceStatics = {};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InvoiceSequence = mongoose.model<InvoiceSequenceDocument, InvoiceSequenceModel>("InvoiceSequence", InvoiceSequenceSchema);
+ * ```
+ */
+export type InvoiceSequenceModel = mongoose.Model<
+  InvoiceSequenceDocument,
+  InvoiceSequenceQueries
+> &
+  InvoiceSequenceStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new InvoiceSequence schema instances:
+ * ```
+ * const InvoiceSequenceSchema: InvoiceSequenceSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type InvoiceSequenceSchema = mongoose.Schema<
+  InvoiceSequenceDocument,
+  InvoiceSequenceModel,
+  InvoiceSequenceMethods,
+  InvoiceSequenceQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InvoiceSequence = mongoose.model<InvoiceSequenceDocument, InvoiceSequenceModel>("InvoiceSequence", InvoiceSequenceSchema);
+ * ```
+ */
+export type InvoiceSequenceDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  InvoiceSequenceQueries
+> &
+  InvoiceSequenceMethods & {
+    year: number;
+    counter?: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Lean version of JournalEntryLineDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `JournalEntryDocument.toObject()`.
+ * ```
+ * const journalentryObject = journalentry.toObject();
+ * ```
+ */
+export type JournalEntryLine = {
+  accountId: Account;
+  description?: string;
+  debit?: number;
+  credit?: number;
+  lineType?: "product" | "tax" | "counterpart";
+  productId?: InventoryProduct;
+  quantity?: number;
+  unitPrice?: number;
+  taxIds: (Tax["_id"] | Tax)[];
+  discountId?: Discount["_id"] | Discount;
+  amount?: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of JournalEntryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `JournalEntryDocument.toObject()`. To avoid conflicts with model names, use the type alias `JournalEntryObject`.
+ * ```
+ * const journalentryObject = journalentry.toObject();
+ * ```
+ */
+export type JournalEntry = {
+  journalId: Journal;
+  date: Date;
+  reference?: string;
+  currencyId: Currency;
+  status?: "draft" | "posted" | "cancel";
+  companyId?: Company;
+  lines: JournalEntryLine[];
+  active?: boolean;
+  isInvoice?: boolean;
+  number?: string;
+  contactId?: Contact;
+  paymentTermId?: PaymentTerm;
+  dueDate?: Date;
+  salespersonId?: User;
+  paymentReference?: string;
+  fiscalPositionId?: FiscalPosition;
+  untaxedAmount?: number;
+  taxAmount?: number;
+  totalAmount?: number;
+  amountDue?: number;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of JournalEntryDocument (type alias of `JournalEntry`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { JournalEntry } from "../models"
+ * import { JournalEntryObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const journalentryObject: JournalEntryObject = journalentry.toObject();
+ * ```
+ */
+export type JournalEntryObject = JournalEntry;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type JournalEntryQuery = mongoose.Query<
+  any,
+  JournalEntryDocument,
+  JournalEntryQueries
+> &
+  JournalEntryQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `JournalEntrySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type JournalEntryQueries = {
+  paginate: (this: JournalEntryQuery, ...args: any[]) => JournalEntryQuery;
+};
+
+export type JournalEntryMethods = {};
+
+export type JournalEntryStatics = {
+  paginate: (this: JournalEntryModel, ...args: any[]) => any;
+  paginateSubDocs: (this: JournalEntryModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const JournalEntry = mongoose.model<JournalEntryDocument, JournalEntryModel>("JournalEntry", JournalEntrySchema);
+ * ```
+ */
+export type JournalEntryModel = mongoose.Model<
+  JournalEntryDocument,
+  JournalEntryQueries
+> &
+  JournalEntryStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new JournalEntry schema instances:
+ * ```
+ * const JournalEntrySchema: JournalEntrySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type JournalEntrySchema = mongoose.Schema<
+  JournalEntryDocument,
+  JournalEntryModel,
+  JournalEntryMethods,
+  JournalEntryQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `JournalEntryDocument["lines"]` element.
+ */
+export type JournalEntryLineDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    accountId: AccountDocument;
+    description?: string;
+    debit?: number;
+    credit?: number;
+    lineType?: "product" | "tax" | "counterpart";
+    productId?: InventoryProductDocument;
+    quantity?: number;
+    unitPrice?: number;
+    taxIds: mongoose.Types.Array<TaxDocument["_id"] | TaxDocument>;
+    discountId?: DiscountDocument["_id"] | DiscountDocument;
+    amount?: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const JournalEntry = mongoose.model<JournalEntryDocument, JournalEntryModel>("JournalEntry", JournalEntrySchema);
+ * ```
+ */
+export type JournalEntryDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  JournalEntryQueries
+> &
+  JournalEntryMethods & {
+    journalId: JournalDocument;
+    date: Date;
+    reference?: string;
+    currencyId: CurrencyDocument;
+    status?: "draft" | "posted" | "cancel";
+    companyId?: CompanyDocument;
+    lines: mongoose.Types.DocumentArray<JournalEntryLineDocument>;
+    active?: boolean;
+    isInvoice?: boolean;
+    number?: string;
+    contactId?: ContactDocument;
+    paymentTermId?: PaymentTermDocument;
+    dueDate?: Date;
+    salespersonId?: UserDocument;
+    paymentReference?: string;
+    fiscalPositionId?: FiscalPositionDocument;
+    untaxedAmount?: number;
+    taxAmount?: number;
+    totalAmount?: number;
+    amountDue?: number;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of JournalDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `JournalDocument.toObject()`. To avoid conflicts with model names, use the type alias `JournalObject`.
+ * ```
+ * const journalObject = journal.toObject();
+ * ```
+ */
+export type Journal = {
+  name: string;
+  code: string;
+  journalType: "sales" | "purchase" | "cash" | "bank" | "general";
+  defaultDebitAccountId?: Account;
+  defaultCreditAccountId?: Account;
+  currencyId?: Currency;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of JournalDocument (type alias of `Journal`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Journal } from "../models"
+ * import { JournalObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const journalObject: JournalObject = journal.toObject();
+ * ```
+ */
+export type JournalObject = Journal;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type JournalQuery = mongoose.Query<
+  any,
+  JournalDocument,
+  JournalQueries
+> &
+  JournalQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `JournalSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type JournalQueries = {
+  paginate: (this: JournalQuery, ...args: any[]) => JournalQuery;
+};
+
+export type JournalMethods = {};
+
+export type JournalStatics = {
+  paginate: (this: JournalModel, ...args: any[]) => any;
+  paginateSubDocs: (this: JournalModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Journal = mongoose.model<JournalDocument, JournalModel>("Journal", JournalSchema);
+ * ```
+ */
+export type JournalModel = mongoose.Model<JournalDocument, JournalQueries> &
+  JournalStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Journal schema instances:
+ * ```
+ * const JournalSchema: JournalSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type JournalSchema = mongoose.Schema<
+  JournalDocument,
+  JournalModel,
+  JournalMethods,
+  JournalQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Journal = mongoose.model<JournalDocument, JournalModel>("Journal", JournalSchema);
+ * ```
+ */
+export type JournalDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  JournalQueries
+> &
+  JournalMethods & {
+    name: string;
+    code: string;
+    journalType: "sales" | "purchase" | "cash" | "bank" | "general";
+    defaultDebitAccountId?: AccountDocument;
+    defaultCreditAccountId?: AccountDocument;
+    currencyId?: CurrencyDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of PaymentTermLineDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PaymentTermDocument.toObject()`.
+ * ```
+ * const paymenttermObject = paymentterm.toObject();
+ * ```
+ */
+export type PaymentTermLine = {
+  percentage: number;
+  dueDays: number;
+};
+
+/**
+ * Lean version of PaymentTermDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PaymentTermDocument.toObject()`. To avoid conflicts with model names, use the type alias `PaymentTermObject`.
+ * ```
+ * const paymenttermObject = paymentterm.toObject();
+ * ```
+ */
+export type PaymentTerm = {
+  name: string;
+  active?: boolean;
+  lines: PaymentTermLine[];
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of PaymentTermDocument (type alias of `PaymentTerm`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { PaymentTerm } from "../models"
+ * import { PaymentTermObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const paymenttermObject: PaymentTermObject = paymentterm.toObject();
+ * ```
+ */
+export type PaymentTermObject = PaymentTerm;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PaymentTermQuery = mongoose.Query<
+  any,
+  PaymentTermDocument,
+  PaymentTermQueries
+> &
+  PaymentTermQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PaymentTermSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PaymentTermQueries = {
+  paginate: (this: PaymentTermQuery, ...args: any[]) => PaymentTermQuery;
+};
+
+export type PaymentTermMethods = {};
+
+export type PaymentTermStatics = {
+  paginate: (this: PaymentTermModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PaymentTermModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PaymentTerm = mongoose.model<PaymentTermDocument, PaymentTermModel>("PaymentTerm", PaymentTermSchema);
+ * ```
+ */
+export type PaymentTermModel = mongoose.Model<
+  PaymentTermDocument,
+  PaymentTermQueries
+> &
+  PaymentTermStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new PaymentTerm schema instances:
+ * ```
+ * const PaymentTermSchema: PaymentTermSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PaymentTermSchema = mongoose.Schema<
+  PaymentTermDocument,
+  PaymentTermModel,
+  PaymentTermMethods,
+  PaymentTermQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `PaymentTermDocument["lines"]` element.
+ */
+export type PaymentTermLineDocument = mongoose.Types.Subdocument<any> & {
+  percentage: number;
+  dueDays: number;
+};
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PaymentTerm = mongoose.model<PaymentTermDocument, PaymentTermModel>("PaymentTerm", PaymentTermSchema);
+ * ```
+ */
+export type PaymentTermDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PaymentTermQueries
+> &
+  PaymentTermMethods & {
+    name: string;
+    active?: boolean;
+    lines: mongoose.Types.DocumentArray<PaymentTermLineDocument>;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of PaymentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PaymentDocument.toObject()`. To avoid conflicts with model names, use the type alias `PaymentObject`.
+ * ```
+ * const paymentObject = payment.toObject();
+ * ```
+ */
+export type Payment = {
+  paymentType: "inbound" | "outbound";
+  partnerId?: Contact;
+  journalId: Journal;
+  amount: number;
+  currencyId: Currency;
+  paymentDate: Date;
+  reference?: string;
+  journalEntryId?: JournalEntry["_id"] | JournalEntry;
+  exchangeRate?: number;
+  status?: "draft" | "confirmed";
+  invoiceId?: JournalEntry["_id"] | JournalEntry;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of PaymentDocument (type alias of `Payment`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Payment } from "../models"
+ * import { PaymentObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const paymentObject: PaymentObject = payment.toObject();
+ * ```
+ */
+export type PaymentObject = Payment;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PaymentQuery = mongoose.Query<
+  any,
+  PaymentDocument,
+  PaymentQueries
+> &
+  PaymentQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PaymentSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PaymentQueries = {
+  paginate: (this: PaymentQuery, ...args: any[]) => PaymentQuery;
+};
+
+export type PaymentMethods = {};
+
+export type PaymentStatics = {
+  paginate: (this: PaymentModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PaymentModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Payment = mongoose.model<PaymentDocument, PaymentModel>("Payment", PaymentSchema);
+ * ```
+ */
+export type PaymentModel = mongoose.Model<PaymentDocument, PaymentQueries> &
+  PaymentStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Payment schema instances:
+ * ```
+ * const PaymentSchema: PaymentSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PaymentSchema = mongoose.Schema<
+  PaymentDocument,
+  PaymentModel,
+  PaymentMethods,
+  PaymentQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Payment = mongoose.model<PaymentDocument, PaymentModel>("Payment", PaymentSchema);
+ * ```
+ */
+export type PaymentDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PaymentQueries
+> &
+  PaymentMethods & {
+    paymentType: "inbound" | "outbound";
+    partnerId?: ContactDocument;
+    journalId: JournalDocument;
+    amount: number;
+    currencyId: CurrencyDocument;
+    paymentDate: Date;
+    reference?: string;
+    journalEntryId?: JournalEntryDocument["_id"] | JournalEntryDocument;
+    exchangeRate?: number;
+    status?: "draft" | "confirmed";
+    invoiceId?: JournalEntryDocument["_id"] | JournalEntryDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of TaxDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TaxDocument.toObject()`. To avoid conflicts with model names, use the type alias `TaxObject`.
+ * ```
+ * const taxObject = tax.toObject();
+ * ```
+ */
+export type Tax = {
+  name: string;
+  taxType: "sales" | "purchase";
+  percentage: number;
+  accountId: Account;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TaxDocument (type alias of `Tax`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Tax } from "../models"
+ * import { TaxObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const taxObject: TaxObject = tax.toObject();
+ * ```
+ */
+export type TaxObject = Tax;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaxQuery = mongoose.Query<any, TaxDocument, TaxQueries> &
+  TaxQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `TaxSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaxQueries = {
+  paginate: (this: TaxQuery, ...args: any[]) => TaxQuery;
+};
+
+export type TaxMethods = {};
+
+export type TaxStatics = {
+  paginate: (this: TaxModel, ...args: any[]) => any;
+  paginateSubDocs: (this: TaxModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Tax = mongoose.model<TaxDocument, TaxModel>("Tax", TaxSchema);
+ * ```
+ */
+export type TaxModel = mongoose.Model<TaxDocument, TaxQueries> & TaxStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Tax schema instances:
+ * ```
+ * const TaxSchema: TaxSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type TaxSchema = mongoose.Schema<
+  TaxDocument,
+  TaxModel,
+  TaxMethods,
+  TaxQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Tax = mongoose.model<TaxDocument, TaxModel>("Tax", TaxSchema);
+ * ```
+ */
+export type TaxDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  TaxQueries
+> &
+  TaxMethods & {
+    name: string;
+    taxType: "sales" | "purchase";
+    percentage: number;
+    accountId: AccountDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of ActivityHistoryDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ActivityHistoryDocument.toObject()`. To avoid conflicts with model names, use the type alias `ActivityHistoryObject`.
@@ -2340,10 +3472,15 @@ export type BCDDocument = mongoose.Document<
  * ```
  */
 export type Company = {
+  type: "company" | "branch-office";
   name: string;
-  countryId: Country;
-  address: string;
-  contactId: Contact;
+  countryId?: Country;
+  address?: string;
+  contactId?: Contact;
+  defaultCurrencyId?: Currency;
+  parentCompany?: Company;
+  branchCode?: string;
+  isDefault?: boolean;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -2430,10 +3567,15 @@ export type CompanyDocument = mongoose.Document<
   CompanyQueries
 > &
   CompanyMethods & {
+    type: "company" | "branch-office";
     name: string;
-    countryId: CountryDocument;
-    address: string;
-    contactId: ContactDocument;
+    countryId?: CountryDocument;
+    address?: string;
+    contactId?: ContactDocument;
+    defaultCurrencyId?: CurrencyDocument;
+    parentCompany?: CompanyDocument;
+    branchCode?: string;
+    isDefault?: boolean;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -2922,6 +4064,229 @@ export type CRMDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ExchangeRateDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ExchangeRateDocument.toObject()`. To avoid conflicts with model names, use the type alias `ExchangeRateObject`.
+ * ```
+ * const exchangerateObject = exchangerate.toObject();
+ * ```
+ */
+export type ExchangeRate = {
+  fromCurrencyId: Currency;
+  toCurrencyId: Currency;
+  rate: number;
+  effectiveDate: Date;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ExchangeRateDocument (type alias of `ExchangeRate`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ExchangeRate } from "../models"
+ * import { ExchangeRateObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const exchangerateObject: ExchangeRateObject = exchangerate.toObject();
+ * ```
+ */
+export type ExchangeRateObject = ExchangeRate;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ExchangeRateQuery = mongoose.Query<
+  any,
+  ExchangeRateDocument,
+  ExchangeRateQueries
+> &
+  ExchangeRateQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ExchangeRateSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ExchangeRateQueries = {
+  paginate: (this: ExchangeRateQuery, ...args: any[]) => ExchangeRateQuery;
+};
+
+export type ExchangeRateMethods = {};
+
+export type ExchangeRateStatics = {
+  paginate: (this: ExchangeRateModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ExchangeRateModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ExchangeRate = mongoose.model<ExchangeRateDocument, ExchangeRateModel>("ExchangeRate", ExchangeRateSchema);
+ * ```
+ */
+export type ExchangeRateModel = mongoose.Model<
+  ExchangeRateDocument,
+  ExchangeRateQueries
+> &
+  ExchangeRateStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ExchangeRate schema instances:
+ * ```
+ * const ExchangeRateSchema: ExchangeRateSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ExchangeRateSchema = mongoose.Schema<
+  ExchangeRateDocument,
+  ExchangeRateModel,
+  ExchangeRateMethods,
+  ExchangeRateQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ExchangeRate = mongoose.model<ExchangeRateDocument, ExchangeRateModel>("ExchangeRate", ExchangeRateSchema);
+ * ```
+ */
+export type ExchangeRateDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ExchangeRateQueries
+> &
+  ExchangeRateMethods & {
+    fromCurrencyId: CurrencyDocument;
+    toCurrencyId: CurrencyDocument;
+    rate: number;
+    effectiveDate: Date;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of CurrencyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CurrencyDocument.toObject()`. To avoid conflicts with model names, use the type alias `CurrencyObject`.
+ * ```
+ * const currencyObject = currency.toObject();
+ * ```
+ */
+export type Currency = {
+  name: string;
+  code: string;
+  symbol: string;
+  decimalPrecision?: number;
+  active?: boolean;
+  isDefault?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CurrencyDocument (type alias of `Currency`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Currency } from "../models"
+ * import { CurrencyObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const currencyObject: CurrencyObject = currency.toObject();
+ * ```
+ */
+export type CurrencyObject = Currency;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CurrencyQuery = mongoose.Query<
+  any,
+  CurrencyDocument,
+  CurrencyQueries
+> &
+  CurrencyQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CurrencySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CurrencyQueries = {
+  paginate: (this: CurrencyQuery, ...args: any[]) => CurrencyQuery;
+};
+
+export type CurrencyMethods = {};
+
+export type CurrencyStatics = {
+  paginate: (this: CurrencyModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CurrencyModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Currency = mongoose.model<CurrencyDocument, CurrencyModel>("Currency", CurrencySchema);
+ * ```
+ */
+export type CurrencyModel = mongoose.Model<CurrencyDocument, CurrencyQueries> &
+  CurrencyStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Currency schema instances:
+ * ```
+ * const CurrencySchema: CurrencySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CurrencySchema = mongoose.Schema<
+  CurrencyDocument,
+  CurrencyModel,
+  CurrencyMethods,
+  CurrencyQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Currency = mongoose.model<CurrencyDocument, CurrencyModel>("Currency", CurrencySchema);
+ * ```
+ */
+export type CurrencyDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CurrencyQueries
+> &
+  CurrencyMethods & {
+    name: string;
+    code: string;
+    symbol: string;
+    decimalPrecision?: number;
+    active?: boolean;
+    isDefault?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of FacilityDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `FacilityDocument.toObject()`. To avoid conflicts with model names, use the type alias `FacilityObject`.
@@ -3126,6 +4491,799 @@ export type RoomDocument = mongoose.Document<
     code: string;
     address: string;
     facilityId: FacilityDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of InventoryLocationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `InventoryLocationDocument.toObject()`. To avoid conflicts with model names, use the type alias `InventoryLocationObject`.
+ * ```
+ * const inventorylocationObject = inventorylocation.toObject();
+ * ```
+ */
+export type InventoryLocation = {
+  name: string;
+  code: string;
+  warehouseId: Warehouse;
+  capacity?: number | null;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of InventoryLocationDocument (type alias of `InventoryLocation`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { InventoryLocation } from "../models"
+ * import { InventoryLocationObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const inventorylocationObject: InventoryLocationObject = inventorylocation.toObject();
+ * ```
+ */
+export type InventoryLocationObject = InventoryLocation;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryLocationQuery = mongoose.Query<
+  any,
+  InventoryLocationDocument,
+  InventoryLocationQueries
+> &
+  InventoryLocationQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `InventoryLocationSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryLocationQueries = {
+  paginate: (
+    this: InventoryLocationQuery,
+    ...args: any[]
+  ) => InventoryLocationQuery;
+};
+
+export type InventoryLocationMethods = {};
+
+export type InventoryLocationStatics = {
+  paginate: (this: InventoryLocationModel, ...args: any[]) => any;
+  paginateSubDocs: (this: InventoryLocationModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryLocation = mongoose.model<InventoryLocationDocument, InventoryLocationModel>("InventoryLocation", InventoryLocationSchema);
+ * ```
+ */
+export type InventoryLocationModel = mongoose.Model<
+  InventoryLocationDocument,
+  InventoryLocationQueries
+> &
+  InventoryLocationStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new InventoryLocation schema instances:
+ * ```
+ * const InventoryLocationSchema: InventoryLocationSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type InventoryLocationSchema = mongoose.Schema<
+  InventoryLocationDocument,
+  InventoryLocationModel,
+  InventoryLocationMethods,
+  InventoryLocationQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryLocation = mongoose.model<InventoryLocationDocument, InventoryLocationModel>("InventoryLocation", InventoryLocationSchema);
+ * ```
+ */
+export type InventoryLocationDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  InventoryLocationQueries
+> &
+  InventoryLocationMethods & {
+    name: string;
+    code: string;
+    warehouseId: WarehouseDocument;
+    capacity?: number | null;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of InventoryProductDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `InventoryProductDocument.toObject()`. To avoid conflicts with model names, use the type alias `InventoryProductObject`.
+ * ```
+ * const inventoryproductObject = inventoryproduct.toObject();
+ * ```
+ */
+export type InventoryProduct = {
+  name: string;
+  sku: string;
+  description?: string;
+  unit?: string;
+  unitOfMeasureId?: InventoryUom;
+  costPrice?: number;
+  salePrice?: number;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of InventoryProductDocument (type alias of `InventoryProduct`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { InventoryProduct } from "../models"
+ * import { InventoryProductObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const inventoryproductObject: InventoryProductObject = inventoryproduct.toObject();
+ * ```
+ */
+export type InventoryProductObject = InventoryProduct;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryProductQuery = mongoose.Query<
+  any,
+  InventoryProductDocument,
+  InventoryProductQueries
+> &
+  InventoryProductQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `InventoryProductSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryProductQueries = {
+  paginate: (
+    this: InventoryProductQuery,
+    ...args: any[]
+  ) => InventoryProductQuery;
+};
+
+export type InventoryProductMethods = {};
+
+export type InventoryProductStatics = {
+  paginate: (this: InventoryProductModel, ...args: any[]) => any;
+  paginateSubDocs: (this: InventoryProductModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryProduct = mongoose.model<InventoryProductDocument, InventoryProductModel>("InventoryProduct", InventoryProductSchema);
+ * ```
+ */
+export type InventoryProductModel = mongoose.Model<
+  InventoryProductDocument,
+  InventoryProductQueries
+> &
+  InventoryProductStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new InventoryProduct schema instances:
+ * ```
+ * const InventoryProductSchema: InventoryProductSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type InventoryProductSchema = mongoose.Schema<
+  InventoryProductDocument,
+  InventoryProductModel,
+  InventoryProductMethods,
+  InventoryProductQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryProduct = mongoose.model<InventoryProductDocument, InventoryProductModel>("InventoryProduct", InventoryProductSchema);
+ * ```
+ */
+export type InventoryProductDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  InventoryProductQueries
+> &
+  InventoryProductMethods & {
+    name: string;
+    sku: string;
+    description?: string;
+    unit?: string;
+    unitOfMeasureId?: InventoryUomDocument;
+    costPrice?: number;
+    salePrice?: number;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of StockBalanceDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `StockBalanceDocument.toObject()`. To avoid conflicts with model names, use the type alias `StockBalanceObject`.
+ * ```
+ * const stockbalanceObject = stockbalance.toObject();
+ * ```
+ */
+export type StockBalance = {
+  productId: InventoryProduct;
+  locationId: InventoryLocation;
+  warehouseId: Warehouse;
+  quantity?: number;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of StockBalanceDocument (type alias of `StockBalance`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { StockBalance } from "../models"
+ * import { StockBalanceObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const stockbalanceObject: StockBalanceObject = stockbalance.toObject();
+ * ```
+ */
+export type StockBalanceObject = StockBalance;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type StockBalanceQuery = mongoose.Query<
+  any,
+  StockBalanceDocument,
+  StockBalanceQueries
+> &
+  StockBalanceQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `StockBalanceSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type StockBalanceQueries = {
+  paginate: (this: StockBalanceQuery, ...args: any[]) => StockBalanceQuery;
+};
+
+export type StockBalanceMethods = {};
+
+export type StockBalanceStatics = {
+  paginate: (this: StockBalanceModel, ...args: any[]) => any;
+  paginateSubDocs: (this: StockBalanceModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const StockBalance = mongoose.model<StockBalanceDocument, StockBalanceModel>("StockBalance", StockBalanceSchema);
+ * ```
+ */
+export type StockBalanceModel = mongoose.Model<
+  StockBalanceDocument,
+  StockBalanceQueries
+> &
+  StockBalanceStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new StockBalance schema instances:
+ * ```
+ * const StockBalanceSchema: StockBalanceSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type StockBalanceSchema = mongoose.Schema<
+  StockBalanceDocument,
+  StockBalanceModel,
+  StockBalanceMethods,
+  StockBalanceQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const StockBalance = mongoose.model<StockBalanceDocument, StockBalanceModel>("StockBalance", StockBalanceSchema);
+ * ```
+ */
+export type StockBalanceDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  StockBalanceQueries
+> &
+  StockBalanceMethods & {
+    productId: InventoryProductDocument;
+    locationId: InventoryLocationDocument;
+    warehouseId: WarehouseDocument;
+    quantity?: number;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of StockMovementDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `StockMovementDocument.toObject()`. To avoid conflicts with model names, use the type alias `StockMovementObject`.
+ * ```
+ * const stockmovementObject = stockmovement.toObject();
+ * ```
+ */
+export type StockMovement = {
+  productId: InventoryProduct;
+  warehouseId: Warehouse;
+  locationId: InventoryLocation;
+  quantity: number;
+  type: "IN" | "OUT" | "ADJUSTMENT" | "TRANSFER";
+  reference?: string;
+  notes?: string;
+  date?: Date;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of StockMovementDocument (type alias of `StockMovement`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { StockMovement } from "../models"
+ * import { StockMovementObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const stockmovementObject: StockMovementObject = stockmovement.toObject();
+ * ```
+ */
+export type StockMovementObject = StockMovement;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type StockMovementQuery = mongoose.Query<
+  any,
+  StockMovementDocument,
+  StockMovementQueries
+> &
+  StockMovementQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `StockMovementSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type StockMovementQueries = {
+  paginate: (this: StockMovementQuery, ...args: any[]) => StockMovementQuery;
+};
+
+export type StockMovementMethods = {};
+
+export type StockMovementStatics = {
+  paginate: (this: StockMovementModel, ...args: any[]) => any;
+  paginateSubDocs: (this: StockMovementModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const StockMovement = mongoose.model<StockMovementDocument, StockMovementModel>("StockMovement", StockMovementSchema);
+ * ```
+ */
+export type StockMovementModel = mongoose.Model<
+  StockMovementDocument,
+  StockMovementQueries
+> &
+  StockMovementStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new StockMovement schema instances:
+ * ```
+ * const StockMovementSchema: StockMovementSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type StockMovementSchema = mongoose.Schema<
+  StockMovementDocument,
+  StockMovementModel,
+  StockMovementMethods,
+  StockMovementQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const StockMovement = mongoose.model<StockMovementDocument, StockMovementModel>("StockMovement", StockMovementSchema);
+ * ```
+ */
+export type StockMovementDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  StockMovementQueries
+> &
+  StockMovementMethods & {
+    productId: InventoryProductDocument;
+    warehouseId: WarehouseDocument;
+    locationId: InventoryLocationDocument;
+    quantity: number;
+    type: "IN" | "OUT" | "ADJUSTMENT" | "TRANSFER";
+    reference?: string;
+    notes?: string;
+    date?: Date;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of InventoryUomCategoryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `InventoryUomCategoryDocument.toObject()`. To avoid conflicts with model names, use the type alias `InventoryUomCategoryObject`.
+ * ```
+ * const inventoryuomcategoryObject = inventoryuomcategory.toObject();
+ * ```
+ */
+export type InventoryUomCategory = {
+  name: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of InventoryUomCategoryDocument (type alias of `InventoryUomCategory`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { InventoryUomCategory } from "../models"
+ * import { InventoryUomCategoryObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const inventoryuomcategoryObject: InventoryUomCategoryObject = inventoryuomcategory.toObject();
+ * ```
+ */
+export type InventoryUomCategoryObject = InventoryUomCategory;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryUomCategoryQuery = mongoose.Query<
+  any,
+  InventoryUomCategoryDocument,
+  InventoryUomCategoryQueries
+> &
+  InventoryUomCategoryQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `InventoryUomCategorySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryUomCategoryQueries = {
+  paginate: (
+    this: InventoryUomCategoryQuery,
+    ...args: any[]
+  ) => InventoryUomCategoryQuery;
+};
+
+export type InventoryUomCategoryMethods = {};
+
+export type InventoryUomCategoryStatics = {
+  paginate: (this: InventoryUomCategoryModel, ...args: any[]) => any;
+  paginateSubDocs: (this: InventoryUomCategoryModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryUomCategory = mongoose.model<InventoryUomCategoryDocument, InventoryUomCategoryModel>("InventoryUomCategory", InventoryUomCategorySchema);
+ * ```
+ */
+export type InventoryUomCategoryModel = mongoose.Model<
+  InventoryUomCategoryDocument,
+  InventoryUomCategoryQueries
+> &
+  InventoryUomCategoryStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new InventoryUomCategory schema instances:
+ * ```
+ * const InventoryUomCategorySchema: InventoryUomCategorySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type InventoryUomCategorySchema = mongoose.Schema<
+  InventoryUomCategoryDocument,
+  InventoryUomCategoryModel,
+  InventoryUomCategoryMethods,
+  InventoryUomCategoryQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryUomCategory = mongoose.model<InventoryUomCategoryDocument, InventoryUomCategoryModel>("InventoryUomCategory", InventoryUomCategorySchema);
+ * ```
+ */
+export type InventoryUomCategoryDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  InventoryUomCategoryQueries
+> &
+  InventoryUomCategoryMethods & {
+    name: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of InventoryUomDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `InventoryUomDocument.toObject()`. To avoid conflicts with model names, use the type alias `InventoryUomObject`.
+ * ```
+ * const inventoryuomObject = inventoryuom.toObject();
+ * ```
+ */
+export type InventoryUom = {
+  name: string;
+  symbol?: string;
+  categoryId: InventoryUomCategory;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of InventoryUomDocument (type alias of `InventoryUom`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { InventoryUom } from "../models"
+ * import { InventoryUomObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const inventoryuomObject: InventoryUomObject = inventoryuom.toObject();
+ * ```
+ */
+export type InventoryUomObject = InventoryUom;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryUomQuery = mongoose.Query<
+  any,
+  InventoryUomDocument,
+  InventoryUomQueries
+> &
+  InventoryUomQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `InventoryUomSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryUomQueries = {
+  paginate: (this: InventoryUomQuery, ...args: any[]) => InventoryUomQuery;
+};
+
+export type InventoryUomMethods = {};
+
+export type InventoryUomStatics = {
+  paginate: (this: InventoryUomModel, ...args: any[]) => any;
+  paginateSubDocs: (this: InventoryUomModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryUom = mongoose.model<InventoryUomDocument, InventoryUomModel>("InventoryUom", InventoryUomSchema);
+ * ```
+ */
+export type InventoryUomModel = mongoose.Model<
+  InventoryUomDocument,
+  InventoryUomQueries
+> &
+  InventoryUomStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new InventoryUom schema instances:
+ * ```
+ * const InventoryUomSchema: InventoryUomSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type InventoryUomSchema = mongoose.Schema<
+  InventoryUomDocument,
+  InventoryUomModel,
+  InventoryUomMethods,
+  InventoryUomQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryUom = mongoose.model<InventoryUomDocument, InventoryUomModel>("InventoryUom", InventoryUomSchema);
+ * ```
+ */
+export type InventoryUomDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  InventoryUomQueries
+> &
+  InventoryUomMethods & {
+    name: string;
+    symbol?: string;
+    categoryId: InventoryUomCategoryDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of WarehouseDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `WarehouseDocument.toObject()`. To avoid conflicts with model names, use the type alias `WarehouseObject`.
+ * ```
+ * const warehouseObject = warehouse.toObject();
+ * ```
+ */
+export type Warehouse = {
+  name: string;
+  code: string;
+  address?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of WarehouseDocument (type alias of `Warehouse`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Warehouse } from "../models"
+ * import { WarehouseObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const warehouseObject: WarehouseObject = warehouse.toObject();
+ * ```
+ */
+export type WarehouseObject = Warehouse;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type WarehouseQuery = mongoose.Query<
+  any,
+  WarehouseDocument,
+  WarehouseQueries
+> &
+  WarehouseQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `WarehouseSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type WarehouseQueries = {
+  paginate: (this: WarehouseQuery, ...args: any[]) => WarehouseQuery;
+};
+
+export type WarehouseMethods = {};
+
+export type WarehouseStatics = {
+  paginate: (this: WarehouseModel, ...args: any[]) => any;
+  paginateSubDocs: (this: WarehouseModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Warehouse = mongoose.model<WarehouseDocument, WarehouseModel>("Warehouse", WarehouseSchema);
+ * ```
+ */
+export type WarehouseModel = mongoose.Model<
+  WarehouseDocument,
+  WarehouseQueries
+> &
+  WarehouseStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Warehouse schema instances:
+ * ```
+ * const WarehouseSchema: WarehouseSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type WarehouseSchema = mongoose.Schema<
+  WarehouseDocument,
+  WarehouseModel,
+  WarehouseMethods,
+  WarehouseQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Warehouse = mongoose.model<WarehouseDocument, WarehouseModel>("Warehouse", WarehouseSchema);
+ * ```
+ */
+export type WarehouseDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  WarehouseQueries
+> &
+  WarehouseMethods & {
+    name: string;
+    code: string;
+    address?: string;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -3366,6 +5524,265 @@ export type ProjectDocument = mongoose.Document<
     description?: string;
     createdBy: UserDocument;
     active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of PurchaseStageDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PurchaseStageDocument.toObject()`. To avoid conflicts with model names, use the type alias `PurchaseStageObject`.
+ * ```
+ * const purchasestageObject = purchasestage.toObject();
+ * ```
+ */
+export type PurchaseStage = {
+  name: string;
+  description?: string;
+  color?: string;
+  order?: number;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of PurchaseStageDocument (type alias of `PurchaseStage`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { PurchaseStage } from "../models"
+ * import { PurchaseStageObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const purchasestageObject: PurchaseStageObject = purchasestage.toObject();
+ * ```
+ */
+export type PurchaseStageObject = PurchaseStage;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PurchaseStageQuery = mongoose.Query<
+  any,
+  PurchaseStageDocument,
+  PurchaseStageQueries
+> &
+  PurchaseStageQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PurchaseStageSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PurchaseStageQueries = {
+  paginate: (this: PurchaseStageQuery, ...args: any[]) => PurchaseStageQuery;
+};
+
+export type PurchaseStageMethods = {};
+
+export type PurchaseStageStatics = {
+  paginate: (this: PurchaseStageModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PurchaseStageModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PurchaseStage = mongoose.model<PurchaseStageDocument, PurchaseStageModel>("PurchaseStage", PurchaseStageSchema);
+ * ```
+ */
+export type PurchaseStageModel = mongoose.Model<
+  PurchaseStageDocument,
+  PurchaseStageQueries
+> &
+  PurchaseStageStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new PurchaseStage schema instances:
+ * ```
+ * const PurchaseStageSchema: PurchaseStageSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PurchaseStageSchema = mongoose.Schema<
+  PurchaseStageDocument,
+  PurchaseStageModel,
+  PurchaseStageMethods,
+  PurchaseStageQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PurchaseStage = mongoose.model<PurchaseStageDocument, PurchaseStageModel>("PurchaseStage", PurchaseStageSchema);
+ * ```
+ */
+export type PurchaseStageDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PurchaseStageQueries
+> &
+  PurchaseStageMethods & {
+    name: string;
+    description?: string;
+    color?: string;
+    order?: number;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of PurchaseOrderLineItemDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PurchaseOrderDocument.toObject()`.
+ * ```
+ * const purchaseorderObject = purchaseorder.toObject();
+ * ```
+ */
+export type PurchaseOrderLineItem = {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+};
+
+/**
+ * Lean version of PurchaseOrderDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PurchaseOrderDocument.toObject()`. To avoid conflicts with model names, use the type alias `PurchaseOrderObject`.
+ * ```
+ * const purchaseorderObject = purchaseorder.toObject();
+ * ```
+ */
+export type PurchaseOrder = {
+  poNumber: string;
+  contactId: Contact;
+  status?: "draft" | "sent" | "partially_received" | "received" | "cancelled";
+  issueDate?: Date;
+  expectedDeliveryDate?: Date;
+  lineItems: PurchaseOrderLineItem[];
+  totalAmount?: number;
+  notes?: string;
+  stageId?: PurchaseStage | null;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of PurchaseOrderDocument (type alias of `PurchaseOrder`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { PurchaseOrder } from "../models"
+ * import { PurchaseOrderObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const purchaseorderObject: PurchaseOrderObject = purchaseorder.toObject();
+ * ```
+ */
+export type PurchaseOrderObject = PurchaseOrder;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PurchaseOrderQuery = mongoose.Query<
+  any,
+  PurchaseOrderDocument,
+  PurchaseOrderQueries
+> &
+  PurchaseOrderQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PurchaseOrderSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PurchaseOrderQueries = {
+  paginate: (this: PurchaseOrderQuery, ...args: any[]) => PurchaseOrderQuery;
+};
+
+export type PurchaseOrderMethods = {};
+
+export type PurchaseOrderStatics = {
+  paginate: (this: PurchaseOrderModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PurchaseOrderModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PurchaseOrder = mongoose.model<PurchaseOrderDocument, PurchaseOrderModel>("PurchaseOrder", PurchaseOrderSchema);
+ * ```
+ */
+export type PurchaseOrderModel = mongoose.Model<
+  PurchaseOrderDocument,
+  PurchaseOrderQueries
+> &
+  PurchaseOrderStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new PurchaseOrder schema instances:
+ * ```
+ * const PurchaseOrderSchema: PurchaseOrderSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PurchaseOrderSchema = mongoose.Schema<
+  PurchaseOrderDocument,
+  PurchaseOrderModel,
+  PurchaseOrderMethods,
+  PurchaseOrderQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `PurchaseOrderDocument["lineItems"]` element.
+ */
+export type PurchaseOrderLineItemDocument = mongoose.Types.Subdocument<any> & {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+};
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PurchaseOrder = mongoose.model<PurchaseOrderDocument, PurchaseOrderModel>("PurchaseOrder", PurchaseOrderSchema);
+ * ```
+ */
+export type PurchaseOrderDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PurchaseOrderQueries
+> &
+  PurchaseOrderMethods & {
+    poNumber: string;
+    contactId: ContactDocument;
+    status?: "draft" | "sent" | "partially_received" | "received" | "cancelled";
+    issueDate?: Date;
+    expectedDeliveryDate?: Date;
+    lineItems: mongoose.Types.DocumentArray<PurchaseOrderLineItemDocument>;
+    totalAmount?: number;
+    notes?: string;
+    stageId?: PurchaseStageDocument | null;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
