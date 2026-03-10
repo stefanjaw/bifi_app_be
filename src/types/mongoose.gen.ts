@@ -1571,6 +1571,40 @@ export type AssetMaintenanceDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of AssetRosterLocationAssignmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetRosterDocument.toObject()`.
+ * ```
+ * const assetrosterObject = assetroster.toObject();
+ * ```
+ */
+export type AssetRosterLocationAssignment = {
+  locationId: Room;
+  assignedQuantity: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of AssetRosterSoftwareConfigurationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetRosterDocument.toObject()`.
+ * ```
+ * const assetrosterObject = assetroster.toObject();
+ * ```
+ */
+export type AssetRosterSoftwareConfiguration = {
+  regulatoryClassification?: "os-middleware" | "simd" | "samd";
+  version?: string;
+  parentAssetId?: AssetRoster["_id"] | AssetRoster;
+  udiDi?: string;
+  fdaMdrClass?: "class-i" | "class-ii" | "class-iii";
+  licenseType?: "perpetual" | "subscription-saas";
+  licenseKey?: string;
+  preventAutoUpdate?: boolean;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of AssetRosterRemarkDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `AssetRosterDocument.toObject()`.
@@ -1613,11 +1647,16 @@ export type AssetRosterAttachment = {
  * ```
  */
 export type AssetRoster = {
+  deviceType: "serialized" | "non-serialized" | "software";
   assetTypeIds: AssetType[];
   vendorIds?: Contact[];
   makeIds: Contact[];
-  productModel: string;
-  serialNumber: string;
+  productModel?: string;
+  serialNumber?: string;
+  description?: string;
+  quantity?: number;
+  locationAssignments: AssetRosterLocationAssignment[];
+  softwareConfiguration?: AssetRosterSoftwareConfiguration;
   condition?: "excellent" | "good" | "fair" | "poor";
   maintenanceWindowIds: MaintenanceWindow[];
   photo?: mongoose.Types.ObjectId;
@@ -1641,6 +1680,11 @@ export type AssetRoster = {
   depreciationCalculator?: number;
   depreciationValue?: number;
   totalCostOfOwnership?: number;
+  commissionedDate?: Date;
+  estimatedEconomicLifeYears?: number;
+  salvageValue?: number;
+  depreciationMethod?: "straight-line" | "accelerated-declining-balance";
+  accelerationFactor?: number;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -1722,6 +1766,39 @@ export type AssetRosterSchema = mongoose.Schema<
 /**
  * Mongoose Subdocument type
  *
+ * Type of `AssetRosterDocument["locationAssignments"]` element.
+ */
+export type AssetRosterLocationAssignmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    locationId: RoomDocument;
+    assignedQuantity: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetRoster = mongoose.model<AssetRosterDocument, AssetRosterModel>("AssetRoster", AssetRosterSchema);
+ * ```
+ */
+export type AssetRosterSoftwareConfigurationDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    regulatoryClassification?: "os-middleware" | "simd" | "samd";
+    version?: string;
+    parentAssetId?: AssetRosterDocument["_id"] | AssetRosterDocument;
+    udiDi?: string;
+    fdaMdrClass?: "class-i" | "class-ii" | "class-iii";
+    licenseType?: "perpetual" | "subscription-saas";
+    licenseKey?: string;
+    preventAutoUpdate?: boolean;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
  * Type of `AssetRosterDocument["remarks"]` element.
  */
 export type AssetRosterRemarkDocument =
@@ -1762,11 +1839,16 @@ export type AssetRosterDocument = mongoose.Document<
   AssetRosterQueries
 > &
   AssetRosterMethods & {
+    deviceType: "serialized" | "non-serialized" | "software";
     assetTypeIds: mongoose.Types.Array<AssetTypeDocument>;
     vendorIds?: mongoose.Types.Array<ContactDocument>;
     makeIds: mongoose.Types.Array<ContactDocument>;
-    productModel: string;
-    serialNumber: string;
+    productModel?: string;
+    serialNumber?: string;
+    description?: string;
+    quantity?: number;
+    locationAssignments: mongoose.Types.DocumentArray<AssetRosterLocationAssignmentDocument>;
+    softwareConfiguration?: AssetRosterSoftwareConfigurationDocument;
     condition?: "excellent" | "good" | "fair" | "poor";
     maintenanceWindowIds: mongoose.Types.Array<MaintenanceWindowDocument>;
     photo?: mongoose.Types.ObjectId;
@@ -1790,6 +1872,11 @@ export type AssetRosterDocument = mongoose.Document<
     depreciationCalculator?: number;
     depreciationValue?: number;
     totalCostOfOwnership?: number;
+    commissionedDate?: Date;
+    estimatedEconomicLifeYears?: number;
+    salvageValue?: number;
+    depreciationMethod?: "straight-line" | "accelerated-declining-balance";
+    accelerationFactor?: number;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;

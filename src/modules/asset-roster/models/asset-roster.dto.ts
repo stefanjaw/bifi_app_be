@@ -1,6 +1,7 @@
 import {
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsDate,
   IsEnum,
   IsIn,
@@ -11,6 +12,7 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
 import { plainToInstance, Transform, Type } from "class-transformer";
@@ -32,17 +34,74 @@ export class assetTypeInformationDTO extends AssetTypeDTO {
   _id?: string;
 }
 
+export class LocationAssignmentDTO {
+  @IsMongoId()
+  @IsNotEmpty()
+  locationId!: string;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  assignedQuantity!: number;
+}
+
+export class SoftwareConfigurationDTO {
+  @IsEnum(["os-middleware", "simd", "samd"])
+  @ValidateIf((_, v) => v !== undefined && v !== null && v !== "")
+  @IsOptional()
+  regulatoryClassification?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ValidateIf((_, v) => v !== undefined && v !== null && v !== "")
+  @IsOptional()
+  version?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  parentAssetId?: string;
+
+  @IsString()
+  @IsOptional()
+  udiDi?: string;
+
+  @IsEnum(["class-i", "class-ii", "class-iii"])
+  @IsOptional()
+  fdaMdrClass?: string;
+
+  @IsEnum(["perpetual", "subscription-saas"])
+  @ValidateIf((_, v) => v !== undefined && v !== null && v !== "")
+  @IsOptional()
+  licenseType?: string;
+
+  @IsString()
+  @IsOptional()
+  licenseKey?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  preventAutoUpdate?: boolean;
+}
+
 export class AssetRosterDTO {
+  @IsEnum(["serialized", "non-serialized", "software"])
+  @IsOptional()
+  deviceType?: string;
+
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
-  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   @IsOptional()
   assetTypeIds?: string[];
 
-  // when assetTypeInformation is passed, creation or update of asset types will be done
   @Transform(({ value }) =>
-    plainToInstance(assetTypeInformationDTO, typeof value === "string" ? JSON.parse(value) : value),
+    plainToInstance(
+      assetTypeInformationDTO,
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   @Type(() => assetTypeInformationDTO)
   @ValidateNested()
@@ -52,20 +111,26 @@ export class AssetRosterDTO {
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
-  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   @IsOptional()
   vendorIds?: string[];
 
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
-  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   @IsOptional()
   makeIds?: string[];
 
-  // when makeInformation is passed, creation or update of makes will be done
   @Transform(({ value }) =>
-    plainToInstance(makeInformationDTO, typeof value === "string" ? JSON.parse(value) : value),
+    plainToInstance(
+      makeInformationDTO,
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   @Type(() => makeInformationDTO)
   @ValidateNested()
@@ -74,11 +139,47 @@ export class AssetRosterDTO {
 
   @IsString()
   @IsNotEmpty()
-  productModel!: string;
+  @ValidateIf((o) => !o.deviceType || o.deviceType === "serialized")
+  productModel?: string;
 
   @IsString()
   @IsNotEmpty()
-  serialNumber!: string;
+  @ValidateIf((o) => !o.deviceType || o.deviceType === "serialized")
+  serialNumber?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ValidateIf(
+    (o) => o.deviceType === "non-serialized" || o.deviceType === "software",
+  )
+  description?: string;
+
+  @IsNumber()
+  @IsPositive()
+  @Type(() => Number)
+  @IsOptional()
+  quantity?: number;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => LocationAssignmentDTO)
+  @Transform(({ value }) => {
+    const parsed = typeof value === "string" ? JSON.parse(value) : value;
+    return parsed.map((la: any) => plainToInstance(LocationAssignmentDTO, la));
+  })
+  locationAssignments?: LocationAssignmentDTO[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => SoftwareConfigurationDTO)
+  @Transform(({ value }) =>
+    plainToInstance(
+      SoftwareConfigurationDTO,
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
+  )
+  softwareConfiguration?: SoftwareConfigurationDTO;
 
   @IsIn(["excellent", "good", "fair", "poor"])
   @IsOptional()
@@ -88,7 +189,9 @@ export class AssetRosterDTO {
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @IsOptional()
-  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   maintenanceWindowIds?: string[];
 
   @IsOptional()
@@ -127,7 +230,6 @@ export class AssetRosterDTO {
   @Type(() => Date)
   maintenanceDate?: Date;
 
-  //Financial details
   @IsDate()
   @Type(() => Date)
   acquiredDate!: Date;
@@ -149,7 +251,7 @@ export class AssetRosterDTO {
   @Type(() => Number)
   @IsOptional()
   yearsOfUse?: number;
-  
+
   @IsNumber()
   @IsPositive()
   @Type(() => Number)
@@ -168,6 +270,30 @@ export class AssetRosterDTO {
   @IsOptional()
   totalCostOfOwnership?: number;
 
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  commissionedDate?: Date;
+
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  estimatedEconomicLifeYears?: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  salvageValue?: number;
+
+  @IsEnum(['straight-line', 'accelerated-declining-balance'])
+  @IsOptional()
+  depreciationMethod?: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  accelerationFactor?: number;
+
   @IsOptional()
   active?: boolean;
 }
@@ -182,7 +308,9 @@ export class UpdateAssetRosterDTO extends PartialType(AssetRosterDTO) {
   @IsOptional()
   @IsArray()
   @IsObject({ each: true })
-  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   attachmentsMetadata?: object[];
 }
 
@@ -195,7 +323,6 @@ export class SkipAssetRosterPMDTO {
   notes!: string;
 }
 
-//model for the notes
 export class NotesDTO {
   @IsOptional()
   @IsString()

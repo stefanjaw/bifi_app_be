@@ -29,8 +29,71 @@ const notesModel = new Schema({
   },
 });
 
+const locationAssignmentSchema = new Schema({
+  locationId: {
+    type: Schema.Types.ObjectId,
+    ref: "Room",
+    autopopulate: {
+      select: "name code address active",
+      maxDepth: 1,
+    },
+    required: true,
+  },
+  assignedQuantity: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+});
+
+const softwareConfigurationSchema = new Schema({
+  regulatoryClassification: {
+    type: String,
+    enum: ["os-middleware", "simd", "samd"],
+    required: false,
+  },
+  version: {
+    type: String,
+    required: false,
+  },
+  parentAssetId: {
+    type: Schema.Types.ObjectId,
+    ref: "AssetRoster",
+    required: false,
+  },
+  udiDi: {
+    type: String,
+    required: false,
+  },
+  fdaMdrClass: {
+    type: String,
+    enum: ["class-i", "class-ii", "class-iii"],
+    required: false,
+  },
+  licenseType: {
+    type: String,
+    enum: ["perpetual", "subscription-saas"],
+    required: false,
+  },
+  licenseKey: {
+    type: String,
+    required: false,
+  },
+  preventAutoUpdate: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+});
+
 const assetRosterSchema = new Schema(
   {
+    deviceType: {
+      type: String,
+      enum: ["serialized", "non-serialized", "software"],
+      required: true,
+      default: "serialized",
+    },
     assetTypeIds: {
       type: [Schema.Types.ObjectId],
       ref: "AssetType",
@@ -41,10 +104,9 @@ const assetRosterSchema = new Schema(
       type: [Schema.Types.ObjectId],
       ref: "Contact",
       required: false,
-      // depth must be of one level
       autopopulate: {
-        select: "name lastName email", // Fields to select from the parent contact
-        maxDepth: 1, // Limit depth to one level
+        select: "name lastName email",
+        maxDepth: 1,
       },
       default: [],
     },
@@ -52,21 +114,37 @@ const assetRosterSchema = new Schema(
       type: [Schema.Types.ObjectId],
       ref: "Contact",
       required: true,
-      // depth must be of one level
       autopopulate: {
-        select: "name lastName email", // Fields to select from the parent contact
-        maxDepth: 1, // Limit depth to one level
+        select: "name lastName email",
+        maxDepth: 1,
       },
     },
     productModel: {
       type: String,
-      required: true,
+      required: false,
     },
     serialNumber: {
       type: String,
-      required: true,
+      required: false,
     },
-
+    description: {
+      type: String,
+      required: false,
+    },
+    quantity: {
+      type: Number,
+      required: false,
+      default: 1,
+    },
+    locationAssignments: {
+      type: [locationAssignmentSchema],
+      required: false,
+      default: [],
+    },
+    softwareConfiguration: {
+      type: softwareConfigurationSchema,
+      required: false,
+    },
     condition: {
       type: String,
       enum: ["excellent", "good", "fair", "poor"],
@@ -87,8 +165,8 @@ const assetRosterSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Room",
       autopopulate: {
-        select: "name code address active", // Fields to select from the room
-        maxDepth: 1, // Limit depth to one level
+        select: "name code address active",
+        maxDepth: 1,
       },
       required: false,
     },
@@ -111,7 +189,6 @@ const assetRosterSchema = new Schema(
       ],
       default: "awaiting-commissioning",
     },
-    // for maintenance
     minMaintenanceDate: {
       type: Date,
     },
@@ -125,7 +202,6 @@ const assetRosterSchema = new Schema(
       type: [fileSchema],
       required: false,
     },
-    // Financial ================
     acquiredDate: {
       type: Date,
       required: true,
@@ -160,14 +236,39 @@ const assetRosterSchema = new Schema(
       required: false,
       default: 0,
     },
+    commissionedDate: {
+      type: Date,
+      required: false,
+    },
+    estimatedEconomicLifeYears: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    salvageValue: {
+      type: Number,
+      required: false,
+      default: 0,
+    },
+    depreciationMethod: {
+      type: String,
+      enum: ['straight-line', 'accelerated-declining-balance'],
+      required: false,
+      default: 'straight-line',
+    },
+    accelerationFactor: {
+      type: Number,
+      required: false,
+      default: 200,
+    },
     active: {
       type: Boolean,
       default: true,
     },
   },
   {
-    toObject: { virtuals: true }, // Include virtuals in toObject output
-    toJSON: { virtuals: true }, // Include virtuals in toJSON output
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
     timestamps: true,
   },
 );
@@ -179,23 +280,21 @@ assetRosterSchema.virtual("assetCommission", {
   foreignField: "assetRosterId",
   autopopulate: {
     select: "outcome details attachments active",
-    maxDepth: 1, // Limit depth to one level
+    maxDepth: 1,
   },
   options: { sort: { date: 1 } },
-  match: { active: true }, // Only populate active commissions
+  match: { active: true },
 });
 
-// TODO: can I have only one maintenance per asset roster at a time?
 assetRosterSchema.virtual("assetMaintenances", {
   ref: "AssetMaintenance",
   localField: "_id",
   foreignField: "assetRosterId",
   autopopulate: {
     select: "name description attachments active type dateStart dateEnd",
-    maxDepth: 1, // Limit depth to one level
+    maxDepth: 1,
   },
-  options: { sort: { date: -1 } },
-  match: { active: true }, // Only populate active maintenances
+  options: { sort: { dateStart: -1 } },
 });
 
 assetRosterSchema.plugin(paginate);
