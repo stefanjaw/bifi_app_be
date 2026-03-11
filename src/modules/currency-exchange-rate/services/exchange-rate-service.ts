@@ -1,9 +1,9 @@
-import mongoose from "mongoose";
 import { BaseService } from "../../../system";
 import {
   exchangeRateModel,
   ExchangeRateDocument,
 } from "../models/exchange-rate.model";
+import { CurrencyDocument } from "@mongodb-types";
 
 export class ExchangeRateService extends BaseService<ExchangeRateDocument> {
   constructor() {
@@ -12,12 +12,12 @@ export class ExchangeRateService extends BaseService<ExchangeRateDocument> {
       refFields: [
         {
           path: "fromCurrencyId",
-          getModel: () => mongoose.model("Currency") as any,
+          getModel: () => this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
         {
           path: "toCurrencyId",
-          getModel: () => mongoose.model("Currency") as any,
+          getModel: () => this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
       ],

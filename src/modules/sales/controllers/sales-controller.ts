@@ -3,11 +3,9 @@ import { BaseController } from "../../../system";
 import { SalesOrderDocument } from "@mongodb-types";
 import { SalesService } from "../services/sales-service";
 
-const salesService = new SalesService();
-
 export class SalesController extends BaseController<SalesOrderDocument> {
   constructor() {
-    super({ service: salesService });
+    super({ service: new SalesService() });
   }
 
   protected async getDashboardHandler(
@@ -16,8 +14,8 @@ export class SalesController extends BaseController<SalesOrderDocument> {
     next: NextFunction
   ) {
     try {
-      const dashboard = await salesService.getDashboard();
-      res.status(200).json(dashboard);
+      const dashboard = await (this.service as SalesService).getDashboard();
+      this.sendData(res, dashboard);
     } catch (error) {
       next(error);
     }

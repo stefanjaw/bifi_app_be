@@ -1,9 +1,10 @@
-import mongoose, { ClientSession } from "mongoose";
+import { ClientSession } from "mongoose";
 import { BaseService, runTransaction, ValidationException } from "../../../system";
 import { paymentModel, PaymentDocument } from "../models/payment.model";
 import { journalEntryModel, JournalEntryStatus } from "../models/journal-entry.model";
 import { journalModel } from "../models/journal.model";
 import { PaymentDTO } from "../models/payment.dto";
+import { ContactDocument, JournalDocument, CurrencyDocument, JournalEntryDocument } from "@mongodb-types";
 
 export class PaymentService extends BaseService<PaymentDocument> {
   constructor() {
@@ -12,22 +13,22 @@ export class PaymentService extends BaseService<PaymentDocument> {
       refFields: [
         {
           path: "partnerId",
-          getModel: () => mongoose.model("Contact") as any,
+          getModel: () => this.connectionManager.getModel<ContactDocument>("Contact"),
           isArray: false,
         },
         {
           path: "journalId",
-          getModel: () => mongoose.model("Journal") as any,
+          getModel: () => this.connectionManager.getModel<JournalDocument>("Journal"),
           isArray: false,
         },
         {
           path: "currencyId",
-          getModel: () => mongoose.model("Currency") as any,
+          getModel: () => this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
         {
           path: "journalEntryId",
-          getModel: () => mongoose.model("JournalEntry") as any,
+          getModel: () => this.connectionManager.getModel<JournalEntryDocument>("JournalEntry"),
           isArray: false,
         },
       ],
@@ -36,7 +37,8 @@ export class PaymentService extends BaseService<PaymentDocument> {
 
   override async create(data: PaymentDTO, session?: ClientSession): Promise<PaymentDocument> {
     return await runTransaction(session, async (s) => {
-      const journal = await journalModel.findById(data.journalId).session(s);
+      const boundJournalModel = this.connectionManager.bindModelToDb(journalModel);
+      const journal = await boundJournalModel.findById(data.journalId).session(s);
       if (!journal) {
         throw new ValidationException("Journal not found.");
       }
@@ -47,7 +49,8 @@ export class PaymentService extends BaseService<PaymentDocument> {
       let paymentData: any = { ...data };
 
       if (debitAccountId && creditAccountId) {
-        const entry = await journalEntryModel.create(
+        const boundJournalEntryModel = this.connectionManager.bindModelToDb(journalEntryModel);
+        const entry = await boundJournalEntryModel.create(
           [
             {
               journalId: data.journalId,

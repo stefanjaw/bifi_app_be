@@ -55,6 +55,9 @@ const salesOrderSchema = new Schema(
     notes: {
       type: String,
     },
+    number: {
+      type: String,
+    },
     active: {
       type: Boolean,
       default: true,

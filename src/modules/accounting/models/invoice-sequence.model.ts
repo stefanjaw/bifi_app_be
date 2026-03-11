@@ -1,4 +1,5 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { PaginateModel, Schema } from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 export interface InvoiceSequenceDocument extends mongoose.Document {
   year: number;
@@ -13,7 +14,9 @@ const invoiceSequenceSchema = new Schema(
   { timestamps: false }
 );
 
-export const invoiceSequenceModel = mongoose.model<InvoiceSequenceDocument>(
+invoiceSequenceSchema.plugin(paginate);
+
+export const invoiceSequenceModel = mongoose.model<InvoiceSequenceDocument, PaginateModel<InvoiceSequenceDocument>>(
   "InvoiceSequence",
   invoiceSequenceSchema
 );

@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import {
   BaseService,
   orderByQuery,
@@ -122,16 +121,16 @@ export class ReportingService extends BaseService<ReportingDocument> {
         const reportingTemplate = reportId
           ? await this.getById(reportId, newSession)
           : modelName
-          ? (
-              await this.get(
-                { model: modelName },
-                undefined,
-                undefined,
-                undefined,
-                newSession,
-              )
-            )[0]
-          : undefined;
+            ? (
+                await this.get(
+                  { model: modelName },
+                  undefined,
+                  undefined,
+                  undefined,
+                  newSession,
+                )
+              )[0]
+            : undefined;
 
         if (!reportingTemplate)
           throw new ValidationException(
@@ -139,15 +138,17 @@ export class ReportingService extends BaseService<ReportingDocument> {
           );
 
         // check that model is valid and get model
-        const isValidModel = !!mongoose
-          .modelNames()
+        const isValidModel = !!this.connectionManager
+          .getModeList()
           .includes(reportingTemplate.model);
 
         if (!isValidModel)
           throw new ValidationException("Template's model is not valid");
 
         // finding data
-        const model = mongoose.model<Document>(reportingTemplate.model);
+        const model = this.connectionManager.getModel<Document>(
+          reportingTemplate.model,
+        );
 
         // if orderBy sent by user, build the object
         let orderByObject: Record<string, any> | undefined = {};
@@ -207,7 +208,7 @@ export class ReportingService extends BaseService<ReportingDocument> {
     return await runTransaction<ReportingDocument>(
       session,
       async (newSession) => {
-        if (!mongoose.modelNames().includes(data.model))
+        if (!this.connectionManager.getModeList().includes(data.model))
           throw new ValidationException(
             "Model is not valid and included in models list",
           );
@@ -224,7 +225,10 @@ export class ReportingService extends BaseService<ReportingDocument> {
     return await runTransaction<ReportingDocument>(
       session,
       async (newSession) => {
-        if (data.model && !mongoose.modelNames().includes(data.model))
+        if (
+          data.model &&
+          !this.connectionManager.getModeList().includes(data.model)
+        )
           throw new ValidationException(
             "Model is not valid and included in models list",
           );

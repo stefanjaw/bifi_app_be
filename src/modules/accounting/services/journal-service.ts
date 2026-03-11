@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
 import { BaseService } from "../../../system";
 import { journalModel, JournalDocument } from "../models/journal.model";
+import { AccountDocument, CurrencyDocument } from "@mongodb-types";
 
 export class JournalService extends BaseService<JournalDocument> {
   constructor() {
@@ -9,17 +9,17 @@ export class JournalService extends BaseService<JournalDocument> {
       refFields: [
         {
           path: "defaultDebitAccountId",
-          getModel: () => mongoose.model("Account") as any,
+          getModel: () => this.connectionManager.getModel<AccountDocument>("Account"),
           isArray: false,
         },
         {
           path: "defaultCreditAccountId",
-          getModel: () => mongoose.model("Account") as any,
+          getModel: () => this.connectionManager.getModel<AccountDocument>("Account"),
           isArray: false,
         },
         {
           path: "currencyId",
-          getModel: () => mongoose.model("Currency") as any,
+          getModel: () => this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
       ],

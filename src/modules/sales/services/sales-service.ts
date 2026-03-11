@@ -23,6 +23,9 @@ export class SalesService extends BaseService<SalesOrderDocument> {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
 
+    const boundSalesOrderModel = this.connectionManager.bindModelToDb(salesOrderModel);
+    const boundCrmModel = this.connectionManager.bindModelToDb(crmModel);
+
     const [
       revenueMTDResult,
       totalRevenueResult,
@@ -32,17 +35,17 @@ export class SalesService extends BaseService<SalesOrderDocument> {
       revenueByStage,
       topSalesReps,
     ] = await Promise.all([
-      salesOrderModel.aggregate([
+      boundSalesOrderModel.aggregate([
         { $match: { closeDate: { $gte: startOfMonth, $lte: endOfMonth }, active: true } },
         { $group: { _id: null, total: { $sum: "$amount" } } },
       ]),
-      salesOrderModel.aggregate([
+      boundSalesOrderModel.aggregate([
         { $match: { active: true } },
         { $group: { _id: null, total: { $sum: "$amount" } } },
       ]),
-      salesOrderModel.countDocuments({ active: true }),
-      crmModel.countDocuments({ active: true }),
-      crmModel.aggregate([
+      boundSalesOrderModel.countDocuments({ active: true }),
+      boundCrmModel.countDocuments({ active: true }),
+      boundCrmModel.aggregate([
         {
           $lookup: {
             from: "crmstages",
@@ -63,7 +66,7 @@ export class SalesService extends BaseService<SalesOrderDocument> {
         },
         { $group: { _id: null, total: { $sum: "$amount" } } },
       ]),
-      crmModel.aggregate([
+      boundCrmModel.aggregate([
         {
           $lookup: {
             from: "crmstages",
@@ -77,7 +80,7 @@ export class SalesService extends BaseService<SalesOrderDocument> {
         { $sort: { total: -1 } },
         { $project: { _id: 0, stageName: { $ifNull: ["$_id", "No Stage"] }, total: 1 } },
       ]),
-      salesOrderModel.aggregate([
+      boundSalesOrderModel.aggregate([
         { $match: { active: true, salesperson: { $ne: null } } },
         {
           $lookup: {

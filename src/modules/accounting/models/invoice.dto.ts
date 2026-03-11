@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsDate,
+  IsIn,
   IsMongoId,
   IsNumber,
   IsOptional,
@@ -12,6 +13,11 @@ import { plainToInstance, Transform, Type } from "class-transformer";
 import { PartialType } from "../../../system";
 
 export class AccountingInvoiceLineDTO {
+  @IsString()
+  @IsIn(['product', 'tax', 'counterpart'])
+  @IsOptional()
+  lineType?: string;
+
   @IsMongoId()
   @IsOptional()
   productId?: string;
@@ -45,6 +51,18 @@ export class AccountingInvoiceLineDTO {
   @IsMongoId()
   @IsOptional()
   discountId?: string;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  debit?: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  credit?: number;
 }
 
 export class AccountingInvoiceDTO {

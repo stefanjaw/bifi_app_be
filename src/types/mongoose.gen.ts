@@ -6261,6 +6261,7 @@ export type SalesOrder = {
   currency?: string;
   closeDate: Date;
   notes?: string;
+  number?: string;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;

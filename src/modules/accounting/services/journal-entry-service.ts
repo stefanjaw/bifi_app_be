@@ -1,7 +1,16 @@
-import mongoose, { ClientSession } from "mongoose";
+import { ClientSession } from "mongoose";
 import { BaseService, ValidationException } from "../../../system";
-import { journalEntryModel, JournalEntryDocument, JournalEntryStatus } from "../models/journal-entry.model";
+import {
+  journalEntryModel,
+  JournalEntryDocument,
+  JournalEntryStatus,
+} from "../models/journal-entry.model";
 import { JournalEntryDTO } from "../models/journal-entry.dto";
+import {
+  JournalDocument,
+  CurrencyDocument,
+  CompanyDocument,
+} from "@mongodb-types";
 
 export class JournalEntryService extends BaseService<JournalEntryDocument> {
   constructor() {
@@ -10,27 +19,35 @@ export class JournalEntryService extends BaseService<JournalEntryDocument> {
       refFields: [
         {
           path: "journalId",
-          getModel: () => mongoose.model("Journal") as any,
+          getModel: () =>
+            this.connectionManager.getModel<JournalDocument>("Journal"),
           isArray: false,
         },
         {
           path: "currencyId",
-          getModel: () => mongoose.model("Currency") as any,
+          getModel: () =>
+            this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
         {
           path: "companyId",
-          getModel: () => mongoose.model("Company") as any,
+          getModel: () =>
+            this.connectionManager.getModel<CompanyDocument>("Company"),
           isArray: false,
         },
       ],
     });
   }
 
-  override async create(data: JournalEntryDTO, session?: ClientSession): Promise<JournalEntryDocument> {
+  override async create(
+    data: JournalEntryDTO,
+    session?: ClientSession,
+  ): Promise<JournalEntryDocument> {
     const lines = data.lines ?? [];
     if (lines.length < 2) {
-      throw new ValidationException("Journal entry must have at least 2 lines.");
+      throw new ValidationException(
+        "Journal entry must have at least 2 lines.",
+      );
     }
     const totalDebit = lines.reduce((sum, l) => sum + (l.debit ?? 0), 0);
     const totalCredit = lines.reduce((sum, l) => sum + (l.credit ?? 0), 0);
@@ -49,10 +66,11 @@ export class JournalEntryService extends BaseService<JournalEntryDocument> {
     if (doc.status === JournalEntryStatus.POSTED) {
       throw new ValidationException("Journal entry is already posted.");
     }
-    const updated = await journalEntryModel.findByIdAndUpdate(
+    const model = this.connectionManager.bindModelToDb(this.model);
+    const updated = await model.findByIdAndUpdate(
       id,
       { status: JournalEntryStatus.POSTED },
-      { new: true }
+      { new: true },
     );
     return updated as JournalEntryDocument;
   }

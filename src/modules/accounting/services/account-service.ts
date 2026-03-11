@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
 import { BaseService } from "../../../system";
 import { accountModel, AccountDocument } from "../models/account.model";
+import { CompanyDocument, CurrencyDocument } from "@mongodb-types";
 
 export class AccountService extends BaseService<AccountDocument> {
   constructor() {
@@ -9,17 +9,17 @@ export class AccountService extends BaseService<AccountDocument> {
       refFields: [
         {
           path: "companyId",
-          getModel: () => mongoose.model("Company") as any,
+          getModel: () => this.connectionManager.getModel<CompanyDocument>("Company"),
           isArray: false,
         },
         {
           path: "parentAccountId",
-          getModel: () => mongoose.model("Account") as any,
+          getModel: () => this.connectionManager.getModel<AccountDocument>("Account"),
           isArray: false,
         },
         {
           path: "currencyId",
-          getModel: () => mongoose.model("Currency") as any,
+          getModel: () => this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
       ],

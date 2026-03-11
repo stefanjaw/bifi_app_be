@@ -1,34 +1,105 @@
 import mongoose, { ClientSession } from "mongoose";
-import { BaseService, ValidationException, runTransaction } from "../../../system";
-import { journalEntryModel, JournalEntryDocument, JournalEntryStatus } from "../models/journal-entry.model";
+import {
+  BaseService,
+  ValidationException,
+  runTransaction,
+} from "../../../system";
+import {
+  journalEntryModel,
+  JournalEntryDocument,
+  JournalEntryStatus,
+} from "../models/journal-entry.model";
 import { PaginateResult } from "mongoose";
-import { orderByQuery, paginationOptions } from "../../../system/libraries/base-module/query-options.type";
+import {
+  orderByQuery,
+  paginationOptions,
+} from "../../../system/libraries/base-module/query-options.type";
 import { invoiceSequenceModel } from "../models/invoice-sequence.model";
 import { journalModel } from "../models/journal.model";
+import { AccountingSettingsService } from "./accounting-settings-service";
+import { SequenceService } from "../../sequences/services/sequence-service";
 import { paymentTermModel } from "../models/payment-term.model";
 import { taxModel } from "../models/tax.model";
 import { discountModel } from "../models/discount.model";
-import { paymentModel, PaymentType, PaymentStatus } from "../models/payment.model";
-import { AccountingInvoiceDTO, RegisterPaymentDTO } from "../models/invoice.dto";
+import {
+  paymentModel,
+  PaymentType,
+  PaymentStatus,
+} from "../models/payment.model";
+import {
+  AccountingInvoiceDTO,
+  RegisterPaymentDTO,
+} from "../models/invoice.dto";
+import {
+  ContactDocument,
+  PaymentTermDocument,
+  JournalDocument,
+  UserDocument,
+  FiscalPositionDocument,
+  CompanyDocument,
+  CurrencyDocument,
+} from "@mongodb-types";
 
 export class InvoiceService extends BaseService<JournalEntryDocument> {
   constructor() {
     super({
       model: journalEntryModel,
       refFields: [
-        { path: "contactId", getModel: () => mongoose.model("Contact") as any, isArray: false },
-        { path: "paymentTermId", getModel: () => mongoose.model("PaymentTerm") as any, isArray: false },
-        { path: "journalId", getModel: () => mongoose.model("Journal") as any, isArray: false },
-        { path: "salespersonId", getModel: () => mongoose.model("User") as any, isArray: false },
-        { path: "fiscalPositionId", getModel: () => mongoose.model("FiscalPosition") as any, isArray: false },
-        { path: "companyId", getModel: () => mongoose.model("Company") as any, isArray: false },
-        { path: "currencyId", getModel: () => mongoose.model("Currency") as any, isArray: false },
+        {
+          path: "contactId",
+          getModel: () =>
+            this.connectionManager.getModel<ContactDocument>("Contact"),
+          isArray: false,
+        },
+        {
+          path: "paymentTermId",
+          getModel: () =>
+            this.connectionManager.getModel<PaymentTermDocument>("PaymentTerm"),
+          isArray: false,
+        },
+        {
+          path: "journalId",
+          getModel: () =>
+            this.connectionManager.getModel<JournalDocument>("Journal"),
+          isArray: false,
+        },
+        {
+          path: "salespersonId",
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
+          isArray: false,
+        },
+        {
+          path: "fiscalPositionId",
+          getModel: () =>
+            this.connectionManager.getModel<FiscalPositionDocument>(
+              "FiscalPosition",
+            ),
+          isArray: false,
+        },
+        {
+          path: "companyId",
+          getModel: () =>
+            this.connectionManager.getModel<CompanyDocument>("Company"),
+          isArray: false,
+        },
+        {
+          path: "currencyId",
+          getModel: () =>
+            this.connectionManager.getModel<CurrencyDocument>("Currency"),
+          isArray: false,
+        },
       ],
     });
   }
 
-  override async getById(id: string, session: ClientSession | undefined): Promise<JournalEntryDocument | undefined> {
-    const doc = await journalEntryModel.findOne({ _id: id, isInvoice: true }).session(session ?? null);
+  override async getById(
+    id: string,
+    session: ClientSession | undefined,
+  ): Promise<JournalEntryDocument | undefined> {
+    const model = this.connectionManager.bindModelToDb(this.model);
+    const doc = await model
+      .findOne({ _id: id, isInvoice: true })
+      .session(session ?? null);
     return doc ?? undefined;
   }
 
@@ -55,21 +126,43 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     count: boolean | undefined,
     session: ClientSession | undefined,
   ): Promise<PaginateResult<JournalEntryDocument> | JournalEntryDocument[]> {
-    return super.get({ ...searchParams, isInvoice: true }, paginationOptions as any, orderBy, count, session);
+    return super.get(
+      { ...searchParams, isInvoice: true },
+      paginationOptions as any,
+      orderBy,
+      count,
+      session,
+    );
   }
 
   private async generateNumber(session: ClientSession): Promise<string> {
+    const accountingSettingsService = new AccountingSettingsService();
+    const sequenceService = new SequenceService();
+    const settings = await accountingSettingsService.getSettings();
+    const invoiceSequence = settings?.invoiceSequence as any;
+    if (invoiceSequence) {
+      const seqId =
+        typeof invoiceSequence === "object"
+          ? invoiceSequence._id.toString()
+          : invoiceSequence.toString();
+      return sequenceService.getNextNumberById(seqId);
+    }
+    const boundInvoiceSeqModel =
+      this.connectionManager.bindModelToDb(invoiceSequenceModel);
     const year = new Date().getFullYear();
-    const seq = await invoiceSequenceModel.findOneAndUpdate(
+    const seq = await boundInvoiceSeqModel.findOneAndUpdate(
       { year },
       { $inc: { counter: 1 } },
-      { new: true, upsert: true, session }
+      { new: true, upsert: true, session },
     );
     const counter = String(seq.counter).padStart(5, "0");
     return `INV/${year}/${counter}`;
   }
 
-  private calculateDueDate(invoiceDate: Date, paymentTerm: any): Date | undefined {
+  private calculateDueDate(
+    invoiceDate: Date,
+    paymentTerm: any,
+  ): Date | undefined {
     if (!paymentTerm || !paymentTerm.lines || paymentTerm.lines.length === 0) {
       return undefined;
     }
@@ -107,12 +200,17 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         taxAmount += taxAmt;
         if (tax.accountId) {
           const existingLine = taxLines.find(
-            (t) => t.accountId.toString() === (tax.accountId._id ?? tax.accountId).toString()
+            (t) =>
+              t.accountId.toString() ===
+              (tax.accountId._id ?? tax.accountId).toString(),
           );
           if (existingLine) {
             existingLine.amount += taxAmt;
           } else {
-            taxLines.push({ accountId: tax.accountId._id ?? tax.accountId, amount: taxAmt });
+            taxLines.push({
+              accountId: tax.accountId._id ?? tax.accountId,
+              amount: taxAmt,
+            });
           }
         }
       }
@@ -121,16 +219,28 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     return { untaxedAmount, taxAmount, taxLines };
   }
 
-  private async enrichLines(rawLines: any[], session: ClientSession): Promise<any[]> {
+  private async enrichLines(
+    rawLines: any[],
+    session: ClientSession,
+  ): Promise<any[]> {
+    const boundTaxModel = this.connectionManager.bindModelToDb(taxModel);
+    const boundDiscountModel =
+      this.connectionManager.bindModelToDb(discountModel);
     const enrichedLines: any[] = [];
     for (const line of rawLines) {
       const enriched: any = { ...line };
       enriched._taxes =
         line.taxIds && line.taxIds.length > 0
-          ? await taxModel.find({ _id: { $in: line.taxIds } }).session(session).lean()
+          ? await boundTaxModel
+              .find({ _id: { $in: line.taxIds } })
+              .session(session)
+              .lean()
           : [];
       if (line.discountId) {
-        enriched._discount = await discountModel.findById(line.discountId).session(session).lean();
+        enriched._discount = await boundDiscountModel
+          .findById(line.discountId)
+          .session(session)
+          .lean();
       }
       enrichedLines.push(enriched);
     }
@@ -141,7 +251,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     enrichedLines: any[],
     taxLines: { accountId: string; amount: number }[],
     totalAmount: number,
-    debitAccountId: any
+    debitAccountId: any,
   ): any[] {
     const productLines = enrichedLines.map((line) => ({
       lineType: "product",
@@ -180,29 +290,50 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     return [...counterpartLine, ...productLines, ...taxJELines];
   }
 
-  override async create(data: AccountingInvoiceDTO, session?: ClientSession): Promise<JournalEntryDocument> {
+  override async create(
+    data: AccountingInvoiceDTO,
+    session?: ClientSession,
+  ): Promise<JournalEntryDocument> {
     return await runTransaction(session, async (s) => {
       const number = await this.generateNumber(s);
 
-      const journal = await journalModel.findById(data.journalId).session(s);
+      const boundJournalModel =
+        this.connectionManager.bindModelToDb(journalModel);
+      const journal = await boundJournalModel
+        .findById(data.journalId)
+        .session(s);
       if (!journal) throw new ValidationException("Journal not found.");
 
       let paymentTerm: any = null;
       if (data.paymentTermId) {
-        paymentTerm = await paymentTermModel.findById(data.paymentTermId).session(s).lean();
+        const boundPaymentTermModel =
+          this.connectionManager.bindModelToDb(paymentTermModel);
+        paymentTerm = await boundPaymentTermModel
+          .findById(data.paymentTermId)
+          .session(s)
+          .lean();
       }
 
       const invoiceDate = new Date(data.invoiceDate);
-      const dueDate = data.dueDate ? new Date(data.dueDate) : this.calculateDueDate(invoiceDate, paymentTerm);
+      const dueDate = data.dueDate
+        ? new Date(data.dueDate)
+        : this.calculateDueDate(invoiceDate, paymentTerm);
 
       const rawLines = data.lines ?? [];
       const enrichedLines = await this.enrichLines(rawLines, s);
-      const { untaxedAmount, taxAmount, taxLines } = this.calculateLineTotals(enrichedLines);
+      const { untaxedAmount, taxAmount, taxLines } =
+        this.calculateLineTotals(enrichedLines);
       const totalAmount = untaxedAmount + taxAmount;
 
-      const jeLines = this.buildJELines(enrichedLines, taxLines, totalAmount, journal.defaultDebitAccountId);
+      const jeLines = this.buildJELines(
+        enrichedLines,
+        taxLines,
+        totalAmount,
+        journal.defaultDebitAccountId,
+      );
 
-      const docs = await journalEntryModel.create(
+      const model = this.connectionManager.bindModelToDb(this.model);
+      const docs = await model.create(
         [
           {
             isInvoice: true,
@@ -227,50 +358,61 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
             active: true,
           },
         ],
-        { session: s }
+        { session: s },
       );
 
       return docs[0];
     });
   }
 
-  override async update(data: any, session?: ClientSession): Promise<JournalEntryDocument> {
+  override async update(
+    data: any,
+    session?: ClientSession,
+  ): Promise<JournalEntryDocument> {
     return await runTransaction(session, async (s) => {
       const { _id, ...fields } = data;
-      const existing = await journalEntryModel.findById(_id).session(s);
+      const model = this.connectionManager.bindModelToDb(this.model);
+      const existing = await model.findById(_id).session(s);
       if (!existing) throw new ValidationException("Invoice not found.");
-      if (!existing.isInvoice) throw new ValidationException("Document is not an invoice.");
+      if (!existing.isInvoice)
+        throw new ValidationException("Document is not an invoice.");
 
-      const journal = await journalModel
+      const boundJournalModel =
+        this.connectionManager.bindModelToDb(journalModel);
+      const journal = await boundJournalModel
         .findById(fields.journalId ?? existing.journalId)
         .session(s);
 
       let paymentTerm: any = null;
       const paymentTermId = fields.paymentTermId ?? existing.paymentTermId;
       if (paymentTermId) {
-        paymentTerm = await paymentTermModel.findById(paymentTermId).session(s).lean();
+        const boundPaymentTermModel =
+          this.connectionManager.bindModelToDb(paymentTermModel);
+        paymentTerm = await boundPaymentTermModel
+          .findById(paymentTermId)
+          .session(s)
+          .lean();
       }
 
-      const invoiceDate = fields.invoiceDate ? new Date(fields.invoiceDate) : existing.date;
+      const invoiceDate = fields.invoiceDate
+        ? new Date(fields.invoiceDate)
+        : existing.date;
       const dueDate = fields.dueDate
         ? new Date(fields.dueDate)
         : fields.invoiceDate
-        ? this.calculateDueDate(invoiceDate, paymentTerm)
-        : existing.dueDate;
+          ? this.calculateDueDate(invoiceDate, paymentTerm)
+          : existing.dueDate;
 
       const rawLines = fields.lines ?? [];
-      const enrichedLines = await this.enrichLines(rawLines, s);
-      const { untaxedAmount, taxAmount, taxLines } = this.calculateLineTotals(enrichedLines);
+      const productLines = rawLines.filter(
+        (l: any) => !l.lineType || l.lineType === "product",
+      );
+      const enrichedProductLines = await this.enrichLines(productLines, s);
+      const { untaxedAmount, taxAmount } =
+        this.calculateLineTotals(enrichedProductLines);
       const totalAmount = untaxedAmount + taxAmount;
 
-      const jeLines = this.buildJELines(
-        enrichedLines,
-        taxLines,
-        totalAmount,
-        journal?.defaultDebitAccountId
-      );
-
-      return journalEntryModel.findByIdAndUpdate(
+      return model.findByIdAndUpdate(
         _id,
         {
           journalId: fields.journalId ?? existing.journalId,
@@ -281,32 +423,48 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           paymentTermId,
           dueDate,
           salespersonId: fields.salespersonId ?? existing.salespersonId,
-          paymentReference: fields.paymentReference ?? existing.paymentReference,
-          fiscalPositionId: fields.fiscalPositionId ?? existing.fiscalPositionId,
+          paymentReference:
+            fields.paymentReference ?? existing.paymentReference,
+          fiscalPositionId:
+            fields.fiscalPositionId ?? existing.fiscalPositionId,
           companyId: fields.companyId ?? existing.companyId,
           untaxedAmount,
           taxAmount,
           totalAmount,
-          lines: jeLines,
+          lines: rawLines,
         },
-        { new: true, session: s }
+        { new: true, session: s },
       ) as any;
     });
   }
 
   async getPayments(invoiceId: string): Promise<any[]> {
-    return paymentModel.find({ invoiceId: new mongoose.Types.ObjectId(invoiceId) }).lean();
+    const boundPaymentModel =
+      this.connectionManager.bindModelToDb(paymentModel);
+    return boundPaymentModel
+      .find({ invoiceId: new mongoose.Types.ObjectId(invoiceId) })
+      .lean();
   }
 
-  async registerPayment(invoiceId: string, data: RegisterPaymentDTO, session?: ClientSession): Promise<any> {
+  async registerPayment(
+    invoiceId: string,
+    data: RegisterPaymentDTO,
+    session?: ClientSession,
+  ): Promise<any> {
     return await runTransaction(session, async (s) => {
-      const invoice = await journalEntryModel.findById(invoiceId).session(s);
+      const model = this.connectionManager.bindModelToDb(this.model);
+      const invoice = await model.findById(invoiceId).session(s);
       if (!invoice) throw new ValidationException("Invoice not found.");
-      if (!invoice.isInvoice) throw new ValidationException("Document is not an invoice.");
+      if (!invoice.isInvoice)
+        throw new ValidationException("Document is not an invoice.");
       if (invoice.status === JournalEntryStatus.CANCEL)
-        throw new ValidationException("Cannot register payment on a cancelled invoice.");
+        throw new ValidationException(
+          "Cannot register payment on a cancelled invoice.",
+        );
 
-      await paymentModel.create(
+      const boundPaymentModel =
+        this.connectionManager.bindModelToDb(paymentModel);
+      await boundPaymentModel.create(
         [
           {
             paymentType: PaymentType.INBOUND,
@@ -320,17 +478,20 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
             active: true,
           },
         ],
-        { session: s }
+        { session: s },
       );
 
-      const allPayments = await paymentModel
+      const allPayments = await boundPaymentModel
         .find({ invoiceId: new mongoose.Types.ObjectId(invoiceId) })
         .session(s)
         .lean();
-      const totalPaid = allPayments.reduce((sum, p) => sum + (p.amount ?? 0), 0);
+      const totalPaid = allPayments.reduce(
+        (sum, p) => sum + (p.amount ?? 0),
+        0,
+      );
       const amountDue = Math.max(0, (invoice.totalAmount ?? 0) - totalPaid);
 
-      await journalEntryModel.findByIdAndUpdate(invoiceId, { amountDue }, { session: s });
+      await model.findByIdAndUpdate(invoiceId, { amountDue }, { session: s });
 
       return allPayments[allPayments.length - 1];
     });
@@ -338,31 +499,35 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
 
   async post(id: string): Promise<JournalEntryDocument> {
     return await runTransaction(undefined, async (s) => {
-      const invoice = await journalEntryModel.findById(id).session(s);
+      const model = this.connectionManager.bindModelToDb(this.model);
+      const invoice = await model.findById(id).session(s);
       if (!invoice) throw new ValidationException("Invoice not found.");
-      if (!invoice.isInvoice) throw new ValidationException("Document is not an invoice.");
+      if (!invoice.isInvoice)
+        throw new ValidationException("Document is not an invoice.");
       if (invoice.status !== JournalEntryStatus.DRAFT)
         throw new ValidationException("Only draft invoices can be posted.");
 
-      return journalEntryModel.findByIdAndUpdate(
+      return model.findByIdAndUpdate(
         id,
         { status: JournalEntryStatus.POSTED },
-        { new: true, session: s }
+        { new: true, session: s },
       ) as any;
     });
   }
 
   async cancel(id: string): Promise<JournalEntryDocument> {
-    const invoice = await journalEntryModel.findById(id);
+    const model = this.connectionManager.bindModelToDb(this.model);
+    const invoice = await model.findById(id);
     if (!invoice) throw new ValidationException("Invoice not found.");
-    if (!invoice.isInvoice) throw new ValidationException("Document is not an invoice.");
+    if (!invoice.isInvoice)
+      throw new ValidationException("Document is not an invoice.");
     if (invoice.status === JournalEntryStatus.CANCEL)
       throw new ValidationException("Invoice is already cancelled.");
 
-    return journalEntryModel.findByIdAndUpdate(
+    return model.findByIdAndUpdate(
       id,
       { status: JournalEntryStatus.CANCEL },
-      { new: true }
+      { new: true },
     ) as any;
   }
 }

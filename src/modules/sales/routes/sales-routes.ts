@@ -1,25 +1,41 @@
-import { Router } from "express";
-import { authorizeMiddleware } from "../../../system";
+import { BaseRoutes } from "../../../system/libraries/base-module/base-routes";
+import { authorizeMiddleware, validateBodyMiddleware } from "../../../system";
 import { SalesController } from "../controllers/sales-controller";
+import { SalesSettingsController } from "../controllers/sales-settings-controller";
+import { SalesSettingsDTO } from "../models/sales-settings.dto";
+import { SalesOrderDocument } from "@mongodb-types";
 
 const salesController = new SalesController();
+const salesSettingsController = new SalesSettingsController();
 
-export class SalesRouter {
-  private router = Router();
-
+export class SalesRouter extends BaseRoutes<SalesOrderDocument> {
   constructor() {
-    this.initRoutes();
+    super({
+      controller: salesController,
+      endpoint: "/sales",
+      dtoCreateClass: SalesSettingsDTO,
+      dtoUpdateClass: SalesSettingsDTO,
+    });
   }
 
-  private initRoutes() {
+  protected override initRoutes() {
     this.router.get(
       "/sales/dashboard",
       authorizeMiddleware("sales", "read"),
       salesController.getDashboard
     );
-  }
 
-  get getRouter() {
-    return this.router;
+    this.router.get(
+      "/sales/settings",
+      authorizeMiddleware("sales", "read"),
+      salesSettingsController.getSettings
+    );
+
+    this.router.put(
+      "/sales/settings",
+      authorizeMiddleware("sales", "update"),
+      validateBodyMiddleware(SalesSettingsDTO),
+      salesSettingsController.upsertSettings
+    );
   }
 }

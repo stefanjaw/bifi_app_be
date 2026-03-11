@@ -12,19 +12,20 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
   override async create(data: StockMovementDTO, session?: ClientSession): Promise<StockMovementDocument> {
     return await runTransaction(session, async (s) => {
       const { productId, warehouseId, locationId, quantity, type } = data;
+      const balanceModel = this.connectionManager.bindModelToDb(stockBalanceModel);
 
       if (type === MovementType.TRANSFER) {
         throw new ValidationException("Use the transfer endpoint for TRANSFER movements.");
       }
 
       if (type === MovementType.IN || type === MovementType.ADJUSTMENT) {
-        await stockBalanceModel.findOneAndUpdate(
+        await balanceModel.findOneAndUpdate(
           { productId, locationId, warehouseId },
           { $inc: { quantity } },
           { upsert: true, new: true, session: s, setDefaultsOnInsert: true }
         );
       } else if (type === MovementType.OUT) {
-        const balance = await stockBalanceModel
+        const balance = await balanceModel
           .findOne({ productId, locationId, warehouseId })
           .session(s);
 
@@ -34,7 +35,7 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
           );
         }
 
-        await stockBalanceModel.findOneAndUpdate(
+        await balanceModel.findOneAndUpdate(
           { productId, locationId, warehouseId },
           { $inc: { quantity: -quantity } },
           { new: true, session: s }
@@ -57,12 +58,13 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
         reference,
         notes,
       } = data;
+      const balanceModel = this.connectionManager.bindModelToDb(stockBalanceModel);
 
       if (fromLocationId === toLocationId) {
         throw new ValidationException("Source and destination locations must be different.");
       }
 
-      const sourceBalance = await stockBalanceModel
+      const sourceBalance = await balanceModel
         .findOne({ productId, locationId: fromLocationId, warehouseId: fromWarehouseId })
         .session(s);
 
@@ -72,13 +74,13 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
         );
       }
 
-      await stockBalanceModel.findOneAndUpdate(
+      await balanceModel.findOneAndUpdate(
         { productId, locationId: fromLocationId, warehouseId: fromWarehouseId },
         { $inc: { quantity: -quantity } },
         { new: true, session: s }
       );
 
-      await stockBalanceModel.findOneAndUpdate(
+      await balanceModel.findOneAndUpdate(
         { productId, locationId: toLocationId, warehouseId: toWarehouseId },
         { $inc: { quantity } },
         { upsert: true, new: true, session: s, setDefaultsOnInsert: true }

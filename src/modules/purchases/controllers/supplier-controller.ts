@@ -1,10 +1,14 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
+import { BaseController } from "../../../system/libraries/base-module/base-controller";
 import { PurchaseSuppliersService } from "../services/supplier-service";
+import { ContactDocument } from "@mongodb-types";
 
-const service = new PurchaseSuppliersService();
+export class SupplierController extends BaseController<ContactDocument> {
+  constructor() {
+    super({ service: new PurchaseSuppliersService() });
+  }
 
-export class SupplierController {
-  getAll = async (req: Request, res: Response): Promise<void> => {
+  protected async getAllHandler(req: Request, res: Response, next: NextFunction) {
     try {
       const searchParams = req.query.searchParams
         ? JSON.parse(req.query.searchParams as string)
@@ -13,23 +17,31 @@ export class SupplierController {
         ? JSON.parse(req.query.paginationOptions as string)
         : {};
 
-      const result = await service.getAll(searchParams, paginationOptions);
-      res.json(result);
+      const result = await (this.service as PurchaseSuppliersService).getAll(searchParams, paginationOptions);
+      this.sendData(res, result);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching suppliers" });
+      next(error);
     }
-  };
+  }
 
-  getById = async (req: Request, res: Response): Promise<void> => {
+  protected async getSupplierByIdHandler(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await service.getById(req.params.id);
+      const result = await (this.service as PurchaseSuppliersService).getSupplierById(req.params.id);
       if (!result) {
         res.status(404).json({ message: "Not found" });
         return;
       }
-      res.json(result);
+      this.sendData(res, result);
     } catch (error) {
-      res.status(500).json({ message: "Error fetching supplier" });
+      next(error);
     }
+  }
+
+  getAll = async (req: Request, res: Response, next: NextFunction) => {
+    await this.getAllHandler(req, res, next);
+  };
+
+  getSupplierById = async (req: Request, res: Response, next: NextFunction) => {
+    await this.getSupplierByIdHandler(req, res, next);
   };
 }

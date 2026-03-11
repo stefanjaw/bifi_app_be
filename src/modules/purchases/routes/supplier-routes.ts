@@ -1,17 +1,22 @@
-import { Router } from "express";
-import { SupplierController } from "../controllers/supplier-controller";
+import { BaseRoutes } from "../../../system/libraries/base-module/base-routes";
 import { authorizeMiddleware } from "../../../system/middlewares";
+import { SupplierController } from "../controllers/supplier-controller";
+import { ContactDTO, UpdateContactDTO } from "../../contacts/models/contact.dto";
+import { ContactDocument } from "@mongodb-types";
 
 const supplierController = new SupplierController();
 
-export class SupplierRouter {
-  private router = Router();
-
+export class SupplierRouter extends BaseRoutes<ContactDocument> {
   constructor() {
-    this.initRoutes();
+    super({
+      controller: supplierController,
+      endpoint: "/purchases/suppliers",
+      dtoCreateClass: ContactDTO,
+      dtoUpdateClass: UpdateContactDTO,
+    });
   }
 
-  private initRoutes() {
+  protected override initRoutes() {
     this.router.get(
       "/purchases/suppliers",
       authorizeMiddleware("purchases/suppliers", "read"),
@@ -20,11 +25,7 @@ export class SupplierRouter {
     this.router.get(
       "/purchases/suppliers/:id",
       authorizeMiddleware("purchases/suppliers", "read"),
-      supplierController.getById
+      supplierController.getSupplierById
     );
-  }
-
-  get getRouter() {
-    return this.router;
   }
 }

@@ -51,6 +51,7 @@ import {
   SupplierRouter,
   PurchaseOrderRouter,
   PurchaseStageRouter,
+  PurchaseSettingsRouter,
   BCDTaxTypeRouter,
   BCDPortRouter,
   BCDChargeCodeRouter,
@@ -72,6 +73,8 @@ import {
   JournalEntryRouter,
   PaymentRouter,
   InvoiceRouter,
+  SequenceRouter,
+  AccountingSettingsRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -114,6 +117,8 @@ app.use(
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   }),
 );
+
+app.use(express.json());
 
 app.use(authenticateMiddleware(new UserService()));
 
@@ -159,6 +164,7 @@ app.use("/api", new BCDChargeCodeRouter().getRouter);
 app.use("/api", new SupplierRouter().getRouter);
 app.use("/api", new PurchaseOrderRouter().getRouter);
 app.use("/api", new PurchaseStageRouter().getRouter);
+app.use("/api", new PurchaseSettingsRouter().getRouter);
 app.use("/api", new WarehouseRouter().getRouter);
 app.use("/api", new LocationRouter().getRouter);
 app.use("/api", new ProductRouter().getRouter);
@@ -177,6 +183,8 @@ app.use("/api", new JournalRouter().getRouter);
 app.use("/api", new JournalEntryRouter().getRouter);
 app.use("/api", new PaymentRouter().getRouter);
 app.use("/api", new InvoiceRouter().getRouter);
+app.use("/api", new AccountingSettingsRouter().getRouter);
+app.use("/api", new SequenceRouter().getRouter);
 
 // health check route
 app.get("/api/health-check", (req, res) => {

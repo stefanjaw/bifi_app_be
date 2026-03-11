@@ -40,3 +40,4 @@ export * from "./inventory";
 export * from "./currency";
 export * from "./currency-exchange-rate";
 export * from "./accounting";
+export * from "./sequences";
