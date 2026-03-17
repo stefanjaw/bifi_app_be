@@ -67,16 +67,9 @@ const stockMovementSchema = new Schema(
 stockMovementSchema.plugin(paginate);
 stockMovementSchema.plugin(autopopulate);
 
-export type StockMovementDocument = mongoose.Document & {
-  productId: string;
-  warehouseId: string;
-  locationId: string;
-  quantity: number;
-  type: MovementType;
-  reference: string;
-  notes: string;
-  date: Date;
-};
+import { StockMovementDocument } from "@mongodb-types";
+
+export { StockMovementDocument };
 
 const stockMovementModel = mongoose.model<
   StockMovementDocument,

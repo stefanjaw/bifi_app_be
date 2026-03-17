@@ -1,6 +1,8 @@
 import {
+  CustomsTariffDocument,
   ShippingDocument,
-  ShippingInvoicePdfExtractedDatumLineDocument,
+  ShippingInvoicePdfExtractedDatumLine,
+  ShippingInvoicePdfExtractedDatumLineTariff,
 } from "@mongodb-types";
 import {
   BaseService,
@@ -10,13 +12,16 @@ import {
   ValidationException,
 } from "../../../system";
 import { shippingModel } from "../models/shipping.model";
-import { ClientSession } from "mongoose";
+import mongoose, { ClientSession } from "mongoose";
 import { ShippingDTO, UpdateShippingDTO } from "../models/shipping.dto";
-import { GenAIService } from "../../ia/genai/services/genai-service";
+import { GenAIService } from "../../ai/genai/services/genai-service";
 import { CountryService } from "../../countries/services/country-service";
 import { shippingGenAISchema } from "../models/shipping.schema";
 import { HScodeDTO } from "../models/hs-code.dto";
 import { linesGenAISchema } from "../models/invoice.schema";
+import { CustomsTariffService } from "../../customs-tariffs";
+import { CustomsHeadingService } from "../../customs-headings";
+import { CustomsChapterService } from "../../customs-chapters";
 
 export class ShippingService extends BaseService<ShippingDocument> {
   // constants
@@ -226,11 +231,86 @@ export class ShippingService extends BaseService<ShippingDocument> {
   // services
   private readonly genAIService = new GenAIService();
   private readonly countryService = new CountryService();
+  private readonly customsTariffService = new CustomsTariffService();
+  private readonly customsHeadingService = new CustomsHeadingService();
+  private readonly customsChapterService = new CustomsChapterService();
 
   constructor() {
     super({
       model: shippingModel,
     });
+  }
+
+  /**
+   * Builds a lean tariff patch from the DB document.
+   * Only includes optional fields when the DB has a value — never injects defaults.
+   */
+  private buildTariffPatch(
+    dbTariff: CustomsTariffDocument,
+  ): Omit<ShippingInvoicePdfExtractedDatumLineTariff, "_id"> {
+    const patch: Omit<ShippingInvoicePdfExtractedDatumLineTariff, "_id"> = {
+      code: dbTariff.code,
+      chapter: dbTariff.chapter,
+      heading: dbTariff.heading,
+      subheading: dbTariff.subheading,
+      description: dbTariff.description,
+    };
+    patch.rateOfDuty = dbTariff.rateOfDuty ?? null;
+    patch.unitOfMeasurement = dbTariff.unitOfMeasurement ?? null;
+    patch.quantity = dbTariff.quantity ?? null;
+    return patch;
+  }
+
+  /**
+   * Applies authoritative DB tariff data onto a lean shipping invoice line object.
+   * Always updates HS-code classification fields on the line.
+   * Creates or overwrites the tariff subdocument from DB values.
+   * Fields from the DB always take precedence over AI-generated values.
+   * @param line - The lean line object to enrich (mutated in place).
+   * @param dbTariff - The matching tariff document from the DB.
+   */
+  private applyDbTariffToLine(
+    line: ShippingInvoicePdfExtractedDatumLine,
+    dbTariff: CustomsTariffDocument,
+  ): void {
+    // Correct authoritative HS code classification fields directly on the line
+    line.customsChapter = dbTariff.chapter;
+    line.customsHeading = dbTariff.heading;
+    line.customsSubheading = dbTariff.subheading;
+    line.subheadingDescription = dbTariff.description;
+
+    const patch = this.buildTariffPatch(dbTariff);
+
+    if (line.tariff) {
+      // Overwrite existing tariff fields with authoritative DB values
+      Object.assign(line.tariff, patch);
+    } else {
+      // Create a new tariff subdocument from DB values
+      line.tariff = {
+        _id: new mongoose.Types.ObjectId(),
+        ...patch,
+      };
+    }
+  }
+
+  /**
+   * Enriches chapter and heading description fields on a lean line using
+   * authoritative data from the customs chapters and headings collections.
+   * @param line - The lean line object to enrich (mutated in place).
+   * @param chapter - Two-digit chapter code (e.g. "01").
+   * @param heading - Two-digit heading code (e.g. "01").
+   */
+  private async enrichLineDescriptions(
+    line: ShippingInvoicePdfExtractedDatumLine,
+    chapter: string,
+    heading: string,
+  ): Promise<void> {
+    const [dbChapter, dbHeading] = await Promise.all([
+      this.customsChapterService.lookupByNumber(chapter),
+      this.customsHeadingService.lookupByChapterAndHeading(chapter, heading),
+    ]);
+    if (dbChapter) line.chapterDescription = dbChapter.description;
+    if (dbHeading) line.headingDescription = dbHeading.description;
   }
 
   /**
@@ -282,6 +362,8 @@ export class ShippingService extends BaseService<ShippingDocument> {
     _id: string,
     session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
+    const userId = userStorage.getStore()?.user?._id;
+
     return await runTransaction<ShippingDocument>(
       session,
       async (newSession) => {
@@ -290,7 +372,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
         return await super.create(
           {
             ...shipping?.toObject(),
-            createdBy: userStorage.getStore()?.user?._id,
+            createdBy: userId,
           },
           newSession,
         );
@@ -312,6 +394,8 @@ export class ShippingService extends BaseService<ShippingDocument> {
     _id: string | undefined,
     session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
+    const userId = userStorage.getStore()?.user?._id;
+
     return await runTransaction<ShippingDocument>(
       session,
       async (newSession) => {
@@ -367,7 +451,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
             {
               ...shippingData,
               _id: _id,
-              updatedBy: userStorage.getStore()?.user?._id,
+              updatedBy: userId,
             },
             newSession,
           );
@@ -375,7 +459,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
           return await super.create(
             {
               ...shippingData,
-              createdBy: userStorage.getStore()?.user?._id,
+              createdBy: userId,
             },
             newSession,
           );
@@ -385,16 +469,16 @@ export class ShippingService extends BaseService<ShippingDocument> {
   }
 
   /**
-   * Generate HS codes for shipping using the GEN-AI service
-   * @param data The data to generate HS codes for, including the lines to generate HS codes for
-   * @returns A promise that resolves to an array of ShippingInvoicePdfExtractedDatumLineDocument objects, each containing the generated HS code
-   * @throws InternalServerException If the GEN-AI service fails to generate HS codes
+   * Generate HS codes for shipping using the GEN-AI service, then enrich each
+   * AI-generated line with authoritative tariff and description data from the DB.
+   * @param data The data to generate HS codes for
+   * @returns A promise that resolves to an array of enriched line documents
+   * @throws InternalServerException If the GEN-AI service fails
    */
   async generateHSCodesForShipping(
     data: HScodeDTO,
-  ): Promise<ShippingInvoicePdfExtractedDatumLineDocument[]> {
+  ): Promise<ShippingInvoicePdfExtractedDatumLine[]> {
     try {
-      // Generate
       const response = await this.genAIService.generate({
         question: this.GENAI_GENERATE_HS_CODE_MESSAGE,
         context: `${this.GENAI_CONTEXT} ${JSON.stringify({
@@ -403,9 +487,32 @@ export class ShippingService extends BaseService<ShippingDocument> {
         schema: linesGenAISchema,
       });
 
+      // Parse as lean plain-object types — no Mongoose document machinery needed here
       const linesData = JSON.parse(
         response.text || "",
-      ) as ShippingInvoicePdfExtractedDatumLineDocument[];
+      ) as ShippingInvoicePdfExtractedDatumLine[];
+
+      // Enrich each line with authoritative DB data using the HS code
+      await Promise.all(
+        linesData.map(async (line) => {
+          const hsCode = line.hsCode;
+          if (!hsCode || hsCode.length < 7) return;
+
+          // Parse 7-digit HS code into chapter / heading / subheading
+          const chapter = hsCode.slice(0, 2);
+          const heading = hsCode.slice(2, 4);
+          const subheading = hsCode.slice(4, 7);
+
+          const [dbTariff] = await Promise.all([
+            this.customsTariffService.lookupByParts(chapter, heading, subheading),
+            this.enrichLineDescriptions(line, chapter, heading),
+          ]);
+
+          if (dbTariff) {
+            this.applyDbTariffToLine(line, dbTariff);
+          }
+        }),
+      );
 
       return linesData;
     } catch (error) {
@@ -416,16 +523,16 @@ export class ShippingService extends BaseService<ShippingDocument> {
   }
 
   /**
-   * Generate tariff for shipping using the GEN-AI service
-   * @param data The data to generate tariff for, including the lines to generate tariff for
-   * @returns A promise that resolves to an array of ShippingInvoicePdfExtractedDatumLineDocument objects, each containing the generated tariff
-   * @throws InternalServerException If the GEN-AI service fails to generate tariff
+   * Generate tariff for shipping using the GEN-AI service, then enrich each
+   * AI-generated line with authoritative tariff and description data from the DB.
+   * @param data The data to generate tariff for
+   * @returns A promise that resolves to an array of enriched line documents
+   * @throws InternalServerException If the GEN-AI service fails
    */
   async generateTariffForShipping(
     data: HScodeDTO,
-  ): Promise<ShippingInvoicePdfExtractedDatumLineDocument[]> {
+  ): Promise<ShippingInvoicePdfExtractedDatumLine[]> {
     try {
-      // Generate
       const response = await this.genAIService.generate({
         question: this.GENAI_GENERATE_TARIFF_MESSAGE,
         context: `${this.GENAI_CONTEXT} ${JSON.stringify({
@@ -434,9 +541,43 @@ export class ShippingService extends BaseService<ShippingDocument> {
         schema: linesGenAISchema,
       });
 
+      // Parse as lean plain-object types — no Mongoose document machinery needed here
       const linesData = JSON.parse(
         response.text || "",
-      ) as ShippingInvoicePdfExtractedDatumLineDocument[];
+      ) as ShippingInvoicePdfExtractedDatumLine[];
+
+      // Enrich each line with authoritative DB tariff data
+      await Promise.all(
+        linesData.map(async (line) => {
+          const tariff = line.tariff;
+          if (!tariff) return;
+
+          let dbTariff: CustomsTariffDocument | null = null;
+
+          // First try exact lookup by tariff.code
+          if (tariff.code) {
+            dbTariff = await this.customsTariffService.lookupByCode(tariff.code);
+          }
+
+          // Fallback: lookup by chapter/heading/subheading
+          if (!dbTariff && tariff.chapter && tariff.heading && tariff.subheading) {
+            dbTariff = await this.customsTariffService.lookupByParts(
+              tariff.chapter,
+              tariff.heading,
+              tariff.subheading,
+            );
+          }
+
+          if (dbTariff) {
+            this.applyDbTariffToLine(line, dbTariff);
+            await this.enrichLineDescriptions(
+              line,
+              dbTariff.chapter,
+              dbTariff.heading,
+            );
+          }
+        }),
+      );
 
       return linesData;
     } catch (error) {

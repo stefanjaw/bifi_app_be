@@ -31,12 +31,9 @@ const warehouseSchema = new Schema(
 warehouseSchema.plugin(paginate);
 warehouseSchema.plugin(autopopulate);
 
-export type WarehouseDocument = mongoose.Document & {
-  name: string;
-  code: string;
-  address: string;
-  active: boolean;
-};
+import { WarehouseDocument } from "@mongodb-types";
+
+export { WarehouseDocument };
 
 const warehouseModel = mongoose.model<
   WarehouseDocument,

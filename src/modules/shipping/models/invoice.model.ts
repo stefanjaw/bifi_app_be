@@ -60,6 +60,10 @@ const tariffSchema = new Schema({
     type: String,
     default: null,
   },
+  quantity: {
+    type: Number,
+    default: null,
+  },
   tax: {
     type: Number,
     default: null,

@@ -44,24 +44,9 @@ const purchaseOrderSchema = new Schema(
 purchaseOrderSchema.plugin(autopopulate);
 purchaseOrderSchema.plugin(paginate);
 
-export type LineItem = {
-  description: string;
-  quantity: number;
-  unitPrice: number;
-  total: number;
-};
+import { PurchaseOrderDocument } from "@mongodb-types";
 
-export type PurchaseOrderDocument = mongoose.Document & {
-  poNumber: string;
-  contactId: mongoose.Types.ObjectId;
-  status: "draft" | "sent" | "partially_received" | "received" | "cancelled";
-  issueDate: Date;
-  expectedDeliveryDate?: Date;
-  lineItems: LineItem[];
-  totalAmount: number;
-  notes?: string;
-  stageId?: mongoose.Types.ObjectId | null;
-};
+export { PurchaseOrderDocument };
 
 const purchaseOrderModel = mongoose.model<PurchaseOrderDocument, PaginateModel<PurchaseOrderDocument>>(
   "PurchaseOrder",

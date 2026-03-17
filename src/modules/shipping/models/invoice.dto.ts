@@ -62,6 +62,11 @@ class ExtractedTariffDTO {
   @IsNumber()
   @Type(() => Number)
   @IsOptional()
+  quantity?: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
   tax?: number;
 }
 

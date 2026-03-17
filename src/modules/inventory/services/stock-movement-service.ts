@@ -29,7 +29,7 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
           .findOne({ productId, locationId, warehouseId })
           .session(s);
 
-        if (!balance || balance.quantity < quantity) {
+        if (!balance || (balance.quantity ?? 0) < quantity) {
           throw new ValidationException(
             `Insufficient stock at this location. Available: ${balance?.quantity ?? 0}, requested: ${quantity}`
           );
@@ -68,7 +68,7 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
         .findOne({ productId, locationId: fromLocationId, warehouseId: fromWarehouseId })
         .session(s);
 
-      if (!sourceBalance || sourceBalance.quantity < quantity) {
+      if (!sourceBalance || (sourceBalance.quantity ?? 0) < quantity) {
         throw new ValidationException(
           `Insufficient stock at source location. Available: ${sourceBalance?.quantity ?? 0}, requested: ${quantity}`
         );

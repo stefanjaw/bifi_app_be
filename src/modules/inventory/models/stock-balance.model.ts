@@ -44,12 +44,9 @@ stockBalanceSchema.index({ productId: 1, locationId: 1 }, { unique: true });
 stockBalanceSchema.plugin(paginate);
 stockBalanceSchema.plugin(autopopulate);
 
-export type StockBalanceDocument = mongoose.Document & {
-  productId: string;
-  locationId: string;
-  warehouseId: string;
-  quantity: number;
-};
+import { StockBalanceDocument } from "@mongodb-types";
+
+export { StockBalanceDocument };
 
 const stockBalanceModel = mongoose.model<
   StockBalanceDocument,

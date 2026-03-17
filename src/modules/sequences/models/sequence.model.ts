@@ -1,18 +1,9 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
+import { SequenceDocument } from "@mongodb-types";
 
-export type SequenceDocument = mongoose.Document & {
-  name: string;
-  prefix: string;
-  suffix?: string;
-  number: number;
-  step: number;
-  size: number;
-  nogap: boolean;
-  active: boolean;
-  description?: string;
-};
+export { SequenceDocument };
 
 const sequenceSchema = new Schema(
   {

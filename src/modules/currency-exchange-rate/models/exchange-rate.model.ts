@@ -41,13 +41,9 @@ const exchangeRateSchema = new Schema(
 exchangeRateSchema.plugin(paginate);
 exchangeRateSchema.plugin(autopopulate);
 
-export type ExchangeRateDocument = mongoose.Document & {
-  fromCurrencyId: any;
-  toCurrencyId: any;
-  rate: number;
-  effectiveDate: Date;
-  active: boolean;
-};
+import { ExchangeRateDocument } from "@mongodb-types";
+
+export { ExchangeRateDocument };
 
 const exchangeRateModel = mongoose.model<
   ExchangeRateDocument,

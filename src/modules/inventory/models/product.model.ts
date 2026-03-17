@@ -53,16 +53,9 @@ const productSchema = new Schema(
 productSchema.plugin(paginate);
 productSchema.plugin(autopopulate);
 
-export type ProductDocument = mongoose.Document & {
-  name: string;
-  sku: string;
-  description: string;
-  unit: string;
-  unitOfMeasureId?: string;
-  costPrice: number;
-  salePrice: number;
-  active: boolean;
-};
+import { InventoryProductDocument as ProductDocument } from "@mongodb-types";
+
+export { ProductDocument };
 
 const productModel = mongoose.model<
   ProductDocument,

@@ -40,14 +40,9 @@ const currencySchema = new Schema(
 currencySchema.plugin(paginate);
 currencySchema.plugin(autopopulate);
 
-export type CurrencyDocument = mongoose.Document & {
-  name: string;
-  code: string;
-  symbol: string;
-  decimalPrecision: number;
-  active: boolean;
-  isDefault: boolean;
-};
+import { CurrencyDocument } from "@mongodb-types";
+
+export { CurrencyDocument };
 
 const currencyModel = mongoose.model<
   CurrencyDocument,
