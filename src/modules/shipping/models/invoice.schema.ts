@@ -198,6 +198,17 @@ export const linesGenAISchema: Schema = {
                 ],
                 description: "A unit of measurement",
               },
+              quantity: {
+                anyOf: [
+                  {
+                    type: Type.NUMBER,
+                  },
+                  {
+                    type: Type.NULL,
+                  },
+                ],
+                description: "Supplementary unit quantity from tariff",
+              },
               tax: {
                 anyOf: [
                   {

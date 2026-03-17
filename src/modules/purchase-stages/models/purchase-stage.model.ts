@@ -32,13 +32,9 @@ const purchaseStageSchema = new Schema(
 purchaseStageSchema.plugin(paginate);
 purchaseStageSchema.plugin(autopopulate);
 
-export type PurchaseStageDocument = mongoose.Document & {
-  name: string;
-  description: string;
-  color: string;
-  order: number;
-  active: boolean;
-};
+import { PurchaseStageDocument } from "@mongodb-types";
+
+export { PurchaseStageDocument };
 
 const purchaseStageModel = mongoose.model<
   PurchaseStageDocument,

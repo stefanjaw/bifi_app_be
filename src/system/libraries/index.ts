@@ -15,6 +15,7 @@ export * from "./file-storage/file-validator-service";
 export * from "./file-storage/file.model";
 export * from "./file-storage/ftp-services";
 export * from "./file-storage/ftp.types";
+export * from "./file-storage/google-drive-connector-service";
 export * from "./file-storage/grid-fs-bucket-service";
 export * from "./partial-types/mapped-type.type";
 export * from "./partial-types/partial-type-helpers";

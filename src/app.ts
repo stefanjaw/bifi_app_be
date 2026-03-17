@@ -12,6 +12,8 @@ import {
   FTPService,
   userStorage,
 } from "./system";
+import { initializePricingIndexModels } from "./modules/pricing-index/initialize";
+import { initializeCustomsData } from "./modules/customs-tariffs/initialize";
 import {
   ActivityHistoryRouter,
   BugReportingRouter,
@@ -75,6 +77,14 @@ import {
   InvoiceRouter,
   SequenceRouter,
   AccountingSettingsRouter,
+  GemsRouter,
+  AiSettingsRouter,
+  DriveSettingsRouter,
+  PricingIndexRouter,
+  PricingEstimateRouter,
+  CustomsChapterRouter,
+  CustomsHeadingRouter,
+  CustomsTariffRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -185,6 +195,14 @@ app.use("/api", new PaymentRouter().getRouter);
 app.use("/api", new InvoiceRouter().getRouter);
 app.use("/api", new AccountingSettingsRouter().getRouter);
 app.use("/api", new SequenceRouter().getRouter);
+app.use("/api", new GemsRouter().getRouter);
+app.use("/api", new AiSettingsRouter().getRouter);
+app.use("/api", new DriveSettingsRouter().getRouter);
+app.use("/api", new PricingIndexRouter().getRouter);
+app.use("/api", new PricingEstimateRouter().getRouter);
+app.use("/api", new CustomsChapterRouter().getRouter);
+app.use("/api", new CustomsHeadingRouter().getRouter);
+app.use("/api", new CustomsTariffRouter().getRouter);
 
 // health check route
 app.get("/api/health-check", (req, res) => {
@@ -208,6 +226,12 @@ const start = async () => {
     });
 
     console.log("Connected to MongoDB successfully!");
+
+    // sync pricing-index model indexes once at startup
+    // await initializePricingIndexModels();
+
+    // seed customs reference data (idempotent upsert)
+    // await initializeCustomsData();
 
     // init ftpservice
     FTPService.initiate({

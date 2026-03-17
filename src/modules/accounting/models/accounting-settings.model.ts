@@ -1,11 +1,9 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
+import { AccountingSettingsDocument } from "@mongodb-types";
 
-export type AccountingSettingsDocument = mongoose.Document & {
-  invoiceSequence?: string;
-  description?: string;
-};
+export { AccountingSettingsDocument };
 
 const accountingSettingsSchema = new Schema(
   {

@@ -20,10 +20,9 @@ const uomCategorySchema = new Schema(
 uomCategorySchema.plugin(paginate);
 uomCategorySchema.plugin(autopopulate);
 
-export type UomCategoryDocument = mongoose.Document & {
-  name: string;
-  active: boolean;
-};
+import { InventoryUomCategoryDocument as UomCategoryDocument } from "@mongodb-types";
+
+export { UomCategoryDocument };
 
 const uomCategoryModel = mongoose.model<
   UomCategoryDocument,

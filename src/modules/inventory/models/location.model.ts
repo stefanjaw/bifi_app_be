@@ -39,13 +39,9 @@ const locationSchema = new Schema(
 locationSchema.plugin(paginate);
 locationSchema.plugin(autopopulate);
 
-export type LocationDocument = mongoose.Document & {
-  name: string;
-  code: string;
-  warehouseId: string;
-  capacity: number | null;
-  active: boolean;
-};
+import { InventoryLocationDocument as LocationDocument } from "@mongodb-types";
+
+export { LocationDocument };
 
 const locationModel = mongoose.model<
   LocationDocument,

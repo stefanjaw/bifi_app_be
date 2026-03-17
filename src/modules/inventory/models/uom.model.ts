@@ -34,12 +34,9 @@ const uomSchema = new Schema(
 uomSchema.plugin(paginate);
 uomSchema.plugin(autopopulate);
 
-export type UomDocument = mongoose.Document & {
-  name: string;
-  symbol: string;
-  categoryId: string;
-  active: boolean;
-};
+import { InventoryUomDocument as UomDocument } from "@mongodb-types";
+
+export { UomDocument };
 
 const uomModel = mongoose.model<UomDocument, PaginateModel<UomDocument>>(
   "InventoryUom",

@@ -25,7 +25,7 @@ import {
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 import { AssetRosterStatusService } from "./asset-roster-status-service";
 import { AssetTypeService } from "../../asset-types/services/asset-type-service";
-import { GenAIService } from "../../ia/genai/services/genai-service";
+import { GenAIService } from "../../ai/genai/services/genai-service";
 
 export class AssetRosterService extends BaseService<AssetRosterDocument> {
   private assetRosterStatusService = new AssetRosterStatusService();

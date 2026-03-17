@@ -121,6 +121,115 @@ export type AccountDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of AccountingSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AccountingSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `AccountingSettingsObject`.
+ * ```
+ * const accountingsettingsObject = accountingsettings.toObject();
+ * ```
+ */
+export type AccountingSettings = {
+  invoiceSequence?: Sequence | null;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AccountingSettingsDocument (type alias of `AccountingSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { AccountingSettings } from "../models"
+ * import { AccountingSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const accountingsettingsObject: AccountingSettingsObject = accountingsettings.toObject();
+ * ```
+ */
+export type AccountingSettingsObject = AccountingSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type AccountingSettingsQuery = mongoose.Query<
+  any,
+  AccountingSettingsDocument,
+  AccountingSettingsQueries
+> &
+  AccountingSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `AccountingSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type AccountingSettingsQueries = {
+  paginate: (
+    this: AccountingSettingsQuery,
+    ...args: any[]
+  ) => AccountingSettingsQuery;
+};
+
+export type AccountingSettingsMethods = {};
+
+export type AccountingSettingsStatics = {
+  paginate: (this: AccountingSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: AccountingSettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AccountingSettings = mongoose.model<AccountingSettingsDocument, AccountingSettingsModel>("AccountingSettings", AccountingSettingsSchema);
+ * ```
+ */
+export type AccountingSettingsModel = mongoose.Model<
+  AccountingSettingsDocument,
+  AccountingSettingsQueries
+> &
+  AccountingSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new AccountingSettings schema instances:
+ * ```
+ * const AccountingSettingsSchema: AccountingSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type AccountingSettingsSchema = mongoose.Schema<
+  AccountingSettingsDocument,
+  AccountingSettingsModel,
+  AccountingSettingsMethods,
+  AccountingSettingsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AccountingSettings = mongoose.model<AccountingSettingsDocument, AccountingSettingsModel>("AccountingSettings", AccountingSettingsSchema);
+ * ```
+ */
+export type AccountingSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  AccountingSettingsQueries
+> &
+  AccountingSettingsMethods & {
+    invoiceSequence?: SequenceDocument | null;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of DiscountDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `DiscountDocument.toObject()`. To avoid conflicts with model names, use the type alias `DiscountObject`.
@@ -429,11 +538,19 @@ export type InvoiceSequenceQuery = mongoose.Query<
  *
  * This type represents `InvoiceSequenceSchema.query`. For most use cases, you should not need to use this type explicitly.
  */
-export type InvoiceSequenceQueries = {};
+export type InvoiceSequenceQueries = {
+  paginate: (
+    this: InvoiceSequenceQuery,
+    ...args: any[]
+  ) => InvoiceSequenceQuery;
+};
 
 export type InvoiceSequenceMethods = {};
 
-export type InvoiceSequenceStatics = {};
+export type InvoiceSequenceStatics = {
+  paginate: (this: InvoiceSequenceModel, ...args: any[]) => any;
+  paginateSubDocs: (this: InvoiceSequenceModel, ...args: any[]) => any;
+};
 
 /**
  * Mongoose Model type
@@ -1253,6 +1370,148 @@ export type ActivityHistoryDocument = mongoose.Document<
     modelId: mongoose.Types.ObjectId;
     metadata?: any | null;
     userId?: UserDocument;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of AiSettingsPromptVersionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AiSettingsDocument.toObject()`.
+ * ```
+ * const aisettingsObject = aisettings.toObject();
+ * ```
+ */
+export type AiSettingsPromptVersion = {
+  name: string;
+  prompt: string;
+  version: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of AiSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AiSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `AiSettingsObject`.
+ * ```
+ * const aisettingsObject = aisettings.toObject();
+ * ```
+ */
+export type AiSettings = {
+  aiProvider?: string;
+  apiKey?: string;
+  model?: string;
+  embeddingModel?: string;
+  maxTokenLimit?: number;
+  promptVersions: AiSettingsPromptVersion[];
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AiSettingsDocument (type alias of `AiSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { AiSettings } from "../models"
+ * import { AiSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const aisettingsObject: AiSettingsObject = aisettings.toObject();
+ * ```
+ */
+export type AiSettingsObject = AiSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type AiSettingsQuery = mongoose.Query<
+  any,
+  AiSettingsDocument,
+  AiSettingsQueries
+> &
+  AiSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `AiSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type AiSettingsQueries = {
+  paginate: (this: AiSettingsQuery, ...args: any[]) => AiSettingsQuery;
+};
+
+export type AiSettingsMethods = {};
+
+export type AiSettingsStatics = {
+  paginate: (this: AiSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: AiSettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AiSettings = mongoose.model<AiSettingsDocument, AiSettingsModel>("AiSettings", AiSettingsSchema);
+ * ```
+ */
+export type AiSettingsModel = mongoose.Model<
+  AiSettingsDocument,
+  AiSettingsQueries
+> &
+  AiSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new AiSettings schema instances:
+ * ```
+ * const AiSettingsSchema: AiSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type AiSettingsSchema = mongoose.Schema<
+  AiSettingsDocument,
+  AiSettingsModel,
+  AiSettingsMethods,
+  AiSettingsQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `AiSettingsDocument["promptVersions"]` element.
+ */
+export type AiSettingsPromptVersionDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    name: string;
+    prompt: string;
+    version: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AiSettings = mongoose.model<AiSettingsDocument, AiSettingsModel>("AiSettings", AiSettingsSchema);
+ * ```
+ */
+export type AiSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  AiSettingsQueries
+> &
+  AiSettingsMethods & {
+    aiProvider?: string;
+    apiKey?: string;
+    model?: string;
+    embeddingModel?: string;
+    maxTokenLimit?: number;
+    promptVersions: mongoose.Types.DocumentArray<AiSettingsPromptVersionDocument>;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -4374,6 +4633,110 @@ export type CurrencyDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of DriveSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `DriveSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `DriveSettingsObject`.
+ * ```
+ * const drivesettingsObject = drivesettings.toObject();
+ * ```
+ */
+export type DriveSettings = {
+  serviceAccountKey?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of DriveSettingsDocument (type alias of `DriveSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { DriveSettings } from "../models"
+ * import { DriveSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const drivesettingsObject: DriveSettingsObject = drivesettings.toObject();
+ * ```
+ */
+export type DriveSettingsObject = DriveSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type DriveSettingsQuery = mongoose.Query<
+  any,
+  DriveSettingsDocument,
+  DriveSettingsQueries
+> &
+  DriveSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `DriveSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type DriveSettingsQueries = {
+  paginate: (this: DriveSettingsQuery, ...args: any[]) => DriveSettingsQuery;
+};
+
+export type DriveSettingsMethods = {};
+
+export type DriveSettingsStatics = {
+  paginate: (this: DriveSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: DriveSettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const DriveSettings = mongoose.model<DriveSettingsDocument, DriveSettingsModel>("DriveSettings", DriveSettingsSchema);
+ * ```
+ */
+export type DriveSettingsModel = mongoose.Model<
+  DriveSettingsDocument,
+  DriveSettingsQueries
+> &
+  DriveSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new DriveSettings schema instances:
+ * ```
+ * const DriveSettingsSchema: DriveSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type DriveSettingsSchema = mongoose.Schema<
+  DriveSettingsDocument,
+  DriveSettingsModel,
+  DriveSettingsMethods,
+  DriveSettingsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const DriveSettings = mongoose.model<DriveSettingsDocument, DriveSettingsModel>("DriveSettings", DriveSettingsSchema);
+ * ```
+ */
+export type DriveSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  DriveSettingsQueries
+> &
+  DriveSettingsMethods & {
+    serviceAccountKey?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of FacilityDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `FacilityDocument.toObject()`. To avoid conflicts with model names, use the type alias `FacilityObject`.
@@ -5510,6 +5873,482 @@ export type MaintenanceWindowDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of PricingEstimatePricingControlDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PricingEstimateDocument.toObject()`.
+ * ```
+ * const pricingestimateObject = pricingestimate.toObject();
+ * ```
+ */
+export type PricingEstimatePricingControl = {
+  dutyFree?: boolean;
+  method?: "markup" | "margin";
+  markupFactor?: number;
+  margin?: number;
+};
+
+/**
+ * Lean version of PricingEstimateLineItemDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PricingEstimateDocument.toObject()`.
+ * ```
+ * const pricingestimateObject = pricingestimate.toObject();
+ * ```
+ */
+export type PricingEstimateLineItem = {
+  product?: string | null;
+  supplier?: string | null;
+  partNo?: string | null;
+  qty?: number;
+  unitPrice?: number;
+  freightPerUnit?: number;
+  hsCode?: string | null;
+  dutyPct?: number;
+  dutyPerUnit?: number;
+  wharfage?: number;
+  landedPerUnit?: number;
+  custPricePerUnit?: number;
+  marginPct?: number;
+  totalCust?: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of PricingEstimateDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PricingEstimateDocument.toObject()`. To avoid conflicts with model names, use the type alias `PricingEstimateObject`.
+ * ```
+ * const pricingestimateObject = pricingestimate.toObject();
+ * ```
+ */
+export type PricingEstimate = {
+  number?: string | null;
+  date?: Date;
+  preparedBy?: string | null;
+  requestText?: string;
+  shippingMethod?: string;
+  pricingControls?: PricingEstimatePricingControl;
+  specialInstructions?: string;
+  status?: "draft" | "generated" | "approved" | "rejected";
+  lineItems: PricingEstimateLineItem[];
+  totalLanded?: number;
+  totalCustomer?: number;
+  wharfageBankFeePct?: number;
+  wharfageBankFeeAmount?: number;
+  inputTokens?: number;
+  outputTokens?: number;
+  totalTokens?: number;
+  estimatedCost?: number;
+  aiModel?: string | null;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of PricingEstimateDocument (type alias of `PricingEstimate`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { PricingEstimate } from "../models"
+ * import { PricingEstimateObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const pricingestimateObject: PricingEstimateObject = pricingestimate.toObject();
+ * ```
+ */
+export type PricingEstimateObject = PricingEstimate;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PricingEstimateQuery = mongoose.Query<
+  any,
+  PricingEstimateDocument,
+  PricingEstimateQueries
+> &
+  PricingEstimateQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PricingEstimateSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PricingEstimateQueries = {
+  paginate: (
+    this: PricingEstimateQuery,
+    ...args: any[]
+  ) => PricingEstimateQuery;
+};
+
+export type PricingEstimateMethods = {};
+
+export type PricingEstimateStatics = {
+  paginate: (this: PricingEstimateModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PricingEstimateModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PricingEstimate = mongoose.model<PricingEstimateDocument, PricingEstimateModel>("PricingEstimate", PricingEstimateSchema);
+ * ```
+ */
+export type PricingEstimateModel = mongoose.Model<
+  PricingEstimateDocument,
+  PricingEstimateQueries
+> &
+  PricingEstimateStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new PricingEstimate schema instances:
+ * ```
+ * const PricingEstimateSchema: PricingEstimateSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PricingEstimateSchema = mongoose.Schema<
+  PricingEstimateDocument,
+  PricingEstimateModel,
+  PricingEstimateMethods,
+  PricingEstimateQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PricingEstimate = mongoose.model<PricingEstimateDocument, PricingEstimateModel>("PricingEstimate", PricingEstimateSchema);
+ * ```
+ */
+export type PricingEstimatePricingControlDocument = mongoose.Document<any> & {
+  dutyFree?: boolean;
+  method?: "markup" | "margin";
+  markupFactor?: number;
+  margin?: number;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `PricingEstimateDocument["lineItems"]` element.
+ */
+export type PricingEstimateLineItemDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    product?: string | null;
+    supplier?: string | null;
+    partNo?: string | null;
+    qty?: number;
+    unitPrice?: number;
+    freightPerUnit?: number;
+    hsCode?: string | null;
+    dutyPct?: number;
+    dutyPerUnit?: number;
+    wharfage?: number;
+    landedPerUnit?: number;
+    custPricePerUnit?: number;
+    marginPct?: number;
+    totalCust?: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PricingEstimate = mongoose.model<PricingEstimateDocument, PricingEstimateModel>("PricingEstimate", PricingEstimateSchema);
+ * ```
+ */
+export type PricingEstimateDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PricingEstimateQueries
+> &
+  PricingEstimateMethods & {
+    number?: string | null;
+    date?: Date;
+    preparedBy?: string | null;
+    requestText?: string;
+    shippingMethod?: string;
+    pricingControls?: PricingEstimatePricingControlDocument;
+    specialInstructions?: string;
+    status?: "draft" | "generated" | "approved" | "rejected";
+    lineItems: mongoose.Types.DocumentArray<PricingEstimateLineItemDocument>;
+    totalLanded?: number;
+    totalCustomer?: number;
+    wharfageBankFeePct?: number;
+    wharfageBankFeeAmount?: number;
+    inputTokens?: number;
+    outputTokens?: number;
+    totalTokens?: number;
+    estimatedCost?: number;
+    aiModel?: string | null;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of PricingSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PricingSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `PricingSettingsObject`.
+ * ```
+ * const pricingsettingsObject = pricingsettings.toObject();
+ * ```
+ */
+export type PricingSettings = {
+  estimateSequence?: Sequence | null;
+  defaultWharfageBankFeePct?: number;
+  defaultShippingMethod?: string;
+  defaultPricingMethod?: "markup" | "margin";
+  defaultMarkupFactor?: number;
+  defaultMargin?: number;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of PricingSettingsDocument (type alias of `PricingSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { PricingSettings } from "../models"
+ * import { PricingSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const pricingsettingsObject: PricingSettingsObject = pricingsettings.toObject();
+ * ```
+ */
+export type PricingSettingsObject = PricingSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PricingSettingsQuery = mongoose.Query<
+  any,
+  PricingSettingsDocument,
+  PricingSettingsQueries
+> &
+  PricingSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PricingSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PricingSettingsQueries = {
+  paginate: (
+    this: PricingSettingsQuery,
+    ...args: any[]
+  ) => PricingSettingsQuery;
+};
+
+export type PricingSettingsMethods = {};
+
+export type PricingSettingsStatics = {
+  paginate: (this: PricingSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PricingSettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PricingSettings = mongoose.model<PricingSettingsDocument, PricingSettingsModel>("PricingSettings", PricingSettingsSchema);
+ * ```
+ */
+export type PricingSettingsModel = mongoose.Model<
+  PricingSettingsDocument,
+  PricingSettingsQueries
+> &
+  PricingSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new PricingSettings schema instances:
+ * ```
+ * const PricingSettingsSchema: PricingSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PricingSettingsSchema = mongoose.Schema<
+  PricingSettingsDocument,
+  PricingSettingsModel,
+  PricingSettingsMethods,
+  PricingSettingsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PricingSettings = mongoose.model<PricingSettingsDocument, PricingSettingsModel>("PricingSettings", PricingSettingsSchema);
+ * ```
+ */
+export type PricingSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PricingSettingsQueries
+> &
+  PricingSettingsMethods & {
+    estimateSequence?: SequenceDocument | null;
+    defaultWharfageBankFeePct?: number;
+    defaultShippingMethod?: string;
+    defaultPricingMethod?: "markup" | "margin";
+    defaultMarkupFactor?: number;
+    defaultMargin?: number;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of PricingIndexDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PricingIndexDocument.toObject()`. To avoid conflicts with model names, use the type alias `PricingIndexObject`.
+ * ```
+ * const pricingindexObject = pricingindex.toObject();
+ * ```
+ */
+export type PricingIndex = {
+  type: "pricelist" | "shipping" | "tax" | "instruction";
+  vendor?: string | null;
+  carrier?: string | null;
+  product?: string | null;
+  zone?: string | null;
+  price?: number | null;
+  currency?: string;
+  unit?: string | null;
+  textDescription?: string;
+  embedding?: number[];
+  sourceDriveFileId?: string | null;
+  sourceGridFsId?: string | null;
+  sourceFileName?: string | null;
+  sourceCategory?: "pricelists" | "shipping" | "taxes" | "instructions";
+  sheetName?: string | null;
+  rowIndex?: number | null;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of PricingIndexDocument (type alias of `PricingIndex`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { PricingIndex } from "../models"
+ * import { PricingIndexObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const pricingindexObject: PricingIndexObject = pricingindex.toObject();
+ * ```
+ */
+export type PricingIndexObject = PricingIndex;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PricingIndexQuery = mongoose.Query<
+  any,
+  PricingIndexDocument,
+  PricingIndexQueries
+> &
+  PricingIndexQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PricingIndexSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PricingIndexQueries = {
+  paginate: (this: PricingIndexQuery, ...args: any[]) => PricingIndexQuery;
+};
+
+export type PricingIndexMethods = {};
+
+export type PricingIndexStatics = {
+  paginate: (this: PricingIndexModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PricingIndexModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PricingIndex = mongoose.model<PricingIndexDocument, PricingIndexModel>("PricingIndex", PricingIndexSchema);
+ * ```
+ */
+export type PricingIndexModel = mongoose.Model<
+  PricingIndexDocument,
+  PricingIndexQueries
+> &
+  PricingIndexStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new PricingIndex schema instances:
+ * ```
+ * const PricingIndexSchema: PricingIndexSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PricingIndexSchema = mongoose.Schema<
+  PricingIndexDocument,
+  PricingIndexModel,
+  PricingIndexMethods,
+  PricingIndexQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PricingIndex = mongoose.model<PricingIndexDocument, PricingIndexModel>("PricingIndex", PricingIndexSchema);
+ * ```
+ */
+export type PricingIndexDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PricingIndexQueries
+> &
+  PricingIndexMethods & {
+    type: "pricelist" | "shipping" | "tax" | "instruction";
+    vendor?: string | null;
+    carrier?: string | null;
+    product?: string | null;
+    zone?: string | null;
+    price?: number | null;
+    currency?: string;
+    unit?: string | null;
+    textDescription?: string;
+    embedding?: mongoose.Types.Array<number>;
+    sourceDriveFileId?: string | null;
+    sourceGridFsId?: string | null;
+    sourceFileName?: string | null;
+    sourceCategory?: "pricelists" | "shipping" | "taxes" | "instructions";
+    sheetName?: string | null;
+    rowIndex?: number | null;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of ProjectDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ProjectDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProjectObject`.
@@ -5870,6 +6709,115 @@ export type PurchaseOrderDocument = mongoose.Document<
     totalAmount?: number;
     notes?: string;
     stageId?: PurchaseStageDocument | null;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of PurchaseSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PurchaseSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `PurchaseSettingsObject`.
+ * ```
+ * const purchasesettingsObject = purchasesettings.toObject();
+ * ```
+ */
+export type PurchaseSettings = {
+  purchaseSequence?: Sequence | null;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of PurchaseSettingsDocument (type alias of `PurchaseSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { PurchaseSettings } from "../models"
+ * import { PurchaseSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const purchasesettingsObject: PurchaseSettingsObject = purchasesettings.toObject();
+ * ```
+ */
+export type PurchaseSettingsObject = PurchaseSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PurchaseSettingsQuery = mongoose.Query<
+  any,
+  PurchaseSettingsDocument,
+  PurchaseSettingsQueries
+> &
+  PurchaseSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PurchaseSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PurchaseSettingsQueries = {
+  paginate: (
+    this: PurchaseSettingsQuery,
+    ...args: any[]
+  ) => PurchaseSettingsQuery;
+};
+
+export type PurchaseSettingsMethods = {};
+
+export type PurchaseSettingsStatics = {
+  paginate: (this: PurchaseSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PurchaseSettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PurchaseSettings = mongoose.model<PurchaseSettingsDocument, PurchaseSettingsModel>("PurchaseSettings", PurchaseSettingsSchema);
+ * ```
+ */
+export type PurchaseSettingsModel = mongoose.Model<
+  PurchaseSettingsDocument,
+  PurchaseSettingsQueries
+> &
+  PurchaseSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new PurchaseSettings schema instances:
+ * ```
+ * const PurchaseSettingsSchema: PurchaseSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PurchaseSettingsSchema = mongoose.Schema<
+  PurchaseSettingsDocument,
+  PurchaseSettingsModel,
+  PurchaseSettingsMethods,
+  PurchaseSettingsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PurchaseSettings = mongoose.model<PurchaseSettingsDocument, PurchaseSettingsModel>("PurchaseSettings", PurchaseSettingsSchema);
+ * ```
+ */
+export type PurchaseSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PurchaseSettingsQueries
+> &
+  PurchaseSettingsMethods & {
+    purchaseSequence?: SequenceDocument | null;
+    description?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -6359,6 +7307,7 @@ export type SalesOrderDocument = mongoose.Document<
     currency?: string;
     closeDate: Date;
     notes?: string;
+    number?: string;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -6482,6 +7431,229 @@ export type SalesTargetDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of SalesSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SalesSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `SalesSettingsObject`.
+ * ```
+ * const salessettingsObject = salessettings.toObject();
+ * ```
+ */
+export type SalesSettings = {
+  orderSequence?: Sequence | null;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of SalesSettingsDocument (type alias of `SalesSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { SalesSettings } from "../models"
+ * import { SalesSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const salessettingsObject: SalesSettingsObject = salessettings.toObject();
+ * ```
+ */
+export type SalesSettingsObject = SalesSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type SalesSettingsQuery = mongoose.Query<
+  any,
+  SalesSettingsDocument,
+  SalesSettingsQueries
+> &
+  SalesSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `SalesSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type SalesSettingsQueries = {
+  paginate: (this: SalesSettingsQuery, ...args: any[]) => SalesSettingsQuery;
+};
+
+export type SalesSettingsMethods = {};
+
+export type SalesSettingsStatics = {
+  paginate: (this: SalesSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: SalesSettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesSettings = mongoose.model<SalesSettingsDocument, SalesSettingsModel>("SalesSettings", SalesSettingsSchema);
+ * ```
+ */
+export type SalesSettingsModel = mongoose.Model<
+  SalesSettingsDocument,
+  SalesSettingsQueries
+> &
+  SalesSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new SalesSettings schema instances:
+ * ```
+ * const SalesSettingsSchema: SalesSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type SalesSettingsSchema = mongoose.Schema<
+  SalesSettingsDocument,
+  SalesSettingsModel,
+  SalesSettingsMethods,
+  SalesSettingsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesSettings = mongoose.model<SalesSettingsDocument, SalesSettingsModel>("SalesSettings", SalesSettingsSchema);
+ * ```
+ */
+export type SalesSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  SalesSettingsQueries
+> &
+  SalesSettingsMethods & {
+    orderSequence?: SequenceDocument | null;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of SequenceDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SequenceDocument.toObject()`. To avoid conflicts with model names, use the type alias `SequenceObject`.
+ * ```
+ * const sequenceObject = sequence.toObject();
+ * ```
+ */
+export type Sequence = {
+  name: string;
+  prefix: string;
+  suffix?: string;
+  number: number;
+  step: number;
+  size: number;
+  nogap: boolean;
+  active?: boolean;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of SequenceDocument (type alias of `Sequence`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Sequence } from "../models"
+ * import { SequenceObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const sequenceObject: SequenceObject = sequence.toObject();
+ * ```
+ */
+export type SequenceObject = Sequence;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type SequenceQuery = mongoose.Query<
+  any,
+  SequenceDocument,
+  SequenceQueries
+> &
+  SequenceQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `SequenceSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type SequenceQueries = {
+  paginate: (this: SequenceQuery, ...args: any[]) => SequenceQuery;
+};
+
+export type SequenceMethods = {};
+
+export type SequenceStatics = {
+  paginate: (this: SequenceModel, ...args: any[]) => any;
+  paginateSubDocs: (this: SequenceModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Sequence = mongoose.model<SequenceDocument, SequenceModel>("Sequence", SequenceSchema);
+ * ```
+ */
+export type SequenceModel = mongoose.Model<SequenceDocument, SequenceQueries> &
+  SequenceStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Sequence schema instances:
+ * ```
+ * const SequenceSchema: SequenceSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type SequenceSchema = mongoose.Schema<
+  SequenceDocument,
+  SequenceModel,
+  SequenceMethods,
+  SequenceQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Sequence = mongoose.model<SequenceDocument, SequenceModel>("Sequence", SequenceSchema);
+ * ```
+ */
+export type SequenceDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  SequenceQueries
+> &
+  SequenceMethods & {
+    name: string;
+    prefix: string;
+    suffix?: string;
+    number: number;
+    step: number;
+    size: number;
+    nogap: boolean;
+    active?: boolean;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of ShippingInvoiceCommentDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ShippingInvoiceDocument.toObject()`.
@@ -6515,6 +7687,7 @@ export type ShippingInvoicePdfExtractedDatumLineTariff = {
   description?: string | null;
   rateOfDuty?: number | null;
   unitOfMeasurement?: string | null;
+  quantity?: number | null;
   tax?: number | null;
   _id: mongoose.Types.ObjectId;
 };
@@ -6745,6 +7918,7 @@ export type ShippingInvoicePdfExtractedDatumLineTariffDocument =
     description?: string | null;
     rateOfDuty?: number | null;
     unitOfMeasurement?: string | null;
+    quantity?: number | null;
     tax?: number | null;
     _id: mongoose.Types.ObjectId;
   };
@@ -7493,3 +8667,165 @@ declare module "mongoose" {
       THelpers;
   }
 }
+
+// ############# CUSTOMS REFERENCE DATA TYPES #############
+
+export type CustomsChapter = {
+  number: string;
+  description: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type CustomsChapterObject = CustomsChapter;
+
+export type CustomsChapterQueries = {
+  paginate: (this: CustomsChapterQuery, ...args: any[]) => CustomsChapterQuery;
+};
+
+export type CustomsChapterQuery = mongoose.Query<
+  any,
+  CustomsChapterDocument,
+  CustomsChapterQueries
+> &
+  CustomsChapterQueries;
+
+export type CustomsChapterMethods = {};
+
+export type CustomsChapterStatics = {
+  paginate: (this: CustomsChapterModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CustomsChapterModel, ...args: any[]) => any;
+};
+
+export type CustomsChapterModel = mongoose.Model<
+  CustomsChapterDocument,
+  CustomsChapterQueries
+> &
+  CustomsChapterStatics;
+
+export type CustomsChapterDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CustomsChapterQueries
+> &
+  CustomsChapterMethods & {
+    number: string;
+    description: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+export type CustomsHeading = {
+  heading: string;
+  chapter: string;
+  description: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type CustomsHeadingObject = CustomsHeading;
+
+export type CustomsHeadingQueries = {
+  paginate: (this: CustomsHeadingQuery, ...args: any[]) => CustomsHeadingQuery;
+};
+
+export type CustomsHeadingQuery = mongoose.Query<
+  any,
+  CustomsHeadingDocument,
+  CustomsHeadingQueries
+> &
+  CustomsHeadingQueries;
+
+export type CustomsHeadingMethods = {};
+
+export type CustomsHeadingStatics = {
+  paginate: (this: CustomsHeadingModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CustomsHeadingModel, ...args: any[]) => any;
+};
+
+export type CustomsHeadingModel = mongoose.Model<
+  CustomsHeadingDocument,
+  CustomsHeadingQueries
+> &
+  CustomsHeadingStatics;
+
+export type CustomsHeadingDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CustomsHeadingQueries
+> &
+  CustomsHeadingMethods & {
+    heading: string;
+    chapter: string;
+    description: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+export type CustomsTariff = {
+  code: string;
+  chapter: string;
+  heading: string;
+  subheading: string;
+  description: string;
+  unitForDuty?: string;
+  quantity?: number;
+  unitOfMeasurement?: string;
+  rateOfDuty?: number;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type CustomsTariffObject = CustomsTariff;
+
+export type CustomsTariffQueries = {
+  paginate: (this: CustomsTariffQuery, ...args: any[]) => CustomsTariffQuery;
+};
+
+export type CustomsTariffQuery = mongoose.Query<
+  any,
+  CustomsTariffDocument,
+  CustomsTariffQueries
+> &
+  CustomsTariffQueries;
+
+export type CustomsTariffMethods = {};
+
+export type CustomsTariffStatics = {
+  paginate: (this: CustomsTariffModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CustomsTariffModel, ...args: any[]) => any;
+};
+
+export type CustomsTariffModel = mongoose.Model<
+  CustomsTariffDocument,
+  CustomsTariffQueries
+> &
+  CustomsTariffStatics;
+
+export type CustomsTariffDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CustomsTariffQueries
+> &
+  CustomsTariffMethods & {
+    code: string;
+    chapter: string;
+    heading: string;
+    subheading: string;
+    description: string;
+    unitForDuty?: string;
+    quantity?: number;
+    unitOfMeasurement?: string;
+    rateOfDuty?: number;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
