@@ -31,7 +31,6 @@ export class ContactDTO {
   @IsOptional()
   email!: string;
 
-  @IsOptional()
   @IsUrl()
   @ValidateIf((obj) => obj.type === "company")
   website?: string;
