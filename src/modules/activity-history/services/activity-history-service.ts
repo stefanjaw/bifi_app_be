@@ -35,13 +35,19 @@ export class ActivityHistoryService extends BaseService<ActivityHistoryDocument>
    * @param data - The optional filter data to export.
    * @returns A buffer containing the CSV data.
    */
-  override async exportCSV(data?: Record<string, any>[]): Promise<Buffer> {
+  override async exportCSV(data?: Record<string, any>): Promise<Buffer> {
     return runTransaction<Buffer>(undefined, async (newSession) => {
+      const assetRosterId = data?.assetRosterId;
+
       const model = this.connectionManager.bindModelToDb(this.model);
 
       const activityHistory = await model
-        .find()
-        .populate("userId")
+        .find({
+          $or: [
+            { $and: [{ model: "AssetRoster" }, { modelId: assetRosterId }] },
+            { metadata: { assetRosterId } },
+          ],
+        })
         .session(newSession);
 
       const json = activityHistory.map((p) => ({
@@ -59,7 +65,7 @@ export class ActivityHistoryService extends BaseService<ActivityHistoryDocument>
           : "N/A",
       }));
 
-      return super.exportCSV(json);
+      return super.exportCSV(!json || json.length === 0 ? [{}] : json);
     });
   }
 }

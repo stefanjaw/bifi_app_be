@@ -218,7 +218,9 @@ export class PricingEstimateCreateDTO {
   aiModel?: string;
 }
 
-export class PricingEstimateUpdateDTO extends PartialType(PricingEstimateCreateDTO) {
+export class PricingEstimateUpdateDTO extends PartialType(
+  PricingEstimateCreateDTO,
+) {
   @IsString()
   @IsNotEmpty()
   _id!: string;

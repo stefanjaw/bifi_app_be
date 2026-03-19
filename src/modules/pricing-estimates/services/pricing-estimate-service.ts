@@ -17,7 +17,7 @@ export class PricingEstimateService extends BaseService<PricingEstimateDocument>
 
   override async create(
     data: Record<string, unknown>,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<PricingEstimateDocument> {
     const settings = await pricingSettingsService.getSettings();
     const estimateSequence = settings?.estimateSequence as
@@ -27,7 +27,7 @@ export class PricingEstimateService extends BaseService<PricingEstimateDocument>
 
     if (!estimateSequence) {
       throw new ValidationException(
-        "Estimate sequence is not configured. Please set an estimate sequence in Pricing Settings before creating estimates."
+        "Estimate sequence is not configured. Please set an estimate sequence in Pricing Settings before creating estimates.",
       );
     }
 

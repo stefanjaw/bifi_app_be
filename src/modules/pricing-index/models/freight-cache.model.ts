@@ -45,10 +45,17 @@ const freightCacheSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
-freightCacheSchema.index({ carrier: "text", zone: "text", origin: "text", destination: "text", product_description: "text", hs_code: "text" });
+freightCacheSchema.index({
+  carrier: "text",
+  zone: "text",
+  origin: "text",
+  destination: "text",
+  product_description: "text",
+  hs_code: "text",
+});
 freightCacheSchema.index({ active: 1 });
 freightCacheSchema.index({ source_file: 1 });
 freightCacheSchema.plugin(paginate);

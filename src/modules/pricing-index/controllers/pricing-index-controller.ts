@@ -23,20 +23,22 @@ export class PricingIndexController extends BaseController<CatalogCacheDocument>
   protected async triggerIndexingHandler(
     req: Request,
     res: Response,
-    _next: NextFunction
+    _next: NextFunction,
   ) {
     const type = req.body?.type;
     const force = req.body?.force === true;
     this.indexingService.triggerIndexing(type, force).catch((err) => {
       console.error("Background indexing error:", err.message);
     });
-    res.status(202).json({ running: true, message: "Indexing started in background" });
+    res
+      .status(202)
+      .json({ running: true, message: "Indexing started in background" });
   }
 
   protected async getStatusHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const status = await this.indexingService.getIndexingStatus();
@@ -49,28 +51,20 @@ export class PricingIndexController extends BaseController<CatalogCacheDocument>
   protected async textSearchHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const query = req.query.q as string;
       const topN = parseInt(req.query.topN as string) || 10;
       const type = req.query.type as string | undefined;
-      const results = await this.searchService.search(
-        query || "",
-        topN,
-        type
-      );
+      const results = await this.searchService.search(query || "", topN, type);
       this.sendData(res, results);
     } catch (error) {
       next(error);
     }
   }
 
-  triggerIndexing = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  triggerIndexing = async (req: Request, res: Response, next: NextFunction) => {
     await this.triggerIndexingHandler(req, res, next);
   };
 

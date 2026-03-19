@@ -1,6 +1,9 @@
 import { PaginateModel } from "mongoose";
 import { ConnectionManager } from "../../../system/libraries/base-module/connection-manager";
-import { catalogCacheModel, CatalogCacheDocument } from "../models/catalog-cache.model";
+import {
+  catalogCacheModel,
+  CatalogCacheDocument,
+} from "../models/catalog-cache.model";
 import { catalogRecordGenAISchema } from "../models/catalog-record.schema";
 import { GemsService } from "../../ai/gems/services/gems-service";
 import { GoogleDriveConnectorService } from "../../../system";
@@ -60,7 +63,11 @@ export class CatalogIndexer {
         filesProcessed += downloaded.files.length;
         errors.push(...downloaded.errors);
       } catch (err: unknown) {
-        errors.push(`Pricing folder ${folder.label || folder.folderId}: ${toErrorMessage(err)}`);
+        errors.push(
+          `Pricing folder ${folder.label || folder.folderId}: ${toErrorMessage(
+            err,
+          )}`,
+        );
       }
     }
 
@@ -68,12 +75,18 @@ export class CatalogIndexer {
 
     if (allFileParts.length > 0) {
       try {
-        console.log(`Extracting catalog records from ${allFileParts.length} file(s)...`);
+        console.log(
+          `Extracting catalog records from ${allFileParts.length} file(s)...`,
+        );
         const extracted = await this.extractBatch(gemsService, allFileParts);
-        const filePartMap = new Map(allFileParts.map((fp) => [fp.file.name, fp.folderId]));
+        const filePartMap = new Map(
+          allFileParts.map((fp) => [fp.file.name, fp.folderId]),
+        );
         for (const record of extracted) {
           if (record.product_name || record.part_number) {
-            record.folderId = record.source_file ? filePartMap.get(record.source_file) : undefined;
+            record.folderId = record.source_file
+              ? filePartMap.get(record.source_file)
+              : undefined;
             records.push(record);
           }
         }
@@ -90,8 +103,13 @@ export class CatalogIndexer {
     try {
       const fullCatalog = await this.getAllActiveRecords();
       if (fullCatalog.length > 0) {
-        const csvBuffer = this.fileParserService.catalogRecordsToCsv(fullCatalog);
-        await driveConnector.uploadFile(configFolderId, "master_catalog.csv", csvBuffer);
+        const csvBuffer =
+          this.fileParserService.catalogRecordsToCsv(fullCatalog);
+        await driveConnector.uploadFile(
+          configFolderId,
+          "master_catalog.csv",
+          csvBuffer,
+        );
       }
     } catch (err: unknown) {
       uploadWarning = `Upload master_catalog.csv: ${toErrorMessage(err)}`;
@@ -131,14 +149,18 @@ export class CatalogIndexer {
     return records.map((r) => ({
       ...r,
       source_file: r.source_file || undefined,
-      file_date: (r.source_file ? fileDateMap.get(r.source_file) : undefined) || undefined,
+      file_date:
+        (r.source_file ? fileDateMap.get(r.source_file) : undefined) ||
+        undefined,
       last_indexed: new Date(),
     }));
   }
 
   private async upsertCache(records: CatalogRecord[]): Promise<void> {
     const model = this.getModel();
-    const sourceFiles = [...new Set(records.map((r) => r.source_file).filter(Boolean))];
+    const sourceFiles = [
+      ...new Set(records.map((r) => r.source_file).filter(Boolean)),
+    ];
     if (sourceFiles.length > 0) {
       await model.deleteMany({ source_file: { $in: sourceFiles } });
     }

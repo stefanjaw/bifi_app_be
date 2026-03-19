@@ -1,6 +1,9 @@
 import { PaginateModel } from "mongoose";
 import { ConnectionManager } from "../../../system/libraries/base-module/connection-manager";
-import { freightCacheModel, FreightCacheDocument } from "../models/freight-cache.model";
+import {
+  freightCacheModel,
+  FreightCacheDocument,
+} from "../models/freight-cache.model";
 import { freightRecordGenAISchema } from "../models/freight-record.schema";
 import { GemsService } from "../../ai/gems/services/gems-service";
 import { GoogleDriveConnectorService } from "../../../system";
@@ -60,7 +63,11 @@ export class FreightIndexer {
         filesProcessed += downloaded.files.length;
         errors.push(...downloaded.errors);
       } catch (err: unknown) {
-        errors.push(`Freight folder ${folder.label || folder.folderId}: ${toErrorMessage(err)}`);
+        errors.push(
+          `Freight folder ${folder.label || folder.folderId}: ${toErrorMessage(
+            err,
+          )}`,
+        );
       }
     }
 
@@ -68,15 +75,27 @@ export class FreightIndexer {
 
     if (allFileParts.length > 0) {
       try {
-        console.log(`Extracting freight records from ${allFileParts.length} file(s)...`);
+        console.log(
+          `Extracting freight records from ${allFileParts.length} file(s)...`,
+        );
         const extracted = await this.extractBatch(gemsService, allFileParts);
-        const filePartMap = new Map(allFileParts.map((fp) => [fp.file.name, fp.folderId]));
+        const filePartMap = new Map(
+          allFileParts.map((fp) => [fp.file.name, fp.folderId]),
+        );
 
         let accepted = 0;
         let rejected = 0;
         for (const record of extracted) {
-          if (record.carrier || record.rate_usd != null || record.rate_type || record.hs_code || record.duty_rate_pct != null) {
-            record.folderId = record.source_file ? filePartMap.get(record.source_file) : undefined;
+          if (
+            record.carrier ||
+            record.rate_usd != null ||
+            record.rate_type ||
+            record.hs_code ||
+            record.duty_rate_pct != null
+          ) {
+            record.folderId = record.source_file
+              ? filePartMap.get(record.source_file)
+              : undefined;
             records.push(record);
             accepted++;
           } else {
@@ -85,7 +104,9 @@ export class FreightIndexer {
         }
 
         if (rejected > 0) {
-          console.log(`Freight validity filter: ${accepted} accepted, ${rejected} rejected out of ${extracted.length}`);
+          console.log(
+            `Freight validity filter: ${accepted} accepted, ${rejected} rejected out of ${extracted.length}`,
+          );
         }
       } catch (err: unknown) {
         errors.push(`Gems freight extraction: ${toErrorMessage(err)}`);
@@ -100,8 +121,13 @@ export class FreightIndexer {
     try {
       const fullFreight = await this.getAllActiveRecords();
       if (fullFreight.length > 0) {
-        const csvBuffer = this.fileParserService.freightRecordsToCsv(fullFreight);
-        await driveConnector.uploadFile(configFolderId, "freight_index.csv", csvBuffer);
+        const csvBuffer =
+          this.fileParserService.freightRecordsToCsv(fullFreight);
+        await driveConnector.uploadFile(
+          configFolderId,
+          "freight_index.csv",
+          csvBuffer,
+        );
       }
     } catch (err: unknown) {
       uploadWarning = `Upload freight_index.csv: ${toErrorMessage(err)}`;
@@ -121,9 +147,18 @@ export class FreightIndexer {
 
     for (let i = 0; i < text.length; i++) {
       const ch = text[i];
-      if (escape) { escape = false; continue; }
-      if (ch === "\\") { escape = true; continue; }
-      if (ch === '"') { inString = !inString; continue; }
+      if (escape) {
+        escape = false;
+        continue;
+      }
+      if (ch === "\\") {
+        escape = true;
+        continue;
+      }
+      if (ch === '"') {
+        inString = !inString;
+        continue;
+      }
       if (inString) continue;
       if (ch === "[" || ch === "{") depth++;
       if (ch === "]" || ch === "}") depth--;
@@ -132,7 +167,9 @@ export class FreightIndexer {
 
     if (lastCompleteItem > 0) {
       try {
-        const parsed = JSON.parse(text.substring(0, lastCompleteItem + 1) + "]");
+        const parsed = JSON.parse(
+          text.substring(0, lastCompleteItem + 1) + "]",
+        );
         return Array.isArray(parsed) ? parsed : [parsed];
       } catch {
         return [];
@@ -141,7 +178,10 @@ export class FreightIndexer {
     return [];
   }
 
-  private async extractFromFile(gemsService: GemsService, entry: FilePart): Promise<FreightRecord[]> {
+  private async extractFromFile(
+    gemsService: GemsService,
+    entry: FilePart,
+  ): Promise<FreightRecord[]> {
     const response = await gemsService.generate({
       question:
         "Extract all freight, shipping, and customs tariff records from the attached file. " +
@@ -167,28 +207,41 @@ export class FreightIndexer {
     } catch {
       const recovered = this.recoverTruncatedJson(rawText) as FreightRecord[];
       if (recovered.length > 0) {
-        console.log(`Freight: recovered ${recovered.length} records from truncated response for "${entry.file.name}"`);
+        console.log(
+          `Freight: recovered ${recovered.length} records from truncated response for "${entry.file.name}"`,
+        );
       }
       records = recovered;
     }
 
-    console.log(`Freight: extracted ${records.length} records from "${entry.file.name}"`);
+    console.log(
+      `Freight: extracted ${records.length} records from "${entry.file.name}"`,
+    );
 
     return records.map((r) => ({
       ...r,
-      effective_date: r.effective_date ? new Date(r.effective_date as unknown as string) : undefined,
+      effective_date: r.effective_date
+        ? new Date(r.effective_date as unknown as string)
+        : undefined,
       source_file: r.source_file || entry.file.name,
     }));
   }
 
-  private async extractBatch(gemsService: GemsService, files: FilePart[]): Promise<FreightRecord[]> {
+  private async extractBatch(
+    gemsService: GemsService,
+    files: FilePart[],
+  ): Promise<FreightRecord[]> {
     const allRecords: FreightRecord[] = [];
     for (const entry of files) {
       try {
         const records = await this.extractFromFile(gemsService, entry);
         allRecords.push(...records);
       } catch (err: unknown) {
-        console.error(`Freight extraction failed for "${entry.file.name}": ${toErrorMessage(err)}`);
+        console.error(
+          `Freight extraction failed for "${entry.file.name}": ${toErrorMessage(
+            err,
+          )}`,
+        );
       }
     }
     return allRecords;
@@ -196,7 +249,9 @@ export class FreightIndexer {
 
   private async upsertCache(records: FreightRecord[]): Promise<void> {
     const model = this.getModel();
-    const sourceFiles = [...new Set(records.map((r) => r.source_file).filter(Boolean))];
+    const sourceFiles = [
+      ...new Set(records.map((r) => r.source_file).filter(Boolean)),
+    ];
     if (sourceFiles.length > 0) {
       await model.deleteMany({ source_file: { $in: sourceFiles } });
     }

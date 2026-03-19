@@ -1,5 +1,8 @@
 import puppeteer from "puppeteer";
-import { PricingEstimateDocument, PricingEstimateLineItemDocument } from "@mongodb-types";
+import {
+  PricingEstimateDocument,
+  PricingEstimateLineItemDocument,
+} from "@mongodb-types";
 
 function esc(value: unknown): string {
   const str = String(value ?? "");
@@ -102,20 +105,36 @@ export class PdfGeneratorService {
   <h1>Estimated Price &amp; Landed Cost</h1>
 
   <div class="meta">
-    <span><span class="label">Estimate #:</span> ${esc(estimate.number ?? "N/A")}</span>
+    <span><span class="label">Estimate #:</span> ${esc(
+      estimate.number ?? "N/A",
+    )}</span>
     <span><span class="label">Date:</span> ${esc(date)}</span>
-    <span><span class="label">Prepared By:</span> ${esc(estimate.preparedBy ?? "N/A")}</span>
-    <span><span class="label">Shipping:</span> ${esc(estimate.shippingMethod ?? "N/A")}</span>
-    <span><span class="label">Status:</span> ${esc(estimate.status ?? "draft")}</span>
+    <span><span class="label">Prepared By:</span> ${esc(
+      estimate.preparedBy ?? "N/A",
+    )}</span>
+    <span><span class="label">Shipping:</span> ${esc(
+      estimate.shippingMethod ?? "N/A",
+    )}</span>
+    <span><span class="label">Status:</span> ${esc(
+      estimate.status ?? "draft",
+    )}</span>
   </div>
 
   ${
     pricingControls
       ? `<div class="controls">
-    <span><strong>Method:</strong> ${esc(pricingControls.method ?? "markup")}</span>
-    <span><strong>Markup Factor:</strong> ${esc(pricingControls.markupFactor ?? "N/A")}</span>
-    <span><strong>Margin:</strong> ${esc(pricingControls.margin ?? "N/A")}%</span>
-    <span><strong>Duty Free:</strong> ${pricingControls.dutyFree ? "Yes" : "No"}</span>
+    <span><strong>Method:</strong> ${esc(
+      pricingControls.method ?? "markup",
+    )}</span>
+    <span><strong>Markup Factor:</strong> ${esc(
+      pricingControls.markupFactor ?? "N/A",
+    )}</span>
+    <span><strong>Margin:</strong> ${esc(
+      pricingControls.margin ?? "N/A",
+    )}%</span>
+    <span><strong>Duty Free:</strong> ${
+      pricingControls.dutyFree ? "Yes" : "No"
+    }</span>
   </div>`
       : ""
   }
@@ -155,14 +174,25 @@ export class PdfGeneratorService {
       </tr>
     </thead>
     <tbody>
-      ${lineItemRows || '<tr><td colspan="14" style="text-align:center;">No line items</td></tr>'}
+      ${
+        lineItemRows ||
+        '<tr><td colspan="14" style="text-align:center;">No line items</td></tr>'
+      }
     </tbody>
   </table>
 
   <div class="totals">
-    <div class="row bold"><span>Total Landed Cost:</span><span>$${(estimate.totalLanded ?? 0).toFixed(2)}</span></div>
-    <div class="row bold"><span>Total Customer Price:</span><span>$${(estimate.totalCustomer ?? 0).toFixed(2)}</span></div>
-    <div class="row"><span>Wharfage / Bank Fee (${estimate.wharfageBankFeePct ?? 0}%):</span><span>$${(estimate.wharfageBankFeeAmount ?? 0).toFixed(2)}</span></div>
+    <div class="row bold"><span>Total Landed Cost:</span><span>$${(
+      estimate.totalLanded ?? 0
+    ).toFixed(2)}</span></div>
+    <div class="row bold"><span>Total Customer Price:</span><span>$${(
+      estimate.totalCustomer ?? 0
+    ).toFixed(2)}</span></div>
+    <div class="row"><span>Wharfage / Bank Fee (${
+      estimate.wharfageBankFeePct ?? 0
+    }%):</span><span>$${(estimate.wharfageBankFeeAmount ?? 0).toFixed(
+      2,
+    )}</span></div>
   </div>
 
   <div class="section-title">AI Usage</div>
@@ -171,7 +201,9 @@ export class PdfGeneratorService {
     <span><strong>Input:</strong> ${estimate.inputTokens ?? 0}</span>
     <span><strong>Output:</strong> ${estimate.outputTokens ?? 0}</span>
     <span><strong>Total Tokens:</strong> ${estimate.totalTokens ?? 0}</span>
-    <span><strong>Est. Cost:</strong> $${(estimate.estimatedCost ?? 0).toFixed(4)}</span>
+    <span><strong>Est. Cost:</strong> $${(estimate.estimatedCost ?? 0).toFixed(
+      4,
+    )}</span>
   </div>
 
   <div class="disclaimer">

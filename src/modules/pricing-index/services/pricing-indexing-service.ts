@@ -154,7 +154,9 @@ export class PricingIndexingService {
         freightTypesFound: [],
         lastIndexedAt: new Date(),
         errors: [
-          `AI settings not available — skipping file extraction: ${toErrorMessage(err)}`,
+          `AI settings not available — skipping file extraction: ${toErrorMessage(
+            err,
+          )}`,
         ],
       };
     }
@@ -175,7 +177,7 @@ export class PricingIndexingService {
       const lastIndexed =
         force || currentCount === 0
           ? undefined
-          : (pricingSettings?.catalogLastIndexed ?? undefined);
+          : pricingSettings?.catalogLastIndexed ?? undefined;
 
       const result = await this.catalogIndexer.index(
         gemsService,
@@ -204,7 +206,7 @@ export class PricingIndexingService {
       const lastIndexed =
         force || currentCount === 0
           ? undefined
-          : (pricingSettings?.freightLastIndexed ?? undefined);
+          : pricingSettings?.freightLastIndexed ?? undefined;
 
       const result = await this.freightIndexer.index(
         gemsService,

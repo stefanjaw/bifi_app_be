@@ -30,14 +30,18 @@ export class DriveFileService {
   }
 
   fileToGenerativePart(buffer: Buffer, file: DriveFile): Part {
-    const isPdf = file.mimeType === "application/pdf" || file.name.endsWith(".pdf");
+    const isPdf =
+      file.mimeType === "application/pdf" || file.name.endsWith(".pdf");
     const isCsv = file.mimeType === "text/csv" || file.name.endsWith(".csv");
 
     if (isPdf) return this.bufferToGenerativePart(buffer, "application/pdf");
     if (isCsv) return this.bufferToGenerativePart(buffer, "text/csv");
 
     const csvString = this.xlsxBufferToCsvString(buffer);
-    return this.bufferToGenerativePart(Buffer.from(csvString, "utf-8"), "text/csv");
+    return this.bufferToGenerativePart(
+      Buffer.from(csvString, "utf-8"),
+      "text/csv",
+    );
   }
 
   buildLabeledParts(files: FilePart[]): Part[] {
@@ -49,7 +53,10 @@ export class DriveFileService {
     return parts;
   }
 
-  private async downloadFile(file: DriveFile, driveConnector: GoogleDriveConnectorService): Promise<Buffer> {
+  private async downloadFile(
+    file: DriveFile,
+    driveConnector: GoogleDriveConnectorService,
+  ): Promise<Buffer> {
     if (file.mimeType === "application/vnd.google-apps.spreadsheet") {
       return driveConnector.exportGoogleSheet(file.id);
     }
@@ -58,7 +65,9 @@ export class DriveFileService {
 
   filterModifiedFiles(files: DriveFile[], lastIndexed?: Date): DriveFile[] {
     if (!lastIndexed) return files;
-    return files.filter((f) => !f.modifiedTime || new Date(f.modifiedTime) > lastIndexed);
+    return files.filter(
+      (f) => !f.modifiedTime || new Date(f.modifiedTime) > lastIndexed,
+    );
   }
 
   async downloadFolderFiles(
@@ -76,7 +85,9 @@ export class DriveFileService {
       try {
         const buffer = await this.downloadFile(file, driveConnector);
         const part = this.fileToGenerativePart(buffer, file);
-        const fileDate = file.modifiedTime ? new Date(file.modifiedTime) : undefined;
+        const fileDate = file.modifiedTime
+          ? new Date(file.modifiedTime)
+          : undefined;
         result.push({ part, file, fileDate });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);

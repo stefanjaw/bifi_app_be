@@ -31,7 +31,8 @@ export const catalogRecordGenAISchema: Schema = {
       },
       source_file: {
         anyOf: [{ type: Type.STRING }, { type: Type.NULL }],
-        description: "The filename this record was extracted from, taken from the === FILE: ... === label preceding the file data",
+        description:
+          "The filename this record was extracted from, taken from the === FILE: ... === label preceding the file data",
       },
     },
   },

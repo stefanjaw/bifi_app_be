@@ -91,19 +91,25 @@ export class PricingEngineService {
     const aiSettings = await this.aiSettingsService.getSettings();
     if (!aiSettings || !aiSettings.apiKey) {
       throw new ValidationException(
-        "AI settings not configured. Please add an API key."
+        "AI settings not configured. Please add an API key.",
       );
     }
 
     const pricingSettings = await this.pricingSettingsService.getSettings();
-    const wharfagePct =
-      pricingSettings?.defaultWharfageBankFeePct ?? 2;
+    const wharfagePct = pricingSettings?.defaultWharfageBankFeePct ?? 2;
 
     const controls = {
       dutyFree: params.pricingControls?.dutyFree ?? false,
-      method: params.pricingControls?.method ?? pricingSettings?.defaultPricingMethod ?? "markup",
-      markupFactor: params.pricingControls?.markupFactor ?? pricingSettings?.defaultMarkupFactor ?? 1.3,
-      margin: params.pricingControls?.margin ?? pricingSettings?.defaultMargin ?? 30,
+      method:
+        params.pricingControls?.method ??
+        pricingSettings?.defaultPricingMethod ??
+        "markup",
+      markupFactor:
+        params.pricingControls?.markupFactor ??
+        pricingSettings?.defaultMarkupFactor ??
+        1.3,
+      margin:
+        params.pricingControls?.margin ?? pricingSettings?.defaultMargin ?? 30,
     };
 
     const gemsService = new GemsService({
@@ -112,7 +118,13 @@ export class PricingEngineService {
       embeddingModel: aiSettings.embeddingModel,
     });
 
-    const parsePrompt = `Extract all product requests from the following text. For each product, extract the product name/description, supplier/vendor if mentioned, part number if mentioned, and quantity. If quantity is not specified, assume 1.\n\nRequest:\n${params.requestText}${params.specialInstructions ? `\n\nSpecial Instructions:\n${params.specialInstructions}` : ""}`;
+    const parsePrompt = `Extract all product requests from the following text. For each product, extract the product name/description, supplier/vendor if mentioned, part number if mentioned, and quantity. If quantity is not specified, assume 1.\n\nRequest:\n${
+      params.requestText
+    }${
+      params.specialInstructions
+        ? `\n\nSpecial Instructions:\n${params.specialInstructions}`
+        : ""
+    }`;
 
     const parseResponse = await gemsService.generate({
       question: parsePrompt,
@@ -127,10 +139,12 @@ export class PricingEngineService {
       const parsed = JSON.parse(parseResponse.text ?? "[]");
       products = Array.isArray(parsed) ? parsed : [parsed];
     } catch {
-      products = [{
-        product: params.requestText.substring(0, 100),
-        qty: 1,
-      }];
+      products = [
+        {
+          product: params.requestText.substring(0, 100),
+          qty: 1,
+        },
+      ];
     }
 
     const lineItems: EstimateLineItem[] = [];
@@ -140,25 +154,26 @@ export class PricingEngineService {
 
     for (const product of products) {
       const catalogResults = await this.searchService.searchCatalog(
-        `${product.supplier ?? ""} ${product.product} ${product.partNo ?? ""}`.trim(),
-        5
+        `${product.supplier ?? ""} ${product.product} ${
+          product.partNo ?? ""
+        }`.trim(),
+        5,
       );
 
       const freightResults = await this.searchService.searchFreight(
         `${params.shippingMethod ?? "sea"} ${product.product}`.trim(),
-        3
+        3,
       );
 
-      const unitPrice = catalogResults.length > 0
-        ? (catalogResults[0].unit_price ?? 0)
-        : 0;
+      const unitPrice =
+        catalogResults.length > 0 ? catalogResults[0].unit_price ?? 0 : 0;
 
-      const supplier = product.supplier
-        ?? (catalogResults.length > 0 ? catalogResults[0].supplier ?? "" : "");
+      const supplier =
+        product.supplier ??
+        (catalogResults.length > 0 ? catalogResults[0].supplier ?? "" : "");
 
-      const freightPerUnit = freightResults.length > 0
-        ? (freightResults[0].rate_usd ?? 0)
-        : 0;
+      const freightPerUnit =
+        freightResults.length > 0 ? freightResults[0].rate_usd ?? 0 : 0;
 
       const dutyPct = 0;
       const hsCode = "";
@@ -234,17 +249,25 @@ export class PricingEngineService {
     const aiSettings = await this.aiSettingsService.getSettings();
     const maxTokenLimit = aiSettings?.maxTokenLimit ?? 10000;
 
-    const catalogModel = this.connectionManager.bindModelToDb(catalogCacheModel);
-    const freightModel = this.connectionManager.bindModelToDb(freightCacheModel);
+    const catalogModel =
+      this.connectionManager.bindModelToDb(catalogCacheModel);
+    const freightModel =
+      this.connectionManager.bindModelToDb(freightCacheModel);
 
-    const words = requestText.toLowerCase().split(/\s+/).filter((w) => w.length > 2);
+    const words = requestText
+      .toLowerCase()
+      .split(/\s+/)
+      .filter((w) => w.length > 2);
 
     let catalogRowsToRetrieve = 0;
     let freightRowsToRetrieve = 0;
 
     if (words.length > 0) {
       const orConditions = words.map((w) => ({
-        product_name: { $regex: w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" },
+        product_name: {
+          $regex: w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+          $options: "i",
+        },
       }));
 
       catalogRowsToRetrieve = await catalogModel.countDocuments({
@@ -253,7 +276,10 @@ export class PricingEngineService {
       });
 
       const freightOrConditions = words.map((w) => ({
-        carrier: { $regex: w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), $options: "i" },
+        carrier: {
+          $regex: w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+          $options: "i",
+        },
       }));
 
       freightRowsToRetrieve = await freightModel.countDocuments({
@@ -269,9 +295,12 @@ export class PricingEngineService {
     const contextTokens = (catalogRows + freightRows) * TOKENS_PER_ROW;
     const estimatedInputTokens = promptBaseTokens + contextTokens;
 
-    const productCount = Math.max(1, words.filter((w) =>
-      ["need", "want", "order", "buy", "quote", "price", "get"].includes(w)
-    ).length || Math.ceil(words.length / 5));
+    const productCount = Math.max(
+      1,
+      words.filter((w) =>
+        ["need", "want", "order", "buy", "quote", "price", "get"].includes(w),
+      ).length || Math.ceil(words.length / 5),
+    );
     const estimatedOutputTokens = productCount * OUTPUT_TOKENS_PER_PRODUCT;
 
     const totalEstimated = estimatedInputTokens + estimatedOutputTokens;

@@ -33,10 +33,14 @@ const catalogCacheSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
-catalogCacheSchema.index({ product_name: "text", supplier: "text", part_number: "text" });
+catalogCacheSchema.index({
+  product_name: "text",
+  supplier: "text",
+  part_number: "text",
+});
 catalogCacheSchema.index({ active: 1 });
 catalogCacheSchema.index({ source_file: 1 });
 catalogCacheSchema.plugin(paginate);
