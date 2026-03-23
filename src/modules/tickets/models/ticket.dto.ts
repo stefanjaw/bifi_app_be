@@ -45,6 +45,7 @@ export class TicketDTO {
   senderUser?: string;
 
   @IsOptional()
+  @IsArray()
   @IsMongoId({ each: true })
   @Transform(({ value }) => (typeof value === "string" ? JSON.parse(value) : value))
   followers?: string[];
@@ -77,6 +78,7 @@ export class TicketDTO {
   slaResolutionDeadline?: Date;
 
   @IsOptional()
+  @IsArray()
   @IsMongoId({ each: true })
   @Transform(({ value }) => (typeof value === "string" ? JSON.parse(value) : value))
   taskIds?: string[];
