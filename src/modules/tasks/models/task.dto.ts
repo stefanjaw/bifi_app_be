@@ -57,6 +57,10 @@ export class TaskDTO {
   projectId?: string;
 
   @IsOptional()
+  @IsMongoId()
+  ticketId?: string;
+
+  @IsOptional()
   @IsMongoId({ each: true })
   @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
   dependencyIds?: string[];

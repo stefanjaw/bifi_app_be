@@ -3,6 +3,7 @@ import {
   ProjectDocument,
   TaskStageDocument,
   UserDocument,
+  TicketDocument,
 } from "@mongodb-types";
 import {
   BaseService,
@@ -35,6 +36,12 @@ export class TaskService extends BaseService<TaskDocument> {
           path: "projectId",
           getModel: () =>
             this.connectionManager.getModel<ProjectDocument>("TaskProject"),
+          isArray: false,
+        },
+        {
+          path: "ticketId",
+          getModel: () =>
+            this.connectionManager.getModel<TicketDocument>("Ticket"),
           isArray: false,
         },
         {

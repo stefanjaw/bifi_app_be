@@ -12,11 +12,13 @@ import {
   FTPService,
   userStorage,
 } from "./system";
-import { initializePricingIndexModels } from "./modules/pricing-index/initialize";
-import { initializeCustomsData } from "./modules/customs-tariffs/initialize";
+// import { initializePricingIndexModels } from "./modules/pricing-index/initialize";
+// import { initializeCustomsData } from "./modules/customs-tariffs/initialize";
 import {
   ActivityHistoryRouter,
-  BugReportingRouter,
+  HelpdeskStageRouter,
+  TicketRouter,
+  TicketRuleRouter,
   CompanyRouter,
   ContactRouter,
   CountryRouter,
@@ -148,7 +150,9 @@ app.use("/api", new ActivityHistoryRouter().getRouter);
 app.use("/api", new UserRouter().getRouter);
 app.use("/api", new RoleRouter().getRouter);
 app.use("/api", new PolicyRouter().getRouter);
-app.use("/api", new BugReportingRouter().getRouter);
+app.use("/api", new HelpdeskStageRouter().getRouter);
+app.use("/api", new TicketRouter().getRouter);
+app.use("/api", new TicketRuleRouter().getRouter);
 app.use("/api", new CRMRouter().getRouter);
 app.use("/api", new CrmStageRouter().getRouter);
 app.use("/api", new SalesOrderRouter().getRouter);

@@ -44,6 +44,15 @@ const taskSchema = new Schema(
       autopopulate: true,
       required: false,
     },
+    ticketId: {
+      type: Schema.Types.ObjectId,
+      ref: "Ticket",
+      autopopulate: {
+        select: "name priority stage assigned active",
+        maxDepth: 1,
+      },
+      required: false,
+    },
     dependencyIds: {
       type: [Schema.Types.ObjectId],
       ref: "Task",
