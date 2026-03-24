@@ -3,6 +3,9 @@ import { BaseService, runTransaction, userStorage } from "../../../system";
 import { projectModel } from "../models/project.model";
 import mongoose from "mongoose";
 import { ProjectDTO } from "../models/project.dto";
+import { SequenceService } from "../../sequences/services/sequence-service";
+
+const sequenceService = new SequenceService();
 
 export class ProjectService extends BaseService<ProjectDocument> {
   constructor() {
@@ -22,7 +25,7 @@ export class ProjectService extends BaseService<ProjectDocument> {
   /**
    * Creates a new project document.
    * The document is created with the user who made the request as the createdBy user.
-   * The function runs within a transaction and returns the created record.
+   * A sequence number is generated automatically using a sequence with prefix "PRJ-".
    * @param data - The project data to create.
    * @param session - The optional client session to use for the transaction.
    * @returns A promise resolving to the created project document.
@@ -34,8 +37,18 @@ export class ProjectService extends BaseService<ProjectDocument> {
     return await runTransaction<ProjectDocument>(
       session,
       async (newSession) => {
+        const number = await sequenceService.getNextNumberOrCreate(
+          "Projects",
+          "PRJ-",
+          5,
+          1
+        );
         return await super.create(
-          { ...data, createdBy: userStorage.getStore()?.user?._id },
+          {
+            ...data,
+            createdBy: userStorage.getStore()?.user?._id,
+            number,
+          } as any,
           newSession,
         );
       },

@@ -26,6 +26,10 @@ const projectSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    number: {
+      type: String,
+      default: '',
+    },
   },
   { timestamps: true }
 );
