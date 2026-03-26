@@ -32,6 +32,7 @@ export * from "./sales-orders";
 export * from "./sales-targets";
 export * from "./shipping";
 export * from "./task-stages";
+export * from "./task-types";
 export * from "./tasks";
 export * from "./templates";
 export * from "./users";

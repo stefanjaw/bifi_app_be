@@ -44,6 +44,7 @@ import {
   UserService,
   ProjectRouter,
   TaskStageRouter,
+  TaskTypeRouter,
   TaskRouter,
   GenAIRouter,
   ShippingRouter,
@@ -164,6 +165,7 @@ app.use("/api", new ModelRouter().getRouter);
 app.use("/api", new TaskRouter().getRouter);
 app.use("/api", new ProjectRouter().getRouter);
 app.use("/api", new TaskStageRouter().getRouter);
+app.use("/api", new TaskTypeRouter().getRouter);
 app.use("/api", new GenAIRouter().getRouter);
 app.use("/api", new ShippingRouter().getRouter);
 app.use("/api", new BCDRouter().getRouter);
@@ -212,7 +214,7 @@ app.use("/api", new CustomsTariffRouter().getRouter);
 app.get("/api/health-check", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
-    version: "202603241449",
+    version: "202602271200",
     status: "OK",
   });
 });

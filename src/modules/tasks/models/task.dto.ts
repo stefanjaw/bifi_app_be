@@ -50,6 +50,10 @@ export class TaskDTO {
 
   @IsOptional()
   @IsMongoId()
+  typeId?: string;
+
+  @IsOptional()
+  @IsMongoId()
   stage?: string;
 
   @IsOptional()

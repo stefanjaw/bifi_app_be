@@ -7089,6 +7089,7 @@ export type Project = {
   description?: string;
   createdBy: User;
   active?: boolean;
+  number?: string;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -7178,6 +7179,7 @@ export type ProjectDocument = mongoose.Document<
     description?: string;
     createdBy: UserDocument;
     active?: boolean;
+    number?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -8890,6 +8892,111 @@ export type TaskStageDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of TaskTypeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TaskTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `TaskTypeObject`.
+ * ```
+ * const tasktypeObject = tasktype.toObject();
+ * ```
+ */
+export type TaskType = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TaskTypeDocument (type alias of `TaskType`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { TaskType } from "../models"
+ * import { TaskTypeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const tasktypeObject: TaskTypeObject = tasktype.toObject();
+ * ```
+ */
+export type TaskTypeObject = TaskType;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaskTypeQuery = mongoose.Query<
+  any,
+  TaskTypeDocument,
+  TaskTypeQueries
+> &
+  TaskTypeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `TaskTypeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type TaskTypeQueries = {
+  paginate: (this: TaskTypeQuery, ...args: any[]) => TaskTypeQuery;
+};
+
+export type TaskTypeMethods = {};
+
+export type TaskTypeStatics = {
+  paginate: (this: TaskTypeModel, ...args: any[]) => any;
+  paginateSubDocs: (this: TaskTypeModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const TaskType = mongoose.model<TaskTypeDocument, TaskTypeModel>("TaskType", TaskTypeSchema);
+ * ```
+ */
+export type TaskTypeModel = mongoose.Model<TaskTypeDocument, TaskTypeQueries> &
+  TaskTypeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new TaskType schema instances:
+ * ```
+ * const TaskTypeSchema: TaskTypeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type TaskTypeSchema = mongoose.Schema<
+  TaskTypeDocument,
+  TaskTypeModel,
+  TaskTypeMethods,
+  TaskTypeQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const TaskType = mongoose.model<TaskTypeDocument, TaskTypeModel>("TaskType", TaskTypeSchema);
+ * ```
+ */
+export type TaskTypeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  TaskTypeQueries
+> &
+  TaskTypeMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of TaskAttachmentDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `TaskDocument.toObject()`.
@@ -8923,6 +9030,7 @@ export type Task = {
   plannedEndDate?: Date;
   plannedDuration?: number;
   progress?: number;
+  typeId?: TaskType;
   stage?: TaskStage;
   projectId?: Project;
   ticketId?: Ticket;
@@ -9038,6 +9146,7 @@ export type TaskDocument = mongoose.Document<
     plannedEndDate?: Date;
     plannedDuration?: number;
     progress?: number;
+    typeId?: TaskTypeDocument;
     stage?: TaskStageDocument;
     projectId?: ProjectDocument;
     ticketId?: TicketDocument;

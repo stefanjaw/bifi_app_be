@@ -32,6 +32,12 @@ const taskSchema = new Schema(
       type: Number,
       default: 0,
     },
+    typeId: {
+      type: Schema.Types.ObjectId,
+      ref: "TaskType",
+      autopopulate: true,
+      required: false,
+    },
     stage: {
       type: Schema.Types.ObjectId,
       ref: "TaskStage",
