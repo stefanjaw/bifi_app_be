@@ -1,7 +1,34 @@
-# use node 22
-FROM node:22 AS build
+# =========================
+# 1️⃣ BUILD STAGE
+# =========================
+FROM node:22-slim AS build
+
+WORKDIR /app
 
 # install dependencies
+COPY bifi_app_be/package*.json ./bifi_app_be/
+RUN npm --prefix ./bifi_app_be install
+
+# copy the rest
+COPY . .
+
+# update submodule
+RUN git submodule update --progress --init --recursive
+RUN git -C ./bifi_app_be checkout nodev22
+
+# build
+RUN npm --prefix ./bifi_app_be run build
+
+# =========================
+# 1️⃣ RUNTIME STAGE
+# =========================
+FROM node:22-slim
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# install packages for puppeteer
 RUN apt-get update && apt-get install -y \
     ca-certificates \
     fonts-liberation \
@@ -25,27 +52,16 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# create app directory
-WORKDIR /app
 
-# copy everthing
-COPY . .
+# install dependencies as production
+COPY bifi_app_be/package*.json ./
+RUN npm install --omit=dev
 
-# clone submodule
-RUN git submodule update --progress --init --recursive
-RUN git -C ./bifi_app_be checkout nodev22
-
-# install dependencies
-RUN npm --prefix ./bifi_app_be install
-
-# install puppeteer dependencies
-RUN npx --prefix ./bifi_app_be puppeteer browsers install chrome
-
-# build app
-RUN npm --prefix ./bifi_app_be run build
+# copy only neccesary for build
+COPY --from=build /app/bifi_app_be/dist ./dist
 
 # expose port
 EXPOSE 8081
 
 # run app
-CMD ["node", "bifi_app_be/dist/index.js"]
+CMD ["node", "dist/index.js"]
