@@ -161,7 +161,7 @@ const ticketSchema = new Schema(
         select: "username email contactId",
         maxDepth: 1,
       },
-      required: true,
+      required: false,
     },
     updatedBy: {
       type: Schema.Types.ObjectId,
