@@ -9,6 +9,9 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y git \
     && rm -rf /var/lib/apt/lists/*
 
+# copy the rest
+COPY . .
+
 # update submodule
 RUN git submodule update --progress --init --recursive
 RUN git -C ./bifi_app_be checkout nodev22
@@ -16,9 +19,6 @@ RUN git -C ./bifi_app_be checkout nodev22
 # install dependencies
 COPY bifi_app_be/package*.json ./bifi_app_be/
 RUN npm --prefix ./bifi_app_be install
-
-# copy the rest
-COPY . .
 
 # build
 RUN npm --prefix ./bifi_app_be run build
