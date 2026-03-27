@@ -218,7 +218,7 @@ app.use("/api", new ReportBugRouter().getRouter);
 app.get("/api/health-check", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
-    version: "202602271200",
+    version: "202603271550",
     status: "OK",
   });
 });
