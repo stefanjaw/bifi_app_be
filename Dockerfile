@@ -57,7 +57,7 @@ RUN apt-get update && apt-get install -y \
 
 
 # install dependencies as production
-COPY bifi_app_be/package*.json ./
+COPY --from=build /app/bifi_app_be/package*.json ./
 RUN npm install --omit=dev
 
 # copy only neccesary for build
