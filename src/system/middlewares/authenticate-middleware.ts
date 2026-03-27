@@ -7,6 +7,7 @@ import { FirebaseAppError } from "firebase-admin/app";
 const ignoreEndpoints: { endpoint: string; method: string }[] = [
   { endpoint: "/templates", method: "GET" },
   { endpoint: "/health-check", method: "GET" },
+  { endpoint: "/report-bug", method: "POST" },
 ];
 
 /**

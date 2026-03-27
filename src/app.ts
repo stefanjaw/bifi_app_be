@@ -89,6 +89,7 @@ import {
   CustomsChapterRouter,
   CustomsHeadingRouter,
   CustomsTariffRouter,
+  ReportBugRouter,
 } from "./modules";
 
 import admin from "firebase-admin";
@@ -211,6 +212,7 @@ app.use("/api", new PricingEstimateRouter().getRouter);
 app.use("/api", new CustomsChapterRouter().getRouter);
 app.use("/api", new CustomsHeadingRouter().getRouter);
 app.use("/api", new CustomsTariffRouter().getRouter);
+app.use("/api", new ReportBugRouter().getRouter);
 
 // health check route
 app.get("/api/health-check", (req, res) => {
