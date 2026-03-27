@@ -22,6 +22,14 @@ const projectSchema = new Schema(
       },
       required: true,
     },
+    stage: {
+      type: Schema.Types.ObjectId,
+      ref: "ProjectStage",
+      autopopulate: {
+        maxDepth: 1,
+      },
+      required: false,
+    },
     active: {
       type: Boolean,
       default: true,

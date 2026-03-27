@@ -8,7 +8,7 @@ import {
 } from "class-validator";
 import { PartialType } from "../../../system";
 
-export class ProjectDTO {
+export class ProjectStageDTO {
   @IsString()
   @IsNotEmpty()
   name!: string;
@@ -18,9 +18,10 @@ export class ProjectDTO {
   @IsOptional()
   description?: string;
 
-  @IsMongoId()
+  @IsBoolean()
+  @Type(() => Boolean)
   @IsOptional()
-  stage?: string;
+  isDefault?: boolean;
 
   @IsBoolean()
   @Type(() => Boolean)
@@ -28,7 +29,7 @@ export class ProjectDTO {
   active?: boolean;
 }
 
-export class UpdateProjectDTO extends PartialType(ProjectDTO) {
+export class UpdateProjectStageDTO extends PartialType(ProjectStageDTO) {
   @IsMongoId()
   _id!: string;
 }

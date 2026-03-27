@@ -7088,6 +7088,7 @@ export type Project = {
   name: string;
   description?: string;
   createdBy: User;
+  stage?: ProjectStage;
   active?: boolean;
   number?: string;
   _id: mongoose.Types.ObjectId;
@@ -7178,8 +7179,119 @@ export type ProjectDocument = mongoose.Document<
     name: string;
     description?: string;
     createdBy: UserDocument;
+    stage?: ProjectStageDocument;
     active?: boolean;
     number?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of ProjectStageDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProjectStageDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProjectStageObject`.
+ * ```
+ * const projectstageObject = projectstage.toObject();
+ * ```
+ */
+export type ProjectStage = {
+  name: string;
+  description?: string;
+  isDefault?: boolean;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ProjectStageDocument (type alias of `ProjectStage`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ProjectStage } from "../models"
+ * import { ProjectStageObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const projectstageObject: ProjectStageObject = projectstage.toObject();
+ * ```
+ */
+export type ProjectStageObject = ProjectStage;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProjectStageQuery = mongoose.Query<
+  any,
+  ProjectStageDocument,
+  ProjectStageQueries
+> &
+  ProjectStageQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ProjectStageSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProjectStageQueries = {
+  paginate: (this: ProjectStageQuery, ...args: any[]) => ProjectStageQuery;
+};
+
+export type ProjectStageMethods = {};
+
+export type ProjectStageStatics = {
+  paginate: (this: ProjectStageModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ProjectStageModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProjectStage = mongoose.model<ProjectStageDocument, ProjectStageModel>("ProjectStage", ProjectStageSchema);
+ * ```
+ */
+export type ProjectStageModel = mongoose.Model<
+  ProjectStageDocument,
+  ProjectStageQueries
+> &
+  ProjectStageStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ProjectStage schema instances:
+ * ```
+ * const ProjectStageSchema: ProjectStageSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ProjectStageSchema = mongoose.Schema<
+  ProjectStageDocument,
+  ProjectStageModel,
+  ProjectStageMethods,
+  ProjectStageQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProjectStage = mongoose.model<ProjectStageDocument, ProjectStageModel>("ProjectStage", ProjectStageSchema);
+ * ```
+ */
+export type ProjectStageDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ProjectStageQueries
+> &
+  ProjectStageMethods & {
+    name: string;
+    description?: string;
+    isDefault?: boolean;
+    active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

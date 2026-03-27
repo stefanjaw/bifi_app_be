@@ -43,6 +43,7 @@ import {
   UserRouter,
   UserService,
   ProjectRouter,
+  ProjectStageRouter,
   TaskStageRouter,
   TaskTypeRouter,
   TaskRouter,
@@ -164,6 +165,7 @@ app.use("/api", new TemplateRouter().getRouter);
 app.use("/api", new ModelRouter().getRouter);
 app.use("/api", new TaskRouter().getRouter);
 app.use("/api", new ProjectRouter().getRouter);
+app.use("/api", new ProjectStageRouter().getRouter);
 app.use("/api", new TaskStageRouter().getRouter);
 app.use("/api", new TaskTypeRouter().getRouter);
 app.use("/api", new GenAIRouter().getRouter);
