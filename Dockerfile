@@ -5,6 +5,10 @@ FROM node:22-slim AS build
 
 WORKDIR /app
 
+# Install git
+RUN apt-get update && apt-get install -y git \
+    && rm -rf /var/lib/apt/lists/*
+
 # install dependencies
 COPY bifi_app_be/package*.json ./bifi_app_be/
 RUN npm --prefix ./bifi_app_be install
