@@ -230,7 +230,7 @@ export class TicketService extends BaseService<TicketDocument> {
       const ticket = await super.create({
         ...data,
         createdBy: userStorage.getStore()?.user?._id,
-      });
+      }, newSession);
 
       const followerIds: mongoose.Types.ObjectId[] = (data.followers ?? [])
         .map(toObjectId)
@@ -513,7 +513,7 @@ export class TicketService extends BaseService<TicketDocument> {
       return await super.update({
         ...data,
         updatedBy: changedBy,
-      });
+      }, newSession);
     });
   }
 

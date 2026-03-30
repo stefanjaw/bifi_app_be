@@ -135,7 +135,7 @@ export class TaskService extends BaseService<TaskDocument> {
       return await super.create({
         ...data,
         createdBy: userStorage.getStore()?.user?._id,
-      });
+      }, newSession);
     });
   }
 
@@ -171,7 +171,7 @@ export class TaskService extends BaseService<TaskDocument> {
       return await super.update({
         ...data,
         updatedBy: userStorage.getStore()?.user?._id,
-      });
+      }, newSession);
     });
   }
 
