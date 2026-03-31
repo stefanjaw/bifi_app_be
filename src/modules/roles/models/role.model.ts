@@ -8,7 +8,6 @@ const roleSchema = new Schema(
     name: {
       type: String,
       required: true,
-      unique: true,
     },
     policies: {
       type: [
@@ -39,7 +38,7 @@ const roleSchema = new Schema(
     toObject: { virtuals: true }, // Include virtuals in toObject output
     toJSON: { virtuals: true }, // Include virtuals in toJSON output
     timestamps: true,
-  }
+  },
 );
 
 roleSchema.plugin(paginate);
@@ -47,7 +46,7 @@ roleSchema.plugin(autopopulate);
 
 const roleModel = mongoose.model<RoleDocument, PaginateModel<RoleDocument>>(
   "Role",
-  roleSchema
+  roleSchema,
 );
 
 export { roleModel };
