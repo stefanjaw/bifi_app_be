@@ -35,7 +35,7 @@ export class TaskService extends BaseService<TaskDocument> {
         {
           path: "projectId",
           getModel: () =>
-            this.connectionManager.getModel<ProjectDocument>("TaskProject"),
+            this.connectionManager.getModel<ProjectDocument>("Project"),
           isArray: false,
         },
         {
@@ -132,10 +132,13 @@ export class TaskService extends BaseService<TaskDocument> {
           : dayjs().add(1, "day").toDate();
       }
 
-      return await super.create({
-        ...data,
-        createdBy: userStorage.getStore()?.user?._id,
-      }, newSession);
+      return await super.create(
+        {
+          ...data,
+          createdBy: userStorage.getStore()?.user?._id,
+        },
+        newSession,
+      );
     });
   }
 
@@ -168,10 +171,13 @@ export class TaskService extends BaseService<TaskDocument> {
         );
       }
 
-      return await super.update({
-        ...data,
-        updatedBy: userStorage.getStore()?.user?._id,
-      }, newSession);
+      return await super.update(
+        {
+          ...data,
+          updatedBy: userStorage.getStore()?.user?._id,
+        },
+        newSession,
+      );
     });
   }
 
