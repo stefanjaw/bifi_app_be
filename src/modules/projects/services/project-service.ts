@@ -1,9 +1,15 @@
 import { ProjectDocument, UserDocument } from "@mongodb-types";
-import { BaseService, runTransaction, userStorage } from "../../../system";
+import {
+  BaseService,
+  runTransaction,
+  userStorage,
+  ValidationException,
+} from "../../../system";
 import { projectModel } from "../models/project.model";
 import mongoose from "mongoose";
 import { ProjectDTO } from "../models/project.dto";
 import { SequenceService } from "../../sequences/services/sequence-service";
+import dayjs from "dayjs";
 
 const sequenceService = new SequenceService();
 
@@ -14,8 +20,7 @@ export class ProjectService extends BaseService<ProjectDocument> {
       refFields: [
         {
           path: "createdBy",
-          getModel: () =>
-            this.connectionManager.getModel<UserDocument>("User"),
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
           isArray: false,
         },
       ],
@@ -41,8 +46,13 @@ export class ProjectService extends BaseService<ProjectDocument> {
           "Projects",
           "PRJ-",
           5,
-          1
+          1,
         );
+
+        if (dayjs(data.dateEnd).isBefore(dayjs(data.dateStart))) {
+          throw new ValidationException("Start date must be before end date");
+        }
+
         return await super.create(
           {
             ...data,

@@ -1,8 +1,11 @@
 import { Type } from "class-transformer";
 import {
   IsBoolean,
+  IsDate,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
 } from "class-validator";
@@ -21,6 +24,27 @@ export class ProjectDTO {
   @IsMongoId()
   @IsOptional()
   stage?: string;
+
+  @IsEnum(["low", "medium", "high", "urgent"])
+  @IsOptional()
+  priority?: "low" | "medium" | "high" | "urgent";
+
+  @IsMongoId()
+  @IsOptional()
+  contactId?: string;
+
+  @IsDate()
+  @Type(() => Date)
+  dateStart!: Date;
+
+  @IsDate()
+  @Type(() => Date)
+  dateEnd!: Date;
+
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  sequence?: number;
 
   @IsBoolean()
   @Type(() => Boolean)

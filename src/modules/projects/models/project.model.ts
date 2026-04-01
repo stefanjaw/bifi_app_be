@@ -28,7 +28,32 @@ const projectSchema = new Schema(
       autopopulate: {
         maxDepth: 1,
       },
+      required: true,
+    },
+    priority: {
+      type: String,
+      enum: ["low", "medium", "high", "urgent"],
+      default: "medium",
+    },
+    contactId: {
+      type: Schema.Types.ObjectId,
+      ref: "Contact",
       required: false,
+      autopopulate: {
+        maxDepth: 2,
+      },
+    },
+    dateStart: {
+      type: Date,
+      required: true,
+    },
+    dateEnd: {
+      type: Date,
+      required: true,
+    },
+    sequence: {
+      type: Number,
+      default: 10,
     },
     active: {
       type: Boolean,
@@ -36,10 +61,10 @@ const projectSchema = new Schema(
     },
     number: {
       type: String,
-      default: '',
+      default: "",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 projectSchema.plugin(paginate);

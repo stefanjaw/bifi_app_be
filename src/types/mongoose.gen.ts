@@ -7198,7 +7198,12 @@ export type Project = {
   name: string;
   description?: string;
   createdBy: User;
-  stage?: ProjectStage;
+  stage: ProjectStage;
+  priority?: "low" | "medium" | "high" | "urgent";
+  contactId?: Contact;
+  dateStart: Date;
+  dateEnd: Date;
+  sequence?: number;
   active?: boolean;
   number?: string;
   _id: mongoose.Types.ObjectId;
@@ -7289,7 +7294,12 @@ export type ProjectDocument = mongoose.Document<
     name: string;
     description?: string;
     createdBy: UserDocument;
-    stage?: ProjectStageDocument;
+    stage: ProjectStageDocument;
+    priority?: "low" | "medium" | "high" | "urgent";
+    contactId?: ContactDocument;
+    dateStart: Date;
+    dateEnd: Date;
+    sequence?: number;
     active?: boolean;
     number?: string;
     _id: mongoose.Types.ObjectId;
