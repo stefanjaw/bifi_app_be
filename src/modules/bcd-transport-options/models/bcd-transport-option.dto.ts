@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform } from "class-transformer";
 import {
   IsBoolean,
   IsEnum,
@@ -7,7 +7,7 @@ import {
   IsString,
   Length,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 import { BCDTransportOptionTypeEnum } from "./bcd-transport-option.types";
 
 export class BCDTransportOptionDTO {
@@ -27,7 +27,7 @@ export class BCDTransportOptionDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

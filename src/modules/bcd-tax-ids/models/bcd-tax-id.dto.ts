@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform } from "class-transformer";
 import {
   IsBoolean,
   IsMongoId,
@@ -6,7 +6,7 @@ import {
   IsString,
   Length,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class BCDTaxIdDTO {
   @IsString()
@@ -22,7 +22,7 @@ export class BCDTaxIdDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

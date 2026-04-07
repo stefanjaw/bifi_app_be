@@ -1,6 +1,6 @@
-import { Type } from "class-transformer";
+import { Transform } from "class-transformer";
 import { IsBoolean, IsMongoId, IsNotEmpty, IsOptional, IsString } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class UomDTO {
   @IsString()
@@ -15,7 +15,7 @@ export class UomDTO {
   categoryId!: string;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   @IsOptional()
   active?: boolean;
 }

@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform } from "class-transformer";
 import {
   IsBoolean,
   IsEnum,
@@ -8,7 +8,7 @@ import {
   IsString,
   Matches,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class TemplateDTO {
   @IsString()
@@ -49,7 +49,7 @@ export class TemplateDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

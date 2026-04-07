@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsBoolean,
   IsDate,
@@ -9,7 +9,7 @@ import {
   IsOptional,
   IsString,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class ProjectDTO {
   @IsString()
@@ -46,7 +46,7 @@ export class ProjectDTO {
   sequence?: number;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   @IsOptional()
   active?: boolean;
 }

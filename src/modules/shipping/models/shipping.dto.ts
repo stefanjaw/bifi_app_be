@@ -12,7 +12,7 @@ import {
 } from "class-validator";
 import { InvoiceDTO } from "./invoice.dto";
 import { ShippingStage, ShippingStatus } from "./shipping.model";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class ShippingDTO {
   @IsString()
@@ -42,14 +42,9 @@ export class ShippingDTO {
   })
   invoices?: InvoiceDTO[];
 
-  //   @IsOptional()
-  //   @IsArray()
-  //   @IsMongoId({ each: true })
-  //   bcds?: string[];
-
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

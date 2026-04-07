@@ -10,7 +10,7 @@ import {
   Max,
   Min,
 } from "class-validator";
-import { FileUpload, PartialType } from "../../../system";
+import { FileUpload, PartialType, toBoolean } from "../../../system";
 import { Transform, Type } from "class-transformer";
 
 export class TaskDTO {
@@ -86,12 +86,12 @@ export class TaskDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   isMilestone?: boolean;
 }
 

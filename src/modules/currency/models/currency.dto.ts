@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsBoolean,
   IsMongoId,
@@ -8,7 +8,7 @@ import {
   IsString,
   Min,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class CurrencyDTO {
   @IsString()
@@ -30,12 +30,12 @@ export class CurrencyDTO {
   decimalPrecision?: number;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   @IsOptional()
   active?: boolean;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   @IsOptional()
   isDefault?: boolean;
 }

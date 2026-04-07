@@ -7,11 +7,11 @@ import {
   Length,
   ValidateNested,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class BCDTaxTypeImpactDTO {
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   wharfageRate!: boolean;
 }
 
@@ -37,7 +37,7 @@ export class BCDTaxTypeDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

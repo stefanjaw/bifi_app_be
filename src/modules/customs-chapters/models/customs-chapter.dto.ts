@@ -1,6 +1,6 @@
 import { IsBoolean, IsMongoId, IsOptional, IsString } from "class-validator";
-import { Type } from "class-transformer";
-import { PartialType } from "../../../system";
+import { Transform } from "class-transformer";
+import { PartialType, toBoolean } from "../../../system";
 
 export class CustomsChapterDTO {
   @IsString()
@@ -11,7 +11,7 @@ export class CustomsChapterDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

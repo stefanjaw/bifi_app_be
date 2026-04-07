@@ -8,7 +8,7 @@ import {
   IsOptional,
   IsString,
 } from "class-validator";
-import { FileUpload, PartialType } from "../../../system";
+import { FileUpload, PartialType, toBoolean } from "../../../system";
 import { Transform, Type } from "class-transformer";
 
 export class TicketDTO {
@@ -85,7 +85,7 @@ export class TicketDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

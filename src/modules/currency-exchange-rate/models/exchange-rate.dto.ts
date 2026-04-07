@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsBoolean,
   IsDate,
@@ -7,7 +7,7 @@ import {
   IsOptional,
   Min,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class ExchangeRateDTO {
   @IsMongoId()
@@ -26,7 +26,7 @@ export class ExchangeRateDTO {
   effectiveDate!: Date;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   @IsOptional()
   active?: boolean;
 }

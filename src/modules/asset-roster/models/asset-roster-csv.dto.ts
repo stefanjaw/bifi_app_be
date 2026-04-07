@@ -11,6 +11,7 @@ import {
   IsString,
 } from "class-validator";
 import { Transform, Type } from "class-transformer";
+import { toBoolean } from "../../../system";
 
 export class AssetRosterCSVDTO {
   @IsString()
@@ -73,6 +74,6 @@ export class AssetRosterCSVDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }

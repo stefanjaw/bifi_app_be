@@ -10,7 +10,7 @@ import {
   ValidateIf,
   ValidateNested,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 import { plainToInstance, Transform, Type } from "class-transformer";
 
 export class RolePolicyDTO {
@@ -37,11 +37,11 @@ export class RoleDTO {
   )
   @Type(() => RolePolicyDTO)
   @ValidateNested({ each: true })
-  policies!: RolePolicyDTO[]; // Assuming policies are represented as an array of MongoDB ObjectIds
+  policies!: RolePolicyDTO[];
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

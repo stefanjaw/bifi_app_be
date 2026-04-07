@@ -5,8 +5,8 @@ import {
   IsOptional,
   IsString,
 } from "class-validator";
-import { PartialType } from "../../../system";
-import { Type } from "class-transformer";
+import { PartialType, toBoolean } from "../../../system";
+import { Transform } from "class-transformer";
 
 export class ReportingDTO {
   @IsString()
@@ -15,7 +15,6 @@ export class ReportingDTO {
 
   @IsString()
   @IsNotEmpty()
-  //   @Matches(/^<(\w+)\b[^>]*>.*?<\/\1>$/, { message: "Invalid HTML structure" })
   template!: string;
 
   @IsString()
@@ -24,7 +23,7 @@ export class ReportingDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

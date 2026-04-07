@@ -10,7 +10,7 @@ import {
   IsArray,
   ValidateNested,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 import {
   BCDChargeCodeLevelEnum,
   BCDChargeCodeTypeEnum,
@@ -18,11 +18,11 @@ import {
 
 export class BCDChargeCodeImpactDTO {
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   customsValue!: boolean;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   payable!: boolean;
 }
 
@@ -58,7 +58,7 @@ export class BCDChargeCodeDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

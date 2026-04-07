@@ -15,7 +15,7 @@ import {
   MaxLength,
   ValidateNested,
 } from "class-validator";
-import { FileUpload } from "../../../system";
+import { FileUpload, toBoolean } from "../../../system";
 import { CommentStatus, InvoiceStatus } from "./invoice.model";
 
 class ExtractedTariffDTO {
@@ -224,7 +224,7 @@ class InvoiceCommentDTO {
   createdBy?: string;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   @IsOptional()
   active?: boolean;
 

@@ -1,4 +1,4 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsBoolean,
   IsMongoId,
@@ -8,7 +8,7 @@ import {
   IsString,
   Min,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class ProductDTO {
   @IsString()
@@ -44,7 +44,7 @@ export class ProductDTO {
   unitOfMeasureId?: string;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   @IsOptional()
   active?: boolean;
 }

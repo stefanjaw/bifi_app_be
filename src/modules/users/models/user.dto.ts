@@ -10,7 +10,7 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 import { plainToInstance, Transform, Type } from "class-transformer";
 import { ContactDTO } from "../../contacts/models/contact.dto";
 
@@ -70,12 +70,12 @@ export class UserDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   confirmed?: boolean;
 }
 

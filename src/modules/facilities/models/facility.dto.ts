@@ -9,10 +9,9 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 import { RoomDTO } from "./room.dto";
 
-// To verify from the facility dto
 export class FacilityRoomInformationDTO extends RoomDTO {
   @IsMongoId()
   @IsOptional()
@@ -42,7 +41,7 @@ export class FacilityDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

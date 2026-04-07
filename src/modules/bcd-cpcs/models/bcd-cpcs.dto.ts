@@ -15,7 +15,7 @@ import {
   IsObject,
   IsNumberString,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class BCDCpcTaxDTO {
   @IsMongoId()
@@ -84,7 +84,7 @@ export class BCDCpcDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

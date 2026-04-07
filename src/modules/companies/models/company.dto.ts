@@ -7,8 +7,8 @@ import {
   IsBoolean,
   ValidateIf,
 } from "class-validator";
-import { Type } from "class-transformer";
-import { PartialType } from "../../../system";
+import { Transform } from "class-transformer";
+import { PartialType, toBoolean } from "../../../system";
 
 export class CompanyDTO {
   @IsString()
@@ -45,7 +45,7 @@ export class CompanyDTO {
   branchCode?: string;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   @IsOptional()
   isDefault?: boolean;
 

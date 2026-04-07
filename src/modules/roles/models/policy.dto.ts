@@ -9,7 +9,7 @@ import {
   IsString,
   ValidateNested,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class ConditionDTO {
   @IsMongoId()
@@ -41,7 +41,6 @@ export class PolicyDTO {
   type!: string;
 
   @IsArray()
-  // @ArrayMinSize(1)
   @IsOptional()
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((room: any) => plainToInstance(ConditionDTO, room))
@@ -52,7 +51,7 @@ export class PolicyDTO {
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 }
 

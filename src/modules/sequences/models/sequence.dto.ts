@@ -7,8 +7,8 @@ import {
   IsString,
   Min,
 } from "class-validator";
-import { PartialType } from "../../../system";
-import { Type } from "class-transformer";
+import { PartialType, toBoolean } from "../../../system";
+import { Transform, Type } from "class-transformer";
 
 export class SequenceDTO {
   @IsString()
@@ -39,12 +39,12 @@ export class SequenceDTO {
   size!: number;
 
   @IsBoolean()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   nogap!: boolean;
 
   @IsBoolean()
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(toBoolean)
   active?: boolean;
 
   @IsString()
