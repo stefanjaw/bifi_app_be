@@ -17,7 +17,6 @@ export class ProjectDTO {
   name!: string;
 
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   description?: string;
 
