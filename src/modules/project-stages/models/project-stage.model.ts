@@ -11,7 +11,7 @@ const projectStageSchema = new Schema(
     },
     description: {
       type: String,
-      default: "",
+      required: false,
     },
     isDefault: {
       type: Boolean,

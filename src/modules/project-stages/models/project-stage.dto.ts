@@ -14,7 +14,6 @@ export class ProjectStageDTO {
   name!: string;
 
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   description?: string;
 
