@@ -115,6 +115,10 @@ const taskSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    isMilestone: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );

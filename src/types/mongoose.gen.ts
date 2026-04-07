@@ -9164,6 +9164,7 @@ export type Task = {
   assigned?: User;
   attachments: TaskAttachment[];
   active?: boolean;
+  isMilestone?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;

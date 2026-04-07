@@ -88,6 +88,11 @@ export class TaskDTO {
   @IsOptional()
   @Type(() => Boolean)
   active?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  @Type(() => Boolean)
+  isMilestone?: boolean;
 }
 
 export class UpdateTaskDTO extends PartialType(TaskDTO) {
