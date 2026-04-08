@@ -32,6 +32,10 @@ export class ProjectDTO {
   @IsOptional()
   contactId?: string;
 
+  @IsMongoId()
+  @IsOptional()
+  parentId?: string;
+
   @IsDate()
   @Type(() => Date)
   dateStart!: Date;

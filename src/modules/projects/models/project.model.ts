@@ -43,6 +43,15 @@ const projectSchema = new Schema(
         maxDepth: 2,
       },
     },
+    parentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+      required: false,
+      autopopulate: {
+        select: "name number",
+        maxDepth: 1,
+      },
+    },
     dateStart: {
       type: Date,
       required: true,
@@ -64,8 +73,23 @@ const projectSchema = new Schema(
       default: "",
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+  },
 );
+
+projectSchema.virtual("children", {
+  ref: "Project",
+  localField: "_id",
+  foreignField: "parentId",
+  autopopulate: {
+    select: "name number priority stage dateStart dateEnd active",
+    maxDepth: 1,
+  },
+  match: { active: true },
+});
 
 projectSchema.plugin(paginate);
 projectSchema.plugin(autopopulate);

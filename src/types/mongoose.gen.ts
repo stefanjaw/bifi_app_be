@@ -7201,6 +7201,7 @@ export type Project = {
   stage: ProjectStage;
   priority?: "low" | "medium" | "high" | "urgent";
   contactId?: Contact;
+  parentId?: Project;
   dateStart: Date;
   dateEnd: Date;
   sequence?: number;
@@ -7209,6 +7210,7 @@ export type Project = {
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
+  children: any;
 };
 
 /**
@@ -7297,6 +7299,7 @@ export type ProjectDocument = mongoose.Document<
     stage: ProjectStageDocument;
     priority?: "low" | "medium" | "high" | "urgent";
     contactId?: ContactDocument;
+    parentId?: ProjectDocument;
     dateStart: Date;
     dateEnd: Date;
     sequence?: number;
@@ -7305,6 +7308,7 @@ export type ProjectDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
+    children: any;
   };
 
 /**
@@ -9281,6 +9285,7 @@ export type TaskDocument = mongoose.Document<
     assigned?: UserDocument;
     attachments: mongoose.Types.DocumentArray<TaskAttachmentDocument>;
     active?: boolean;
+    isMilestone?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
