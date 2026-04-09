@@ -1,4 +1,9 @@
-import { ProjectDocument, UserDocument } from "@mongodb-types";
+import {
+  ContactDocument,
+  ProjectDocument,
+  ProjectStageDocument,
+  UserDocument,
+} from "@mongodb-types";
 import {
   BaseService,
   runTransaction,
@@ -21,6 +26,26 @@ export class ProjectService extends BaseService<ProjectDocument> {
         {
           path: "createdBy",
           getModel: () => this.connectionManager.getModel<UserDocument>("User"),
+          isArray: false,
+        },
+        {
+          path: "stage",
+          getModel: () =>
+            this.connectionManager.getModel<ProjectStageDocument>(
+              "ProjectStage",
+            ),
+          isArray: false,
+        },
+        {
+          path: "contactId",
+          getModel: () =>
+            this.connectionManager.getModel<ContactDocument>("Contact"),
+          isArray: false,
+        },
+        {
+          path: "parentId",
+          getModel: () =>
+            this.connectionManager.getModel<ProjectDocument>("Project"),
           isArray: false,
         },
       ],
