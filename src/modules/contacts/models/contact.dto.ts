@@ -9,8 +9,32 @@ import {
   ValidateIf,
   IsPostalCode,
   IsUrl,
+  ValidatorConstraint,
+  ValidatorConstraintInterface,
+  ValidationArguments,
+  Validate,
 } from "class-validator";
 import { PartialType } from "../../../system";
+
+@ValidatorConstraint({ name: "atLeastOneContact", async: false })
+export class AtLeastOneContactConstraint
+  implements ValidatorConstraintInterface
+{
+  validate(_: any, args: ValidationArguments) {
+    const obj = args.object as any;
+
+    const hasPhone = !!obj.phoneNumber?.trim();
+    const hasEmail = !!obj.email?.trim();
+    // Website solo cuenta si es company
+    const hasWebsite = obj.type === "company" && !!obj.website?.trim();
+
+    return hasPhone || hasEmail || hasWebsite;
+  }
+
+  defaultMessage() {
+    return "At least one contact method (phone number, email, or website for companies) must be provided.";
+  }
+}
 
 export class ContactDTO {
   @IsString()
@@ -25,20 +49,21 @@ export class ContactDTO {
   // @IsPhoneNumber("BM")
   @IsString()
   @IsOptional()
-  phoneNumber!: string;
+  phoneNumber?: string;
 
   @IsEmail()
   @IsOptional()
-  email!: string;
+  email?: string;
 
   @IsUrl()
-  @ValidateIf((obj) => obj.type === "company")
+  @IsOptional()
   website?: string;
 
   @IsMongoId()
   @IsOptional()
   parentId?: string;
 
+  @Validate(AtLeastOneContactConstraint)
   @IsEnum(["individual", "company"])
   type!: "individual" | "company";
 
@@ -68,7 +93,9 @@ export class ContactDTO {
   streetAddress2?: string;
 
   @IsMongoId({ each: true })
-  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   @IsOptional()
   childIds?: string[];
 
