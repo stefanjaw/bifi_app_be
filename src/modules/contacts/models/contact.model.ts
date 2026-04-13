@@ -106,10 +106,9 @@ contactSchema.virtual("fullName").get(function (this: ContactDocument) {
 });
 
 contactSchema.virtual("displayName").get(function (this: ContactDocument) {
-  if (this.parentId?._id) {
-    return `${this.parentId.name}, ${this.name} ${this.lastName}`;
-  }
-  return `${this.name} ${this.lastName}`;
+  return `${
+    this.parentId?.name ? this.parentId.name + ", " : ""
+  }${this.name} ${this.lastName}`;
 });
 
 contactSchema.virtual("fullAddress").get(function (this: ContactDocument) {
@@ -124,6 +123,7 @@ contactSchema.virtual("fullAddress").get(function (this: ContactDocument) {
 
   return parts.length > 0 ? parts.join(", ") : "No address";
 });
+
 contactSchema.plugin(paginate);
 contactSchema.plugin(autopopulate);
 
