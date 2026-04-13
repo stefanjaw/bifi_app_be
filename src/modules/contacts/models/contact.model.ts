@@ -105,15 +105,25 @@ contactSchema.virtual("fullName").get(function (this: ContactDocument) {
   return `${this.name} ${this.lastName}`;
 });
 
-contactSchema.virtual("fullAddress").get(function (this: ContactDocument) {
-  return `${this.streetAddress || "No street"}, 
-          ${this.streetAddress2 || "No street 2"}, 
-          ${this.city || "No city"}, 
-          ${this.state || "No state"}, 
-          ${this.zipCode || "No zip code"}, 
-          ${this.countryId?.name || "No country"}`;
+contactSchema.virtual("displayName").get(function (this: ContactDocument) {
+  if (this.parentId?._id) {
+    return `${this.parentId.name}, ${this.name} ${this.lastName}`;
+  }
+  return `${this.name} ${this.lastName}`;
 });
 
+contactSchema.virtual("fullAddress").get(function (this: ContactDocument) {
+  const parts = [
+    this.streetAddress,
+    this.streetAddress2,
+    this.city,
+    this.state,
+    this.zipCode,
+    this.countryId?.name,
+  ].filter((v) => v && v.toString().trim() !== "");
+
+  return parts.length > 0 ? parts.join(", ") : "No address";
+});
 contactSchema.plugin(paginate);
 contactSchema.plugin(autopopulate);
 

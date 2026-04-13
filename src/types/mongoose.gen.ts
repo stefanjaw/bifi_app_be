@@ -4076,6 +4076,7 @@ export type Contact = {
   updatedAt?: Date;
   childIds: any;
   fullName: string;
+  displayName: string;
   fullAddress: string;
 };
 
@@ -4178,6 +4179,7 @@ export type ContactDocument = mongoose.Document<
     updatedAt?: Date;
     childIds: any;
     fullName: string;
+    displayName: string;
     fullAddress: string;
   };
 
