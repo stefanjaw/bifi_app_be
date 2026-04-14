@@ -9637,6 +9637,9 @@ export type Ticket = {
   createdBy?: User;
   updatedBy?: User;
   active?: boolean;
+  dateStart?: Date;
+  dateEnd?: Date;
+  duration?: string;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -9801,6 +9804,9 @@ export type TicketDocument = mongoose.Document<
     createdBy?: UserDocument;
     updatedBy?: UserDocument;
     active?: boolean;
+    dateStart?: Date;
+    dateEnd?: Date;
+    duration?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

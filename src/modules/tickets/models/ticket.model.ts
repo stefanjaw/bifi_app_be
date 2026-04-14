@@ -176,6 +176,20 @@ const ticketSchema = new Schema(
       type: Boolean,
       default: true,
     },
+
+    dateStart: {
+      type: Date,
+      required: false,
+    },
+    dateEnd: {
+      type: Date,
+      required: false,
+    },
+
+    duration: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );
