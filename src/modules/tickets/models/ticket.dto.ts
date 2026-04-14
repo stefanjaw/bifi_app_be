@@ -47,13 +47,17 @@ export class TicketDTO {
   @IsOptional()
   @IsArray()
   @IsMongoId({ each: true })
-  @Transform(({ value }) => (typeof value === "string" ? JSON.parse(value) : value))
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   followers?: string[];
 
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  @Transform(({ value }) => (typeof value === "string" ? JSON.parse(value) : value))
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   tags?: string[];
 
   @IsString()
@@ -80,13 +84,29 @@ export class TicketDTO {
   @IsOptional()
   @IsArray()
   @IsMongoId({ each: true })
-  @Transform(({ value }) => (typeof value === "string" ? JSON.parse(value) : value))
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   taskIds?: string[];
 
   @IsBoolean()
   @IsOptional()
   @Transform(toBoolean)
   active?: boolean;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  dateStart?: Date;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  dateEnd?: Date;
+
+  @IsString()
+  @IsOptional()
+  duration?: string;
 }
 
 export class UpdateTicketDTO extends PartialType(TicketDTO) {
