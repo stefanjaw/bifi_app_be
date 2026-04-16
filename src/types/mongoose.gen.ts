@@ -4424,7 +4424,7 @@ export type CRM = {
   expectedCloseDate?: Date;
   actualCloseDate?: Date;
   contact: Contact;
-  company: Company;
+  company?: Company;
   owner?: User;
   salesperson?: User;
   tags: string[];
@@ -4519,7 +4519,7 @@ export type CRMDocument = mongoose.Document<
     expectedCloseDate?: Date;
     actualCloseDate?: Date;
     contact: ContactDocument;
-    company: CompanyDocument;
+    company?: CompanyDocument;
     owner?: UserDocument;
     salesperson?: UserDocument;
     tags: mongoose.Types.Array<string>;

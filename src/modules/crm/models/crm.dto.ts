@@ -53,6 +53,7 @@ export class CRMDTO {
   contact!: string;
 
   @IsMongoId()
+  @IsOptional()
   company!: string;
 
   @IsMongoId()
