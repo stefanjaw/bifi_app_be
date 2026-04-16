@@ -30,7 +30,7 @@ const crmSchema = new Schema(
     company: {
       type: Schema.Types.ObjectId,
       ref: "Company",
-      required: true,
+      required: false,
       autopopulate: {
         maxDepth: 1,
       },
