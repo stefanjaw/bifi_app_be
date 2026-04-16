@@ -52,9 +52,10 @@ export class CRMDTO {
   @IsMongoId()
   contact!: string;
 
+  @Transform(({ value }) => (value === "" ? null : value))
   @IsMongoId()
   @IsOptional()
-  company!: string;
+  company?: string;
 
   @IsMongoId()
   @IsOptional()
