@@ -119,8 +119,16 @@ const taskSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    sequence: {
+      type: Number,
+      default: 1,
+    },
   },
-  { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
+  {
+    timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+  },
 );
 
 taskSchema.virtual("childIds", {
@@ -138,7 +146,7 @@ taskSchema.plugin(autopopulate);
 
 const taskModel = mongoose.model<TaskDocument, PaginateModel<TaskDocument>>(
   "Task",
-  taskSchema
+  taskSchema,
 );
 
 export { taskModel };

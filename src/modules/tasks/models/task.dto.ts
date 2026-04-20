@@ -6,6 +6,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
   Max,
   Min,
@@ -66,7 +67,9 @@ export class TaskDTO {
 
   @IsOptional()
   @IsMongoId({ each: true })
-  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   dependencyIds?: string[];
 
   @IsOptional()
@@ -93,6 +96,12 @@ export class TaskDTO {
   @IsOptional()
   @Transform(toBoolean)
   isMilestone?: boolean;
+
+  @IsNumber()
+  @IsPositive()
+  @IsOptional()
+  @Type(() => Number)
+  sequence?: number;
 }
 
 export class UpdateTaskDTO extends PartialType(TaskDTO) {

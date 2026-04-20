@@ -7,6 +7,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsOptional,
+  IsPositive,
   IsString,
 } from "class-validator";
 import { PartialType, toBoolean } from "../../../system";
@@ -45,6 +46,7 @@ export class ProjectDTO {
   dateEnd!: Date;
 
   @IsNumber()
+  @IsPositive()
   @Type(() => Number)
   @IsOptional()
   sequence?: number;

@@ -62,7 +62,7 @@ const projectSchema = new Schema(
     },
     sequence: {
       type: Number,
-      default: 10,
+      default: 1,
     },
     active: {
       type: Boolean,
