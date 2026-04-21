@@ -4418,7 +4418,7 @@ export type CrmStageDocument = mongoose.Document<
 export type CRM = {
   title: string;
   amount: number;
-  currency?: string;
+  currency?: Currency;
   stage?: CrmStage;
   probability?: number;
   expectedCloseDate?: Date;
@@ -4513,7 +4513,7 @@ export type CRMDocument = mongoose.Document<
   CRMMethods & {
     title: string;
     amount: number;
-    currency?: string;
+    currency?: CurrencyDocument;
     stage?: CrmStageDocument;
     probability?: number;
     expectedCloseDate?: Date;

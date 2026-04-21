@@ -7,7 +7,13 @@ const crmSchema = new Schema(
   {
     title: { type: String, required: true, trim: true },
     amount: { type: Number, required: true, min: 0 },
-    currency: { type: String, default: "USD", uppercase: true },
+    currency: {
+      type: Schema.Types.ObjectId,
+      ref: "Currency",
+      autopopulate: {
+        maxDepth: 1,
+      },
+    },
     stage: {
       type: Schema.Types.ObjectId,
       ref: "CrmStage",
@@ -59,7 +65,7 @@ const crmSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 crmSchema.plugin(autopopulate);
@@ -67,7 +73,7 @@ crmSchema.plugin(paginate);
 
 const crmModel = mongoose.model<CRMDocument, PaginateModel<CRMDocument>>(
   "CRM",
-  crmSchema
+  crmSchema,
 );
 
 export { crmModel };

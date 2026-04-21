@@ -24,7 +24,7 @@ export class CRMDTO {
   @Type(() => Number)
   amount!: number;
 
-  @IsISO4217CurrencyCode()
+  @IsMongoId()
   @IsOptional()
   currency?: string;
 
