@@ -39,7 +39,7 @@ export class CRMDTO {
   @IsOptional()
   probability?: number;
 
-  @IsDate()
+  @IsString()
   @Type(() => Date)
   @IsOptional()
   expectedCloseDate?: Date;
