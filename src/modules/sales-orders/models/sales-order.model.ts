@@ -3,6 +3,16 @@ import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { SalesOrderDocument } from "@mongodb-types";
 
+const lineItemSchema = new Schema(
+  {
+    description: { type: String, required: true, trim: true },
+    quantity: { type: Number, required: true, min: 0 },
+    unitPrice: { type: Number, required: true, min: 0 },
+    total: { type: Number, required: true, min: 0 },
+  },
+  { _id: false }
+);
+
 const salesOrderSchema = new Schema(
   {
     crmId: {
@@ -52,6 +62,7 @@ const salesOrderSchema = new Schema(
       type: Date,
       required: true,
     },
+    lineItems: [lineItemSchema],
     notes: {
       type: String,
     },
