@@ -13,7 +13,7 @@ import {
 } from "class-validator";
 import { PartialType } from "../../../system";
 
-export class LineItemDTO {
+class LineItemDTO {
   @IsString()
   @IsNotEmpty()
   description!: string;

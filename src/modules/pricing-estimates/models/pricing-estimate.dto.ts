@@ -35,7 +35,7 @@ export class PricingControlsDTO {
   margin?: number;
 }
 
-export class LineItemDTO {
+class LineItemDTO {
   @IsString()
   @IsOptional()
   product?: string;
