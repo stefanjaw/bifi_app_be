@@ -39,7 +39,7 @@ export class CRMDTO {
   @IsOptional()
   probability?: number;
 
-  @IsString()
+  @IsDate()
   @Type(() => Date)
   @IsOptional()
   expectedCloseDate?: Date;
@@ -67,7 +67,9 @@ export class CRMDTO {
 
   @IsArray()
   @IsString({ each: true })
-  @Transform(({ value }) => typeof value === "string" ? JSON.parse(value) : value)
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
   @IsOptional()
   tags?: string[];
 
