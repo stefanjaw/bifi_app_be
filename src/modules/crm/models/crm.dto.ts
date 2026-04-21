@@ -24,7 +24,7 @@ export class CRMDTO {
   @Type(() => Number)
   amount!: number;
 
-  @IsISO4217CurrencyCode()
+  @IsMongoId()
   @IsOptional()
   currency?: string;
 
@@ -39,7 +39,7 @@ export class CRMDTO {
   @IsOptional()
   probability?: number;
 
-  @IsDate()
+  @IsString()
   @Type(() => Date)
   @IsOptional()
   expectedCloseDate?: Date;
