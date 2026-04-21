@@ -9171,6 +9171,7 @@ export type Task = {
   attachments: TaskAttachment[];
   active?: boolean;
   isMilestone?: boolean;
+  sequence?: number;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -9288,6 +9289,7 @@ export type TaskDocument = mongoose.Document<
     attachments: mongoose.Types.DocumentArray<TaskAttachmentDocument>;
     active?: boolean;
     isMilestone?: boolean;
+    sequence?: number;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
