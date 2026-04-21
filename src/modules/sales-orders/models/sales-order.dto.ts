@@ -1,5 +1,6 @@
-import { Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import {
+  IsArray,
   IsDate,
   IsISO4217CurrencyCode,
   IsMongoId,
@@ -8,8 +9,31 @@ import {
   IsOptional,
   IsPositive,
   IsString,
+  Min,
+  ValidateNested,
 } from "class-validator";
 import { PartialType } from "../../../system";
+
+export class LineItemDTO {
+  @IsString()
+  @IsNotEmpty()
+  description!: string;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  quantity!: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  unitPrice!: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  total!: number;
+}
 
 export class SalesOrderDTO {
   @IsMongoId()
@@ -37,6 +61,17 @@ export class SalesOrderDTO {
   @IsDate()
   @Type(() => Date)
   closeDate!: Date;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => LineItemDTO)
+  @Transform(({ value }) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
+      plainToInstance(LineItemDTO, item)
+    )
+  )
+  @IsOptional()
+  lineItems?: LineItemDTO[];
 
   @IsString()
   @IsNotEmpty()

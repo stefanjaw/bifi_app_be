@@ -8051,6 +8051,21 @@ export type RoleDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of SalesOrderLineItemDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SalesOrderDocument.toObject()`.
+ * ```
+ * const salesorderObject = salesorder.toObject();
+ * ```
+ */
+export type SalesOrderLineItem = {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+};
+
+/**
  * Lean version of SalesOrderDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `SalesOrderDocument.toObject()`. To avoid conflicts with model names, use the type alias `SalesOrderObject`.
@@ -8066,6 +8081,7 @@ export type SalesOrder = {
   amount: number;
   currency?: string;
   closeDate: Date;
+  lineItems: SalesOrderLineItem[];
   notes?: string;
   number?: string;
   active?: boolean;
@@ -8145,6 +8161,18 @@ export type SalesOrderSchema = mongoose.Schema<
 >;
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `SalesOrderDocument["lineItems"]` element.
+ */
+export type SalesOrderLineItemDocument = mongoose.Types.Subdocument<any> & {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+};
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -8164,6 +8192,7 @@ export type SalesOrderDocument = mongoose.Document<
     amount: number;
     currency?: string;
     closeDate: Date;
+    lineItems: mongoose.Types.DocumentArray<SalesOrderLineItemDocument>;
     notes?: string;
     number?: string;
     active?: boolean;
