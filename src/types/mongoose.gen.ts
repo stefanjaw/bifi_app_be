@@ -8050,6 +8050,67 @@ export type RoleDocument = mongoose.Document<
     updatedAt?: Date;
   };
 
+export type SalesOrderStage = {
+  name: string;
+  description?: string;
+  color?: string;
+  order?: number;
+  isDefault?: boolean;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+export type SalesOrderStageObject = SalesOrderStage;
+
+export type SalesOrderStageQuery = mongoose.Query<
+  any,
+  SalesOrderStageDocument,
+  SalesOrderStageQueries
+> &
+  SalesOrderStageQueries;
+
+export type SalesOrderStageQueries = {
+  paginate: (this: SalesOrderStageQuery, ...args: any[]) => SalesOrderStageQuery;
+};
+
+export type SalesOrderStageMethods = {};
+
+export type SalesOrderStageStatics = {
+  paginate: (this: SalesOrderStageModel, ...args: any[]) => any;
+  paginateSubDocs: (this: SalesOrderStageModel, ...args: any[]) => any;
+};
+
+export type SalesOrderStageModel = mongoose.Model<
+  SalesOrderStageDocument,
+  SalesOrderStageQueries
+> &
+  SalesOrderStageStatics;
+
+export type SalesOrderStageSchema = mongoose.Schema<
+  SalesOrderStageDocument,
+  SalesOrderStageModel,
+  SalesOrderStageMethods,
+  SalesOrderStageQueries
+>;
+
+export type SalesOrderStageDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  SalesOrderStageQueries
+> &
+  SalesOrderStageMethods & {
+    name: string;
+    description?: string;
+    color?: string;
+    order?: number;
+    isDefault?: boolean;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
 /**
  * Lean version of SalesOrderLineItemDocument
  *
@@ -8059,6 +8120,7 @@ export type RoleDocument = mongoose.Document<
  * ```
  */
 export type SalesOrderLineItem = {
+  productId?: Product;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -8078,6 +8140,7 @@ export type SalesOrder = {
   contact: Contact;
   company: Company;
   salesperson?: User;
+  stageId?: SalesOrderStage | null;
   amount: number;
   currency?: string;
   closeDate: Date;
@@ -8166,6 +8229,7 @@ export type SalesOrderSchema = mongoose.Schema<
  * Type of `SalesOrderDocument["lineItems"]` element.
  */
 export type SalesOrderLineItemDocument = mongoose.Types.Subdocument<any> & {
+  productId?: ProductDocument;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -8189,6 +8253,7 @@ export type SalesOrderDocument = mongoose.Document<
     contact: ContactDocument;
     company: CompanyDocument;
     salesperson?: UserDocument;
+    stageId?: SalesOrderStageDocument | null;
     amount: number;
     currency?: string;
     closeDate: Date;

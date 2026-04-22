@@ -190,6 +190,10 @@ const ticketSchema = new Schema(
       type: String,
       required: false,
     },
+    number: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );

@@ -26,6 +26,7 @@ import {
   CrmStageRouter,
   SalesRouter,
   SalesOrderRouter,
+  SalesOrderStageRouter,
   SalesTargetRouter,
   FacilityRouter,
   FileRouter,
@@ -159,6 +160,7 @@ app.use("/api", new TicketRouter().getRouter);
 app.use("/api", new TicketRuleRouter().getRouter);
 app.use("/api", new CRMRouter().getRouter);
 app.use("/api", new CrmStageRouter().getRouter);
+app.use("/api", new SalesOrderStageRouter().getRouter);
 app.use("/api", new SalesOrderRouter().getRouter);
 app.use("/api", new SalesTargetRouter().getRouter);
 app.use("/api", new SalesRouter().getRouter);

@@ -15,6 +15,10 @@ import {
 import { PartialType } from "../../../system";
 
 class LineItemDTO {
+  @IsMongoId()
+  @IsOptional()
+  productId?: string;
+
   @IsString()
   @IsNotEmpty()
   description!: string;
@@ -37,7 +41,8 @@ class LineItemDTO {
 
 export class SalesOrderDTO {
   @IsMongoId()
-  crmId!: string;
+  @IsOptional()
+  crmId?: string;
 
   @IsMongoId()
   contact!: string;
@@ -48,6 +53,10 @@ export class SalesOrderDTO {
   @IsMongoId()
   @IsOptional()
   salesperson?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  stageId?: string;
 
   @IsNumber()
   @IsPositive()
@@ -67,8 +76,8 @@ export class SalesOrderDTO {
   @Type(() => LineItemDTO)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
-      plainToInstance(LineItemDTO, item)
-    )
+      plainToInstance(LineItemDTO, item),
+    ),
   )
   @IsOptional()
   lineItems?: LineItemDTO[];
@@ -76,6 +85,7 @@ export class SalesOrderDTO {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
+  @Transform(({ value }) => (value === "" ? null : value))
   notes?: string;
 }
 

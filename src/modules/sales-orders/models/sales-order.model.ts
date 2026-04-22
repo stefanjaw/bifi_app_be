@@ -5,6 +5,15 @@ import { SalesOrderDocument } from "@mongodb-types";
 
 const lineItemSchema = new Schema(
   {
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: "InventoryProduct",
+      required: false,
+      autopopulate: {
+        select: "name sku description salePrice unit unitOfMeasureId",
+        maxDepth: 1,
+      },
+    },
     description: { type: String, required: true, trim: true },
     quantity: { type: Number, required: true, min: 0 },
     unitPrice: { type: Number, required: true, min: 0 },
@@ -18,7 +27,7 @@ const salesOrderSchema = new Schema(
     crmId: {
       type: Schema.Types.ObjectId,
       ref: "CRM",
-      required: true,
+      required: false,
       autopopulate: {
         maxDepth: 1,
       },
@@ -45,6 +54,15 @@ const salesOrderSchema = new Schema(
       ref: "User",
       autopopulate: {
         select: "username email contactId",
+        maxDepth: 1,
+      },
+    },
+    stageId: {
+      type: Schema.Types.ObjectId,
+      ref: "SalesOrderStage",
+      required: false,
+      autopopulate: {
+        select: "name color order isDefault",
         maxDepth: 1,
       },
     },

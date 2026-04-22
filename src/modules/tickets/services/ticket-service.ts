@@ -17,6 +17,8 @@ import mongoose from "mongoose";
 import { TicketDTO, UpdateTicketDTO } from "../models/ticket.dto";
 import { HelpdeskStageService } from "../../helpdesk-stages/services/helpdesk-stage-service";
 import { TicketRuleService } from "./ticket-rule-service";
+import { SequenceService } from "../../sequences/services/sequence-service";
+import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 import dayjs from "dayjs";
 
 type Priority = "low" | "medium" | "high" | "urgent";
@@ -113,6 +115,8 @@ function arrayIdsToStrings(arr: unknown[]): string[] {
 export class TicketService extends BaseService<TicketDocument> {
   private helpdeskStageService = new HelpdeskStageService();
   private ticketRuleService = new TicketRuleService();
+  private sequenceService = new SequenceService();
+  private activityHistoryService = new ActivityHistoryService();
 
   constructor() {
     super({
@@ -227,8 +231,16 @@ export class TicketService extends BaseService<TicketDocument> {
         data.slaResolutionDeadline = slaDates.slaResolutionDeadline;
       }
 
+      const number = await this.sequenceService.getNextNumberOrCreate(
+        "Tickets",
+        "TKT-",
+        5,
+        1,
+      );
+
       const ticket = await super.create({
         ...data,
+        number,
         createdBy: userStorage.getStore()?.user?._id,
       }, newSession);
 
@@ -507,6 +519,151 @@ export class TicketService extends BaseService<TicketDocument> {
             ...(Object.keys(pushOps).length > 0 ? { $push: pushOps } : {}),
           },
           { session: newSession },
+        );
+      }
+
+      if (activityEntries.length > 0) {
+        const fieldLabels: Record<string, string> = {
+          name: "Subject",
+          description: "Description",
+          internalNotes: "Internal Notes",
+          priority: "Priority",
+          type: "Type",
+          stage: "Stage",
+          assigned: "Assigned To",
+          senderUser: "Requester",
+          category: "Category",
+          appModule: "Module",
+          active: "Active",
+          slaResponseDeadline: "SLA Response Deadline",
+          slaResolutionDeadline: "SLA Resolution Deadline",
+          followers: "Followers",
+          tags: "Tags",
+          taskIds: "Linked Tasks",
+          attachments: "Attachments",
+        };
+
+        // Fields whose values are ObjectId references that need display-name resolution
+        const refFieldType: Record<string, "stage" | "user" | "task"> = {
+          stage: "stage",
+          assigned: "user",
+          senderUser: "user",
+          followers: "user",
+          taskIds: "task",
+        };
+
+        // Collect unique IDs per collection
+        const stageIds = new Set<string>();
+        const userIds = new Set<string>();
+        const taskRefIds = new Set<string>();
+
+        for (const entry of activityEntries) {
+          const refType = refFieldType[entry.field];
+          if (!refType) continue;
+          const targets =
+            refType === "stage" ? stageIds : refType === "user" ? userIds : taskRefIds;
+          const combined = [
+            ...(Array.isArray(entry.oldValue) ? (entry.oldValue as string[]) : [String(entry.oldValue ?? "")]),
+            ...(Array.isArray(entry.newValue) ? (entry.newValue as string[]) : [String(entry.newValue ?? "")]),
+          ];
+          for (const id of combined) {
+            if (id && mongoose.isValidObjectId(id)) targets.add(id);
+          }
+        }
+
+        // Batch-fetch display names from DB (one query per collection)
+        const stageModel = this.connectionManager.bindModelToDb(
+          this.connectionManager.getModel<HelpdeskStageDocument>("HelpdeskStage"),
+        );
+        const userModel = this.connectionManager.bindModelToDb(
+          this.connectionManager.getModel<UserDocument>("User"),
+        );
+        const taskModel = this.connectionManager.bindModelToDb(
+          this.connectionManager.getModel<TaskDocument>("Task"),
+        );
+
+        const [stageDocs, userDocs, taskDocs] = await Promise.all([
+          stageIds.size > 0
+            ? stageModel.find({ _id: { $in: [...stageIds] } }, { name: 1 }).session(newSession)
+            : [],
+          userIds.size > 0
+            ? userModel.find({ _id: { $in: [...userIds] } }, { username: 1, email: 1 }).session(newSession)
+            : [],
+          taskRefIds.size > 0
+            ? taskModel.find({ _id: { $in: [...taskRefIds] } }, { name: 1 }).session(newSession)
+            : [],
+        ]);
+
+        const stageMap = new Map<string, string>(
+          (stageDocs as any[]).map((s) => [s._id.toString(), String(s.name ?? "—")]),
+        );
+        const userMap = new Map<string, string>(
+          (userDocs as any[]).map((u) => [
+            u._id.toString(),
+            String(u.username || u.email || "—"),
+          ]),
+        );
+        const taskLabelMap = new Map<string, string>(
+          (taskDocs as any[]).map((t) => [t._id.toString(), String(t.name ?? "—")]),
+        );
+
+        const resolveId = (id: string, field: string): string => {
+          const refType = refFieldType[field];
+          if (refType === "stage") return stageMap.get(id) ?? id;
+          if (refType === "user") return userMap.get(id) ?? id;
+          if (refType === "task") return taskLabelMap.get(id) ?? id;
+          return id;
+        };
+
+        const resolveDisplay = (value: unknown, field: string): string => {
+          if (value === null || value === undefined || value === "") return "—";
+          if (Array.isArray(value)) {
+            const items = (value as string[])
+              .filter(Boolean)
+              .map((id) => resolveId(id, field));
+            return items.join(", ") || "—";
+          }
+          return resolveId(String(value), field);
+        };
+
+        const buildMetaValue = (value: unknown, field: string) => {
+          const isRef = !!refFieldType[field];
+          if (Array.isArray(value)) {
+            if (isRef) {
+              const ids = (value as string[]).filter(Boolean);
+              return { ids, labels: ids.map((id) => resolveId(id, field)) };
+            }
+            return value;
+          }
+          if (isRef) {
+            const id = String(value ?? "");
+            return { id, label: resolveId(id, field) };
+          }
+          return value;
+        };
+
+        await Promise.all(
+          activityEntries.map((entry) => {
+            const label = fieldLabels[entry.field] ?? entry.field;
+            const oldDisplay = resolveDisplay(entry.oldValue, entry.field);
+            const newDisplay = resolveDisplay(entry.newValue, entry.field);
+            return this.activityHistoryService.create(
+              {
+                title: `${label} changed`,
+                details: `From: ${oldDisplay} → To: ${newDisplay}`,
+                performDate: new Date(),
+                model: "Ticket",
+                modelId: data._id,
+                userId: changedBy,
+                metadata: {
+                  field: entry.field,
+                  oldValue: buildMetaValue(entry.oldValue, entry.field),
+                  newValue: buildMetaValue(entry.newValue, entry.field),
+                },
+              },
+              newSession,
+            );
+          }),
         );
       }
 
