@@ -8050,6 +8050,14 @@ export type RoleDocument = mongoose.Document<
     updatedAt?: Date;
   };
 
+/**
+ * Lean version of SalesOrderStageDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SalesOrderStageDocument.toObject()`. To avoid conflicts with model names, use the type alias `SalesOrderStageObject`.
+ * ```
+ * const salesorderstageObject = salesorderstage.toObject();
+ * ```
+ */
 export type SalesOrderStage = {
   name: string;
   description?: string;
@@ -8062,8 +8070,24 @@ export type SalesOrderStage = {
   updatedAt?: Date;
 };
 
+/**
+ * Lean version of SalesOrderStageDocument (type alias of `SalesOrderStage`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { SalesOrderStage } from "../models"
+ * import { SalesOrderStageObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const salesorderstageObject: SalesOrderStageObject = salesorderstage.toObject();
+ * ```
+ */
 export type SalesOrderStageObject = SalesOrderStage;
 
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
 export type SalesOrderStageQuery = mongoose.Query<
   any,
   SalesOrderStageDocument,
@@ -8071,8 +8095,16 @@ export type SalesOrderStageQuery = mongoose.Query<
 > &
   SalesOrderStageQueries;
 
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `SalesOrderStageSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
 export type SalesOrderStageQueries = {
-  paginate: (this: SalesOrderStageQuery, ...args: any[]) => SalesOrderStageQuery;
+  paginate: (
+    this: SalesOrderStageQuery,
+    ...args: any[]
+  ) => SalesOrderStageQuery;
 };
 
 export type SalesOrderStageMethods = {};
@@ -8082,12 +8114,28 @@ export type SalesOrderStageStatics = {
   paginateSubDocs: (this: SalesOrderStageModel, ...args: any[]) => any;
 };
 
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesOrderStage = mongoose.model<SalesOrderStageDocument, SalesOrderStageModel>("SalesOrderStage", SalesOrderStageSchema);
+ * ```
+ */
 export type SalesOrderStageModel = mongoose.Model<
   SalesOrderStageDocument,
   SalesOrderStageQueries
 > &
   SalesOrderStageStatics;
 
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new SalesOrderStage schema instances:
+ * ```
+ * const SalesOrderStageSchema: SalesOrderStageSchema = new mongoose.Schema({ ... })
+ * ```
+ */
 export type SalesOrderStageSchema = mongoose.Schema<
   SalesOrderStageDocument,
   SalesOrderStageModel,
@@ -8095,6 +8143,14 @@ export type SalesOrderStageSchema = mongoose.Schema<
   SalesOrderStageQueries
 >;
 
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesOrderStage = mongoose.model<SalesOrderStageDocument, SalesOrderStageModel>("SalesOrderStage", SalesOrderStageSchema);
+ * ```
+ */
 export type SalesOrderStageDocument = mongoose.Document<
   mongoose.Types.ObjectId,
   SalesOrderStageQueries
@@ -8120,7 +8176,7 @@ export type SalesOrderStageDocument = mongoose.Document<
  * ```
  */
 export type SalesOrderLineItem = {
-  productId?: Product;
+  productId?: InventoryProduct;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -8136,11 +8192,11 @@ export type SalesOrderLineItem = {
  * ```
  */
 export type SalesOrder = {
-  crmId: CRM;
+  crmId?: CRM;
   contact: Contact;
   company: Company;
   salesperson?: User;
-  stageId?: SalesOrderStage | null;
+  stageId?: SalesOrderStage;
   amount: number;
   currency?: string;
   closeDate: Date;
@@ -8229,7 +8285,7 @@ export type SalesOrderSchema = mongoose.Schema<
  * Type of `SalesOrderDocument["lineItems"]` element.
  */
 export type SalesOrderLineItemDocument = mongoose.Types.Subdocument<any> & {
-  productId?: ProductDocument;
+  productId?: InventoryProductDocument;
   description: string;
   quantity: number;
   unitPrice: number;
@@ -8249,11 +8305,11 @@ export type SalesOrderDocument = mongoose.Document<
   SalesOrderQueries
 > &
   SalesOrderMethods & {
-    crmId: CRMDocument;
+    crmId?: CRMDocument;
     contact: ContactDocument;
     company: CompanyDocument;
     salesperson?: UserDocument;
-    stageId?: SalesOrderStageDocument | null;
+    stageId?: SalesOrderStageDocument;
     amount: number;
     currency?: string;
     closeDate: Date;
@@ -9736,6 +9792,7 @@ export type Ticket = {
   dateStart?: Date;
   dateEnd?: Date;
   duration?: string;
+  number?: string;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -9903,6 +9960,7 @@ export type TicketDocument = mongoose.Document<
     dateStart?: Date;
     dateEnd?: Date;
     duration?: string;
+    number?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
