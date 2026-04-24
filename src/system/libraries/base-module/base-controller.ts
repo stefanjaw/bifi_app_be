@@ -48,13 +48,13 @@ export class BaseController<T> {
     try {
       // get elements
       const searchParams = req.query.searchParams
-        ? JSON.parse(req.query.searchParams as string)
+        ? JSON.parse(this.normalize(req.query.searchParams as string))
         : {};
       const paginationOptions = req.query.paginationOptions
-        ? JSON.parse(req.query.paginationOptions as string)
+        ? JSON.parse(this.normalize(req.query.paginationOptions as string))
         : {};
       const orderBy = req.query.orderBy
-        ? JSON.parse(req.query.orderBy as string)
+        ? JSON.parse(this.normalize(req.query.orderBy as string))
         : {};
       const count = req.query.count === "true" ? true : false;
 
@@ -70,6 +70,10 @@ export class BaseController<T> {
     } catch (error: any) {
       next(error);
     }
+  }
+
+  protected normalize(value: string) {
+    return decodeURIComponent(value.replace(/\+/g, " "));
   }
 
   /**
