@@ -32,39 +32,30 @@ WORKDIR /app
 ENV NODE_ENV=production
 
 # install packages for puppeteer
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    chromium \
     ca-certificates \
     fonts-liberation \
-    libasound2 \
-    libatk-bridge2.0-0 \
-    libatk1.0-0 \
-    libcups2 \
-    libdbus-1-3 \
-    libdrm2 \
-    libgbm1 \
-    libgtk-3-0 \
-    libnspr4 \
     libnss3 \
-    libx11-xcb1 \
-    libxcomposite1 \
-    libxdamage1 \
-    libxfixes3 \
-    libxrandr2 \
-    xdg-utils \
-    wget \
-    --no-install-recommends \
+    libxss1 \
+    libgbm1 \
+    libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
 
 # install dependencies as production
 COPY --from=build /app/bifi_app_be/package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 # copy only neccesary for build
 COPY --from=build /app/bifi_app_be/dist ./dist
 
 # expose port
 EXPOSE 8081
+
+# Puppeteer setup: Skip Chromium download and use the installed Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium"
 
 # run app
 CMD ["node", "dist/index.js"]
