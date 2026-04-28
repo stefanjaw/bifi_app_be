@@ -104,6 +104,11 @@ export class TicketDTO {
   @Type(() => Date)
   dateEnd?: Date;
 
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  dateScheduled?: Date;
+
   @IsString()
   @IsOptional()
   duration?: string;

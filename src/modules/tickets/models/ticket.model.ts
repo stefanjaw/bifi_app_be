@@ -16,7 +16,7 @@ const activityEntrySchema = new Schema(
       required: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const notificationSchema = new Schema(
@@ -28,7 +28,18 @@ const notificationSchema = new Schema(
     },
     eventType: {
       type: String,
-      enum: ["ticket_created", "stage_changed", "priority_changed", "assigned_changed", "comment_added", "resolved", "closed", "reopened", "follower_added", "follower_removed"],
+      enum: [
+        "ticket_created",
+        "stage_changed",
+        "priority_changed",
+        "assigned_changed",
+        "comment_added",
+        "resolved",
+        "closed",
+        "reopened",
+        "follower_added",
+        "follower_removed",
+      ],
       required: true,
     },
     message: {
@@ -45,7 +56,7 @@ const notificationSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const ticketSchema = new Schema(
@@ -185,7 +196,10 @@ const ticketSchema = new Schema(
       type: Date,
       required: false,
     },
-
+    dateScheduled: {
+      type: Date,
+      required: false,
+    },
     duration: {
       type: String,
       required: false,
@@ -195,15 +209,19 @@ const ticketSchema = new Schema(
       required: false,
     },
   },
-  { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
+  {
+    timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+  },
 );
 
 ticketSchema.plugin(paginate);
 ticketSchema.plugin(autopopulate);
 
-const ticketModel = mongoose.model<TicketDocument, PaginateModel<TicketDocument>>(
-  "Ticket",
-  ticketSchema
-);
+const ticketModel = mongoose.model<
+  TicketDocument,
+  PaginateModel<TicketDocument>
+>("Ticket", ticketSchema);
 
 export { ticketModel };
