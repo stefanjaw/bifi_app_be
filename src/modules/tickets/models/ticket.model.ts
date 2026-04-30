@@ -12,7 +12,10 @@ const activityEntrySchema = new Schema(
     changedBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      autopopulate: { select: "username email contactId", maxDepth: 1 },
+      autopopulate: {
+        select: "username email contactId",
+        maxDepth: 1,
+      },
       required: false,
     },
   },
@@ -25,6 +28,10 @@ const notificationSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      autopopulate: {
+        select: "username email contactId",
+        maxDepth: 1,
+      },
     },
     eventType: {
       type: String,
@@ -49,6 +56,10 @@ const notificationSchema = new Schema(
     readBy: {
       type: [Schema.Types.ObjectId],
       ref: "User",
+      autopopulate: {
+        select: "username email contactId",
+        maxDepth: 1,
+      },
       default: [],
     },
     isRead: {
@@ -187,7 +198,6 @@ const ticketSchema = new Schema(
       type: Boolean,
       default: true,
     },
-
     dateStart: {
       type: Date,
       required: false,
