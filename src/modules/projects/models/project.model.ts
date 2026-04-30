@@ -81,16 +81,16 @@ const projectSchema = new Schema(
   },
 );
 
-projectSchema.virtual("children", {
-  ref: "Project",
-  localField: "_id",
-  foreignField: "parentId",
-  autopopulate: {
-    select: "name number priority stage dateStart dateEnd active",
-    maxDepth: 1,
-  },
-  match: { active: true },
-});
+// projectSchema.virtual("children", {
+//   ref: "Project",
+//   localField: "_id",
+//   foreignField: "parentId",
+//   autopopulate: {
+//     select: "name number priority stage dateStart dateEnd active",
+//     maxDepth: 1,
+//   },
+//   match: { active: true },
+// });
 
 projectSchema.plugin(paginate);
 projectSchema.plugin(autopopulate);
