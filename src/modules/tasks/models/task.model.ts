@@ -131,15 +131,15 @@ const taskSchema = new Schema(
   },
 );
 
-taskSchema.virtual("childIds", {
-  ref: "Task",
-  localField: "_id",
-  foreignField: "parentId",
-  autopopulate: {
-    maxDepth: 1,
-  },
-  match: { active: true },
-});
+// taskSchema.virtual("childIds", {
+//   ref: "Task",
+//   localField: "_id",
+//   foreignField: "parentId",
+//   autopopulate: {
+//     maxDepth: 1,
+//   },
+//   match: { active: true },
+// });
 
 taskSchema.plugin(paginate);
 taskSchema.plugin(autopopulate);
