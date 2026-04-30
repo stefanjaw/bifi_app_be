@@ -40,7 +40,8 @@ const projectSchema = new Schema(
       ref: "Contact",
       required: false,
       autopopulate: {
-        maxDepth: 2,
+        select: "name lastName email phoneNumber type",
+        maxDepth: 1,
       },
     },
     parentId: {
