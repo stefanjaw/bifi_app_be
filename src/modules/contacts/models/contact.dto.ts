@@ -100,6 +100,9 @@ export class ContactDTO {
   childIds?: string[];
 
   @IsOptional()
+  photo?: unknown;
+
+  @IsOptional()
   active?: boolean;
 }
 

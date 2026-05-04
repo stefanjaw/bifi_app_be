@@ -1,6 +1,7 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
+import { fileSchema } from "../../../system";
 
 const productSchema = new Schema(
   {
@@ -45,6 +46,16 @@ const productSchema = new Schema(
     active: {
       type: Boolean,
       default: true,
+    },
+    photo: {
+      type: Schema.Types.ObjectId,
+      required: false,
+      default: null,
+    },
+    attachments: {
+      type: [fileSchema],
+      required: false,
+      default: [],
     },
   },
   { timestamps: true }

@@ -77,6 +77,10 @@ const contactSchema = new Schema(
       type: String,
       required: false,
     },
+    photo: {
+      type: Schema.Types.ObjectId,
+      autopopulate: false,
+    },
     active: {
       type: Boolean,
       default: true,

@@ -50,6 +50,12 @@ const assetMaintenanceSchema = new Schema(
       enum: ["service", "preventive-maintenance"],
       required: true,
     },
+    cost: {
+      type: Number,
+      required: false,
+      default: null,
+      min: 0,
+    },
     manual: {
       type: Boolean,
       required: false,

@@ -1704,6 +1704,7 @@ export type AssetMaintenance = {
   dateStart?: Date;
   dateEnd?: Date;
   type: "service" | "preventive-maintenance";
+  cost?: number | null;
   manual?: boolean;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -1822,6 +1823,7 @@ export type AssetMaintenanceDocument = mongoose.Document<
     dateStart?: Date;
     dateEnd?: Date;
     type: "service" | "preventive-maintenance";
+    cost?: number | null;
     manual?: boolean;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
@@ -4070,6 +4072,7 @@ export type Contact = {
   zipCode?: string;
   streetAddress?: string;
   streetAddress2?: string;
+  photo?: mongoose.Types.ObjectId;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -4173,6 +4176,7 @@ export type ContactDocument = mongoose.Document<
     zipCode?: string;
     streetAddress?: string;
     streetAddress2?: string;
+    photo?: mongoose.Types.ObjectId;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -5635,6 +5639,25 @@ export type InventoryLocationDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of InventoryProductAttachmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `InventoryProductDocument.toObject()`.
+ * ```
+ * const inventoryproductObject = inventoryproduct.toObject();
+ * ```
+ */
+export type InventoryProductAttachment = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
  * Lean version of InventoryProductDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `InventoryProductDocument.toObject()`. To avoid conflicts with model names, use the type alias `InventoryProductObject`.
@@ -5651,6 +5674,8 @@ export type InventoryProduct = {
   costPrice?: number;
   salePrice?: number;
   active?: boolean;
+  photo?: mongoose.Types.ObjectId | null;
+  attachments: InventoryProductAttachment[];
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -5730,6 +5755,23 @@ export type InventoryProductSchema = mongoose.Schema<
 >;
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `InventoryProductDocument["attachments"]` element.
+ */
+export type InventoryProductAttachmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -5750,6 +5792,8 @@ export type InventoryProductDocument = mongoose.Document<
     costPrice?: number;
     salePrice?: number;
     active?: boolean;
+    photo?: mongoose.Types.ObjectId | null;
+    attachments: mongoose.Types.DocumentArray<InventoryProductAttachmentDocument>;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -7212,7 +7256,6 @@ export type Project = {
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
-  children: any;
 };
 
 /**
@@ -7310,7 +7353,6 @@ export type ProjectDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
-    children: any;
   };
 
 /**
@@ -9325,7 +9367,6 @@ export type Task = {
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
-  childIds: any;
 };
 
 /**
@@ -9443,7 +9484,6 @@ export type TaskDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
-    childIds: any;
   };
 
 /**
@@ -9737,7 +9777,7 @@ export type TicketActivityHistory = {
  * ```
  */
 export type TicketNotification = {
-  recipientId: User["_id"] | User;
+  recipientId: User;
   eventType:
     | "ticket_created"
     | "stage_changed"
@@ -9750,7 +9790,7 @@ export type TicketNotification = {
     | "follower_added"
     | "follower_removed";
   message?: string;
-  readBy: (User["_id"] | User)[];
+  readBy: User[];
   isRead?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -9791,6 +9831,7 @@ export type Ticket = {
   active?: boolean;
   dateStart?: Date;
   dateEnd?: Date;
+  dateScheduled?: Date;
   duration?: string;
   number?: string;
   _id: mongoose.Types.ObjectId;
@@ -9901,7 +9942,7 @@ export type TicketActivityHistoryDocument =
  */
 export type TicketNotificationDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    recipientId: UserDocument["_id"] | UserDocument;
+    recipientId: UserDocument;
     eventType:
       | "ticket_created"
       | "stage_changed"
@@ -9914,7 +9955,7 @@ export type TicketNotificationDocument =
       | "follower_added"
       | "follower_removed";
     message?: string;
-    readBy: mongoose.Types.Array<UserDocument["_id"] | UserDocument>;
+    readBy: mongoose.Types.Array<UserDocument>;
     isRead?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -9959,6 +10000,7 @@ export type TicketDocument = mongoose.Document<
     active?: boolean;
     dateStart?: Date;
     dateEnd?: Date;
+    dateScheduled?: Date;
     duration?: string;
     number?: string;
     _id: mongoose.Types.ObjectId;

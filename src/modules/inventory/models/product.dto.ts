@@ -9,6 +9,7 @@ import {
   Min,
 } from "class-validator";
 import { PartialType, toBoolean } from "../../../system";
+import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
 
 export class ProductDTO {
   @IsString()
@@ -47,6 +48,12 @@ export class ProductDTO {
   @Transform(toBoolean)
   @IsOptional()
   active?: boolean;
+
+  @IsOptional()
+  photo?: unknown;
+
+  @IsOptional()
+  attachments?: FileUpload;
 }
 
 export class UpdateProductDTO extends PartialType(ProductDTO) {

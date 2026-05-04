@@ -4,8 +4,10 @@ import {
   IsEnum,
   IsMongoId,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
+  Min,
 } from "class-validator";
 import { PartialType } from "../../../system";
 import { Type } from "class-transformer";
@@ -44,6 +46,12 @@ export class AssetMaintenanceDTO {
 
   @IsEnum(["service", "preventive-maintenance"])
   type!: string;
+
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  @Type(() => Number)
+  cost?: number;
 
   @IsOptional()
   manual?: string;
