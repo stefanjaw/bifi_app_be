@@ -4,6 +4,15 @@ import autopopulate from "mongoose-autopopulate";
 
 const lineItemSchema = new Schema(
   {
+    productId: {
+      type: Schema.Types.ObjectId,
+      ref: "InventoryProduct",
+      required: false,
+      autopopulate: {
+        select: "name sku description costPrice unit unitOfMeasureId",
+        maxDepth: 1,
+      },
+    },
     description: { type: String, required: true, trim: true },
     quantity: { type: Number, required: true, min: 0 },
     unitPrice: { type: Number, required: true, min: 0 },

@@ -22,6 +22,8 @@ export class ProductService extends BaseService<ProductDocument> {
           Array.isArray(data.photo) ? data.photo[0] : data.photo,
         );
         data.photo = fileId;
+      } else {
+        delete (data as any).photo;
       }
 
       if (isValidFileUpload(data.attachments) && Array.isArray(data.attachments)) {
@@ -33,6 +35,8 @@ export class ProductService extends BaseService<ProductDocument> {
             size: file.size,
           })),
         );
+      } else {
+        delete (data as any).attachments;
       }
 
       return super.create(data, newSession);
@@ -68,7 +72,7 @@ export class ProductService extends BaseService<ProductDocument> {
           })),
         );
         data.attachments = attachments;
-      } else if (attachments === undefined) {
+      } else {
         delete (data as any).attachments;
       }
 

@@ -46,6 +46,8 @@ export class ContactService extends BaseService<ContactDocument> {
           Array.isArray(data.photo) ? data.photo[0] : data.photo,
         );
         data.photo = fileId;
+      } else {
+        delete (data as any).photo;
       }
 
       const createdContact = await super.create(data, session);

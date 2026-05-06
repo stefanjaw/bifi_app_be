@@ -14,6 +14,10 @@ import {
 import { PartialType } from "../../../system";
 
 class LineItemDTO {
+  @IsMongoId()
+  @IsOptional()
+  productId?: string;
+
   @IsString()
   @IsNotEmpty()
   description!: string;
