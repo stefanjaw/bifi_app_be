@@ -8,6 +8,15 @@ const lineItemSchema = new Schema(
     quantity: { type: Number, required: true, min: 0 },
     unitPrice: { type: Number, required: true, min: 0 },
     total: { type: Number, required: true, min: 0 },
+    taxIds: [{ type: Schema.Types.ObjectId, ref: "Tax" }],
+  },
+  { _id: false }
+);
+
+const appliedTaxSchema = new Schema(
+  {
+    taxId: { type: Schema.Types.ObjectId, ref: "Tax", required: true },
+    amount: { type: Number, required: true, default: 0 },
   },
   { _id: false }
 );
@@ -29,6 +38,10 @@ const purchaseOrderSchema = new Schema(
     issueDate: { type: Date, default: Date.now },
     expectedDeliveryDate: { type: Date },
     lineItems: [lineItemSchema],
+    subtotal: { type: Number, default: 0 },
+    taxes: { type: [appliedTaxSchema], default: [] },
+    taxTotal: { type: Number, default: 0 },
+    grandTotal: { type: Number, default: 0 },
     totalAmount: { type: Number, default: 0 },
     notes: { type: String },
     stageId: {

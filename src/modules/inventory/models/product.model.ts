@@ -33,6 +33,15 @@ const productSchema = new Schema(
         maxDepth: 1,
       },
     },
+    productTypeId: {
+      type: Schema.Types.ObjectId,
+      ref: "InventoryProductType",
+      required: false,
+      autopopulate: {
+        select: "name",
+        maxDepth: 1,
+      },
+    },
     costPrice: {
       type: Number,
       default: 0,
@@ -42,6 +51,16 @@ const productSchema = new Schema(
       type: Number,
       default: 0,
       min: 0,
+    },
+    defaultSaleTaxIds: {
+      type: [Schema.Types.ObjectId],
+      ref: "Tax",
+      default: [],
+    },
+    defaultPurchaseTaxIds: {
+      type: [Schema.Types.ObjectId],
+      ref: "Tax",
+      default: [],
     },
     active: {
       type: Boolean,

@@ -31,7 +31,15 @@ class LineItemDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  total!: number;
+  @IsOptional()
+  total?: number;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsMongoId({ each: true })
+  @IsOptional()
+  @Transform(({ value }) => value ?? [])
+  taxIds?: string[];
 }
 
 export class PurchaseOrderDTO {

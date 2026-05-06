@@ -14,6 +14,8 @@ import {
 } from "./system";
 // import { initializePricingIndexModels } from "./modules/pricing-index/initialize";
 // import { initializeCustomsData } from "./modules/customs-tariffs/initialize";
+import { migrateSalesOrderCurrencyToRef } from "./modules/sales-orders/migrations/migrate-currency-to-ref";
+import { migrateSalesOrderTotals } from "./modules/sales-orders/migrations/migrate-sales-order-totals";
 import {
   ActivityHistoryRouter,
   HelpdeskStageRouter,
@@ -69,6 +71,7 @@ import {
   StockMovementRouter,
   UomCategoryRouter,
   UomRouter,
+  ProductTypeRouter,
   CurrencyRouter,
   ExchangeRateRouter,
   AccountRouter,
@@ -194,6 +197,7 @@ app.use("/api", new StockBalanceRouter().getRouter);
 app.use("/api", new StockMovementRouter().getRouter);
 app.use("/api", new UomCategoryRouter().getRouter);
 app.use("/api", new UomRouter().getRouter);
+app.use("/api", new ProductTypeRouter().getRouter);
 app.use("/api", new CurrencyRouter().getRouter);
 app.use("/api", new ExchangeRateRouter().getRouter);
 app.use("/api", new AccountRouter().getRouter);
@@ -221,7 +225,7 @@ app.use("/api", new ReportBugRouter().getRouter);
 app.get("/api/health-check", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
-    version: "202604301230",
+    version: "202605061230",
     status: "OK",
   });
 });
@@ -245,6 +249,14 @@ const start = async () => {
 
     // seed customs reference data (idempotent upsert)
     // await initializeCustomsData();
+
+    // one-time migration: convert legacy SalesOrder.currency string codes
+    // (e.g. "USD") into Currency ObjectId references. Idempotent.
+    await migrateSalesOrderCurrencyToRef();
+
+    // one-time migration: backfill subtotal/taxTotal/grandTotal/taxes on
+    // legacy Sales Orders that predate the tax-integration feature. Idempotent.
+    await migrateSalesOrderTotals();
 
     // init ftpservice
     FTPService.initiate({

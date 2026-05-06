@@ -1,13 +1,12 @@
 import { plainToInstance, Transform, Type } from "class-transformer";
 import {
+  ArrayUnique,
   IsArray,
   IsDate,
-  IsISO4217CurrencyCode,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsOptional,
-  IsPositive,
   IsString,
   Min,
   ValidateNested,
@@ -36,7 +35,25 @@ class LineItemDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
-  total!: number;
+  @IsOptional()
+  total?: number;
+
+  @IsArray()
+  @IsMongoId({ each: true })
+  @IsOptional()
+  @Transform(({ value }) => value ?? [])
+  taxIds?: string[];
+}
+
+export class AppliedTaxDTO {
+  @IsMongoId()
+  taxId!: string;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  amount?: number;
 }
 
 export class SalesOrderDTO {
@@ -59,13 +76,14 @@ export class SalesOrderDTO {
   stageId?: string;
 
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   @Type(() => Number)
-  amount!: number;
-
-  @IsISO4217CurrencyCode()
   @IsOptional()
-  currency?: string;
+  amount?: number;
+
+  @IsMongoId()
+  @IsNotEmpty()
+  currency!: string;
 
   @IsDate()
   @Type(() => Date)
@@ -87,6 +105,31 @@ export class SalesOrderDTO {
   @IsOptional()
   @Transform(({ value }) => (value === "" ? null : value))
   notes?: string;
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => AppliedTaxDTO)
+  @ArrayUnique((t: AppliedTaxDTO) => t.taxId)
+  @IsOptional()
+  taxes?: AppliedTaxDTO[];
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  subtotal?: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  taxTotal?: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  grandTotal?: number;
 }
 
 export class UpdateSalesOrderDTO extends PartialType(SalesOrderDTO) {

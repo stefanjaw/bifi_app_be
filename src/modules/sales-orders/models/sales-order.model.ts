@@ -18,6 +18,7 @@ const lineItemSchema = new Schema(
     quantity: { type: Number, required: true, min: 0 },
     unitPrice: { type: Number, required: true, min: 0 },
     total: { type: Number, required: true, min: 0 },
+    taxIds: [{ type: Schema.Types.ObjectId, ref: "Tax" }],
   },
   { _id: false }
 );
@@ -72,15 +73,49 @@ const salesOrderSchema = new Schema(
       min: 0,
     },
     currency: {
-      type: String,
-      default: "USD",
-      uppercase: true,
+      type: Schema.Types.ObjectId,
+      ref: "Currency",
+      required: true,
+      autopopulate: {
+        select: "code symbol name decimalPrecision",
+        maxDepth: 1,
+      },
     },
     closeDate: {
       type: Date,
       required: true,
     },
     lineItems: [lineItemSchema],
+    subtotal: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    taxes: [
+      {
+        taxId: {
+          type: Schema.Types.ObjectId,
+          ref: "Tax",
+          required: true,
+        },
+        amount: {
+          type: Number,
+          required: true,
+          min: 0,
+        },
+        _id: false,
+      },
+    ],
+    taxTotal: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    grandTotal: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     notes: {
       type: String,
     },

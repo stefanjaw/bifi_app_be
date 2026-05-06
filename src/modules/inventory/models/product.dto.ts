@@ -1,5 +1,6 @@
 import { Transform, Type } from "class-transformer";
 import {
+  IsArray,
   IsBoolean,
   IsMongoId,
   IsNotEmpty,
@@ -43,6 +44,44 @@ export class ProductDTO {
   @IsMongoId()
   @IsOptional()
   unitOfMeasureId?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  productTypeId?: string;
+
+  @IsArray()
+  @IsMongoId({ each: true })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return value ?? [];
+  })
+  defaultSaleTaxIds?: string[];
+
+  @IsArray()
+  @IsMongoId({ each: true })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") {
+      try {
+        const parsed = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return value ?? [];
+  })
+  defaultPurchaseTaxIds?: string[];
 
   @IsBoolean()
   @Transform(toBoolean)
