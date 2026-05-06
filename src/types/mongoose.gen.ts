@@ -5639,6 +5639,117 @@ export type InventoryLocationDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of InventoryProductTypeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `InventoryProductTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `InventoryProductTypeObject`.
+ * ```
+ * const inventoryproducttypeObject = inventoryproducttype.toObject();
+ * ```
+ */
+export type InventoryProductType = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of InventoryProductTypeDocument (type alias of `InventoryProductType`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { InventoryProductType } from "../models"
+ * import { InventoryProductTypeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const inventoryproducttypeObject: InventoryProductTypeObject = inventoryproducttype.toObject();
+ * ```
+ */
+export type InventoryProductTypeObject = InventoryProductType;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryProductTypeQuery = mongoose.Query<
+  any,
+  InventoryProductTypeDocument,
+  InventoryProductTypeQueries
+> &
+  InventoryProductTypeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `InventoryProductTypeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventoryProductTypeQueries = {
+  paginate: (
+    this: InventoryProductTypeQuery,
+    ...args: any[]
+  ) => InventoryProductTypeQuery;
+};
+
+export type InventoryProductTypeMethods = {};
+
+export type InventoryProductTypeStatics = {
+  paginate: (this: InventoryProductTypeModel, ...args: any[]) => any;
+  paginateSubDocs: (this: InventoryProductTypeModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryProductType = mongoose.model<InventoryProductTypeDocument, InventoryProductTypeModel>("InventoryProductType", InventoryProductTypeSchema);
+ * ```
+ */
+export type InventoryProductTypeModel = mongoose.Model<
+  InventoryProductTypeDocument,
+  InventoryProductTypeQueries
+> &
+  InventoryProductTypeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new InventoryProductType schema instances:
+ * ```
+ * const InventoryProductTypeSchema: InventoryProductTypeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type InventoryProductTypeSchema = mongoose.Schema<
+  InventoryProductTypeDocument,
+  InventoryProductTypeModel,
+  InventoryProductTypeMethods,
+  InventoryProductTypeQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventoryProductType = mongoose.model<InventoryProductTypeDocument, InventoryProductTypeModel>("InventoryProductType", InventoryProductTypeSchema);
+ * ```
+ */
+export type InventoryProductTypeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  InventoryProductTypeQueries
+> &
+  InventoryProductTypeMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of InventoryProductAttachmentDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `InventoryProductDocument.toObject()`.
@@ -5671,8 +5782,11 @@ export type InventoryProduct = {
   description?: string;
   unit?: string;
   unitOfMeasureId?: InventoryUom;
+  productTypeId?: InventoryProductType;
   costPrice?: number;
   salePrice?: number;
+  defaultSaleTaxIds: (Tax["_id"] | Tax)[];
+  defaultPurchaseTaxIds: (Tax["_id"] | Tax)[];
   active?: boolean;
   photo?: mongoose.Types.ObjectId | null;
   attachments: InventoryProductAttachment[];
@@ -5789,8 +5903,13 @@ export type InventoryProductDocument = mongoose.Document<
     description?: string;
     unit?: string;
     unitOfMeasureId?: InventoryUomDocument;
+    productTypeId?: InventoryProductTypeDocument;
     costPrice?: number;
     salePrice?: number;
+    defaultSaleTaxIds: mongoose.Types.Array<TaxDocument["_id"] | TaxDocument>;
+    defaultPurchaseTaxIds: mongoose.Types.Array<
+      TaxDocument["_id"] | TaxDocument
+    >;
     active?: boolean;
     photo?: mongoose.Types.ObjectId | null;
     attachments: mongoose.Types.DocumentArray<InventoryProductAttachmentDocument>;
@@ -7476,10 +7595,25 @@ export type PurchaseStageDocument = mongoose.Document<
  * ```
  */
 export type PurchaseOrderLineItem = {
+  productId?: InventoryProduct;
   description: string;
   quantity: number;
   unitPrice: number;
   total: number;
+  taxIds: (Tax["_id"] | Tax)[];
+};
+
+/**
+ * Lean version of PurchaseOrderTaxDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PurchaseOrderDocument.toObject()`.
+ * ```
+ * const purchaseorderObject = purchaseorder.toObject();
+ * ```
+ */
+export type PurchaseOrderTax = {
+  taxId: Tax["_id"] | Tax;
+  amount: number;
 };
 
 /**
@@ -7497,6 +7631,10 @@ export type PurchaseOrder = {
   issueDate?: Date;
   expectedDeliveryDate?: Date;
   lineItems: PurchaseOrderLineItem[];
+  subtotal?: number;
+  taxes: PurchaseOrderTax[];
+  taxTotal?: number;
+  grandTotal?: number;
   totalAmount?: number;
   notes?: string;
   stageId?: PurchaseStage | null;
@@ -7581,10 +7719,22 @@ export type PurchaseOrderSchema = mongoose.Schema<
  * Type of `PurchaseOrderDocument["lineItems"]` element.
  */
 export type PurchaseOrderLineItemDocument = mongoose.Types.Subdocument<any> & {
+  productId?: InventoryProductDocument;
   description: string;
   quantity: number;
   unitPrice: number;
   total: number;
+  taxIds: mongoose.Types.Array<TaxDocument["_id"] | TaxDocument>;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `PurchaseOrderDocument["taxes"]` element.
+ */
+export type PurchaseOrderTaxDocument = mongoose.Types.Subdocument<any> & {
+  taxId: TaxDocument["_id"] | TaxDocument;
+  amount: number;
 };
 
 /**
@@ -7606,6 +7756,10 @@ export type PurchaseOrderDocument = mongoose.Document<
     issueDate?: Date;
     expectedDeliveryDate?: Date;
     lineItems: mongoose.Types.DocumentArray<PurchaseOrderLineItemDocument>;
+    subtotal?: number;
+    taxes: mongoose.Types.DocumentArray<PurchaseOrderTaxDocument>;
+    taxTotal?: number;
+    grandTotal?: number;
     totalAmount?: number;
     notes?: string;
     stageId?: PurchaseStageDocument | null;
@@ -8223,6 +8377,20 @@ export type SalesOrderLineItem = {
   quantity: number;
   unitPrice: number;
   total: number;
+  taxIds: (Tax["_id"] | Tax)[];
+};
+
+/**
+ * Lean version of SalesOrderTaxDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SalesOrderDocument.toObject()`.
+ * ```
+ * const salesorderObject = salesorder.toObject();
+ * ```
+ */
+export type SalesOrderTax = {
+  taxId: Tax["_id"] | Tax;
+  amount: number;
 };
 
 /**
@@ -8240,9 +8408,13 @@ export type SalesOrder = {
   salesperson?: User;
   stageId?: SalesOrderStage;
   amount: number;
-  currency?: string;
+  currency: Currency;
   closeDate: Date;
   lineItems: SalesOrderLineItem[];
+  subtotal?: number;
+  taxes: SalesOrderTax[];
+  taxTotal?: number;
+  grandTotal?: number;
   notes?: string;
   number?: string;
   active?: boolean;
@@ -8332,6 +8504,17 @@ export type SalesOrderLineItemDocument = mongoose.Types.Subdocument<any> & {
   quantity: number;
   unitPrice: number;
   total: number;
+  taxIds: mongoose.Types.Array<TaxDocument["_id"] | TaxDocument>;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `SalesOrderDocument["taxes"]` element.
+ */
+export type SalesOrderTaxDocument = mongoose.Types.Subdocument<any> & {
+  taxId: TaxDocument["_id"] | TaxDocument;
+  amount: number;
 };
 
 /**
@@ -8353,9 +8536,13 @@ export type SalesOrderDocument = mongoose.Document<
     salesperson?: UserDocument;
     stageId?: SalesOrderStageDocument;
     amount: number;
-    currency?: string;
+    currency: CurrencyDocument;
     closeDate: Date;
     lineItems: mongoose.Types.DocumentArray<SalesOrderLineItemDocument>;
+    subtotal?: number;
+    taxes: mongoose.Types.DocumentArray<SalesOrderTaxDocument>;
+    taxTotal?: number;
+    grandTotal?: number;
     notes?: string;
     number?: string;
     active?: boolean;
