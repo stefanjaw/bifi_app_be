@@ -10,7 +10,7 @@ import {
   calculateGrandTotal,
   calculateLineItemTotal,
   TaxInput,
-} from "../../../system/price-calculator";
+} from "../../../system/libraries/orders/price-calculator";
 
 const purchaseSettingsService = new PurchaseSettingsService();
 const sequenceService = new SequenceService();

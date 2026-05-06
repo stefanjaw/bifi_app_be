@@ -14,8 +14,6 @@ import {
 } from "./system";
 // import { initializePricingIndexModels } from "./modules/pricing-index/initialize";
 // import { initializeCustomsData } from "./modules/customs-tariffs/initialize";
-import { migrateSalesOrderCurrencyToRef } from "./modules/sales-orders/migrations/migrate-currency-to-ref";
-import { migrateSalesOrderTotals } from "./modules/sales-orders/migrations/migrate-sales-order-totals";
 import {
   ActivityHistoryRouter,
   HelpdeskStageRouter,
@@ -249,14 +247,6 @@ const start = async () => {
 
     // seed customs reference data (idempotent upsert)
     // await initializeCustomsData();
-
-    // one-time migration: convert legacy SalesOrder.currency string codes
-    // (e.g. "USD") into Currency ObjectId references. Idempotent.
-    await migrateSalesOrderCurrencyToRef();
-
-    // one-time migration: backfill subtotal/taxTotal/grandTotal/taxes on
-    // legacy Sales Orders that predate the tax-integration feature. Idempotent.
-    await migrateSalesOrderTotals();
 
     // init ftpservice
     FTPService.initiate({

@@ -12,7 +12,7 @@ import {
   calculateGrandTotal,
   calculateLineItemTotal,
   TaxInput,
-} from "../../../system/price-calculator";
+} from "../../../system/libraries/orders/price-calculator";
 
 const salesSettingsService = new SalesSettingsService();
 const sequenceService = new SequenceService();
