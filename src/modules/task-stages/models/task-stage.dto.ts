@@ -18,6 +18,10 @@ export class TaskStageDTO {
   @IsOptional()
   description?: string;
 
+  @IsString()
+  @IsOptional()
+  color?: string;
+
   @IsBoolean()
   @Transform(toBoolean)
   @IsOptional()

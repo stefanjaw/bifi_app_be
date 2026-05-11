@@ -9299,6 +9299,7 @@ export type ShippingDocument = mongoose.Document<
 export type TaskStage = {
   name: string;
   description?: string;
+  color?: string;
   isDefault?: boolean;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -9391,6 +9392,7 @@ export type TaskStageDocument = mongoose.Document<
   TaskStageMethods & {
     name: string;
     description?: string;
+    color?: string;
     isDefault?: boolean;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
