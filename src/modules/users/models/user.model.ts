@@ -46,13 +46,14 @@ const userSchema = new Schema(
     roles: {
       type: [mongoose.Types.ObjectId],
       ref: "Role",
-      autopopulate: true,
+      autopopulate: false,
       required: true,
     },
     contactId: {
       type: mongoose.Types.ObjectId,
       ref: "Contact",
       autopopulate: {
+        select: "name lastName email type active",
         maxDepth: 1,
       },
       required: false,

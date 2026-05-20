@@ -77,6 +77,19 @@ const contactSchema = new Schema(
       type: String,
       required: false,
     },
+    vat: {
+      type: String,
+      required: false,
+    },
+    crVatType: {
+      type: String,
+      required: false,
+      enum: ["01", "02", "03", "04", "05", "06"],
+    },
+    commercialName: {
+      type: String,
+      required: false,
+    },
     photo: {
       type: Schema.Types.ObjectId,
       autopopulate: false,

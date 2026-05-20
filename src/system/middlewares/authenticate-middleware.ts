@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { UnauthorizedException, userStorage } from "../libraries";
 import { UserService } from "../../modules";
+import { userModel } from "../../modules/users/models/user.model";
 import admin from "firebase-admin";
 import { FirebaseAppError } from "firebase-admin/app";
 
@@ -62,6 +63,16 @@ export function authenticateMiddleware(userService: UserService) {
           undefined,
         )
       )?.[0];
+
+      // Populate roles+policies for permission checks — only needed here (/me)
+      // and in getById (user edit form). Plain get() no longer does this so that
+      // user dropdowns don't over-fetch role data for every user.
+      if (user) {
+        await userModel.populate(user, {
+          path: "roles",
+          populate: { path: "policies.policyId" },
+        });
+      }
 
       // if user is found but not active, throw an error
       if (user && !user.active) {

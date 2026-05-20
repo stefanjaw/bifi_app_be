@@ -7,7 +7,7 @@ import {
   ValidationException,
 } from "../../../system";
 import { userModel } from "../models/user.model";
-import mongoose from "mongoose";
+import mongoose, { ClientSession } from "mongoose";
 import admin from "firebase-admin";
 import { UpdateUserDTO, UserDTO } from "../models/user.dto";
 import { ContactService } from "../../contacts/services/contact-service";
@@ -32,6 +32,35 @@ export class UserService extends BaseService<UserDocument> {
         },
       ],
     });
+  }
+
+  /**
+   * Explicitly populates roles and their nested policyId references on one
+   * or many UserDocuments. Called after every direct UserService query because
+   * roles autopopulate is disabled on the schema — this prevents roles from
+   * being pulled in when User is loaded as a nested ref inside tasks/tickets.
+   */
+  private async _populateRoles(
+    users: UserDocument | UserDocument[],
+  ): Promise<void> {
+    const arr = Array.isArray(users) ? users : [users];
+    if (arr.length === 0) return;
+    await userModel.populate(arr, {
+      path: "roles",
+      populate: { path: "policies.policyId" },
+    });
+  }
+
+  /**
+   * Retrieves a user by id and explicitly populates roles+policies.
+   */
+  override async getById(
+    id: string,
+    session: ClientSession | undefined,
+  ): Promise<UserDocument | undefined> {
+    const user = await super.getById(id, session);
+    if (user) await this._populateRoles(user);
+    return user;
   }
 
   /**

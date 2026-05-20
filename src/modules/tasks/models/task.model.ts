@@ -35,19 +35,22 @@ const taskSchema = new Schema(
     typeId: {
       type: Schema.Types.ObjectId,
       ref: "TaskType",
-      autopopulate: true,
+      autopopulate: { select: "name color" },
       required: false,
     },
     stage: {
       type: Schema.Types.ObjectId,
       ref: "TaskStage",
-      autopopulate: true,
+      autopopulate: { select: "name color sequence" },
       required: false,
     },
     projectId: {
       type: Schema.Types.ObjectId,
       ref: "Project",
-      autopopulate: true,
+      autopopulate: {
+        select: "name number stage priority sequence dateStart dateEnd active",
+        maxDepth: 1,
+      },
       required: false,
     },
     ticketId: {
@@ -64,6 +67,7 @@ const taskSchema = new Schema(
       ref: "Task",
       required: false,
       autopopulate: {
+        select: "name sequence priority stage progress isMilestone",
         maxDepth: 1,
       },
     },
@@ -72,6 +76,7 @@ const taskSchema = new Schema(
       ref: "Task",
       required: false,
       autopopulate: {
+        select: "name sequence priority stage progress isMilestone",
         maxDepth: 1,
       },
     },

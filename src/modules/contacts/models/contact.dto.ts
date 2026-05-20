@@ -92,6 +92,18 @@ export class ContactDTO {
   @IsOptional()
   streetAddress2?: string;
 
+  @IsString()
+  @IsOptional()
+  vat?: string;
+
+  @IsEnum(["01", "02", "03", "04", "05", "06"])
+  @IsOptional()
+  crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
+
+  @IsString()
+  @IsOptional()
+  commercialName?: string;
+
   @IsMongoId({ each: true })
   @Transform(({ value }) =>
     typeof value === "string" ? JSON.parse(value) : value,

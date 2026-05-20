@@ -4072,6 +4072,9 @@ export type Contact = {
   zipCode?: string;
   streetAddress?: string;
   streetAddress2?: string;
+  vat?: string;
+  crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
+  commercialName?: string;
   photo?: mongoose.Types.ObjectId;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -4176,6 +4179,9 @@ export type ContactDocument = mongoose.Document<
     zipCode?: string;
     streetAddress?: string;
     streetAddress2?: string;
+    vat?: string;
+    crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
+    commercialName?: string;
     photo?: mongoose.Types.ObjectId;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
@@ -10214,7 +10220,7 @@ export type User = {
   uploadedPictureId?: mongoose.Types.ObjectId;
   active?: boolean;
   confirmed?: boolean;
-  roles: Role[];
+  roles: (Role["_id"] | Role)[];
   contactId?: Contact;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -10304,7 +10310,7 @@ export type UserDocument = mongoose.Document<
     uploadedPictureId?: mongoose.Types.ObjectId;
     active?: boolean;
     confirmed?: boolean;
-    roles: mongoose.Types.Array<RoleDocument>;
+    roles: mongoose.Types.Array<RoleDocument["_id"] | RoleDocument>;
     contactId?: ContactDocument;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
