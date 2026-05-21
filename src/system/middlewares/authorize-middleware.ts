@@ -1,6 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { UnauthorizedException, userStorage } from "../libraries";
-import { PolicyDocument, RolePolicy, UserDocument } from "@mongodb-types";
+import {
+  PolicyConditionDocument,
+  PolicyDocument,
+  RoleDocument,
+  RolePolicy,
+  UserDocument,
+} from "@mongodb-types";
 
 /**
  * Authorization middleware to check if the user has the required permissions
@@ -40,6 +46,10 @@ export function authorizeMiddleware(
 
       const policies =
         user?.roles
+          .filter(
+            (role): role is RoleDocument =>
+              typeof role === "object" && "policies" in role,
+          )
           .flatMap((role) => role.policies)
           .filter(
             (policy) =>
@@ -60,9 +70,11 @@ export function authorizeMiddleware(
         if (policy.policyId.conditions.length === 0) return true;
 
         // check if conditions are met
-        return policy.policyId.conditions.every((condition) => {
-          return evaluateCondition(document, condition, user);
-        });
+        return policy.policyId.conditions.every(
+          (condition: PolicyConditionDocument) => {
+            return evaluateCondition(document, condition, user);
+          },
+        );
       });
 
       if (!allowed) throw new UnauthorizedException("Unauthorized");
@@ -85,7 +97,7 @@ export function authorizeMiddleware(
  */
 function evaluateCondition(
   resourceData: Record<string, any>,
-  condition: PolicyDocument["conditions"][0],
+  condition: PolicyConditionDocument,
   user: UserDocument | undefined,
   context = {},
 ): boolean {
