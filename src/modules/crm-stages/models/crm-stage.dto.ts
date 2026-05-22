@@ -49,6 +49,11 @@ export class CrmStageDTO {
   @IsBoolean()
   @Transform(toBoolean)
   @IsOptional()
+  isDefault?: boolean;
+
+  @IsBoolean()
+  @Transform(toBoolean)
+  @IsOptional()
   active?: boolean;
 }
 

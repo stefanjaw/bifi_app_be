@@ -36,6 +36,10 @@ const crmStageSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
     active: {
       type: Boolean,
       default: true,

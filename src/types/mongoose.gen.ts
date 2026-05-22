@@ -4318,6 +4318,7 @@ export type CrmStage = {
   probability?: number;
   isWon?: boolean;
   isLost?: boolean;
+  isDefault?: boolean;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -4411,6 +4412,7 @@ export type CrmStageDocument = mongoose.Document<
     probability?: number;
     isWon?: boolean;
     isLost?: boolean;
+    isDefault?: boolean;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -10198,6 +10200,139 @@ export type TicketDocument = mongoose.Document<
     dateScheduled?: Date;
     duration?: string;
     number?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of UserShortcutsShortcutDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `UserShortcutsDocument.toObject()`.
+ * ```
+ * const usershortcutsObject = usershortcuts.toObject();
+ * ```
+ */
+export type UserShortcutsShortcut = {
+  label?: string;
+  icon?: string;
+  routerLink?: string[];
+  resource?: string;
+};
+
+/**
+ * Lean version of UserShortcutsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `UserShortcutsDocument.toObject()`. To avoid conflicts with model names, use the type alias `UserShortcutsObject`.
+ * ```
+ * const usershortcutsObject = usershortcuts.toObject();
+ * ```
+ */
+export type UserShortcuts = {
+  userId: User["_id"] | User;
+  shortcuts: UserShortcutsShortcut[];
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of UserShortcutsDocument (type alias of `UserShortcuts`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { UserShortcuts } from "../models"
+ * import { UserShortcutsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const usershortcutsObject: UserShortcutsObject = usershortcuts.toObject();
+ * ```
+ */
+export type UserShortcutsObject = UserShortcuts;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type UserShortcutsQuery = mongoose.Query<
+  any,
+  UserShortcutsDocument,
+  UserShortcutsQueries
+> &
+  UserShortcutsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `UserShortcutsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type UserShortcutsQueries = {
+  paginate: (this: UserShortcutsQuery, ...args: any[]) => UserShortcutsQuery;
+};
+
+export type UserShortcutsMethods = {};
+
+export type UserShortcutsStatics = {
+  paginate: (this: UserShortcutsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: UserShortcutsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const UserShortcuts = mongoose.model<UserShortcutsDocument, UserShortcutsModel>("UserShortcuts", UserShortcutsSchema);
+ * ```
+ */
+export type UserShortcutsModel = mongoose.Model<
+  UserShortcutsDocument,
+  UserShortcutsQueries
+> &
+  UserShortcutsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new UserShortcuts schema instances:
+ * ```
+ * const UserShortcutsSchema: UserShortcutsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type UserShortcutsSchema = mongoose.Schema<
+  UserShortcutsDocument,
+  UserShortcutsModel,
+  UserShortcutsMethods,
+  UserShortcutsQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `UserShortcutsDocument["shortcuts"]` element.
+ */
+export type UserShortcutsShortcutDocument = mongoose.Types.Subdocument<any> & {
+  label?: string;
+  icon?: string;
+  routerLink?: mongoose.Types.Array<string>;
+  resource?: string;
+};
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const UserShortcuts = mongoose.model<UserShortcutsDocument, UserShortcutsModel>("UserShortcuts", UserShortcutsSchema);
+ * ```
+ */
+export type UserShortcutsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  UserShortcutsQueries
+> &
+  UserShortcutsMethods & {
+    userId: UserDocument["_id"] | UserDocument;
+    shortcuts: mongoose.Types.DocumentArray<UserShortcutsShortcutDocument>;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
