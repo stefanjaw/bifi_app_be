@@ -242,7 +242,7 @@ app.use("/api", new EmailEventRouter().getRouter);
 app.get("/api/health-check", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
-    version: "202605201614",
+    version: "202606020938",
     status: "OK",
   });
 });
