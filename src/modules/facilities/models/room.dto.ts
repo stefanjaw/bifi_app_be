@@ -21,8 +21,9 @@ export class RoomDTO {
   @IsNotEmpty()
   address!: string;
 
+  @IsOptional()
   @IsMongoId()
-  facilityId!: string;
+  facilityId?: string;
 
   @IsOptional()
   active?: string;

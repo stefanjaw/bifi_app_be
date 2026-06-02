@@ -206,6 +206,11 @@ export class AssetRosterDTO {
   @IsOptional()
   warrantyDate?: Date;
 
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  supportEndDate?: Date;
+
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

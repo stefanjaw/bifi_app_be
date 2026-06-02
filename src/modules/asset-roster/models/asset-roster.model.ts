@@ -174,6 +174,10 @@ const assetRosterSchema = new Schema(
       type: Date,
       required: false,
     },
+    supportEndDate: {
+      type: Date,
+      required: false,
+    },
     remarks: {
       type: [notesModel],
       default: [],

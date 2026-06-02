@@ -93,7 +93,15 @@ import {
   CustomsTariffRouter,
   ReportBugRouter,
   UserShortcutsRouter,
+  EmailSettingsRouter,
+  EmailTemplateRouter,
+  MailingListRouter,
+  SubscriberRouter,
+  EmailCampaignRouter,
+  EmailEventRouter,
+  EmailMarketingPublicRouter,
 } from "./modules";
+import { startCampaignScheduler } from "./modules/email-marketing/services/campaign-send-service";
 
 import admin from "firebase-admin";
 import { BCDCpcRouter } from "./modules/bcd-cpcs";
@@ -138,6 +146,9 @@ app.use(
 );
 
 app.use(express.json());
+
+// public, unauthenticated email-marketing routes (tracking, unsubscribe, webhooks)
+app.use("/api", new EmailMarketingPublicRouter().getRouter);
 
 app.use(authenticateMiddleware(new UserService()));
 
@@ -220,6 +231,12 @@ app.use("/api", new CustomsHeadingRouter().getRouter);
 app.use("/api", new CustomsTariffRouter().getRouter);
 app.use("/api", new ReportBugRouter().getRouter);
 app.use("/api", new UserShortcutsRouter().getRouter);
+app.use("/api", new EmailSettingsRouter().getRouter);
+app.use("/api", new EmailTemplateRouter().getRouter);
+app.use("/api", new MailingListRouter().getRouter);
+app.use("/api", new SubscriberRouter().getRouter);
+app.use("/api", new EmailCampaignRouter().getRouter);
+app.use("/api", new EmailEventRouter().getRouter);
 
 // health check route
 app.get("/api/health-check", (req, res) => {
@@ -257,6 +274,9 @@ const start = async () => {
       user: process.env.FTP_USER || "",
       password: process.env.FTP_PASSWORD || "",
     });
+
+    // start the scheduled email campaign processor
+    startCampaignScheduler();
 
     // init app
     app.listen(Number(PORT), "0.0.0.0", () => {

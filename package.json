@@ -23,7 +23,10 @@
     "generate:graph": "npx depcruise --config .dependency-cruiser.js src --output-type dot | dot -Tsvg -o graph.svg"
   },
   "dependencies": {
+    "@aws-sdk/client-sesv2": "^3.679.0",
     "@google/genai": "^1.34.0",
+    "@sendgrid/client": "^8.1.4",
+    "@sendgrid/mail": "^8.1.4",
     "axios": "^1.12.2",
     "basic-ftp": "^5.1.0",
     "class-transformer": "^0.5.1",
@@ -38,6 +41,7 @@
     "googleapis": "^171.4.0",
     "handlebars": "^4.7.8",
     "json-2-csv": "^5.5.9",
+    "mailgun.js": "^10.2.3",
     "mime-types": "^3.0.2",
     "mongodb": "^6.17.0",
     "mongoose": "^8.16.1",
@@ -47,6 +51,7 @@
     "multer": "^2.0.1",
     "puppeteer": "^24.32.0",
     "reflect-metadata": "^0.2.2",
+    "resend": "^4.0.1",
     "sharp": "^0.34.5",
     "xlsx": "^0.18.5"
   },
