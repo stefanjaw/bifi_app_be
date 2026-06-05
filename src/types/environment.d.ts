@@ -10,6 +10,7 @@ declare global {
       FTP_BASE_PATH?: string;
       FTP_USER?: string;
       FTP_PASSWORD?: string;
+      CR_EINVOICE_SERVER_URL?: string;
     }
   }
 }

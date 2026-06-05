@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from "class-validator";
+import { IsEnum, IsMongoId, IsOptional, IsString } from "class-validator";
 
 export class CrEinvoiceSettingsDTO {
   @IsString()
@@ -19,7 +19,7 @@ export class CrEinvoiceSettingsDTO {
 
   @IsString()
   @IsOptional()
-  economicActivityCode?: string;
+  certificatePassword?: string;
 
   @IsEnum(["production", "sandbox"])
   @IsOptional()
@@ -32,4 +32,12 @@ export class CrEinvoiceSettingsDTO {
   @IsString()
   @IsOptional()
   codigoPuntoVenta?: string;
+
+  @IsString()
+  @IsOptional()
+  feVersion?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  emisorCompanyId?: string;
 }

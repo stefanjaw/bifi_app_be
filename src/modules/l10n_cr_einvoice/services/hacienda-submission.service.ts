@@ -15,6 +15,17 @@ export class HaciendaSubmissionService {
     settings: CrEinvoiceSettingsDocument,
     callbackUrl?: string
   ): Promise<any> {
+    const customServerUrl = process.env.CR_EINVOICE_SERVER_URL;
+
+    if (customServerUrl) {
+      const fullPayload: any = { ...payload };
+      if (callbackUrl) fullPayload.callbackUrl = callbackUrl;
+      const response = await axios.post(customServerUrl, fullPayload, {
+        headers: { "Content-Type": "application/json" },
+      });
+      return response.data;
+    }
+
     const token = await haciendaAuthService.getToken(settings);
     const baseUrl = this.getBaseUrl(settings);
     const fullPayload: any = { ...payload };

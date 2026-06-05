@@ -242,6 +242,7 @@ export type Discount = {
   discountType: "percentage" | "fixed";
   value: number;
   active?: boolean;
+  crNaturalezaDescuento?: string;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -331,6 +332,7 @@ export type DiscountDocument = mongoose.Document<
     discountType: "percentage" | "fixed";
     value: number;
     active?: boolean;
+    crNaturalezaDescuento?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -651,6 +653,14 @@ export type JournalEntry = {
   taxAmount?: number;
   totalAmount?: number;
   amountDue?: number;
+  crEinvoiceType?: "FE" | "ND" | "NC" | "TE" | "FEC" | "FEE" | "REP";
+  crEinvoiceStatus?: "draft" | "sent" | "accepted" | "rejected" | "received";
+  crClave?: string;
+  crNumeroConsecutivo?: string;
+  crCondicionVentaId?: CrCondicionVenta;
+  crMedioPagoId?: CrMedioPago;
+  crPlazoCredito?: number;
+  crHaciendaResponse?: any;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -780,6 +790,14 @@ export type JournalEntryDocument = mongoose.Document<
     taxAmount?: number;
     totalAmount?: number;
     amountDue?: number;
+    crEinvoiceType?: "FE" | "ND" | "NC" | "TE" | "FEC" | "FEE" | "REP";
+    crEinvoiceStatus?: "draft" | "sent" | "accepted" | "rejected" | "received";
+    crClave?: string;
+    crNumeroConsecutivo?: string;
+    crCondicionVentaId?: CrCondicionVentaDocument;
+    crMedioPagoId?: CrMedioPagoDocument;
+    crPlazoCredito?: number;
+    crHaciendaResponse?: any;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -1166,6 +1184,9 @@ export type Tax = {
   percentage: number;
   accountId: Account;
   active?: boolean;
+  crCodigo?: string;
+  crCodigoTarifa?: string;
+  crTarifa?: number;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -1251,6 +1272,9 @@ export type TaxDocument = mongoose.Document<
     percentage: number;
     accountId: AccountDocument;
     active?: boolean;
+    crCodigo?: string;
+    crCodigoTarifa?: string;
+    crTarifa?: number;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -1923,6 +1947,7 @@ export type AssetRoster = {
   photo?: mongoose.Types.ObjectId;
   locationId?: Room;
   warrantyDate?: Date;
+  supportEndDate?: Date;
   remarks: AssetRosterRemark[];
   status?:
     | "active"
@@ -2115,6 +2140,7 @@ export type AssetRosterDocument = mongoose.Document<
     photo?: mongoose.Types.ObjectId;
     locationId?: RoomDocument;
     warrantyDate?: Date;
+    supportEndDate?: Date;
     remarks: mongoose.Types.DocumentArray<AssetRosterRemarkDocument>;
     status?:
       | "active"
@@ -4051,6 +4077,20 @@ export type CompanyDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ContactCrEconomicActivityCodeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContactDocument.toObject()`.
+ * ```
+ * const contactObject = contact.toObject();
+ * ```
+ */
+export type ContactCrEconomicActivityCode = {
+  code?: string;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of ContactDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContactDocument.toObject()`. To avoid conflicts with model names, use the type alias `ContactObject`.
@@ -4074,6 +4114,7 @@ export type Contact = {
   streetAddress2?: string;
   vat?: string;
   crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
+  crEconomicActivityCodes: ContactCrEconomicActivityCode[];
   commercialName?: string;
   photo?: mongoose.Types.ObjectId;
   active?: boolean;
@@ -4154,6 +4195,18 @@ export type ContactSchema = mongoose.Schema<
 >;
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContactDocument["crEconomicActivityCodes"]` element.
+ */
+export type ContactCrEconomicActivityCodeDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    code?: string;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -4181,6 +4234,7 @@ export type ContactDocument = mongoose.Document<
     streetAddress2?: string;
     vat?: string;
     crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
+    crEconomicActivityCodes: mongoose.Types.DocumentArray<ContactCrEconomicActivityCodeDocument>;
     commercialName?: string;
     photo?: mongoose.Types.ObjectId;
     active?: boolean;
@@ -5211,6 +5265,812 @@ export type DriveSettingsDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of EmailCampaignStatDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `EmailCampaignDocument.toObject()`.
+ * ```
+ * const emailcampaignObject = emailcampaign.toObject();
+ * ```
+ */
+export type EmailCampaignStat = {
+  recipients?: number;
+  sent?: number;
+  delivered?: number;
+  opened?: number;
+  clicked?: number;
+  bounced?: number;
+  complained?: number;
+  unsubscribed?: number;
+  failed?: number;
+};
+
+/**
+ * Lean version of EmailCampaignDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `EmailCampaignDocument.toObject()`. To avoid conflicts with model names, use the type alias `EmailCampaignObject`.
+ * ```
+ * const emailcampaignObject = emailcampaign.toObject();
+ * ```
+ */
+export type EmailCampaign = {
+  name: string;
+  subject: string;
+  previewText?: string;
+  fromName?: string;
+  fromEmail?: string;
+  replyTo?: string;
+  templateId?: EmailTemplate;
+  designJson?: any | null;
+  mjml?: string;
+  html?: string;
+  listIds: MailingList[];
+  status?: "draft" | "scheduled" | "sending" | "sent" | "failed" | "cancelled";
+  scheduledAt?: Date;
+  sentAt?: Date;
+  stats?: EmailCampaignStat;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of EmailCampaignDocument (type alias of `EmailCampaign`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { EmailCampaign } from "../models"
+ * import { EmailCampaignObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const emailcampaignObject: EmailCampaignObject = emailcampaign.toObject();
+ * ```
+ */
+export type EmailCampaignObject = EmailCampaign;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type EmailCampaignQuery = mongoose.Query<
+  any,
+  EmailCampaignDocument,
+  EmailCampaignQueries
+> &
+  EmailCampaignQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `EmailCampaignSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type EmailCampaignQueries = {
+  paginate: (this: EmailCampaignQuery, ...args: any[]) => EmailCampaignQuery;
+};
+
+export type EmailCampaignMethods = {};
+
+export type EmailCampaignStatics = {
+  paginate: (this: EmailCampaignModel, ...args: any[]) => any;
+  paginateSubDocs: (this: EmailCampaignModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const EmailCampaign = mongoose.model<EmailCampaignDocument, EmailCampaignModel>("EmailCampaign", EmailCampaignSchema);
+ * ```
+ */
+export type EmailCampaignModel = mongoose.Model<
+  EmailCampaignDocument,
+  EmailCampaignQueries
+> &
+  EmailCampaignStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new EmailCampaign schema instances:
+ * ```
+ * const EmailCampaignSchema: EmailCampaignSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type EmailCampaignSchema = mongoose.Schema<
+  EmailCampaignDocument,
+  EmailCampaignModel,
+  EmailCampaignMethods,
+  EmailCampaignQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const EmailCampaign = mongoose.model<EmailCampaignDocument, EmailCampaignModel>("EmailCampaign", EmailCampaignSchema);
+ * ```
+ */
+export type EmailCampaignStatDocument = mongoose.Document<any> & {
+  recipients?: number;
+  sent?: number;
+  delivered?: number;
+  opened?: number;
+  clicked?: number;
+  bounced?: number;
+  complained?: number;
+  unsubscribed?: number;
+  failed?: number;
+};
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const EmailCampaign = mongoose.model<EmailCampaignDocument, EmailCampaignModel>("EmailCampaign", EmailCampaignSchema);
+ * ```
+ */
+export type EmailCampaignDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  EmailCampaignQueries
+> &
+  EmailCampaignMethods & {
+    name: string;
+    subject: string;
+    previewText?: string;
+    fromName?: string;
+    fromEmail?: string;
+    replyTo?: string;
+    templateId?: EmailTemplateDocument;
+    designJson?: any | null;
+    mjml?: string;
+    html?: string;
+    listIds: mongoose.Types.Array<MailingListDocument>;
+    status?:
+      | "draft"
+      | "scheduled"
+      | "sending"
+      | "sent"
+      | "failed"
+      | "cancelled";
+    scheduledAt?: Date;
+    sentAt?: Date;
+    stats?: EmailCampaignStatDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of EmailEventDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `EmailEventDocument.toObject()`. To avoid conflicts with model names, use the type alias `EmailEventObject`.
+ * ```
+ * const emaileventObject = emailevent.toObject();
+ * ```
+ */
+export type EmailEvent = {
+  campaignId?: EmailCampaign;
+  subscriberId?: Subscriber;
+  email?: string;
+  type:
+    | "sent"
+    | "delivered"
+    | "open"
+    | "click"
+    | "bounce"
+    | "complaint"
+    | "unsubscribe"
+    | "failed";
+  providerMessageId?: string;
+  url?: string;
+  meta?: any;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of EmailEventDocument (type alias of `EmailEvent`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { EmailEvent } from "../models"
+ * import { EmailEventObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const emaileventObject: EmailEventObject = emailevent.toObject();
+ * ```
+ */
+export type EmailEventObject = EmailEvent;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type EmailEventQuery = mongoose.Query<
+  any,
+  EmailEventDocument,
+  EmailEventQueries
+> &
+  EmailEventQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `EmailEventSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type EmailEventQueries = {
+  paginate: (this: EmailEventQuery, ...args: any[]) => EmailEventQuery;
+};
+
+export type EmailEventMethods = {};
+
+export type EmailEventStatics = {
+  paginate: (this: EmailEventModel, ...args: any[]) => any;
+  paginateSubDocs: (this: EmailEventModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const EmailEvent = mongoose.model<EmailEventDocument, EmailEventModel>("EmailEvent", EmailEventSchema);
+ * ```
+ */
+export type EmailEventModel = mongoose.Model<
+  EmailEventDocument,
+  EmailEventQueries
+> &
+  EmailEventStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new EmailEvent schema instances:
+ * ```
+ * const EmailEventSchema: EmailEventSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type EmailEventSchema = mongoose.Schema<
+  EmailEventDocument,
+  EmailEventModel,
+  EmailEventMethods,
+  EmailEventQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const EmailEvent = mongoose.model<EmailEventDocument, EmailEventModel>("EmailEvent", EmailEventSchema);
+ * ```
+ */
+export type EmailEventDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  EmailEventQueries
+> &
+  EmailEventMethods & {
+    campaignId?: EmailCampaignDocument;
+    subscriberId?: SubscriberDocument;
+    email?: string;
+    type:
+      | "sent"
+      | "delivered"
+      | "open"
+      | "click"
+      | "bounce"
+      | "complaint"
+      | "unsubscribe"
+      | "failed";
+    providerMessageId?: string;
+    url?: string;
+    meta?: any;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of EmailSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `EmailSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `EmailSettingsObject`.
+ * ```
+ * const emailsettingsObject = emailsettings.toObject();
+ * ```
+ */
+export type EmailSettings = {
+  provider?: "resend" | "mailgun" | "ses" | "sendgrid";
+  fromName?: string;
+  fromEmail?: string;
+  replyTo?: string;
+  resendApiKey?: string;
+  mailgunApiKey?: string;
+  mailgunDomain?: string;
+  mailgunRegion?: "us" | "eu";
+  sesAccessKeyId?: string;
+  sesSecretAccessKey?: string;
+  sesRegion?: string;
+  sendgridApiKey?: string;
+  trackOpens?: boolean;
+  trackClicks?: boolean;
+  footerText?: string;
+  unsubscribeText?: string;
+  testMode?: boolean;
+  testRecipient?: string;
+  publicBaseUrl?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of EmailSettingsDocument (type alias of `EmailSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { EmailSettings } from "../models"
+ * import { EmailSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const emailsettingsObject: EmailSettingsObject = emailsettings.toObject();
+ * ```
+ */
+export type EmailSettingsObject = EmailSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type EmailSettingsQuery = mongoose.Query<
+  any,
+  EmailSettingsDocument,
+  EmailSettingsQueries
+> &
+  EmailSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `EmailSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type EmailSettingsQueries = {
+  paginate: (this: EmailSettingsQuery, ...args: any[]) => EmailSettingsQuery;
+};
+
+export type EmailSettingsMethods = {};
+
+export type EmailSettingsStatics = {
+  paginate: (this: EmailSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: EmailSettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const EmailSettings = mongoose.model<EmailSettingsDocument, EmailSettingsModel>("EmailSettings", EmailSettingsSchema);
+ * ```
+ */
+export type EmailSettingsModel = mongoose.Model<
+  EmailSettingsDocument,
+  EmailSettingsQueries
+> &
+  EmailSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new EmailSettings schema instances:
+ * ```
+ * const EmailSettingsSchema: EmailSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type EmailSettingsSchema = mongoose.Schema<
+  EmailSettingsDocument,
+  EmailSettingsModel,
+  EmailSettingsMethods,
+  EmailSettingsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const EmailSettings = mongoose.model<EmailSettingsDocument, EmailSettingsModel>("EmailSettings", EmailSettingsSchema);
+ * ```
+ */
+export type EmailSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  EmailSettingsQueries
+> &
+  EmailSettingsMethods & {
+    provider?: "resend" | "mailgun" | "ses" | "sendgrid";
+    fromName?: string;
+    fromEmail?: string;
+    replyTo?: string;
+    resendApiKey?: string;
+    mailgunApiKey?: string;
+    mailgunDomain?: string;
+    mailgunRegion?: "us" | "eu";
+    sesAccessKeyId?: string;
+    sesSecretAccessKey?: string;
+    sesRegion?: string;
+    sendgridApiKey?: string;
+    trackOpens?: boolean;
+    trackClicks?: boolean;
+    footerText?: string;
+    unsubscribeText?: string;
+    testMode?: boolean;
+    testRecipient?: string;
+    publicBaseUrl?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of EmailTemplateDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `EmailTemplateDocument.toObject()`. To avoid conflicts with model names, use the type alias `EmailTemplateObject`.
+ * ```
+ * const emailtemplateObject = emailtemplate.toObject();
+ * ```
+ */
+export type EmailTemplate = {
+  name: string;
+  description?: string;
+  category?: string;
+  designJson?: any | null;
+  mjml?: string;
+  html?: string;
+  thumbnail?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of EmailTemplateDocument (type alias of `EmailTemplate`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { EmailTemplate } from "../models"
+ * import { EmailTemplateObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const emailtemplateObject: EmailTemplateObject = emailtemplate.toObject();
+ * ```
+ */
+export type EmailTemplateObject = EmailTemplate;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type EmailTemplateQuery = mongoose.Query<
+  any,
+  EmailTemplateDocument,
+  EmailTemplateQueries
+> &
+  EmailTemplateQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `EmailTemplateSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type EmailTemplateQueries = {
+  paginate: (this: EmailTemplateQuery, ...args: any[]) => EmailTemplateQuery;
+};
+
+export type EmailTemplateMethods = {};
+
+export type EmailTemplateStatics = {
+  paginate: (this: EmailTemplateModel, ...args: any[]) => any;
+  paginateSubDocs: (this: EmailTemplateModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const EmailTemplate = mongoose.model<EmailTemplateDocument, EmailTemplateModel>("EmailTemplate", EmailTemplateSchema);
+ * ```
+ */
+export type EmailTemplateModel = mongoose.Model<
+  EmailTemplateDocument,
+  EmailTemplateQueries
+> &
+  EmailTemplateStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new EmailTemplate schema instances:
+ * ```
+ * const EmailTemplateSchema: EmailTemplateSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type EmailTemplateSchema = mongoose.Schema<
+  EmailTemplateDocument,
+  EmailTemplateModel,
+  EmailTemplateMethods,
+  EmailTemplateQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const EmailTemplate = mongoose.model<EmailTemplateDocument, EmailTemplateModel>("EmailTemplate", EmailTemplateSchema);
+ * ```
+ */
+export type EmailTemplateDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  EmailTemplateQueries
+> &
+  EmailTemplateMethods & {
+    name: string;
+    description?: string;
+    category?: string;
+    designJson?: any | null;
+    mjml?: string;
+    html?: string;
+    thumbnail?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of MailingListDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `MailingListDocument.toObject()`. To avoid conflicts with model names, use the type alias `MailingListObject`.
+ * ```
+ * const mailinglistObject = mailinglist.toObject();
+ * ```
+ */
+export type MailingList = {
+  name: string;
+  description?: string;
+  subscriberCount?: number;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of MailingListDocument (type alias of `MailingList`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { MailingList } from "../models"
+ * import { MailingListObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const mailinglistObject: MailingListObject = mailinglist.toObject();
+ * ```
+ */
+export type MailingListObject = MailingList;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type MailingListQuery = mongoose.Query<
+  any,
+  MailingListDocument,
+  MailingListQueries
+> &
+  MailingListQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `MailingListSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type MailingListQueries = {
+  paginate: (this: MailingListQuery, ...args: any[]) => MailingListQuery;
+};
+
+export type MailingListMethods = {};
+
+export type MailingListStatics = {
+  paginate: (this: MailingListModel, ...args: any[]) => any;
+  paginateSubDocs: (this: MailingListModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const MailingList = mongoose.model<MailingListDocument, MailingListModel>("MailingList", MailingListSchema);
+ * ```
+ */
+export type MailingListModel = mongoose.Model<
+  MailingListDocument,
+  MailingListQueries
+> &
+  MailingListStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new MailingList schema instances:
+ * ```
+ * const MailingListSchema: MailingListSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type MailingListSchema = mongoose.Schema<
+  MailingListDocument,
+  MailingListModel,
+  MailingListMethods,
+  MailingListQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const MailingList = mongoose.model<MailingListDocument, MailingListModel>("MailingList", MailingListSchema);
+ * ```
+ */
+export type MailingListDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  MailingListQueries
+> &
+  MailingListMethods & {
+    name: string;
+    description?: string;
+    subscriberCount?: number;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of SubscriberDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SubscriberDocument.toObject()`. To avoid conflicts with model names, use the type alias `SubscriberObject`.
+ * ```
+ * const subscriberObject = subscriber.toObject();
+ * ```
+ */
+export type Subscriber = {
+  email: string;
+  name?: string;
+  listId: MailingList;
+  contactId?: Contact;
+  status?: "subscribed" | "unsubscribed" | "bounced" | "complained";
+  tags: string[];
+  customFields?: any;
+  subscribedAt?: Date;
+  unsubscribedAt?: Date;
+  bouncedAt?: Date;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of SubscriberDocument (type alias of `Subscriber`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Subscriber } from "../models"
+ * import { SubscriberObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const subscriberObject: SubscriberObject = subscriber.toObject();
+ * ```
+ */
+export type SubscriberObject = Subscriber;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type SubscriberQuery = mongoose.Query<
+  any,
+  SubscriberDocument,
+  SubscriberQueries
+> &
+  SubscriberQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `SubscriberSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type SubscriberQueries = {
+  paginate: (this: SubscriberQuery, ...args: any[]) => SubscriberQuery;
+};
+
+export type SubscriberMethods = {};
+
+export type SubscriberStatics = {
+  paginate: (this: SubscriberModel, ...args: any[]) => any;
+  paginateSubDocs: (this: SubscriberModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Subscriber = mongoose.model<SubscriberDocument, SubscriberModel>("Subscriber", SubscriberSchema);
+ * ```
+ */
+export type SubscriberModel = mongoose.Model<
+  SubscriberDocument,
+  SubscriberQueries
+> &
+  SubscriberStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Subscriber schema instances:
+ * ```
+ * const SubscriberSchema: SubscriberSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type SubscriberSchema = mongoose.Schema<
+  SubscriberDocument,
+  SubscriberModel,
+  SubscriberMethods,
+  SubscriberQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Subscriber = mongoose.model<SubscriberDocument, SubscriberModel>("Subscriber", SubscriberSchema);
+ * ```
+ */
+export type SubscriberDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  SubscriberQueries
+> &
+  SubscriberMethods & {
+    email: string;
+    name?: string;
+    listId: MailingListDocument;
+    contactId?: ContactDocument;
+    status?: "subscribed" | "unsubscribed" | "bounced" | "complained";
+    tags: mongoose.Types.Array<string>;
+    customFields?: any;
+    subscribedAt?: Date;
+    unsubscribedAt?: Date;
+    bouncedAt?: Date;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of FacilityDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `FacilityDocument.toObject()`. To avoid conflicts with model names, use the type alias `FacilityObject`.
@@ -5795,6 +6655,8 @@ export type InventoryProduct = {
   salePrice?: number;
   defaultSaleTaxIds: (Tax["_id"] | Tax)[];
   defaultPurchaseTaxIds: (Tax["_id"] | Tax)[];
+  codigoComercial?: string;
+  productKind: "consumable" | "service" | "storable";
   active?: boolean;
   photo?: mongoose.Types.ObjectId | null;
   attachments: InventoryProductAttachment[];
@@ -5918,6 +6780,8 @@ export type InventoryProductDocument = mongoose.Document<
     defaultPurchaseTaxIds: mongoose.Types.Array<
       TaxDocument["_id"] | TaxDocument
     >;
+    codigoComercial?: string;
+    productKind: "consumable" | "service" | "storable";
     active?: boolean;
     photo?: mongoose.Types.ObjectId | null;
     attachments: mongoose.Types.DocumentArray<InventoryProductAttachmentDocument>;
@@ -6275,6 +7139,7 @@ export type InventoryUom = {
   name: string;
   symbol?: string;
   categoryId: InventoryUomCategory;
+  crUnidadMedida?: string;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -6367,6 +7232,7 @@ export type InventoryUomDocument = mongoose.Document<
     name: string;
     symbol?: string;
     categoryId: InventoryUomCategoryDocument;
+    crUnidadMedida?: string;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -6478,6 +7344,350 @@ export type WarehouseDocument = mongoose.Document<
     code: string;
     address?: string;
     active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of CrCondicionVentaDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CrCondicionVentaDocument.toObject()`. To avoid conflicts with model names, use the type alias `CrCondicionVentaObject`.
+ * ```
+ * const crcondicionventaObject = crcondicionventa.toObject();
+ * ```
+ */
+export type CrCondicionVenta = {
+  code: string;
+  description: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CrCondicionVentaDocument (type alias of `CrCondicionVenta`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CrCondicionVenta } from "../models"
+ * import { CrCondicionVentaObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const crcondicionventaObject: CrCondicionVentaObject = crcondicionventa.toObject();
+ * ```
+ */
+export type CrCondicionVentaObject = CrCondicionVenta;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CrCondicionVentaQuery = mongoose.Query<
+  any,
+  CrCondicionVentaDocument,
+  CrCondicionVentaQueries
+> &
+  CrCondicionVentaQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CrCondicionVentaSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CrCondicionVentaQueries = {
+  paginate: (
+    this: CrCondicionVentaQuery,
+    ...args: any[]
+  ) => CrCondicionVentaQuery;
+};
+
+export type CrCondicionVentaMethods = {};
+
+export type CrCondicionVentaStatics = {
+  paginate: (this: CrCondicionVentaModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CrCondicionVentaModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CrCondicionVenta = mongoose.model<CrCondicionVentaDocument, CrCondicionVentaModel>("CrCondicionVenta", CrCondicionVentaSchema);
+ * ```
+ */
+export type CrCondicionVentaModel = mongoose.Model<
+  CrCondicionVentaDocument,
+  CrCondicionVentaQueries
+> &
+  CrCondicionVentaStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CrCondicionVenta schema instances:
+ * ```
+ * const CrCondicionVentaSchema: CrCondicionVentaSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CrCondicionVentaSchema = mongoose.Schema<
+  CrCondicionVentaDocument,
+  CrCondicionVentaModel,
+  CrCondicionVentaMethods,
+  CrCondicionVentaQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CrCondicionVenta = mongoose.model<CrCondicionVentaDocument, CrCondicionVentaModel>("CrCondicionVenta", CrCondicionVentaSchema);
+ * ```
+ */
+export type CrCondicionVentaDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CrCondicionVentaQueries
+> &
+  CrCondicionVentaMethods & {
+    code: string;
+    description: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of CrMedioPagoDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CrMedioPagoDocument.toObject()`. To avoid conflicts with model names, use the type alias `CrMedioPagoObject`.
+ * ```
+ * const crmediopagoObject = crmediopago.toObject();
+ * ```
+ */
+export type CrMedioPago = {
+  code: string;
+  description: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CrMedioPagoDocument (type alias of `CrMedioPago`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CrMedioPago } from "../models"
+ * import { CrMedioPagoObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const crmediopagoObject: CrMedioPagoObject = crmediopago.toObject();
+ * ```
+ */
+export type CrMedioPagoObject = CrMedioPago;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CrMedioPagoQuery = mongoose.Query<
+  any,
+  CrMedioPagoDocument,
+  CrMedioPagoQueries
+> &
+  CrMedioPagoQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CrMedioPagoSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CrMedioPagoQueries = {
+  paginate: (this: CrMedioPagoQuery, ...args: any[]) => CrMedioPagoQuery;
+};
+
+export type CrMedioPagoMethods = {};
+
+export type CrMedioPagoStatics = {
+  paginate: (this: CrMedioPagoModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CrMedioPagoModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CrMedioPago = mongoose.model<CrMedioPagoDocument, CrMedioPagoModel>("CrMedioPago", CrMedioPagoSchema);
+ * ```
+ */
+export type CrMedioPagoModel = mongoose.Model<
+  CrMedioPagoDocument,
+  CrMedioPagoQueries
+> &
+  CrMedioPagoStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CrMedioPago schema instances:
+ * ```
+ * const CrMedioPagoSchema: CrMedioPagoSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CrMedioPagoSchema = mongoose.Schema<
+  CrMedioPagoDocument,
+  CrMedioPagoModel,
+  CrMedioPagoMethods,
+  CrMedioPagoQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CrMedioPago = mongoose.model<CrMedioPagoDocument, CrMedioPagoModel>("CrMedioPago", CrMedioPagoSchema);
+ * ```
+ */
+export type CrMedioPagoDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CrMedioPagoQueries
+> &
+  CrMedioPagoMethods & {
+    code: string;
+    description: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of CrEinvoiceSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CrEinvoiceSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `CrEinvoiceSettingsObject`.
+ * ```
+ * const creinvoicesettingsObject = creinvoicesettings.toObject();
+ * ```
+ */
+export type CrEinvoiceSettings = {
+  proveedorSistemas?: string;
+  haciendaUsername?: string;
+  haciendaPassword?: string;
+  certificateBase64?: string;
+  certificatePassword?: string;
+  haciendaEnvironment?: "production" | "sandbox";
+  codigoEstablecimiento?: string;
+  codigoPuntoVenta?: string;
+  feVersion?: string;
+  emisorCompanyId?: Company;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CrEinvoiceSettingsDocument (type alias of `CrEinvoiceSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CrEinvoiceSettings } from "../models"
+ * import { CrEinvoiceSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const creinvoicesettingsObject: CrEinvoiceSettingsObject = creinvoicesettings.toObject();
+ * ```
+ */
+export type CrEinvoiceSettingsObject = CrEinvoiceSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CrEinvoiceSettingsQuery = mongoose.Query<
+  any,
+  CrEinvoiceSettingsDocument,
+  CrEinvoiceSettingsQueries
+> &
+  CrEinvoiceSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CrEinvoiceSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CrEinvoiceSettingsQueries = {
+  paginate: (
+    this: CrEinvoiceSettingsQuery,
+    ...args: any[]
+  ) => CrEinvoiceSettingsQuery;
+};
+
+export type CrEinvoiceSettingsMethods = {};
+
+export type CrEinvoiceSettingsStatics = {
+  paginate: (this: CrEinvoiceSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CrEinvoiceSettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CrEinvoiceSettings = mongoose.model<CrEinvoiceSettingsDocument, CrEinvoiceSettingsModel>("CrEinvoiceSettings", CrEinvoiceSettingsSchema);
+ * ```
+ */
+export type CrEinvoiceSettingsModel = mongoose.Model<
+  CrEinvoiceSettingsDocument,
+  CrEinvoiceSettingsQueries
+> &
+  CrEinvoiceSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CrEinvoiceSettings schema instances:
+ * ```
+ * const CrEinvoiceSettingsSchema: CrEinvoiceSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CrEinvoiceSettingsSchema = mongoose.Schema<
+  CrEinvoiceSettingsDocument,
+  CrEinvoiceSettingsModel,
+  CrEinvoiceSettingsMethods,
+  CrEinvoiceSettingsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CrEinvoiceSettings = mongoose.model<CrEinvoiceSettingsDocument, CrEinvoiceSettingsModel>("CrEinvoiceSettings", CrEinvoiceSettingsSchema);
+ * ```
+ */
+export type CrEinvoiceSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CrEinvoiceSettingsQueries
+> &
+  CrEinvoiceSettingsMethods & {
+    proveedorSistemas?: string;
+    haciendaUsername?: string;
+    haciendaPassword?: string;
+    certificateBase64?: string;
+    certificatePassword?: string;
+    haciendaEnvironment?: "production" | "sandbox";
+    codigoEstablecimiento?: string;
+    codigoPuntoVenta?: string;
+    feVersion?: string;
+    emisorCompanyId?: CompanyDocument;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

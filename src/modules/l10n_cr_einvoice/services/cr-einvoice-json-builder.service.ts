@@ -1,7 +1,7 @@
 import { CrEinvoiceSettingsDocument } from "../settings/models/cr-einvoice-settings.model";
 
 export class CrEinvoiceJsonBuilderService {
-  buildFromJournalEntry(entry: any, settings: CrEinvoiceSettingsDocument): object {
+  async buildFromJournalEntry(entry: any, settings: CrEinvoiceSettingsDocument): Promise<object> {
     const condicionVenta =
       (entry.crCondicionVentaId as any)?.code ?? entry.crCondicionVentaId ?? "";
     const medioPago =
@@ -37,14 +37,21 @@ export class CrEinvoiceJsonBuilderService {
     const totalImpuesto = entry.taxAmount ?? 0;
     const totalVentaNeta = entry.untaxedAmount ?? 0;
 
+    const emisorCompany = (settings as any).emisorCompanyId as any;
+    const emisorContact = emisorCompany?.contactId as any;
+
     const emisor: any = {
-      Nombre: settings.emisorNombre ?? "",
+      Nombre: emisorContact?.name ?? emisorCompany?.name ?? "",
       Identificacion: {
-        Tipo: "02",
-        Numero: settings.emisorCedula ?? "",
+        Tipo: emisorContact?.crVatType ?? "02",
+        Numero: emisorContact?.vat ?? "",
       },
-      Correo: settings.emisorCorreo ?? "",
+      Correo: emisorContact?.email ?? "",
     };
+
+    if (emisorContact?.phoneNumber) {
+      emisor.Telefono = { NumTelefono: emisorContact.phoneNumber };
+    }
 
     const contactData = entry.contactId;
     const receptor: any = contactData
@@ -59,7 +66,7 @@ export class CrEinvoiceJsonBuilderService {
     const facturaElectronica: any = {
       Clave: entry.crClave,
       ProveedorSistemas: settings.proveedorSistemas ?? "",
-      CodigoActividadEmisor: settings.economicActivityCode ?? "",
+      CodigoActividadEmisor: emisorContact?.crEconomicActivityCodes?.[0]?.code ?? "",
       NumeroConsecutivo: entry.crNumeroConsecutivo,
       FechaEmision: fechaEmision,
       Emisor: emisor,
@@ -81,10 +88,11 @@ export class CrEinvoiceJsonBuilderService {
 
     return {
       invoice: {
-        fe_version: "4.4",
+        fe_version: settings.feVersion ?? "4.4",
         FacturaElectronica: facturaElectronica,
       },
       certificate: settings.certificateBase64 ?? "",
+      fe_password_certificate: settings.certificatePassword ?? "",
       token_user_name: settings.haciendaUsername ?? "",
     };
   }

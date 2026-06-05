@@ -610,7 +610,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       crFechaEmision: fechaEmision,
     };
 
-    const payload = crEinvoiceJsonBuilderService.buildFromJournalEntry(
+    const payload = await crEinvoiceJsonBuilderService.buildFromJournalEntry(
       entryData,
       settings,
     );

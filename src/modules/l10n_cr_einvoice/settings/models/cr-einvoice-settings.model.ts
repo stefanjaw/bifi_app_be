@@ -1,20 +1,9 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
+import { CrEinvoiceSettingsDocument } from "@mongodb-types";
 
-export interface CrEinvoiceSettingsDocument extends mongoose.Document {
-  proveedorSistemas?: string;
-  haciendaUsername?: string;
-  haciendaPassword?: string;
-  certificateBase64?: string;
-  economicActivityCode?: string;
-  haciendaEnvironment?: "production" | "sandbox";
-  codigoEstablecimiento?: string;
-  codigoPuntoVenta?: string;
-  emisorCedula?: string;
-  emisorNombre?: string;
-  emisorCorreo?: string;
-}
+export type { CrEinvoiceSettingsDocument };
 
 const crEinvoiceSettingsSchema = new Schema(
   {
@@ -22,7 +11,7 @@ const crEinvoiceSettingsSchema = new Schema(
     haciendaUsername: { type: String, required: false, default: "" },
     haciendaPassword: { type: String, required: false, default: "" },
     certificateBase64: { type: String, required: false, default: "" },
-    economicActivityCode: { type: String, required: false, default: "" },
+    certificatePassword: { type: String, required: false, default: "" },
     haciendaEnvironment: {
       type: String,
       enum: ["production", "sandbox"],
@@ -31,9 +20,13 @@ const crEinvoiceSettingsSchema = new Schema(
     },
     codigoEstablecimiento: { type: String, required: false, default: "001" },
     codigoPuntoVenta: { type: String, required: false, default: "00001" },
-    emisorCedula: { type: String, required: false, default: "" },
-    emisorNombre: { type: String, required: false, default: "" },
-    emisorCorreo: { type: String, required: false, default: "" },
+    feVersion: { type: String, required: false, default: "4.4" },
+    emisorCompanyId: {
+      type: Schema.Types.ObjectId,
+      ref: "Company",
+      required: false,
+      autopopulate: { maxDepth: 2 },
+    },
   },
   {
     timestamps: true,
