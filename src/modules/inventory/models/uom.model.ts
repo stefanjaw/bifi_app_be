@@ -23,6 +23,11 @@ const uomSchema = new Schema(
         maxDepth: 1,
       },
     },
+    crUnidadMedida: {
+      type: String,
+      required: false,
+      default: "",
+    },
     active: {
       type: Boolean,
       default: true,

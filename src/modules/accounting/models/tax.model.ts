@@ -13,6 +13,9 @@ export interface TaxDocument extends mongoose.Document {
   percentage: number;
   accountId: any;
   active: boolean;
+  crCodigo?: string;
+  crCodigoTarifa?: string;
+  crTarifa?: number;
 }
 
 const taxSchema = new Schema(
@@ -34,6 +37,9 @@ const taxSchema = new Schema(
       },
     },
     active: { type: Boolean, default: true },
+    crCodigo: { type: String, required: false },
+    crCodigoTarifa: { type: String, required: false },
+    crTarifa: { type: Number, required: false },
   },
   { timestamps: true }
 );

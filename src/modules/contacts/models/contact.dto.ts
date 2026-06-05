@@ -1,4 +1,4 @@
-import { Transform } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
   IsString,
   IsNotEmpty,
@@ -13,6 +13,8 @@ import {
   ValidatorConstraintInterface,
   ValidationArguments,
   Validate,
+  IsArray,
+  ValidateNested,
 } from "class-validator";
 import { PartialType } from "../../../system";
 
@@ -34,6 +36,16 @@ export class AtLeastOneContactConstraint
   defaultMessage() {
     return "At least one contact method (phone number, email, or website for companies) must be provided.";
   }
+}
+
+export class CrEconomicActivityCodeDTO {
+  @IsString()
+  @IsNotEmpty()
+  code!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description!: string;
 }
 
 export class ContactDTO {
@@ -99,6 +111,12 @@ export class ContactDTO {
   @IsEnum(["01", "02", "03", "04", "05", "06"])
   @IsOptional()
   crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CrEconomicActivityCodeDTO)
+  @IsOptional()
+  crEconomicActivityCodes?: CrEconomicActivityCodeDTO[];
 
   @IsString()
   @IsOptional()

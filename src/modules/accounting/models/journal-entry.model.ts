@@ -43,6 +43,14 @@ export interface JournalEntryDocument extends mongoose.Document {
   taxAmount?: number;
   totalAmount?: number;
   amountDue?: number;
+  crEinvoiceType?: string;
+  crEinvoiceStatus?: string;
+  crClave?: string;
+  crNumeroConsecutivo?: string;
+  crCondicionVentaId?: any;
+  crMedioPagoId?: any;
+  crPlazoCredito?: number;
+  crHaciendaResponse?: any;
 }
 
 const journalEntryLineSchema = new Schema(
@@ -161,6 +169,32 @@ const journalEntrySchema = new Schema(
     taxAmount: { type: Number, required: false },
     totalAmount: { type: Number, required: false },
     amountDue: { type: Number, required: false },
+    crEinvoiceType: {
+      type: String,
+      enum: ["FE", "ND", "NC", "TE", "FEC", "FEE", "REP"],
+      required: false,
+    },
+    crEinvoiceStatus: {
+      type: String,
+      enum: ["draft", "sent", "accepted", "rejected", "received"],
+      required: false,
+    },
+    crClave: { type: String, maxlength: 50, required: false },
+    crNumeroConsecutivo: { type: String, maxlength: 20, required: false },
+    crCondicionVentaId: {
+      type: Schema.Types.ObjectId,
+      ref: "CrCondicionVenta",
+      required: false,
+      autopopulate: { select: "code description", maxDepth: 1 },
+    },
+    crMedioPagoId: {
+      type: Schema.Types.ObjectId,
+      ref: "CrMedioPago",
+      required: false,
+      autopopulate: { select: "code description", maxDepth: 1 },
+    },
+    crPlazoCredito: { type: Number, required: false },
+    crHaciendaResponse: { type: Schema.Types.Mixed, required: false },
   },
   { timestamps: true }
 );

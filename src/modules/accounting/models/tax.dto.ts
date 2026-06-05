@@ -22,6 +22,20 @@ export class TaxDTO {
 
   @IsOptional()
   active?: boolean;
+
+  @IsString()
+  @IsOptional()
+  crCodigo?: string;
+
+  @IsString()
+  @IsOptional()
+  crCodigoTarifa?: string;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  crTarifa?: number;
 }
 
 export class UpdateTaxDTO extends PartialType(TaxDTO) {

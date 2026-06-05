@@ -100,6 +100,10 @@ import {
   EmailCampaignRouter,
   EmailEventRouter,
   EmailMarketingPublicRouter,
+  CondicionVentaRouter,
+  MedioPagoRouter,
+  CrEinvoiceSettingsRouter,
+  CrEinvoicePublicRouter,
 } from "./modules";
 import { startCampaignScheduler } from "./modules/email-marketing/services/campaign-send-service";
 
@@ -149,6 +153,9 @@ app.use(express.json());
 
 // public, unauthenticated email-marketing routes (tracking, unsubscribe, webhooks)
 app.use("/api", new EmailMarketingPublicRouter().getRouter);
+
+// public, unauthenticated CR E-Invoice Hacienda callback
+app.use("/api", new CrEinvoicePublicRouter().getRouter);
 
 app.use(authenticateMiddleware(new UserService()));
 
@@ -237,6 +244,11 @@ app.use("/api", new MailingListRouter().getRouter);
 app.use("/api", new SubscriberRouter().getRouter);
 app.use("/api", new EmailCampaignRouter().getRouter);
 app.use("/api", new EmailEventRouter().getRouter);
+
+// CR E-Invoice routes
+app.use("/api", new CondicionVentaRouter().getRouter);
+app.use("/api", new MedioPagoRouter().getRouter);
+app.use("/api", new CrEinvoiceSettingsRouter().getRouter);
 
 // health check route
 app.get("/api/health-check", (req, res) => {

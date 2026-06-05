@@ -2,6 +2,7 @@ import { Transform, Type } from "class-transformer";
 import {
   IsArray,
   IsBoolean,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
@@ -82,6 +83,14 @@ export class ProductDTO {
     return value ?? [];
   })
   defaultPurchaseTaxIds?: string[];
+
+  @IsString()
+  @IsOptional()
+  codigoComercial?: string;
+
+  @IsEnum(["consumable", "service", "storable"])
+  @IsOptional()
+  productKind?: string;
 
   @IsBoolean()
   @Transform(toBoolean)

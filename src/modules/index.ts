@@ -55,3 +55,4 @@ export * from "./customs-tariffs";
 export * from "./report-bug";
 export * from "./user-shortcuts";
 export * from "./email-marketing";
+export * from "./l10n_cr_einvoice";

@@ -14,6 +14,10 @@ export class UomDTO {
   @IsMongoId()
   categoryId!: string;
 
+  @IsString()
+  @IsOptional()
+  crUnidadMedida?: string;
+
   @IsBoolean()
   @Transform(toBoolean)
   @IsOptional()

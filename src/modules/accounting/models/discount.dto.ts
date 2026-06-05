@@ -19,6 +19,10 @@ export class DiscountDTO {
 
   @IsOptional()
   active?: boolean;
+
+  @IsString()
+  @IsOptional()
+  crNaturalezaDescuento?: string;
 }
 
 export class UpdateDiscountDTO extends PartialType(DiscountDTO) {

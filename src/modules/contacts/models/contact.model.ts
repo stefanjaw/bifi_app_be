@@ -86,6 +86,11 @@ const contactSchema = new Schema(
       required: false,
       enum: ["01", "02", "03", "04", "05", "06"],
     },
+    crEconomicActivityCodes: {
+      type: [{ code: String, description: String }],
+      required: false,
+      default: [],
+    },
     commercialName: {
       type: String,
       required: false,

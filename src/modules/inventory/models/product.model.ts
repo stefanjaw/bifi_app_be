@@ -62,6 +62,17 @@ const productSchema = new Schema(
       ref: "Tax",
       default: [],
     },
+    codigoComercial: {
+      type: String,
+      required: false,
+      default: "",
+    },
+    productKind: {
+      type: String,
+      enum: ["consumable", "service", "storable"],
+      required: true,
+      default: "storable",
+    },
     active: {
       type: Boolean,
       default: true,

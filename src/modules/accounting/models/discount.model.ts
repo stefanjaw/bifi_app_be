@@ -12,6 +12,7 @@ export interface DiscountDocument extends mongoose.Document {
   discountType: DiscountType;
   value: number;
   active: boolean;
+  crNaturalezaDescuento?: string;
 }
 
 const discountSchema = new Schema(
@@ -24,6 +25,7 @@ const discountSchema = new Schema(
     },
     value: { type: Number, required: true, min: 0 },
     active: { type: Boolean, default: true },
+    crNaturalezaDescuento: { type: String, required: false },
   },
   { timestamps: true }
 );

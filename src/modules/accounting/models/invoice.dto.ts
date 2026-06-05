@@ -115,6 +115,25 @@ export class AccountingInvoiceDTO {
   )
   @IsOptional()
   lines?: AccountingInvoiceLineDTO[];
+
+  @IsString()
+  @IsIn(["FE", "ND", "NC", "TE", "FEC", "FEE", "REP"])
+  @IsOptional()
+  crEinvoiceType?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  crCondicionVentaId?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  crMedioPagoId?: string;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  crPlazoCredito?: number;
 }
 
 export class UpdateAccountingInvoiceDTO extends PartialType(AccountingInvoiceDTO) {

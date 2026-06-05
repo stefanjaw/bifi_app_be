@@ -39,6 +39,17 @@ import {
   CompanyDocument,
   CurrencyDocument,
 } from "@mongodb-types";
+import { CrEinvoiceSettingsService } from "../../l10n_cr_einvoice/settings/services/cr-einvoice-settings-service";
+import { haciendaSubmissionService } from "../../l10n_cr_einvoice/services/hacienda-submission.service";
+import { crEinvoiceJsonBuilderService } from "../../l10n_cr_einvoice/services/cr-einvoice-json-builder.service";
+import {
+  TIPO_COMPROBANTE_CODES,
+  buildNumeroConsecutivo,
+  buildClave,
+} from "../../l10n_cr_einvoice/utils/cr-clave-builder";
+
+const crEinvoiceSettingsService = new CrEinvoiceSettingsService();
+const sequenceService = new SequenceService();
 
 export class InvoiceService extends BaseService<JournalEntryDocument> {
   constructor() {
@@ -137,7 +148,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
 
   private async generateNumber(session: ClientSession): Promise<string> {
     const accountingSettingsService = new AccountingSettingsService();
-    const sequenceService = new SequenceService();
+    const seqService = new SequenceService();
     const settings = await accountingSettingsService.getSettings();
     const invoiceSequence = settings?.invoiceSequence as any;
     if (invoiceSequence) {
@@ -145,7 +156,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         typeof invoiceSequence === "object"
           ? invoiceSequence._id.toString()
           : invoiceSequence.toString();
-      return sequenceService.getNextNumberById(seqId);
+      return seqService.getNextNumberById(seqId);
     }
     const boundInvoiceSeqModel =
       this.connectionManager.bindModelToDb(invoiceSequenceModel);
@@ -356,6 +367,10 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
             amountDue: totalAmount,
             lines: jeLines,
             active: true,
+            crEinvoiceType: data.crEinvoiceType,
+            crCondicionVentaId: data.crCondicionVentaId,
+            crMedioPagoId: data.crMedioPagoId,
+            crPlazoCredito: data.crPlazoCredito,
           },
         ],
         { session: s },
@@ -412,6 +427,16 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         this.calculateLineTotals(enrichedProductLines);
       const totalAmount = untaxedAmount + taxAmount;
 
+      const crUpdate: Record<string, any> = {};
+      if (fields.crEinvoiceType !== undefined)
+        crUpdate.crEinvoiceType = fields.crEinvoiceType;
+      if (fields.crCondicionVentaId !== undefined)
+        crUpdate.crCondicionVentaId = fields.crCondicionVentaId || null;
+      if (fields.crMedioPagoId !== undefined)
+        crUpdate.crMedioPagoId = fields.crMedioPagoId || null;
+      if (fields.crPlazoCredito !== undefined)
+        crUpdate.crPlazoCredito = fields.crPlazoCredito;
+
       return model.findByIdAndUpdate(
         _id,
         {
@@ -432,6 +457,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           taxAmount,
           totalAmount,
           lines: rawLines,
+          ...crUpdate,
         },
         { new: true, session: s },
       ) as any;
@@ -529,5 +555,88 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       { status: JournalEntryStatus.CANCEL },
       { new: true },
     ) as any;
+  }
+
+  async submitToHacienda(id: string): Promise<JournalEntryDocument> {
+    const settings = await crEinvoiceSettingsService.getSettings();
+    if (!settings) {
+      throw new ValidationException("CR E-Invoice settings not configured.");
+    }
+
+    const model = this.connectionManager.bindModelToDb(this.model);
+    const invoice = await model.findById(id);
+    if (!invoice) throw new ValidationException("Invoice not found.");
+    if (!invoice.isInvoice)
+      throw new ValidationException("Document is not an invoice.");
+
+    const einvoiceType = (invoice as any).crEinvoiceType ?? "FE";
+    const tipoComprobanteCode = TIPO_COMPROBANTE_CODES[einvoiceType] ?? "01";
+
+    const seqName = `CrEInvoice-${einvoiceType}`;
+    const seqPrefix = `CrEInvoice-${einvoiceType}-`;
+    const seqResult = await sequenceService.getNextNumberOrCreate(
+      seqName,
+      seqPrefix,
+      10,
+      1,
+    );
+    const counter = seqResult.replace(seqPrefix, "");
+
+    const codigoEstablecimiento = settings.codigoEstablecimiento ?? "001";
+    const codigoPuntoVenta = settings.codigoPuntoVenta ?? "00001";
+
+    const numeroConsecutivo = buildNumeroConsecutivo(
+      codigoEstablecimiento,
+      codigoPuntoVenta,
+      tipoComprobanteCode,
+      counter,
+    );
+
+    const fechaEmision = new Date();
+    const emisorCedula = (settings.emisorCedula ?? "").replace(/\D/g, "");
+    const clave = buildClave(numeroConsecutivo, fechaEmision, emisorCedula);
+
+    await model.findByIdAndUpdate(id, {
+      crClave: clave,
+      crNumeroConsecutivo: numeroConsecutivo,
+      crEinvoiceStatus: "pending",
+    });
+
+    const populatedInvoice = await model.findById(id);
+    const entryData = {
+      ...(populatedInvoice?.toObject() ?? {}),
+      crClave: clave,
+      crNumeroConsecutivo: numeroConsecutivo,
+      crFechaEmision: fechaEmision,
+    };
+
+    const payload = crEinvoiceJsonBuilderService.buildFromJournalEntry(
+      entryData,
+      settings,
+    );
+
+    console.log("[Invoice] Hacienda submission payload:", payload);
+
+    try {
+      const haciendaResponse = await haciendaSubmissionService.submitPayload(
+        payload,
+        settings,
+        process.env["CR_EINVOICE_CALLBACK_URL"],
+      );
+      return model.findByIdAndUpdate(
+        id,
+        { crHaciendaResponse: haciendaResponse, crEinvoiceStatus: "sent" },
+        { new: true },
+      ) as any;
+    } catch (error: any) {
+      const errorDetail =
+        error?.response?.data ?? error?.message ?? String(error);
+      console.error("[Invoice] Hacienda submission error:", errorDetail);
+      await model.findByIdAndUpdate(id, {
+        crEinvoiceStatus: "failed",
+        crHaciendaResponse: { error: errorDetail },
+      });
+      throw error;
+    }
   }
 }
