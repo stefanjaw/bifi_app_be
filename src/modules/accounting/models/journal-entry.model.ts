@@ -50,6 +50,8 @@ export interface JournalEntryDocument extends mongoose.Document {
   crCondicionVentaId?: any;
   crMedioPagoId?: any;
   crPlazoCredito?: number;
+  crCodigoActividadEmisor?: string;
+  crCodigoActividadReceptor?: string;
   crHaciendaResponse?: any;
 }
 
@@ -76,7 +78,7 @@ const journalEntryLineSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "InventoryProduct",
       required: false,
-      autopopulate: { select: "name salePrice", maxDepth: 1 },
+      autopopulate: { select: "name salePrice codigoComercial unitOfMeasureId productKind", maxDepth: 1 },
     },
     quantity: { type: Number, required: false },
     unitPrice: { type: Number, required: false },
@@ -85,6 +87,7 @@ const journalEntryLineSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "Tax",
         required: false,
+        autopopulate: { select: "name percentage crCodigo crCodigoTarifa crTarifa", maxDepth: 1 },
       },
     ],
     discountId: {
@@ -143,7 +146,10 @@ const journalEntrySchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "Contact",
       required: false,
-      autopopulate: { select: "name lastName", maxDepth: 1 },
+      autopopulate: {
+        select: "name lastName email vat crVatType state city crDistrito streetAddress crEconomicActivityCodes commercialName",
+        maxDepth: 1,
+      },
     },
     paymentTermId: {
       type: Schema.Types.ObjectId,
@@ -176,7 +182,7 @@ const journalEntrySchema = new Schema(
     },
     crEinvoiceStatus: {
       type: String,
-      enum: ["draft", "sent", "accepted", "rejected", "received"],
+      enum: ["draft", "pending", "sent", "accepted", "rejected", "received", "failed"],
       required: false,
     },
     crClave: { type: String, maxlength: 50, required: false },
@@ -194,6 +200,8 @@ const journalEntrySchema = new Schema(
       autopopulate: { select: "code description", maxDepth: 1 },
     },
     crPlazoCredito: { type: Number, required: false },
+    crCodigoActividadEmisor: { type: String, required: false },
+    crCodigoActividadReceptor: { type: String, required: false },
     crHaciendaResponse: { type: Schema.Types.Mixed, required: false },
   },
   { timestamps: true }

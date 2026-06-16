@@ -31,7 +31,7 @@ const companySchema = new Schema(
       ref: "Contact",
       required: false,
       autopopulate: {
-        select: "name lastName email vat phoneNumber crVatType crEconomicActivityCodes",
+        select: "name lastName email vat phoneNumber crVatType crEconomicActivityCodes commercialName state city crDistrito streetAddress",
         maxDepth: 1,
       },
     },

@@ -1,4 +1,4 @@
-import { Transform, Type } from "class-transformer";
+import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   IsString,
   IsNotEmpty,
@@ -116,11 +116,20 @@ export class ContactDTO {
   @ValidateNested({ each: true })
   @Type(() => CrEconomicActivityCodeDTO)
   @IsOptional()
+  @Transform(({ value }) =>
+    (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
+      plainToInstance(CrEconomicActivityCodeDTO, item)
+    )
+  )
   crEconomicActivityCodes?: CrEconomicActivityCodeDTO[];
 
   @IsString()
   @IsOptional()
   commercialName?: string;
+
+  @IsString()
+  @IsOptional()
+  crDistrito?: string;
 
   @IsMongoId({ each: true })
   @Transform(({ value }) =>

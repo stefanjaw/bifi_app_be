@@ -20,7 +20,14 @@ export class CrEinvoiceSettingsController extends BaseController<CrEinvoiceSetti
 
   protected async upsertSettingsHandler(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = req.body as CrEinvoiceSettingsDTO;
+      const files = req.files as { certificateFile?: Express.Multer.File[] } | undefined;
+      const certificateFile = files?.certificateFile?.[0];
+
+      if (certificateFile) {
+        req.body.certificateFile = certificateFile;
+      }
+
+      const data = req.body as CrEinvoiceSettingsDTO & { certificateFile?: Express.Multer.File };
       const result = await (this.service as CrEinvoiceSettingsService).upsertSettings(data);
       this.sendData(res, result);
     } catch (error) {

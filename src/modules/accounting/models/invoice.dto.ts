@@ -134,6 +134,14 @@ export class AccountingInvoiceDTO {
   @Type(() => Number)
   @IsOptional()
   crPlazoCredito?: number;
+
+  @IsString()
+  @IsOptional()
+  crCodigoActividadEmisor?: string;
+
+  @IsString()
+  @IsOptional()
+  crCodigoActividadReceptor?: string;
 }
 
 export class UpdateAccountingInvoiceDTO extends PartialType(AccountingInvoiceDTO) {

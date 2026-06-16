@@ -7580,7 +7580,13 @@ export type CrEinvoiceSettings = {
   proveedorSistemas?: string;
   haciendaUsername?: string;
   haciendaPassword?: string;
-  certificateBase64?: string;
+  certificateFile?: {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: object;
+  };
   certificatePassword?: string;
   haciendaEnvironment?: "production" | "sandbox";
   codigoEstablecimiento?: string;
@@ -7681,7 +7687,13 @@ export type CrEinvoiceSettingsDocument = mongoose.Document<
     proveedorSistemas?: string;
     haciendaUsername?: string;
     haciendaPassword?: string;
-    certificateBase64?: string;
+    certificateFile?: {
+      fileId: mongoose.Types.ObjectId;
+      name: string;
+      mimeType: string;
+      size: number;
+      fileMetadata?: object;
+    };
     certificatePassword?: string;
     haciendaEnvironment?: "production" | "sandbox";
     codigoEstablecimiento?: string;

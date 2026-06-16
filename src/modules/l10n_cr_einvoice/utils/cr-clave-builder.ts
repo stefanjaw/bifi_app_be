@@ -36,10 +36,11 @@ export function buildClave(
   situacion = "1"
 ): string {
   const countryCode = "506";
-  const d = fechaEmision;
-  const dd = d.getDate().toString().padStart(2, "0");
-  const mm = (d.getMonth() + 1).toString().padStart(2, "0");
-  const yy = d.getFullYear().toString().slice(-2);
+  // CR is UTC-6; use Costa Rica local date for the clave key
+  const cr = new Date(fechaEmision.getTime() - 6 * 60 * 60 * 1000);
+  const dd = cr.getUTCDate().toString().padStart(2, "0");
+  const mm = (cr.getUTCMonth() + 1).toString().padStart(2, "0");
+  const yy = cr.getUTCFullYear().toString().slice(-2);
   const cedula = padCedula(emisorCedula);
   const securityCode = generateSecurityCode();
   const clave = `${countryCode}${dd}${mm}${yy}${cedula}${numeroConsecutivo}${situacion}${securityCode}`;

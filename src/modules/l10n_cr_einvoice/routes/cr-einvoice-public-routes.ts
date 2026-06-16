@@ -19,17 +19,25 @@ export class CrEinvoicePublicRouter {
   private initRoutes() {
     this.router.post("/cr-einvoice/hacienda-callback", async (req, res) => {
       try {
-        const { clave, indEstado } = req.body ?? {};
+        const body = req.body ?? {};
+        const clave = body.clave;
 
         if (!clave) {
           res.status(400).json({ ok: false, message: "Missing clave" });
           return;
         }
 
+        const rawState = (
+          body["ind-estado"] ??
+          body.indEstado ??
+          body.estado ??
+          ""
+        ).toLowerCase();
+
         let crEinvoiceStatus: string;
-        if (indEstado === "ACEPTADO") {
+        if (rawState === "aceptado") {
           crEinvoiceStatus = "accepted";
-        } else if (indEstado === "RECHAZADO") {
+        } else if (rawState === "rechazado") {
           crEinvoiceStatus = "rejected";
         } else {
           crEinvoiceStatus = "received";

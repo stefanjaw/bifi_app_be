@@ -54,4 +54,13 @@ export class InvoiceController extends BaseController<JournalEntryDocument> {
       next(error);
     }
   };
+
+  pollEinvoiceStatus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await invoiceService.pollEinvoiceStatus(req.params.id);
+      this.sendData(res, result);
+    } catch (error: any) {
+      next(error);
+    }
+  };
 }

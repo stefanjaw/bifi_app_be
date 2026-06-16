@@ -2,6 +2,7 @@ import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { CrEinvoiceSettingsDocument } from "@mongodb-types";
+import { fileSchema } from "../../../../system";
 
 export type { CrEinvoiceSettingsDocument };
 
@@ -10,7 +11,7 @@ const crEinvoiceSettingsSchema = new Schema(
     proveedorSistemas: { type: String, required: false, default: "" },
     haciendaUsername: { type: String, required: false, default: "" },
     haciendaPassword: { type: String, required: false, default: "" },
-    certificateBase64: { type: String, required: false, default: "" },
+    certificateFile: { type: fileSchema, required: false },
     certificatePassword: { type: String, required: false, default: "" },
     haciendaEnvironment: {
       type: String,

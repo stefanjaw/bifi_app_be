@@ -42,6 +42,7 @@ import {
 import { CrEinvoiceSettingsService } from "../../l10n_cr_einvoice/settings/services/cr-einvoice-settings-service";
 import { haciendaSubmissionService } from "../../l10n_cr_einvoice/services/hacienda-submission.service";
 import { crEinvoiceJsonBuilderService } from "../../l10n_cr_einvoice/services/cr-einvoice-json-builder.service";
+import { crEinvoiceValidatorService } from "../../l10n_cr_einvoice/services/cr-einvoice-validator.service";
 import {
   TIPO_COMPROBANTE_CODES,
   buildNumeroConsecutivo,
@@ -371,6 +372,8 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
             crCondicionVentaId: data.crCondicionVentaId,
             crMedioPagoId: data.crMedioPagoId,
             crPlazoCredito: data.crPlazoCredito,
+            crCodigoActividadEmisor: data.crCodigoActividadEmisor,
+            crCodigoActividadReceptor: data.crCodigoActividadReceptor,
           },
         ],
         { session: s },
@@ -436,6 +439,10 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         crUpdate.crMedioPagoId = fields.crMedioPagoId || null;
       if (fields.crPlazoCredito !== undefined)
         crUpdate.crPlazoCredito = fields.crPlazoCredito;
+      if (fields.crCodigoActividadEmisor !== undefined)
+        crUpdate.crCodigoActividadEmisor = fields.crCodigoActividadEmisor || null;
+      if (fields.crCodigoActividadReceptor !== undefined)
+        crUpdate.crCodigoActividadReceptor = fields.crCodigoActividadReceptor || null;
 
       return model.findByIdAndUpdate(
         _id,
@@ -558,16 +565,38 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
   }
 
   async submitToHacienda(id: string): Promise<JournalEntryDocument> {
-    const settings = await crEinvoiceSettingsService.getSettings();
-    if (!settings) {
+    const settingsRaw = await crEinvoiceSettingsService.getSettings();
+    if (!settingsRaw) {
       throw new ValidationException("CR E-Invoice settings not configured.");
     }
+
+    // Ensure emisorCompanyId.contactId is fully populated with location fields
+    const settingsModel = this.connectionManager.bindModelToDb(
+      (crEinvoiceSettingsService as any).model,
+    );
+    const settings: any = await settingsModel.findById((settingsRaw as any)._id).populate({
+      path: "emisorCompanyId",
+      populate: {
+        path: "contactId",
+        select:
+          "name lastName email vat phoneNumber crVatType crEconomicActivityCodes commercialName state city crDistrito streetAddress",
+      },
+    });
 
     const model = this.connectionManager.bindModelToDb(this.model);
     const invoice = await model.findById(id);
     if (!invoice) throw new ValidationException("Invoice not found.");
     if (!invoice.isInvoice)
       throw new ValidationException("Document is not an invoice.");
+
+    // ── Pre-submission validation (before any sequence numbers are consumed) ──
+    const validationErrors = crEinvoiceValidatorService.validateForSubmission(
+      invoice.toObject(),
+      settings,
+    );
+    if (validationErrors.length > 0) {
+      throw new ValidationException(validationErrors.join("\n"));
+    }
 
     const einvoiceType = (invoice as any).crEinvoiceType ?? "FE";
     const tipoComprobanteCode = TIPO_COMPROBANTE_CODES[einvoiceType] ?? "01";
@@ -593,7 +622,8 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     );
 
     const fechaEmision = new Date();
-    const emisorCedula = (settings.emisorCedula ?? "").replace(/\D/g, "");
+    const emisorContact = (settings as any).emisorCompanyId?.contactId as any;
+    const emisorCedula = (emisorContact?.vat ?? "").replace(/\D/g, "");
     const clave = buildClave(numeroConsecutivo, fechaEmision, emisorCedula);
 
     await model.findByIdAndUpdate(id, {
@@ -638,5 +668,48 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       });
       throw error;
     }
+  }
+
+  async pollEinvoiceStatus(id: string): Promise<JournalEntryDocument> {
+    const settings = await crEinvoiceSettingsService.getSettings();
+    if (!settings) {
+      throw new ValidationException("CR E-Invoice settings not configured.");
+    }
+
+    const model = this.connectionManager.bindModelToDb(this.model);
+    const invoice = await model.findById(id);
+    if (!invoice) throw new ValidationException("Invoice not found.");
+    if (!invoice.isInvoice) throw new ValidationException("Document is not an invoice.");
+
+    const clave = (invoice as any).crClave;
+    if (!clave) throw new ValidationException("Invoice has no CR clave — submit to Hacienda first.");
+
+    const pollResponse = await haciendaSubmissionService.pollStatus(clave, settings);
+
+    // Unwrap JSON-RPC 2.0 envelope from custom FE server ({ jsonrpc, id, result: {...} })
+    // Falls back to the raw response for the direct Hacienda API which is not JSON-RPC.
+    const data = pollResponse?.result ?? pollResponse;
+
+    const rawState = (
+      data?.["ind-estado"] ??
+      data?.indEstado ??
+      data?.estado ??
+      ""
+    ).toLowerCase();
+
+    const newStatus: string =
+      rawState === "aceptado"
+        ? "accepted"
+        : rawState === "rechazado"
+          ? "rejected"
+          : rawState === "recibido"
+            ? "received"
+            : (invoice as any).crEinvoiceStatus ?? "sent";
+
+    return model.findByIdAndUpdate(
+      id,
+      { crHaciendaResponse: data, crEinvoiceStatus: newStatus },
+      { new: true },
+    ) as any;
   }
 }

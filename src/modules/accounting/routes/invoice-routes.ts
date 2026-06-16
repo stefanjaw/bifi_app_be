@@ -47,5 +47,11 @@ export class InvoiceRouter extends BaseRoutes<JournalEntryDocument> {
       authorizeMiddleware("accounting/invoices", "update"),
       invoiceController.submitToHacienda
     );
+
+    this.router.post(
+      "/accounting/invoices/:id/poll-einvoice-status",
+      authorizeMiddleware("accounting/invoices", "update"),
+      invoiceController.pollEinvoiceStatus
+    );
   }
 }

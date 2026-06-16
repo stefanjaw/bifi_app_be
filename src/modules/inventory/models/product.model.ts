@@ -29,7 +29,7 @@ const productSchema = new Schema(
       ref: "InventoryUom",
       required: false,
       autopopulate: {
-        select: "name symbol categoryId",
+        select: "name symbol categoryId crUnidadMedida",
         maxDepth: 1,
       },
     },

@@ -95,6 +95,10 @@ const contactSchema = new Schema(
       type: String,
       required: false,
     },
+    crDistrito: {
+      type: String,
+      required: false,
+    },
     photo: {
       type: Schema.Types.ObjectId,
       autopopulate: false,

@@ -13,17 +13,39 @@ export class HaciendaSubmissionService {
   async submitPayload(
     payload: object,
     settings: CrEinvoiceSettingsDocument,
-    callbackUrl?: string
+    callbackUrl?: string,
   ): Promise<any> {
     const customServerUrl = process.env.CR_EINVOICE_SERVER_URL;
 
     if (customServerUrl) {
       const fullPayload: any = { ...payload };
       if (callbackUrl) fullPayload.callbackUrl = callbackUrl;
+
       const response = await axios.post(customServerUrl, fullPayload, {
         headers: { "Content-Type": "application/json" },
       });
-      return response.data;
+
+      const data = response.data;
+
+      // Detect application-level errors even when the HTTP status is 2xx
+      if (
+        data?.error ||
+        data?.success === false ||
+        data?.status === "error" ||
+        data?.status === "failed" ||
+        (typeof data?.message === "string" && /error|fail/i.test(data.message))
+      ) {
+        const msg =
+          data?.message ??
+          data?.error ??
+          data?.error_description ??
+          "Custom FE server returned an error response.";
+        const err: any = new Error(msg);
+        err.response = { data };
+        throw err;
+      }
+
+      return data;
     }
 
     const token = await haciendaAuthService.getToken(settings);
@@ -38,10 +60,28 @@ export class HaciendaSubmissionService {
       },
     });
 
+    console.log("[Hacienda] Submission response:", response.data);
+
     return response.data;
   }
 
-  async pollStatus(clave: string, settings: CrEinvoiceSettingsDocument): Promise<any> {
+  async pollStatus(
+    clave: string,
+    settings: CrEinvoiceSettingsDocument,
+  ): Promise<any> {
+    const customServerUrl = process.env.CR_EINVOICE_SERVER_URL;
+
+    if (customServerUrl) {
+      const base = customServerUrl.replace(/\/?$/, "");
+      const pollUrl = `${base}/${clave}`;
+      const response = await axios.get(pollUrl, {
+        headers: { "Content-Type": "application/json" },
+        data: {},
+      });
+      
+      return response.data;
+    }
+
     const token = await haciendaAuthService.getToken(settings);
     const baseUrl = this.getBaseUrl(settings);
 

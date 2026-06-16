@@ -15,10 +15,6 @@ export class CrEinvoiceSettingsDTO {
 
   @IsString()
   @IsOptional()
-  certificateBase64?: string;
-
-  @IsString()
-  @IsOptional()
   certificatePassword?: string;
 
   @IsEnum(["production", "sandbox"])
