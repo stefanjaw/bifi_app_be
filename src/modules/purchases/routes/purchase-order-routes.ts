@@ -18,7 +18,16 @@ export class PurchaseOrderRouter extends BaseRoutes<PurchaseOrderDocument> {
 
   protected override initRoutes() {
     super.initRoutes();
+    this.initExportPdfRoute();
     this.initUpdateStatusRoute();
+  }
+
+  private initExportPdfRoute() {
+    this.router.get(
+      `${this.endpoint}/:id/pdf`,
+      authorizeMiddleware("purchases/orders", "read"),
+      purchaseOrderController.exportPdf,
+    );
   }
 
   private initUpdateStatusRoute() {

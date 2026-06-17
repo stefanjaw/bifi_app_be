@@ -104,8 +104,14 @@ import {
   MedioPagoRouter,
   CrEinvoiceSettingsRouter,
   CrEinvoicePublicRouter,
+  SearchDestinationRouter,
+  SearchRouter,
+  NotificationRouter,
+  NotificationSettingsRouter,
 } from "./modules";
 import { startCampaignScheduler } from "./modules/email-marketing/services/campaign-send-service";
+import { seedPurchaseStages } from "./modules/purchase-stages";
+import { seedSearchDestinations } from "./modules/search-destinations";
 
 import admin from "firebase-admin";
 import { BCDCpcRouter } from "./modules/bcd-cpcs";
@@ -244,6 +250,10 @@ app.use("/api", new MailingListRouter().getRouter);
 app.use("/api", new SubscriberRouter().getRouter);
 app.use("/api", new EmailCampaignRouter().getRouter);
 app.use("/api", new EmailEventRouter().getRouter);
+app.use("/api", new SearchDestinationRouter().getRouter);
+app.use("/api", new SearchRouter().getRouter);
+app.use("/api", new NotificationRouter().getRouter);
+app.use("/api", new NotificationSettingsRouter().getRouter);
 
 // CR E-Invoice routes
 app.use("/api", new CondicionVentaRouter().getRouter);
@@ -286,6 +296,12 @@ const start = async () => {
       user: process.env.FTP_USER || "",
       password: process.env.FTP_PASSWORD || "",
     });
+
+    // seed default purchase stages (idempotent — only runs when collection is empty)
+    await seedPurchaseStages();
+
+    // seed default search destinations (idempotent — only runs when collection is empty)
+    await seedSearchDestinations();
 
     // start the scheduled email campaign processor
     startCampaignScheduler();

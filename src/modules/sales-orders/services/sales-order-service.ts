@@ -180,6 +180,18 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
     return super.create(data, session);
   }
 
+  async updateStatus(
+    id: string,
+    status: string,
+  ): Promise<SalesOrderDocument | null> {
+    const boundModel = this.connectionManager.bindModelToDb(salesOrderModel);
+    return boundModel.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true },
+    );
+  }
+
   override async update(
     data: Record<string, any>,
     session: ClientSession | undefined = undefined,

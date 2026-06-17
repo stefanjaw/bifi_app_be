@@ -3,6 +3,7 @@ import {
   ArrayUnique,
   IsArray,
   IsDate,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
@@ -12,6 +13,15 @@ import {
   ValidateNested,
 } from "class-validator";
 import { PartialType } from "../../../system";
+
+export const SALES_ORDER_STATUSES = [
+  'draft',
+  'quote',
+  'confirmed',
+  'shipped',
+  'completed',
+  'cancelled',
+] as const;
 
 class LineItemDTO {
   @IsMongoId()
@@ -43,6 +53,10 @@ class LineItemDTO {
   @IsOptional()
   @Transform(({ value }) => value ?? [])
   taxIds?: string[];
+
+  @IsMongoId()
+  @IsOptional()
+  discountId?: string;
 }
 
 export class AppliedTaxDTO {
@@ -54,6 +68,11 @@ export class AppliedTaxDTO {
   @Type(() => Number)
   @IsOptional()
   amount?: number;
+}
+
+export class UpdateSalesOrderStatusDTO {
+  @IsEnum(SALES_ORDER_STATUSES)
+  status!: string;
 }
 
 export class SalesOrderDTO {
@@ -74,6 +93,10 @@ export class SalesOrderDTO {
   @IsMongoId()
   @IsOptional()
   stageId?: string;
+
+  @IsEnum(SALES_ORDER_STATUSES)
+  @IsOptional()
+  status?: string;
 
   @IsNumber()
   @Min(0)

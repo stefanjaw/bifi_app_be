@@ -1,5 +1,6 @@
 import { ClientSession, Types } from "mongoose";
 import { BaseService } from "../../../system";
+import { fireNotification } from "../../notifications/services/notification-service";
 import { purchaseOrderModel, PurchaseOrderDocument } from "../models/purchase-order.model";
 import { PurchaseSettingsService } from "./purchase-settings-service";
 import { SequenceService } from "../../sequences/services/sequence-service";
@@ -167,10 +168,50 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
 
   async updateStatus(id: string, status: string) {
     const boundModel = this.connectionManager.bindModelToDb(this.model);
-    return await boundModel.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true }
-    );
+    const update: Record<string, any> = { status };
+
+    const existing = await boundModel
+      .findById(id)
+      .select("issueDate createdBy poNumber")
+      .lean();
+
+    if (status === "confirmed") {
+      if (!existing?.issueDate) {
+        update.issueDate = new Date();
+      }
+    }
+
+    const result = await boundModel.findByIdAndUpdate(id, update, { new: true });
+
+    // Alert 5: PO sent to supplier
+    if (status === "sent" && (existing as any)?.createdBy) {
+      await fireNotification({
+        context: { creator: (existing as any).createdBy },
+        type: "po_sent",
+        title: "Purchase Order sent",
+        body: `PO ${(existing as any).poNumber ?? id} has been sent to the supplier.`,
+        link: `/purchases/orders/${id}`,
+        module: "purchases",
+      });
+    }
+
+    // Alert 5: PO received / partially received
+    if (
+      (status === "received" || status === "partially_received") &&
+      (existing as any)?.createdBy
+    ) {
+      const label =
+        status === "received" ? "fully received" : "partially received";
+      await fireNotification({
+        context: { creator: (existing as any).createdBy },
+        type: "po_received",
+        title: `Purchase Order ${label}`,
+        body: `PO ${(existing as any).poNumber ?? id} has been ${label}.`,
+        link: `/purchases/orders/${id}`,
+        module: "purchases",
+      });
+    }
+
+    return result;
   }
 }

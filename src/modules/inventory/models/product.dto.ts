@@ -92,6 +92,10 @@ export class ProductDTO {
   @IsOptional()
   productKind?: string;
 
+  @IsString()
+  @IsOptional()
+  barcode?: string;
+
   @IsBoolean()
   @Transform(toBoolean)
   @IsOptional()

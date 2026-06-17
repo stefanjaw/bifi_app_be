@@ -20,7 +20,6 @@ export class TaskDTO {
   name!: string;
 
   @IsString()
-  @IsNotEmpty()
   @IsOptional()
   description?: string;
 

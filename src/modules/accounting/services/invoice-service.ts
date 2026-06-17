@@ -4,6 +4,7 @@ import {
   ValidationException,
   runTransaction,
 } from "../../../system";
+import { fireNotification } from "../../notifications/services/notification-service";
 import {
   journalEntryModel,
   JournalEntryDocument,
@@ -609,6 +610,21 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
 
       await model.findByIdAndUpdate(invoiceId, { amountDue }, { session: s });
 
+      // Alert 3: invoice fully paid
+      if (amountDue === 0) {
+        await fireNotification({
+          context: {
+            salesperson: (invoice as any).salespersonId,
+            creator: (invoice as any).createdBy,
+          },
+          type: "invoice_paid",
+          title: "Invoice fully paid",
+          body: `Invoice ${(invoice as any).number ?? invoiceId} has been fully paid.`,
+          link: `/accounting/invoices/edit/${invoiceId}`,
+          module: "accounting",
+        });
+      }
+
       return allPayments[allPayments.length - 1];
     });
   }
@@ -623,11 +639,25 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       if (invoice.status !== JournalEntryStatus.DRAFT)
         throw new ValidationException("Only draft invoices can be posted.");
 
-      return model.findByIdAndUpdate(
+      const result = await model.findByIdAndUpdate(
         id,
         { status: JournalEntryStatus.POSTED },
         { new: true, session: s },
-      ) as any;
+      );
+
+      await fireNotification({
+        type: "invoice_posted",
+        context: {
+          salesperson: (invoice as any).salespersonId,
+          creator: (invoice as any).createdBy,
+        },
+        title: "Invoice posted",
+        body: `Invoice ${(invoice as any).number ?? id} has been posted.`,
+        link: `/accounting/invoices/edit/${id}`,
+        module: "accounting",
+      });
+
+      return result as any;
     });
   }
 

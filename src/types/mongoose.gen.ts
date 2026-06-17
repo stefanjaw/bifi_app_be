@@ -618,7 +618,7 @@ export type JournalEntryLine = {
   productId?: InventoryProduct;
   quantity?: number;
   unitPrice?: number;
-  taxIds: (Tax["_id"] | Tax)[];
+  taxIds: Tax[];
   discountId?: Discount["_id"] | Discount;
   amount?: number;
   _id: mongoose.Types.ObjectId;
@@ -654,13 +654,32 @@ export type JournalEntry = {
   totalAmount?: number;
   amountDue?: number;
   crEinvoiceType?: "FE" | "ND" | "NC" | "TE" | "FEC" | "FEE" | "REP";
-  crEinvoiceStatus?: "draft" | "sent" | "accepted" | "rejected" | "received";
+  crEinvoiceStatus?:
+    | "draft"
+    | "pending"
+    | "sent"
+    | "accepted"
+    | "rejected"
+    | "received"
+    | "failed";
   crClave?: string;
   crNumeroConsecutivo?: string;
   crCondicionVentaId?: CrCondicionVenta;
   crMedioPagoId?: CrMedioPago;
   crPlazoCredito?: number;
+  crCodigoActividadEmisor?: string;
+  crCodigoActividadReceptor?: string;
   crHaciendaResponse?: any;
+  crReferenciaInvoiceId?: JournalEntry["_id"] | JournalEntry;
+  crInformacionReferencia: {
+    tipoDocIR?: string;
+    tipoDocRefOTRO?: string;
+    numero?: string;
+    fechaEmisionIR?: Date;
+    codigo?: string;
+    codigoReferenciaOTRO?: string;
+    razon?: string;
+  };
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -751,7 +770,7 @@ export type JournalEntryLineDocument =
     productId?: InventoryProductDocument;
     quantity?: number;
     unitPrice?: number;
-    taxIds: mongoose.Types.Array<TaxDocument["_id"] | TaxDocument>;
+    taxIds: mongoose.Types.Array<TaxDocument>;
     discountId?: DiscountDocument["_id"] | DiscountDocument;
     amount?: number;
     _id: mongoose.Types.ObjectId;
@@ -791,13 +810,32 @@ export type JournalEntryDocument = mongoose.Document<
     totalAmount?: number;
     amountDue?: number;
     crEinvoiceType?: "FE" | "ND" | "NC" | "TE" | "FEC" | "FEE" | "REP";
-    crEinvoiceStatus?: "draft" | "sent" | "accepted" | "rejected" | "received";
+    crEinvoiceStatus?:
+      | "draft"
+      | "pending"
+      | "sent"
+      | "accepted"
+      | "rejected"
+      | "received"
+      | "failed";
     crClave?: string;
     crNumeroConsecutivo?: string;
     crCondicionVentaId?: CrCondicionVentaDocument;
     crMedioPagoId?: CrMedioPagoDocument;
     crPlazoCredito?: number;
+    crCodigoActividadEmisor?: string;
+    crCodigoActividadReceptor?: string;
     crHaciendaResponse?: any;
+    crReferenciaInvoiceId?: JournalEntryDocument["_id"] | JournalEntryDocument;
+    crInformacionReferencia: {
+      tipoDocIR?: string;
+      tipoDocRefOTRO?: string;
+      numero?: string;
+      fechaEmisionIR?: Date;
+      codigo?: string;
+      codigoReferenciaOTRO?: string;
+      razon?: string;
+    };
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -4116,6 +4154,7 @@ export type Contact = {
   crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
   crEconomicActivityCodes: ContactCrEconomicActivityCode[];
   commercialName?: string;
+  crDistrito?: string;
   photo?: mongoose.Types.ObjectId;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -4236,6 +4275,7 @@ export type ContactDocument = mongoose.Document<
     crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
     crEconomicActivityCodes: mongoose.Types.DocumentArray<ContactCrEconomicActivityCodeDocument>;
     commercialName?: string;
+    crDistrito?: string;
     photo?: mongoose.Types.ObjectId;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
@@ -6657,6 +6697,7 @@ export type InventoryProduct = {
   defaultPurchaseTaxIds: (Tax["_id"] | Tax)[];
   codigoComercial?: string;
   productKind: "consumable" | "service" | "storable";
+  barcode?: string;
   active?: boolean;
   photo?: mongoose.Types.ObjectId | null;
   attachments: InventoryProductAttachment[];
@@ -6782,6 +6823,7 @@ export type InventoryProductDocument = mongoose.Document<
     >;
     codigoComercial?: string;
     productKind: "consumable" | "service" | "storable";
+    barcode?: string;
     active?: boolean;
     photo?: mongoose.Types.ObjectId | null;
     attachments: mongoose.Types.DocumentArray<InventoryProductAttachmentDocument>;
@@ -7569,6 +7611,25 @@ export type CrMedioPagoDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of CrEinvoiceSettingsCertificateFileDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CrEinvoiceSettingsDocument.toObject()`.
+ * ```
+ * const creinvoicesettingsObject = creinvoicesettings.toObject();
+ * ```
+ */
+export type CrEinvoiceSettingsCertificateFile = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
  * Lean version of CrEinvoiceSettingsDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CrEinvoiceSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `CrEinvoiceSettingsObject`.
@@ -7580,13 +7641,7 @@ export type CrEinvoiceSettings = {
   proveedorSistemas?: string;
   haciendaUsername?: string;
   haciendaPassword?: string;
-  certificateFile?: {
-    fileId: mongoose.Types.ObjectId;
-    name: string;
-    mimeType: string;
-    size: number;
-    fileMetadata?: object;
-  };
+  certificateFile?: CrEinvoiceSettingsCertificateFile;
   certificatePassword?: string;
   haciendaEnvironment?: "production" | "sandbox";
   codigoEstablecimiento?: string;
@@ -7679,6 +7734,26 @@ export type CrEinvoiceSettingsSchema = mongoose.Schema<
  * const CrEinvoiceSettings = mongoose.model<CrEinvoiceSettingsDocument, CrEinvoiceSettingsModel>("CrEinvoiceSettings", CrEinvoiceSettingsSchema);
  * ```
  */
+export type CrEinvoiceSettingsCertificateFileDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CrEinvoiceSettings = mongoose.model<CrEinvoiceSettingsDocument, CrEinvoiceSettingsModel>("CrEinvoiceSettings", CrEinvoiceSettingsSchema);
+ * ```
+ */
 export type CrEinvoiceSettingsDocument = mongoose.Document<
   mongoose.Types.ObjectId,
   CrEinvoiceSettingsQueries
@@ -7687,13 +7762,7 @@ export type CrEinvoiceSettingsDocument = mongoose.Document<
     proveedorSistemas?: string;
     haciendaUsername?: string;
     haciendaPassword?: string;
-    certificateFile?: {
-      fileId: mongoose.Types.ObjectId;
-      name: string;
-      mimeType: string;
-      size: number;
-      fileMetadata?: object;
-    };
+    certificateFile?: CrEinvoiceSettingsCertificateFileDocument;
     certificatePassword?: string;
     haciendaEnvironment?: "production" | "sandbox";
     codigoEstablecimiento?: string;
@@ -7831,6 +7900,262 @@ export type MaintenanceWindowDocument = mongoose.Document<
       | "quarterly"
       | "semi-anually"
       | "annually";
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of NotificationEventSettingsEventDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `NotificationEventSettingsDocument.toObject()`.
+ * ```
+ * const notificationeventsettingsObject = notificationeventsettings.toObject();
+ * ```
+ */
+export type NotificationEventSettingsEvent = {
+  type: string;
+  enabled: boolean;
+  recipients?: string[];
+};
+
+/**
+ * Lean version of NotificationEventSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `NotificationEventSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `NotificationEventSettingsObject`.
+ * ```
+ * const notificationeventsettingsObject = notificationeventsettings.toObject();
+ * ```
+ */
+export type NotificationEventSettings = {
+  events: NotificationEventSettingsEvent[];
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of NotificationEventSettingsDocument (type alias of `NotificationEventSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { NotificationEventSettings } from "../models"
+ * import { NotificationEventSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const notificationeventsettingsObject: NotificationEventSettingsObject = notificationeventsettings.toObject();
+ * ```
+ */
+export type NotificationEventSettingsObject = NotificationEventSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type NotificationEventSettingsQuery = mongoose.Query<
+  any,
+  NotificationEventSettingsDocument,
+  NotificationEventSettingsQueries
+> &
+  NotificationEventSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `NotificationEventSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type NotificationEventSettingsQueries = {
+  paginate: (
+    this: NotificationEventSettingsQuery,
+    ...args: any[]
+  ) => NotificationEventSettingsQuery;
+};
+
+export type NotificationEventSettingsMethods = {};
+
+export type NotificationEventSettingsStatics = {
+  paginate: (this: NotificationEventSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (
+    this: NotificationEventSettingsModel,
+    ...args: any[]
+  ) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const NotificationEventSettings = mongoose.model<NotificationEventSettingsDocument, NotificationEventSettingsModel>("NotificationEventSettings", NotificationEventSettingsSchema);
+ * ```
+ */
+export type NotificationEventSettingsModel = mongoose.Model<
+  NotificationEventSettingsDocument,
+  NotificationEventSettingsQueries
+> &
+  NotificationEventSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new NotificationEventSettings schema instances:
+ * ```
+ * const NotificationEventSettingsSchema: NotificationEventSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type NotificationEventSettingsSchema = mongoose.Schema<
+  NotificationEventSettingsDocument,
+  NotificationEventSettingsModel,
+  NotificationEventSettingsMethods,
+  NotificationEventSettingsQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `NotificationEventSettingsDocument["events"]` element.
+ */
+export type NotificationEventSettingsEventDocument =
+  mongoose.Types.Subdocument<any> & {
+    type: string;
+    enabled: boolean;
+    recipients?: mongoose.Types.Array<string>;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const NotificationEventSettings = mongoose.model<NotificationEventSettingsDocument, NotificationEventSettingsModel>("NotificationEventSettings", NotificationEventSettingsSchema);
+ * ```
+ */
+export type NotificationEventSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  NotificationEventSettingsQueries
+> &
+  NotificationEventSettingsMethods & {
+    events: mongoose.Types.DocumentArray<NotificationEventSettingsEventDocument>;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of NotificationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `NotificationDocument.toObject()`. To avoid conflicts with model names, use the type alias `NotificationObject`.
+ * ```
+ * const notificationObject = notification.toObject();
+ * ```
+ */
+export type Notification = {
+  userId: User["_id"] | User;
+  type: string;
+  title: string;
+  body?: string;
+  link?: string;
+  module?: string;
+  read?: boolean;
+  seen?: boolean;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of NotificationDocument (type alias of `Notification`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Notification } from "../models"
+ * import { NotificationObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const notificationObject: NotificationObject = notification.toObject();
+ * ```
+ */
+export type NotificationObject = Notification;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type NotificationQuery = mongoose.Query<
+  any,
+  NotificationDocument,
+  NotificationQueries
+> &
+  NotificationQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `NotificationSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type NotificationQueries = {
+  paginate: (this: NotificationQuery, ...args: any[]) => NotificationQuery;
+};
+
+export type NotificationMethods = {};
+
+export type NotificationStatics = {
+  paginate: (this: NotificationModel, ...args: any[]) => any;
+  paginateSubDocs: (this: NotificationModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Notification = mongoose.model<NotificationDocument, NotificationModel>("Notification", NotificationSchema);
+ * ```
+ */
+export type NotificationModel = mongoose.Model<
+  NotificationDocument,
+  NotificationQueries
+> &
+  NotificationStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Notification schema instances:
+ * ```
+ * const NotificationSchema: NotificationSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type NotificationSchema = mongoose.Schema<
+  NotificationDocument,
+  NotificationModel,
+  NotificationMethods,
+  NotificationQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Notification = mongoose.model<NotificationDocument, NotificationModel>("Notification", NotificationSchema);
+ * ```
+ */
+export type NotificationDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  NotificationQueries
+> &
+  NotificationMethods & {
+    userId: UserDocument["_id"] | UserDocument;
+    type: string;
+    title: string;
+    body?: string;
+    link?: string;
+    module?: string;
+    read?: boolean;
+    seen?: boolean;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -8718,6 +9043,7 @@ export type PurchaseStage = {
   color?: string;
   order?: number;
   active?: boolean;
+  isDefault?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -8811,6 +9137,7 @@ export type PurchaseStageDocument = mongoose.Document<
     color?: string;
     order?: number;
     active?: boolean;
+    isDefault?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -8831,6 +9158,7 @@ export type PurchaseOrderLineItem = {
   unitPrice: number;
   total: number;
   taxIds: (Tax["_id"] | Tax)[];
+  discountId?: Discount | null;
 };
 
 /**
@@ -8857,7 +9185,13 @@ export type PurchaseOrderTax = {
 export type PurchaseOrder = {
   poNumber: string;
   contactId: Contact;
-  status?: "draft" | "sent" | "partially_received" | "received" | "cancelled";
+  status?:
+    | "draft"
+    | "confirmed"
+    | "sent"
+    | "partially_received"
+    | "received"
+    | "cancelled";
   issueDate?: Date;
   expectedDeliveryDate?: Date;
   lineItems: PurchaseOrderLineItem[];
@@ -8955,6 +9289,7 @@ export type PurchaseOrderLineItemDocument = mongoose.Types.Subdocument<any> & {
   unitPrice: number;
   total: number;
   taxIds: mongoose.Types.Array<TaxDocument["_id"] | TaxDocument>;
+  discountId?: DiscountDocument | null;
 };
 
 /**
@@ -8982,7 +9317,13 @@ export type PurchaseOrderDocument = mongoose.Document<
   PurchaseOrderMethods & {
     poNumber: string;
     contactId: ContactDocument;
-    status?: "draft" | "sent" | "partially_received" | "received" | "cancelled";
+    status?:
+      | "draft"
+      | "confirmed"
+      | "sent"
+      | "partially_received"
+      | "received"
+      | "cancelled";
     issueDate?: Date;
     expectedDeliveryDate?: Date;
     lineItems: mongoose.Types.DocumentArray<PurchaseOrderLineItemDocument>;
@@ -9608,6 +9949,7 @@ export type SalesOrderLineItem = {
   unitPrice: number;
   total: number;
   taxIds: (Tax["_id"] | Tax)[];
+  discountId?: Discount | null;
 };
 
 /**
@@ -9645,6 +9987,13 @@ export type SalesOrder = {
   taxes: SalesOrderTax[];
   taxTotal?: number;
   grandTotal?: number;
+  status?:
+    | "draft"
+    | "quote"
+    | "confirmed"
+    | "shipped"
+    | "completed"
+    | "cancelled";
   notes?: string;
   number?: string;
   active?: boolean;
@@ -9735,6 +10084,7 @@ export type SalesOrderLineItemDocument = mongoose.Types.Subdocument<any> & {
   unitPrice: number;
   total: number;
   taxIds: mongoose.Types.Array<TaxDocument["_id"] | TaxDocument>;
+  discountId?: DiscountDocument | null;
 };
 
 /**
@@ -9773,6 +10123,13 @@ export type SalesOrderDocument = mongoose.Document<
     taxes: mongoose.Types.DocumentArray<SalesOrderTaxDocument>;
     taxTotal?: number;
     grandTotal?: number;
+    status?:
+      | "draft"
+      | "quote"
+      | "confirmed"
+      | "shipped"
+      | "completed"
+      | "cancelled";
     notes?: string;
     number?: string;
     active?: boolean;
@@ -9998,6 +10355,131 @@ export type SalesSettingsDocument = mongoose.Document<
   SalesSettingsMethods & {
     orderSequence?: SequenceDocument | null;
     description?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of SearchDestinationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SearchDestinationDocument.toObject()`. To avoid conflicts with model names, use the type alias `SearchDestinationObject`.
+ * ```
+ * const searchdestinationObject = searchdestination.toObject();
+ * ```
+ */
+export type SearchDestination = {
+  key: string;
+  label: string;
+  route: string;
+  icon?: string;
+  group?: string;
+  keywords: string[];
+  description?: string;
+  resource?: string;
+  active?: boolean;
+  isSystem?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of SearchDestinationDocument (type alias of `SearchDestination`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { SearchDestination } from "../models"
+ * import { SearchDestinationObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const searchdestinationObject: SearchDestinationObject = searchdestination.toObject();
+ * ```
+ */
+export type SearchDestinationObject = SearchDestination;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type SearchDestinationQuery = mongoose.Query<
+  any,
+  SearchDestinationDocument,
+  SearchDestinationQueries
+> &
+  SearchDestinationQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `SearchDestinationSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type SearchDestinationQueries = {
+  paginate: (
+    this: SearchDestinationQuery,
+    ...args: any[]
+  ) => SearchDestinationQuery;
+};
+
+export type SearchDestinationMethods = {};
+
+export type SearchDestinationStatics = {
+  paginate: (this: SearchDestinationModel, ...args: any[]) => any;
+  paginateSubDocs: (this: SearchDestinationModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SearchDestination = mongoose.model<SearchDestinationDocument, SearchDestinationModel>("SearchDestination", SearchDestinationSchema);
+ * ```
+ */
+export type SearchDestinationModel = mongoose.Model<
+  SearchDestinationDocument,
+  SearchDestinationQueries
+> &
+  SearchDestinationStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new SearchDestination schema instances:
+ * ```
+ * const SearchDestinationSchema: SearchDestinationSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type SearchDestinationSchema = mongoose.Schema<
+  SearchDestinationDocument,
+  SearchDestinationModel,
+  SearchDestinationMethods,
+  SearchDestinationQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SearchDestination = mongoose.model<SearchDestinationDocument, SearchDestinationModel>("SearchDestination", SearchDestinationSchema);
+ * ```
+ */
+export type SearchDestinationDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  SearchDestinationQueries
+> &
+  SearchDestinationMethods & {
+    key: string;
+    label: string;
+    route: string;
+    icon?: string;
+    group?: string;
+    keywords: mongoose.Types.Array<string>;
+    description?: string;
+    resource?: string;
+    active?: boolean;
+    isSystem?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

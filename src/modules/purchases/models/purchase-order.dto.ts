@@ -44,13 +44,17 @@ class LineItemDTO {
   @IsOptional()
   @Transform(({ value }) => value ?? [])
   taxIds?: string[];
+
+  @IsMongoId()
+  @IsOptional()
+  discountId?: string;
 }
 
 export class PurchaseOrderDTO {
   @IsMongoId()
   contactId!: string;
 
-  @IsEnum(["draft", "sent", "partially_received", "received", "cancelled"])
+  @IsEnum(["draft", "confirmed", "sent", "partially_received", "received", "cancelled"])
   @IsOptional()
   status?: string;
 
@@ -81,6 +85,7 @@ export class PurchaseOrderDTO {
 
   @IsMongoId()
   @IsOptional()
+  @Transform(({ value }) => value ?? undefined)
   stageId?: string;
 }
 
@@ -90,9 +95,6 @@ export class UpdatePurchaseOrderDTO extends PartialType(PurchaseOrderDTO) {
 }
 
 export class UpdatePurchaseOrderStatusDTO {
-  @IsMongoId()
-  _id!: string;
-
-  @IsEnum(["draft", "sent", "partially_received", "received", "cancelled"])
+  @IsEnum(["draft", "confirmed", "sent", "partially_received", "received", "cancelled"])
   status!: string;
 }

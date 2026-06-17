@@ -13,6 +13,7 @@ import {
   userStorage,
   ValidationException,
 } from "../../../system";
+import { fireNotification } from "../../notifications/services/notification-service";
 import { taskModel } from "../models/task.model";
 import mongoose from "mongoose";
 import { TaskDTO, UpdateTaskDTO } from "../models/task.dto";
@@ -132,13 +133,28 @@ export class TaskService extends BaseService<TaskDocument> {
           : dayjs().add(1, "day").toDate();
       }
 
-      return await super.create(
+      const actorId = userStorage.getStore()?.user?._id?.toString();
+      const created = await super.create(
         {
           ...data,
-          createdBy: userStorage.getStore()?.user?._id,
+          createdBy: actorId,
         },
         newSession,
       );
+
+      // Alert 8: task assigned on creation
+      if (data.assigned) {
+        await fireNotification({
+          type: "task_assigned",
+          context: { assignee: data.assigned, creator: actorId },
+          title: "Task assigned to you",
+          body: `A new task has been assigned to you.`,
+          link: `/tasks/${created._id}`,
+          module: "tasks",
+        });
+      }
+
+      return created;
     });
   }
 
@@ -171,13 +187,31 @@ export class TaskService extends BaseService<TaskDocument> {
         );
       }
 
-      return await super.update(
+      const actorId = userStorage.getStore()?.user?._id?.toString();
+      const updated = await super.update(
         {
           ...data,
-          updatedBy: userStorage.getStore()?.user?._id,
+          updatedBy: actorId,
         },
         newSession,
       );
+
+      // Alert 8: task assigned on update (fires whenever assigned is explicitly submitted)
+      if (data.assigned !== undefined) {
+        const newAssigned = data.assigned?.toString?.();
+        if (newAssigned) {
+          await fireNotification({
+            type: "task_assigned",
+            context: { assignee: data.assigned, creator: actorId },
+            title: "Task assigned to you",
+            body: `A task has been assigned to you.`,
+            link: `/tasks/${(updated as any)._id}`,
+            module: "tasks",
+          });
+        }
+      }
+
+      return updated;
     });
   }
 

@@ -73,6 +73,10 @@ const productSchema = new Schema(
       required: true,
       default: "storable",
     },
+    barcode: {
+      type: String,
+      default: '',
+    },
     active: {
       type: Boolean,
       default: true,

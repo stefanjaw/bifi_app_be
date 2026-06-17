@@ -18,6 +18,13 @@ const lineItemSchema = new Schema(
     unitPrice: { type: Number, required: true, min: 0 },
     total: { type: Number, required: true, min: 0 },
     taxIds: [{ type: Schema.Types.ObjectId, ref: "Tax" }],
+    discountId: {
+      type: Schema.Types.ObjectId,
+      ref: "Discount",
+      required: false,
+      default: null,
+      autopopulate: { select: "name discountType value", maxDepth: 1 },
+    },
   },
   { _id: false }
 );
@@ -41,10 +48,10 @@ const purchaseOrderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["draft", "sent", "partially_received", "received", "cancelled"],
+      enum: ["draft", "confirmed", "sent", "partially_received", "received", "cancelled"],
       default: "draft",
     },
-    issueDate: { type: Date, default: Date.now },
+    issueDate: { type: Date },
     expectedDeliveryDate: { type: Date },
     lineItems: [lineItemSchema],
     subtotal: { type: Number, default: 0 },

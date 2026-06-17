@@ -19,6 +19,7 @@ import { HelpdeskStageService } from "../../helpdesk-stages/services/helpdesk-st
 import { TicketRuleService } from "./ticket-rule-service";
 import { SequenceService } from "../../sequences/services/sequence-service";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
+import { fireNotification } from "../../notifications/services/notification-service";
 import dayjs from "dayjs";
 
 type Priority = "low" | "medium" | "high" | "urgent";
@@ -425,6 +426,17 @@ export class TicketService extends BaseService<TicketDocument> {
         if (stageName.includes("resolved")) {
           stageEventType = "resolved";
           if (!existing?.resolvedAt) sideEffects["resolvedAt"] = new Date();
+          await fireNotification({
+            type: "ticket_resolved",
+            context: {
+              assignee: getDocumentIdString(existing?.assigned),
+              reporter: getDocumentIdString(existing?.senderUser),
+            },
+            title: "Helpdesk ticket resolved",
+            body: `Ticket "${(existing as any)?.name ?? data._id}" has been resolved.`,
+            link: `/helpdesk/${(data as any)._id}`,
+            module: "helpdesk",
+          });
         } else if (stageName.includes("closed")) {
           stageEventType = "closed";
           if (!existing?.resolvedAt) sideEffects["resolvedAt"] = new Date();
@@ -497,6 +509,17 @@ export class TicketService extends BaseService<TicketDocument> {
             isRead: false,
           });
         }
+        await fireNotification({
+          type: "ticket_assigned",
+          context: {
+            assignee: data.assigned,
+            creator: getDocumentIdString(changedBy),
+          },
+          title: "Helpdesk ticket assigned to you",
+          body: `Ticket "${(existing as any)?.name ?? data._id}" has been assigned to you.`,
+          link: `/helpdesk/${(data as any)._id}`,
+          module: "helpdesk",
+        });
       }
 
       const hasSideEffects =

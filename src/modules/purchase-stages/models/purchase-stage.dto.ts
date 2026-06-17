@@ -31,6 +31,11 @@ export class PurchaseStageDTO {
   @Transform(toBoolean)
   @IsOptional()
   active?: boolean;
+
+  @IsBoolean()
+  @Transform(toBoolean)
+  @IsOptional()
+  isDefault?: boolean;
 }
 
 export class UpdatePurchaseStageDTO extends PartialType(PurchaseStageDTO) {

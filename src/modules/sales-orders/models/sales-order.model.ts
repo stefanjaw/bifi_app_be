@@ -19,6 +19,13 @@ const lineItemSchema = new Schema(
     unitPrice: { type: Number, required: true, min: 0 },
     total: { type: Number, required: true, min: 0 },
     taxIds: [{ type: Schema.Types.ObjectId, ref: "Tax" }],
+    discountId: {
+      type: Schema.Types.ObjectId,
+      ref: "Discount",
+      required: false,
+      default: null,
+      autopopulate: { select: "name discountType value", maxDepth: 1 },
+    },
   },
   { _id: false }
 );
@@ -115,6 +122,11 @@ const salesOrderSchema = new Schema(
       type: Number,
       default: 0,
       min: 0,
+    },
+    status: {
+      type: String,
+      enum: ['draft', 'quote', 'confirmed', 'shipped', 'completed', 'cancelled'],
+      default: 'draft',
     },
     notes: {
       type: String,

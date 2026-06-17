@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { UnauthorizedException, userStorage } from "../libraries";
+import { ConnectionManager } from "../libraries/base-module/connection-manager";
 import { UserService } from "../../modules";
 import { userModel } from "../../modules/users/models/user.model";
 import admin from "firebase-admin";
@@ -64,47 +65,100 @@ export function authenticateMiddleware(userService: UserService) {
         )
       )?.[0];
 
-      // Populate roles+policies for permission checks — only needed here (/me)
-      // and in getById (user edit form). Plain get() no longer does this so that
-      // user dropdowns don't over-fetch role data for every user.
-      if (user) {
-        await userModel.populate(user, {
-          path: "roles",
-          populate: { path: "policies.policyId" },
-        });
-      }
+      // The user's Firebase uid (authId) was not found. Before creating a new
+      // account, check whether one already exists for this email — if so, the
+      // uid simply changed (re-created Firebase identity), so re-point that
+      // account's authId instead of spawning a duplicate. The email match is
+      // case-insensitive to align with the unique email index, otherwise a
+      // casing difference would miss the existing account and the create below
+      // would hit the unique-index duplicate-key error.
+      // Bind the user model to the request's tenant DB (chosen via the `dbname`
+      // header / userStorage) so the rebind find+update hit the SAME database
+      // that userService.get/create use. Raw userModel would target the default
+      // connection and could miss the existing account (or mutate the wrong DB).
+      const boundUserModel = new ConnectionManager().bindModelToDb(userModel);
 
-      // if user is found but not active, throw an error
-      if (user && !user.active) {
-        next(
-          new UnauthorizedException(
-            "Error authenticating, account is disabled",
-          ),
+      const rebindExistingByEmail = async (email: string) => {
+        const existing = await boundUserModel
+          .findOne({ email })
+          .collation({ locale: "en", strength: 2 });
+
+        if (!existing) return undefined;
+
+        await boundUserModel.updateOne(
+          { _id: existing._id },
+          { $set: { authId: firebaseUser.uid } },
         );
-        return;
+
+        return (
+          await userService.get(
+            { authId: firebaseUser.uid },
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+          )
+        )?.[0];
+      };
+
+      if (!user && firebaseUser.email) {
+        user = await rebindExistingByEmail(firebaseUser.email);
       }
 
       if (!user) {
         const [fName, lName] = (firebaseUser.name || " ").split(" ");
 
-        user = await userService.create(
-          {
-            authId: firebaseUser.uid,
-            provider: firebaseUser.firebase.sign_in_provider,
-            username: firebaseUser.email || "Email not provided",
-            email: firebaseUser.email || "Email not provided",
-            picture: firebaseUser.picture,
-            contactInformation: {
+        try {
+          user = await userService.create(
+            {
+              authId: firebaseUser.uid,
+              provider: firebaseUser.firebase.sign_in_provider,
+              username: firebaseUser.email || "Email not provided",
               email: firebaseUser.email || "Email not provided",
-              phoneNumber: firebaseUser.phone_number || "Phone not provided",
-              active: true,
-              name: fName || "Name not provided",
-              lastName: lName || "last name not provided",
-              type: "individual",
+              picture: firebaseUser.picture,
+              contactInformation: {
+                email: firebaseUser.email || "Email not provided",
+                phoneNumber: firebaseUser.phone_number || "Phone not provided",
+                active: true,
+                name: fName || "Name not provided",
+                lastName: lName || "last name not provided",
+                type: "individual",
+              },
             },
-          },
-          undefined,
-        );
+            undefined,
+          );
+        } catch (createError) {
+          // A case-different / concurrently-created account already owns this
+          // email under the case-insensitive unique index — rebind it rather
+          // than failing the login.
+          if (
+            (createError as { code?: number })?.code === 11000 &&
+            firebaseUser.email
+          ) {
+            user = await rebindExistingByEmail(firebaseUser.email);
+          }
+          if (!user) throw createError;
+        }
+      }
+
+      // Populate roles+policies for permission checks — only needed here (/me)
+      // and in getById (user edit form). Plain get() no longer does this so that
+      // user dropdowns don't over-fetch role data for every user.
+      if (user) {
+        await boundUserModel.populate(user, {
+          path: "roles",
+          populate: { path: "policies.policyId" },
+        });
+
+        // if user is found but not active, throw an error
+        if (!user.active) {
+          next(
+            new UnauthorizedException(
+              "Error authenticating, account is disabled",
+            ),
+          );
+          return;
+        }
       }
 
       if (storage) {
