@@ -95,10 +95,15 @@ export class CrEinvoiceJsonBuilderService {
       emisorContact?.crEconomicActivityCodes?.[0]?.code ||
       "";
 
+    // TE XSD does not have CodigoActividadReceptor — omit it for Tiquete Electrónico.
+    // FEC requires it (server throws if absent); all other types accept it as optional.
+    const einvoiceType: string = entry.crEinvoiceType ?? "FE";
     const codigoActividadReceptor: string | undefined =
-      entry.crCodigoActividadReceptor ||
-      contactData?.crEconomicActivityCodes?.[0]?.code ||
-      undefined;
+      einvoiceType === "TE"
+        ? undefined
+        : entry.crCodigoActividadReceptor ||
+          contactData?.crEconomicActivityCodes?.[0]?.code ||
+          undefined;
 
     // ── LineaDetalle ─────────────────────────────────────────────────────────
     let totalServGravados = 0;
@@ -306,10 +311,22 @@ export class CrEinvoiceJsonBuilderService {
 
     facturaElectronica.PDF = pdfBase64;
 
+    const EINVOICE_ROOT_KEYS: Record<string, string> = {
+      FE: "FacturaElectronica",
+      ND: "NotaDebitoElectronica",
+      NC: "NotaCreditoElectronica",
+      TE: "TiqueteElectronico",
+      FEC: "FacturaElectronicaCompra",
+      FEE: "FacturaElectronicaExportacion",
+      REP: "ReciboElectronicoPago",
+    };
+    const rootKey =
+      EINVOICE_ROOT_KEYS[entry.crEinvoiceType ?? "FE"] ?? "FacturaElectronica";
+
     return {
       invoice: {
         fe_version: settings.feVersion ?? "4.4",
-        FacturaElectronica: facturaElectronica,
+        [rootKey]: facturaElectronica,
       },
       certificate,
       token_user_name: settings.haciendaUsername ?? "",

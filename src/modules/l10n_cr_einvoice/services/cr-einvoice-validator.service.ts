@@ -55,10 +55,14 @@ export class CrEinvoiceValidatorService {
     }
 
     // ── Receptor (contact) ────────────────────────────────────────────────────
-    if (!invoice.contactId) {
-      errors.push("Factura: falta el receptor. Debe asignar un contacto a la factura.");
-    } else {
-      const contact = invoice.contactId as any;
+    // Contact rules by document type:
+    //   TE           — entirely optional; if present, only Nombre required.
+    //   NC, ND       — optional (may be created from a TE with no contact);
+    //                  if present, full FE-style validation applies.
+    //   FE/FEC/FEE/REP — required; full FE-style validation applies.
+    const einvoiceType: string = invoice.crEinvoiceType ?? "FE";
+
+    const validateFullReceptor = (contact: any) => {
       if (!contact.name) {
         errors.push("Receptor: el contacto no tiene nombre.");
       }
@@ -68,7 +72,6 @@ export class CrEinvoiceValidatorService {
       if (!contact.crVatType) {
         errors.push("Receptor: el contacto no tiene tipo de identificación configurado (crVatType).");
       }
-      // Actividad económica del receptor
       const hasReceptorActivity =
         invoice.crCodigoActividadReceptor?.trim() ||
         (contact?.crEconomicActivityCodes ?? []).length > 0;
@@ -77,9 +80,31 @@ export class CrEinvoiceValidatorService {
           "Receptor: el contacto no tiene actividades económicas configuradas. Configure al menos una en el contacto, y selecciónela en la factura."
         );
       }
-      // Nombre comercial del receptor
       if (!contact.commercialName?.trim()) {
         errors.push("Receptor: el contacto no tiene nombre comercial (NombreComercial).");
+      }
+    };
+
+    if (einvoiceType === "TE") {
+      // TE: receptor entirely optional; only Nombre required when present
+      if (invoice.contactId) {
+        const contact = invoice.contactId as any;
+        if (!contact.name) {
+          errors.push("Receptor (TE): el contacto asignado no tiene nombre.");
+        }
+      }
+    } else if (einvoiceType === "NC" || einvoiceType === "ND") {
+      // NC/ND: receptor optional (can originate from a TE with no contact);
+      // when present, full FE-style validation applies
+      if (invoice.contactId) {
+        validateFullReceptor(invoice.contactId as any);
+      }
+    } else {
+      // FE, FEC, FEE, REP: receptor is required
+      if (!invoice.contactId) {
+        errors.push("Factura: falta el receptor. Debe asignar un contacto a la factura.");
+      } else {
+        validateFullReceptor(invoice.contactId as any);
       }
     }
 
