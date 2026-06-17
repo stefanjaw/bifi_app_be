@@ -85,4 +85,21 @@ export class SequenceService extends BaseService<SequenceDocument> {
     const formatted = seq.number.toString().padStart(seq.size, "0");
     return `${seq.prefix}${formatted}${seq.suffix ?? ""}`;
   }
+
+  async getNextCounterByName(name: string): Promise<string> {
+    const model = this.connectionManager.bindModelToDb(this.model);
+    const seq = await model.findOneAndUpdate(
+      { name, active: true },
+      [{ $set: { number: { $add: ["$number", "$step"] } } }],
+      { new: false }
+    );
+
+    if (!seq) {
+      throw new NotFoundException(
+        `No active sequence found for name "${name}". Please configure it in Accounting → Sequences before submitting.`
+      );
+    }
+
+    return seq.number.toString().padStart(seq.size, "0");
+  }
 }

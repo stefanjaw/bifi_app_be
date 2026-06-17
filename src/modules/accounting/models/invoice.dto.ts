@@ -6,11 +6,39 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  MaxLength,
   Min,
   ValidateNested,
 } from "class-validator";
 import { plainToInstance, Transform, Type } from "class-transformer";
 import { PartialType } from "../../../system";
+
+export class CrInformacionReferenciaDTO {
+  @IsString()
+  tipoDocIR!: string;
+
+  @IsString()
+  @IsOptional()
+  tipoDocRefOTRO?: string;
+
+  @IsString()
+  numero!: string;
+
+  @IsDate()
+  @Type(() => Date)
+  fechaEmisionIR!: Date;
+
+  @IsString()
+  codigo!: string;
+
+  @IsString()
+  @IsOptional()
+  codigoReferenciaOTRO?: string;
+
+  @IsString()
+  @MaxLength(180)
+  razon!: string;
+}
 
 export class AccountingInvoiceLineDTO {
   @IsString()
@@ -142,6 +170,15 @@ export class AccountingInvoiceDTO {
   @IsString()
   @IsOptional()
   crCodigoActividadReceptor?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  crReferenciaInvoiceId?: string;
+
+  @ValidateNested()
+  @Type(() => CrInformacionReferenciaDTO)
+  @IsOptional()
+  crInformacionReferencia?: CrInformacionReferenciaDTO;
 }
 
 export class UpdateAccountingInvoiceDTO extends PartialType(AccountingInvoiceDTO) {

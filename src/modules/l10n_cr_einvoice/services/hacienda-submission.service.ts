@@ -26,18 +26,31 @@ export class HaciendaSubmissionService {
       });
 
       const data = response.data;
+      console.log("[Hacienda] Custom server response:", JSON.stringify(data));
 
-      // Detect application-level errors even when the HTTP status is 2xx
-      if (
+      // Unwrap JSON-RPC 2.0 envelope if present ({ jsonrpc, id, result: {...} })
+      // pollStatus does the same — errors may live inside result, not at the top level
+      const unwrapped: any = data?.result !== undefined ? data.result : data;
+
+      // Detect application-level errors even when the HTTP status is 2xx.
+      // Check both the JSON-RPC envelope level (data.error) and the unwrapped result.
+      const hasError =
         data?.error ||
-        data?.success === false ||
-        data?.status === "error" ||
-        data?.status === "failed" ||
-        (typeof data?.message === "string" && /error|fail/i.test(data.message))
-      ) {
+        unwrapped?.error ||
+        unwrapped?.success === false ||
+        unwrapped?.status === "error" ||
+        unwrapped?.status === "failed" ||
+        (typeof unwrapped?.message === "string" &&
+          /error|fail|exception|validationerror/i.test(unwrapped.message)) ||
+        (typeof unwrapped?.detalleMensaje === "string" &&
+          /error|fail|exception/i.test(unwrapped.detalleMensaje)) ||
+        (typeof data === "string" && /error|fail|exception/i.test(data));
+
+      if (hasError) {
         const msg =
-          data?.message ??
-          data?.error ??
+          unwrapped?.message ??
+          unwrapped?.detalleMensaje ??
+          (typeof data?.error === "string" ? data.error : data?.error?.message) ??
           data?.error_description ??
           "Custom FE server returned an error response.";
         const err: any = new Error(msg);
@@ -45,7 +58,7 @@ export class HaciendaSubmissionService {
         throw err;
       }
 
-      return data;
+      return unwrapped;
     }
 
     const token = await haciendaAuthService.getToken(settings);

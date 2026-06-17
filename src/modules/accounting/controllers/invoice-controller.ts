@@ -63,4 +63,14 @@ export class InvoiceController extends BaseController<JournalEntryDocument> {
       next(error);
     }
   };
+
+  createNote = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { noteType, codigo, codigoReferenciaOTRO, razon } = req.body;
+      const result = await invoiceService.createNote(req.params.id, noteType, codigo, razon, codigoReferenciaOTRO);
+      this.sendData(res, result);
+    } catch (error: any) {
+      next(error);
+    }
+  };
 }

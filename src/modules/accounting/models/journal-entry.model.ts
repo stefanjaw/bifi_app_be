@@ -203,6 +203,21 @@ const journalEntrySchema = new Schema(
     crCodigoActividadEmisor: { type: String, required: false },
     crCodigoActividadReceptor: { type: String, required: false },
     crHaciendaResponse: { type: Schema.Types.Mixed, required: false },
+    crReferenciaInvoiceId: {
+      type: Schema.Types.ObjectId,
+      ref: "JournalEntry",
+      required: false,
+    },
+    crInformacionReferencia: {
+      tipoDocIR:      { type: String, required: false },
+      tipoDocRefOTRO: { type: String, required: false },
+      numero:                { type: String, required: false },
+      fechaEmisionIR:        { type: Date,   required: false },
+      codigo:                { type: String, required: false },
+      codigoReferenciaOTRO:  { type: String, required: false },
+      razon:                 { type: String, maxlength: 180, required: false },
+      _id: false,
+    },
   },
   { timestamps: true }
 );

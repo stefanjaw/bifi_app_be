@@ -443,6 +443,10 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         crUpdate.crCodigoActividadEmisor = fields.crCodigoActividadEmisor || null;
       if (fields.crCodigoActividadReceptor !== undefined)
         crUpdate.crCodigoActividadReceptor = fields.crCodigoActividadReceptor || null;
+      if (fields.crReferenciaInvoiceId !== undefined)
+        crUpdate.crReferenciaInvoiceId = fields.crReferenciaInvoiceId || null;
+      if (fields.crInformacionReferencia !== undefined)
+        crUpdate.crInformacionReferencia = fields.crInformacionReferencia;
 
       return model.findByIdAndUpdate(
         _id,
@@ -469,6 +473,85 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         { new: true, session: s },
       ) as any;
     });
+  }
+
+  async createNote(
+    sourceInvoiceId: string,
+    noteType: "NC" | "ND",
+    codigo: string,
+    razon: string,
+    codigoReferenciaOTRO?: string,
+  ): Promise<JournalEntryDocument> {
+    const model = this.connectionManager.bindModelToDb(this.model);
+    const source = await model.findById(sourceInvoiceId).lean();
+    if (!source) throw new ValidationException("Source invoice not found.");
+    if (!source.isInvoice)
+      throw new ValidationException("Document is not an invoice.");
+
+    const sourceType: string = (source as any).crEinvoiceType ?? "FE";
+    const tipoDocMap: Record<string, string> = {
+      FE: "01", ND: "02", NC: "03", TE: "04",
+      // FEC: NC→17, ND→18 per Nota 10 v4.4; FEE/REP have no dedicated code → fallback "01"
+      FEE: "01", REP: "01",
+    };
+    let sourceTipoDoc: string;
+    if (sourceType === "FEC") {
+      sourceTipoDoc = noteType === "NC" ? "17" : "18";
+    } else {
+      sourceTipoDoc = tipoDocMap[sourceType] ?? "01";
+    }
+
+    const newInvoiceData: any = {
+      isInvoice: true,
+      status: JournalEntryStatus.DRAFT,
+      journalId: (source as any).journalId,
+      date: new Date(),
+      contactId: (source as any).contactId,
+      currencyId: (source as any).currencyId,
+      paymentTermId: (source as any).paymentTermId,
+      dueDate: (source as any).dueDate,
+      salespersonId: (source as any).salespersonId,
+      fiscalPositionId: (source as any).fiscalPositionId,
+      companyId: (source as any).companyId,
+      reference: (source as any).reference,
+      paymentReference: (source as any).paymentReference,
+      lines: ((source as any).lines ?? []).map((l: any) => ({
+        accountId: l.accountId,
+        description: l.description,
+        debit: l.debit,
+        credit: l.credit,
+        lineType: l.lineType,
+        productId: l.productId,
+        quantity: l.quantity,
+        unitPrice: l.unitPrice,
+        taxIds: l.taxIds,
+        discountId: l.discountId,
+        amount: l.amount,
+      })),
+      untaxedAmount: (source as any).untaxedAmount,
+      taxAmount: (source as any).taxAmount,
+      totalAmount: (source as any).totalAmount,
+      amountDue: (source as any).amountDue,
+      active: true,
+      crEinvoiceType: noteType,
+      crCondicionVentaId: (source as any).crCondicionVentaId,
+      crMedioPagoId: (source as any).crMedioPagoId,
+      crPlazoCredito: (source as any).crPlazoCredito,
+      crCodigoActividadEmisor: (source as any).crCodigoActividadEmisor,
+      crCodigoActividadReceptor: (source as any).crCodigoActividadReceptor,
+      crReferenciaInvoiceId: (source as any)._id,
+      crInformacionReferencia: {
+        tipoDocIR: sourceTipoDoc,
+        numero: (source as any).crClave ?? "",
+        fechaEmisionIR: (source as any).date,
+        codigo,
+        ...(codigoReferenciaOTRO ? { codigoReferenciaOTRO } : {}),
+        razon,
+      },
+    };
+
+    const [created] = await model.create([newInvoiceData]);
+    return created;
   }
 
   async getPayments(invoiceId: string): Promise<any[]> {
@@ -602,18 +685,10 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     const tipoComprobanteCode = TIPO_COMPROBANTE_CODES[einvoiceType] ?? "01";
 
     const seqName = `CrEInvoice-${einvoiceType}`;
-    const seqPrefix = `CrEInvoice-${einvoiceType}-`;
-    const seqResult = await sequenceService.getNextNumberOrCreate(
-      seqName,
-      seqPrefix,
-      10,
-      1,
-    );
-    const counter = seqResult.replace(seqPrefix, "");
+    const counter = await sequenceService.getNextCounterByName(seqName);
 
-    const codigoEstablecimiento = settings.codigoEstablecimiento ?? "001";
-    const codigoPuntoVenta = settings.codigoPuntoVenta ?? "00001";
-
+    const codigoEstablecimiento = (settings as any).codigoEstablecimiento ?? "001";
+    const codigoPuntoVenta = (settings as any).codigoPuntoVenta ?? "00001";
     const numeroConsecutivo = buildNumeroConsecutivo(
       codigoEstablecimiento,
       codigoPuntoVenta,

@@ -108,7 +108,10 @@ export class CrEinvoiceJsonBuilderService {
     let linesTotalImpuesto = 0;
 
     // Tax breakdown map keyed by "crCodigo|crCodigoTarifa"
-    const taxBreakdown: Map<string, { Codigo: string; CodigoTarifaIVA: string; total: number }> = new Map();
+    const taxBreakdown: Map<
+      string,
+      { Codigo: string; CodigoTarifaIVA: string; total: number }
+    > = new Map();
 
     const lineaDetalle = productLines.map((line: any, index: number) => {
       const cantidad = line.quantity ?? 1;
@@ -140,15 +143,21 @@ export class CrEinvoiceJsonBuilderService {
       // Accumulate service/goods subtotals (pre-tax)
       if (firstTax) {
         if (isService) {
-          totalServGravados = parseFloat((totalServGravados + subTotal).toFixed(5));
+          totalServGravados = parseFloat(
+            (totalServGravados + subTotal).toFixed(5),
+          );
         } else {
-          totalMercanciasGravadas = parseFloat((totalMercanciasGravadas + subTotal).toFixed(5));
+          totalMercanciasGravadas = parseFloat(
+            (totalMercanciasGravadas + subTotal).toFixed(5),
+          );
         }
         // Tax breakdown per code
         const key = `${firstTax.crCodigo}|${firstTax.crCodigoTarifa ?? ""}`;
         const existing = taxBreakdown.get(key);
         if (existing) {
-          existing.total = parseFloat((existing.total + impuestoNeto).toFixed(5));
+          existing.total = parseFloat(
+            (existing.total + impuestoNeto).toFixed(5),
+          );
         } else {
           taxBreakdown.set(key, {
             Codigo: firstTax.crCodigo,
@@ -158,13 +167,19 @@ export class CrEinvoiceJsonBuilderService {
         }
       } else {
         if (isService) {
-          totalServExentos = parseFloat((totalServExentos + subTotal).toFixed(5));
+          totalServExentos = parseFloat(
+            (totalServExentos + subTotal).toFixed(5),
+          );
         } else {
-          totalMercanciasExentas = parseFloat((totalMercanciasExentas + subTotal).toFixed(5));
+          totalMercanciasExentas = parseFloat(
+            (totalMercanciasExentas + subTotal).toFixed(5),
+          );
         }
       }
 
-      linesTotalImpuesto = parseFloat((linesTotalImpuesto + impuestoNeto).toFixed(5));
+      linesTotalImpuesto = parseFloat(
+        (linesTotalImpuesto + impuestoNeto).toFixed(5),
+      );
 
       const montoTotalLinea = parseFloat((subTotal + impuestoNeto).toFixed(5));
 
@@ -197,13 +212,20 @@ export class CrEinvoiceJsonBuilderService {
     });
 
     // ── ResumenFactura totals — calculated from line items ────────────────────
-    const totalGravado = parseFloat((totalServGravados + totalMercanciasGravadas).toFixed(5));
-    const totalExento = parseFloat((totalServExentos + totalMercanciasExentas).toFixed(5));
+    const totalGravado = parseFloat(
+      (totalServGravados + totalMercanciasGravadas).toFixed(5),
+    );
+    const totalExento = parseFloat(
+      (totalServExentos + totalMercanciasExentas).toFixed(5),
+    );
     const totalVenta = parseFloat((totalGravado + totalExento).toFixed(5));
-    const totalVentaNeta: number = totalVenta > 0 ? totalVenta : (entry.untaxedAmount ?? 0);
+    const totalVentaNeta: number =
+      totalVenta > 0 ? totalVenta : (entry.untaxedAmount ?? 0);
     const totalImpuesto: number =
       totalVenta > 0 ? linesTotalImpuesto : (entry.taxAmount ?? 0);
-    const totalComprobante = parseFloat((totalVentaNeta + totalImpuesto).toFixed(5));
+    const totalComprobante = parseFloat(
+      (totalVentaNeta + totalImpuesto).toFixed(5),
+    );
 
     // TotalDesgloseImpuesto — required when taxed lines exist
     const totalDesgloseImpuesto =
@@ -224,12 +246,12 @@ export class CrEinvoiceJsonBuilderService {
     if (totalServExentos > 0)
       resumenFactura.TotalServExentos = totalServExentos.toFixed(5);
     if (totalMercanciasGravadas > 0)
-      resumenFactura.TotalMercanciasGravadas = totalMercanciasGravadas.toFixed(5);
+      resumenFactura.TotalMercanciasGravadas =
+        totalMercanciasGravadas.toFixed(5);
     if (totalMercanciasExentas > 0)
       resumenFactura.TotalMercanciasExentas = totalMercanciasExentas.toFixed(5);
     resumenFactura.TotalGravado = totalGravado.toFixed(5);
-    if (totalExento > 0)
-      resumenFactura.TotalExento = totalExento.toFixed(5);
+    if (totalExento > 0) resumenFactura.TotalExento = totalExento.toFixed(5);
     resumenFactura.TotalVenta = totalVenta.toFixed(5);
     resumenFactura.TotalVentaNeta = totalVentaNeta.toFixed(5);
     if (totalDesgloseImpuesto)
@@ -254,6 +276,22 @@ export class CrEinvoiceJsonBuilderService {
       DetalleServicio: { LineaDetalle: lineaDetalle },
       ResumenFactura: resumenFactura,
     };
+
+    // ── InformacionReferencia — required for NC / ND ──────────────────────────
+    const ref = entry.crInformacionReferencia;
+    if (ref?.tipoDocIR) {
+      facturaElectronica.InformacionReferencia = {
+        TipoDocIR: ref.tipoDocIR,
+        ...(ref.tipoDocRefOTRO ? { TipoDocRefOTRO: ref.tipoDocRefOTRO } : {}),
+        Numero: ref.numero,
+        FechaEmisionIR: this.formatFechaEmision(new Date(ref.fechaEmisionIR)),
+        Codigo: ref.codigo,
+        ...(ref.codigoReferenciaOTRO
+          ? { CodigoReferenciaOTRO: ref.codigoReferenciaOTRO }
+          : {}),
+        Razon: ref.razon,
+      };
+    }
 
     const [certificate, pdfBase64] = await Promise.all([
       this.resolveCertificateBase64(settings),

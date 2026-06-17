@@ -53,5 +53,11 @@ export class InvoiceRouter extends BaseRoutes<JournalEntryDocument> {
       authorizeMiddleware("accounting/invoices", "update"),
       invoiceController.pollEinvoiceStatus
     );
+
+    this.router.post(
+      "/accounting/invoices/:id/create-note",
+      authorizeMiddleware("accounting/invoices", "create"),
+      invoiceController.createNote
+    );
   }
 }
