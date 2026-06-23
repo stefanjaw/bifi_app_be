@@ -104,6 +104,7 @@ import {
   MedioPagoRouter,
   CrEinvoiceSettingsRouter,
   CrEinvoicePublicRouter,
+  CrEinvoiceActionRouter,
   SearchDestinationRouter,
   SearchRouter,
   NotificationRouter,
@@ -259,6 +260,7 @@ app.use("/api", new NotificationSettingsRouter().getRouter);
 app.use("/api", new CondicionVentaRouter().getRouter);
 app.use("/api", new MedioPagoRouter().getRouter);
 app.use("/api", new CrEinvoiceSettingsRouter().getRouter);
+app.use("/api", new CrEinvoiceActionRouter().getRouter);
 
 // health check route
 app.get("/api/health-check", (req, res) => {

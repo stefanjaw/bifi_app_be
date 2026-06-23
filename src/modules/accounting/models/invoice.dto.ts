@@ -15,21 +15,25 @@ import { PartialType } from "../../../system";
 
 export class CrInformacionReferenciaDTO {
   @IsString()
-  tipoDocIR!: string;
+  @IsOptional()
+  tipoDocIR?: string;
 
   @IsString()
   @IsOptional()
   tipoDocRefOTRO?: string;
 
   @IsString()
-  numero!: string;
+  @IsOptional()
+  numero?: string;
 
   @IsDate()
   @Type(() => Date)
-  fechaEmisionIR!: Date;
+  @IsOptional()
+  fechaEmisionIR?: Date;
 
   @IsString()
-  codigo!: string;
+  @IsOptional()
+  codigo?: string;
 
   @IsString()
   @IsOptional()
@@ -37,7 +41,8 @@ export class CrInformacionReferenciaDTO {
 
   @IsString()
   @MaxLength(180)
-  razon!: string;
+  @IsOptional()
+  razon?: string;
 }
 
 export class AccountingInvoiceLineDTO {
@@ -145,7 +150,7 @@ export class AccountingInvoiceDTO {
   lines?: AccountingInvoiceLineDTO[];
 
   @IsString()
-  @IsIn(["FE", "ND", "NC", "TE", "FEC", "FEE", "REP"])
+  @IsIn(["FE", "ND", "NC", "TE", "FEC", "FEE", "REP", "MA", "MAP", "MR"])
   @IsOptional()
   crEinvoiceType?: string;
 
@@ -177,8 +182,33 @@ export class AccountingInvoiceDTO {
 
   @ValidateNested()
   @Type(() => CrInformacionReferenciaDTO)
+  @Transform(({ value }) => {
+    const parsed = typeof value === "string" ? JSON.parse(value) : value;
+    return parsed ? plainToInstance(CrInformacionReferenciaDTO, parsed) : parsed;
+  })
   @IsOptional()
   crInformacionReferencia?: CrInformacionReferenciaDTO;
+
+  @IsString()
+  @IsIn(["01", "02", "03", "04", "05"])
+  @IsOptional()
+  crCondicionImpuesto?: string;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  crMontoTotalImpuestoAcreditar?: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  crMontoTotalGastoAplicable?: number;
+
+  @IsString()
+  @IsOptional()
+  crDetalleMensaje?: string;
 }
 
 export class UpdateAccountingInvoiceDTO extends PartialType(AccountingInvoiceDTO) {

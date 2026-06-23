@@ -6,3 +6,4 @@ export * from "./services/hacienda-auth.service";
 export * from "./services/hacienda-submission.service";
 export * from "./services/cr-einvoice-json-builder.service";
 export * from "./routes/cr-einvoice-public-routes";
+export * from "./routes/cr-einvoice-action-routes";

@@ -42,22 +42,5 @@ export class InvoiceRouter extends BaseRoutes<JournalEntryDocument> {
       invoiceController.cancelInvoice
     );
 
-    this.router.post(
-      "/accounting/invoices/:id/submit-einvoice",
-      authorizeMiddleware("accounting/invoices", "update"),
-      invoiceController.submitToHacienda
-    );
-
-    this.router.post(
-      "/accounting/invoices/:id/poll-einvoice-status",
-      authorizeMiddleware("accounting/invoices", "update"),
-      invoiceController.pollEinvoiceStatus
-    );
-
-    this.router.post(
-      "/accounting/invoices/:id/create-note",
-      authorizeMiddleware("accounting/invoices", "create"),
-      invoiceController.createNote
-    );
   }
 }

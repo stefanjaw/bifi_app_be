@@ -1,6 +1,7 @@
 import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
+import { fileSchema } from "../../../system/libraries/file-storage/file.model";
 
 export enum JournalEntryStatus {
   DRAFT = "draft",
@@ -53,6 +54,16 @@ export interface JournalEntryDocument extends mongoose.Document {
   crCodigoActividadEmisor?: string;
   crCodigoActividadReceptor?: string;
   crHaciendaResponse?: any;
+  crPdfFile?: any;
+  crFirmadoXmlFile?: any;
+  crHaciendaXmlFile?: any;
+  crMensajeReceptorNumeroConsecutivo?: string;
+  crCondicionImpuesto?: string;
+  crMontoTotalImpuestoAcreditar?: number;
+  crMontoTotalGastoAplicable?: number;
+  crDetalleMensaje?: string;
+  crAcceptanceStatus?: string;
+  crAcceptanceHaciendaResponse?: any;
 }
 
 const journalEntryLineSchema = new Schema(
@@ -177,7 +188,7 @@ const journalEntrySchema = new Schema(
     amountDue: { type: Number, required: false },
     crEinvoiceType: {
       type: String,
-      enum: ["FE", "ND", "NC", "TE", "FEC", "FEE", "REP"],
+      enum: ["FE", "ND", "NC", "TE", "FEC", "FEE", "REP", "MA", "MAP", "MR"],
       required: false,
     },
     crEinvoiceStatus: {
@@ -218,6 +229,25 @@ const journalEntrySchema = new Schema(
       razon:                 { type: String, maxlength: 180, required: false },
       _id: false,
     },
+    crPdfFile: { type: fileSchema, required: false },
+    crFirmadoXmlFile: { type: fileSchema, required: false },
+    crHaciendaXmlFile: { type: fileSchema, required: false },
+    crMensajeReceptorNumeroConsecutivo: { type: String, required: false },
+    crCondicionImpuesto: {
+      type: String,
+      enum: ["01", "02", "03", "04", "05"],
+      required: false,
+    },
+    crMontoTotalImpuestoAcreditar: { type: Number, required: false },
+    crMontoTotalGastoAplicable: { type: Number, required: false },
+    crDetalleMensaje: { type: String, required: false },
+    crAcceptanceStatus: {
+      type: String,
+      enum: ["draft", "sent", "accepted", "rejected"],
+      default: "draft",
+      required: false,
+    },
+    crAcceptanceHaciendaResponse: { type: Schema.Types.Mixed, required: false },
   },
   { timestamps: true }
 );

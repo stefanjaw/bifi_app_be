@@ -333,6 +333,92 @@ export class CrEinvoiceJsonBuilderService {
     };
   }
 
+  async buildMensajeReceptor(
+    entry: any,
+    settings: any,
+    clave: string,
+    numeroConsecutivoReceptor: string,
+  ): Promise<object> {
+    const einvoiceType: string = entry.crEinvoiceType ?? "MA";
+    const mensajeCode =
+      einvoiceType === "MA" ? "1" : einvoiceType === "MAP" ? "2" : "3";
+
+    const emisorContact = (settings as any).emisorCompanyId?.contactId as any;
+    const receptorCedula = (emisorContact?.vat ?? "").replace(/\D/g, "");
+    const tipoCedulaReceptor: string = emisorContact?.crVatType ?? "02";
+
+    const contactData = entry.contactId as any;
+    const emisorCedula =
+      typeof contactData === "object"
+        ? (contactData?.vat ?? "").replace(/\D/g, "")
+        : "";
+    const tipoCedulaEmisor: string =
+      typeof contactData === "object" ? (contactData?.crVatType ?? "02") : "02";
+
+    const rawDate = entry.crFechaEmision ?? entry.date;
+    const fechaEmision = rawDate
+      ? this.formatFechaEmision(new Date(rawDate))
+      : new Date().toISOString().replace("Z", "-06:00");
+
+    const isMR = mensajeCode === "3";
+
+    // Use the stored taxAmount (set during import from TotalImpuesto in the original XML).
+    // Recalculating from product lines is unreliable because imported invoices have taxIds: [].
+    const montoTotalImpuesto: number = entry.taxAmount ?? 0;
+
+    const codigoActividad: string =
+      entry.crCodigoActividadEmisor ||
+      emisorContact?.crEconomicActivityCodes?.[0]?.code ||
+      "";
+
+    const rawClave = String(entry.crClave ?? "");
+    if (rawClave && (rawClave.includes("e") || rawClave.includes("E"))) {
+      throw new ValidationException(
+        "La Clave de este comprobante fue almacenada en notación científica y no puede enviarse a Hacienda. " +
+        "Por favor re-importe el XML del comprobante para corregir el valor.",
+      );
+    }
+
+    // Spec rules for Mensaje=3 (MR / Rechazo):
+    //   - CondicionImpuesto: not applicable (omit)
+    //   - MontoTotalAcreditar: "no es necesario su uso" → 0 / omit
+    //   - MontoTotalGastoAplicable: same → 0 / omit
+    //   - MontoTotalImpuesto: must match the referenced document's tax total
+    //   - TotalFactura: must match the referenced document's total
+    const mensajeReceptor: any = {
+      Clave: rawClave,
+      NumeroCedulaEmisor: emisorCedula,
+      FechaEmisionDoc: fechaEmision,
+      Mensaje: mensajeCode,
+      MontoTotalImpuesto: parseFloat(montoTotalImpuesto.toFixed(5)),
+      ActividadEconomica: codigoActividad,
+      CondicionImpuesto: entry.crCondicionImpuesto ?? "01",
+      MontoTotalAcreditar: isMR ? 0 : (entry.crMontoTotalImpuestoAcreditar ?? 0),
+      MontoTotalGastoAplicable: isMR ? 0 : (entry.crMontoTotalGastoAplicable ?? 0),
+      TotalFactura: entry.totalAmount ?? 0,
+      TipoCedulaEmisor: tipoCedulaEmisor,
+      NumeroCedulaReceptor: receptorCedula,
+      TipoCedulaReceptor: tipoCedulaReceptor,
+      NumeroConsecutivoReceptor: numeroConsecutivoReceptor,
+    };
+
+    if (entry.crDetalleMensaje) {
+      mensajeReceptor.DetalleMensaje = entry.crDetalleMensaje;
+    }
+
+    const certificate = await this.resolveCertificateBase64(settings);
+    console.log("Invoice:", mensajeReceptor);
+
+    return {
+      invoice: {
+        fe_version: settings.feVersion ?? "4.4",
+        MensajeReceptor: mensajeReceptor,
+      },
+      certificate,
+      token_user_name: settings.haciendaUsername ?? "",
+    };
+  }
+
   private async resolveCertificateBase64(
     settings: CrEinvoiceSettingsDocument,
   ): Promise<string> {

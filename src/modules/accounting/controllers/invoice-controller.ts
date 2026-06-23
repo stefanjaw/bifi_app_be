@@ -46,31 +46,4 @@ export class InvoiceController extends BaseController<JournalEntryDocument> {
     }
   };
 
-  submitToHacienda = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await invoiceService.submitToHacienda(req.params.id);
-      this.sendData(res, result);
-    } catch (error: any) {
-      next(error);
-    }
-  };
-
-  pollEinvoiceStatus = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const result = await invoiceService.pollEinvoiceStatus(req.params.id);
-      this.sendData(res, result);
-    } catch (error: any) {
-      next(error);
-    }
-  };
-
-  createNote = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { noteType, codigo, codigoReferenciaOTRO, razon } = req.body;
-      const result = await invoiceService.createNote(req.params.id, noteType, codigo, razon, codigoReferenciaOTRO);
-      this.sendData(res, result);
-    } catch (error: any) {
-      next(error);
-    }
-  };
 }

@@ -85,6 +85,43 @@ export class CrEinvoiceValidatorService {
       }
     };
 
+    // FEC: the JSON Receptor is the small-business seller whose paper receipt we are digitalizing.
+    // v4.4 spec change #13 makes NombreComercial optional for FEC (Odoo XML builder confirms:
+    // it uses `if NombreComercial` before writing the element).
+    // However, the Odoo XML builder accesses Receptor['Ubicacion'] unconditionally for FEC
+    // (no .get() guard on the outer key), so Provincia MUST be present or Python throws
+    // KeyError: 'Ubicacion'. Require state unless the seller is a foreigner (crVatType 05/06).
+    // CodigoActividadReceptor is also hard-required by the server for FEC.
+    const validateFecReceptor = (contact: any) => {
+      if (!contact.name) {
+        errors.push("Receptor (FEC): el contacto del vendedor no tiene nombre.");
+      }
+      if (!contact.vat) {
+        errors.push("Receptor (FEC): el contacto del vendedor no tiene número de identificación (vat).");
+      }
+      if (!contact.crVatType) {
+        errors.push("Receptor (FEC): el contacto del vendedor no tiene tipo de identificación configurado (crVatType).");
+      }
+      const hasReceptorActivity =
+        invoice.crCodigoActividadReceptor?.trim() ||
+        (contact?.crEconomicActivityCodes ?? []).length > 0;
+      if (!hasReceptorActivity) {
+        errors.push(
+          "Receptor (FEC): el contacto del vendedor debe tener actividades económicas configuradas. El servidor de Hacienda requiere CodigoActividadReceptor para Facturas Electrónicas de Compra."
+        );
+      }
+      // Ubicacion is required by the Odoo XML builder for domestic sellers (crVatType 01-04).
+      // For extranjeros (05) and no-contribuyentes (06) it is optional per the v4.4 spec.
+      const vatType: string = contact.crVatType ?? "";
+      if (vatType !== "05" && vatType !== "06") {
+        if (!contact.state?.trim()) {
+          errors.push(
+            "Receptor (FEC): el contacto del vendedor debe tener Provincia (state) configurada. Es requerida por el servidor de Hacienda para Facturas Electrónicas de Compra."
+          );
+        }
+      }
+    };
+
     if (einvoiceType === "TE") {
       // TE: receptor entirely optional; only Nombre required when present
       if (invoice.contactId) {
@@ -99,8 +136,22 @@ export class CrEinvoiceValidatorService {
       if (invoice.contactId) {
         validateFullReceptor(invoice.contactId as any);
       }
+    } else if (einvoiceType === "FEC") {
+      // FEC: receptor (small-business seller) is required; uses relaxed rules
+      if (!invoice.contactId) {
+        errors.push("Factura (FEC): falta el contacto del vendedor. Debe asignar el establecimiento que emitió el comprobante físico.");
+      } else {
+        validateFecReceptor(invoice.contactId as any);
+      }
+      // InformacionReferencia is mandatory for FEC per v4.4 XSD (spec change #125).
+      // Without it Hacienda rejects with cvc-complex-type.2.4.a (Signature before InformacionReferencia).
+      if (!invoice.crInformacionReferencia?.tipoDocIR?.trim()) {
+        errors.push(
+          "Factura (FEC): debe completar la Información de Referencia (Tipo de Documento). Es obligatoria para toda Factura Electrónica de Compra según el esquema XSD v4.4."
+        );
+      }
     } else {
-      // FE, FEC, FEE, REP: receptor is required
+      // FE, FEE, REP: receptor is required with full validation
       if (!invoice.contactId) {
         errors.push("Factura: falta el receptor. Debe asignar un contacto a la factura.");
       } else {
