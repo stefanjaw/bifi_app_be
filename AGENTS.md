@@ -24,6 +24,75 @@
 - All routes are mounted at `/api` in `app.ts`; auth middleware runs before them (except public email-marketing & CR e-invoice routes)
 - **Multi-tenancy**: `ConnectionManager` + `AsyncLocalStorage` (`userStorage`) switches DB per-request (`dbName` on store)
 
+## Module catalog
+
+All under `src/modules/<name>/`. Check this before adding new features — import existing logic instead of reimplementing.
+
+| Module | What it manages | API endpoint(s) |
+|---|---|---|
+| `accounting` | chart of accounts, taxes, discounts, payment terms, fiscal positions, journals, journal entries (invoices), payments, settings | `/accounts`, `/taxes`, `/discounts`, `/payment-terms`, `/fiscal-positions`, `/journals`, `/journal-entries`, `/payments`, `/invoices`, `/accounting-settings` |
+| `activity-history` | audit log / activity history for records | `/activity-histories` |
+| `ai` | genai (prompt-based generation/streaming), gems (embedding-based generation/streaming/embedding) | `/genai/generate`, `/gems/generate`, `/gems/embed` |
+| `ai-settings` | AI provider/model configuration | `/ai-settings` |
+| `asset-commissioning` | asset commissioning records | `/asset-commissioning` |
+| `asset-maintenance` | asset maintenance work orders | `/asset-maintenances` |
+| `asset-roster` | asset register / equipment roster with CSV import/export and status management | `/asset-rosters` |
+| `asset-types` | asset type classifications | `/asset-types` |
+| `bcd` | Bill of Customs Declaration documents with FTP data exchange | `/bcds` |
+| `bcd-additional-information-types` | lookup: BCD additional information types | `/bcd-additional-information-types` |
+| `bcd-charge-codes` | lookup: BCD charge codes | `/bcd-charge-codes` |
+| `bcd-cpcs` | lookup: BCD Customs Procedure Codes | `/bcd-cpcs` |
+| `bcd-ports` | lookup: BCD ports | `/bcd-ports` |
+| `bcd-tax-ids` | lookup: BCD tax ID types | `/bcd-tax-ids` |
+| `bcd-tax-types` | lookup: BCD tax types | `/bcd-tax-types` |
+| `bcd-transport-options` | lookup: BCD transport options | `/bcd-transport-options` |
+| `bcd-types` | lookup: BCD document types | `/bcd-types` |
+| `branch-office` | branch/office locations for multi-entity orgs | `/branch-offices` |
+| `companies` | company/organization profiles | `/companies` |
+| `contacts` | contact/person records (shared by CRM, suppliers, etc.) | `/contacts` |
+| `countries` | reference country list | `/countries` |
+| `crm` | CRM deals/opportunities pipeline | `/crm` |
+| `crm-stages` | CRM pipeline stage definitions | `/crm-stages` |
+| `currency` | reference currency list | `/currencies` |
+| `currency-exchange-rate` | currency exchange rates | `/exchange-rates` |
+| `customs-chapters` | customs tariff chapter reference data | `/customs-chapters` |
+| `customs-headings` | customs tariff heading reference data | `/customs-headings` |
+| `customs-tariffs` | customs tariff line-item reference data | `/customs-tariffs` |
+| `drive-settings` | Google Drive service account configuration | `/drive-settings` |
+| `email-marketing` | email templates, mailing lists, subscribers, campaigns, events (opens/clicks/bounces), settings + public unsubscribe/tracking/ESP webhooks | `/email-templates`, `/mailing-lists`, `/subscribers`, `/email-campaigns`, `/email-events`, `/email-settings` |
+| `facilities` | facilities and rooms | `/facilities`, `/rooms` |
+| `files` | file upload/download via GridFS | `/files` |
+| `helpdesk-stages` | helpdesk/ticket pipeline stage definitions | `/helpdesk-stages` |
+| `inventory` | products, warehouses, locations, stock balances, stock movements, UOMs, UOM categories, product types | `/products`, `/warehouses`, `/locations`, `/stock-balances`, `/stock-movements`, `/uoms`, `/uom-categories`, `/product-types` |
+| `l10n_cr_einvoice` | Costa Rica electronic invoice plugin (Hacienda FE) | `/cr-einvoice/...` (see Localization plugins below) |
+| `maintenance-windows` | scheduled maintenance time windows | `/maintenance-windows` |
+| `models` | Mongoose model registry introspection | `/models` |
+| `notification-settings` | per-user per-event notification preferences | `/notification-settings` |
+| `notifications` | in-app notification records with read/unread | `/notifications` |
+| `pricing-estimates` | pricing estimates with PDF/CSV generation and pricing engine | `/pricing-estimates` |
+| `pricing-index` | pricing index search over catalog + freight caches, file parsing, Google Drive ingestion | `/pricing-index` |
+| `projects` | project records | `/projects` |
+| `project-stages` | project pipeline stage definitions | `/project-stages` |
+| `purchases` | suppliers, purchase orders, purchase settings | `/suppliers`, `/purchase-orders`, `/purchase-settings` |
+| `purchase-stages` | purchase order pipeline stage definitions | `/purchase-stages` |
+| `report-bug` | bug report submission (creates a ticket) | `/report-bug` |
+| `reporting` | generated report records | `/reporting` |
+| `roles` | RBAC roles and policies (permission definitions) | `/roles`, `/policies` |
+| `sales` | sales dashboard + sales settings | `/sales/dashboard`, `/sales/settings` |
+| `sales-orders` | sales orders with PDF export | `/sales-orders` |
+| `sales-order-stages` | sales order pipeline stage definitions | `/sales-order-stages` |
+| `sales-targets` | sales target/goal records | `/sales-targets` |
+| `search-destinations` | search destinations (indexed models) + unified app-wide search | `/search-destinations`, `/search` |
+| `sequences` | auto-incrementing document numbering sequences | `/sequences` |
+| `shipping` | shipping records with HS code lookup, tariff generation, import from file | `/shippings` |
+| `tasks` | task records | `/tasks` |
+| `task-stages` | task pipeline stage definitions | `/task-stages` |
+| `task-types` | task type definitions | `/task-types` |
+| `templates` | reusable document/email templates | `/templates` |
+| `tickets` | helpdesk tickets and ticket rules (auto-assignment/SLA) | `/tickets`, `/ticket-rules` |
+| `users` | user accounts, profile (`/me`), and user management | `/users` |
+| `user-shortcuts` | per-user shortcut/favorites configuration | `/user-shortcuts` |
+
 ## System infrastructure (`src/system/`)
 
 Everything re-exported through `src/system/index.ts` and importable via `"../../system"`.
