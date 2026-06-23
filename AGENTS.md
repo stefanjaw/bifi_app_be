@@ -67,6 +67,30 @@ Every `BaseService` method wraps in `runTransaction(session, callback)`. Custom 
 ### Price calculator
 `src/system/libraries/orders/price-calculator.ts` exports `calculateLineItemTotal`, `calculateSubtotal`, `calculateTaxes`, `calculateTaxesPerLine`, `calculateGrandTotal` for purchase/sales order pricing. **Do not reimplement.**
 
+### Localization plugins
+
+Each l10n module lives in `src/modules/l10n_<locale>/` and extends a core module by providing region-specific business logic, API integrations, and reference data.
+
+**`src/modules/l10n_cr_einvoice/`** — Costa Rica electronic invoice (FE/Hacienda) plugin.
+
+- **Relationship with `accounting/`**: CR fields (`crEinvoiceType`, `crClave`, `crCondicionVentaId`, etc.) live on the `JournalEntry` model in `accounting/`. This module provides the Hacienda-specific enums, constants, and business logic that `accounting/` imports. It enriches the invoice — it does not own it.
+
+- **Submodules**:
+  - `condicion-venta/`, `medio-pago/` — CRUD for Hacienda-mandated lookup tables (sales conditions, payment methods). Models prefixed `Cr`.
+  - `settings/` — Singleton config (Hacienda credentials, P12 certificate, establishment/POS codes).
+  - `services/` — Hacienda API auth, payload submission, status polling, XML JSON builder, PDF generator (Puppeteer), received-invoice import (XML parser + auto-contact/product creation).
+  - `routes/` — Action endpoints (`submit-einvoice`, `poll-status`, `create-note`, `submit-acceptance`, `import-received`) + public Hacienda callback (registered **before** auth middleware in `app.ts`).
+  - `utils/` — `cr-clave-builder` (50-char Hacienda Clave & 20-char Consecutivo), `cr-constants` (shared enums: document types, statuses, tax conditions).
+
+- **Key API endpoints** (all under `/api/cr-einvoice/`):
+  - `GET/PUT /settings` — CR E-Invoice configuration
+  - `POST /import-received` — Import signed XML from Hacienda
+  - `POST /:id/submit-einvoice` — Submit to Hacienda
+  - `POST /:id/poll-einvoice-status` — Check Hacienda acceptance
+  - `POST /:id/create-note` — Generate credit/debit note (NC/ND)
+  - `POST /:id/submit-acceptance` — Submit MA/MAP/MR message
+  - `POST /hacienda-callback` — Public webhook (no auth)
+
 ## Key quirks
 - **No tests, no linter, no formatter** configured in the project
 - `mongoose.gen.ts` (12k+ lines) is **checked into git** — update it after model changes via `npm run generate:types`
