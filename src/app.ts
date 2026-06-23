@@ -12,8 +12,6 @@ import {
   FTPService,
   userStorage,
 } from "./system";
-// import { initializePricingIndexModels } from "./modules/pricing-index/initialize";
-// import { initializeCustomsData } from "./modules/customs-tariffs/initialize";
 import {
   ActivityHistoryRouter,
   HelpdeskStageRouter,
@@ -62,6 +60,7 @@ import {
   BCDTaxTypeRouter,
   BCDPortRouter,
   BCDChargeCodeRouter,
+  BCDCpcRouter,
   WarehouseRouter,
   LocationRouter,
   ProductRouter,
@@ -115,7 +114,6 @@ import { seedPurchaseStages } from "./modules/purchase-stages";
 import { seedSearchDestinations } from "./modules/search-destinations";
 
 import admin from "firebase-admin";
-import { BCDCpcRouter } from "./modules/bcd-cpcs";
 
 // load .env variables
 const PORT = process.env.SERVER_PORT || 8080;
@@ -284,12 +282,6 @@ const start = async () => {
     });
 
     console.log("Connected to MongoDB successfully!");
-
-    // sync pricing-index model indexes once at startup
-    // await initializePricingIndexModels();
-
-    // seed customs reference data (idempotent upsert)
-    // await initializeCustomsData();
 
     // init ftpservice
     FTPService.initiate({

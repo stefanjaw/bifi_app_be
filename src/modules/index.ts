@@ -12,6 +12,7 @@ export * from "./bcd-tax-ids";
 export * from "./bcd-tax-types";
 export * from "./bcd-transport-options";
 export * from "./bcd-types";
+export * from "./branch-office";
 export * from "./helpdesk-stages";
 export * from "./tickets";
 export * from "./companies";
