@@ -33,7 +33,7 @@ export class PricingSearchService {
         ],
       })
       .limit(topN)
-      .lean();
+      .lean() as unknown as CatalogCacheDocument[];
   }
 
   async searchFreight(
@@ -58,7 +58,7 @@ export class PricingSearchService {
         ],
       })
       .limit(topN)
-      .lean();
+      .lean() as unknown as FreightCacheDocument[];
   }
 
   async search(

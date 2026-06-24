@@ -195,11 +195,11 @@ export class CrEinvoiceReceptionService {
 
       lines.push({
         lineType: "product",
-        accountId: defaultAccount._id,
+        accountId: (defaultAccount as any)._id,
         description,
         debit: 0,
         credit: unitPrice * quantity,
-        productId: product?._id ?? undefined,
+        productId: (product as any)?._id ?? undefined,
         quantity,
         unitPrice,
         taxIds: [],
@@ -215,7 +215,7 @@ export class CrEinvoiceReceptionService {
         journalId: (journal as any)._id,
         date: fechaEmision,
         currencyId: (currency as any)._id,
-        contactId: contact?._id ?? undefined,
+        contactId: (contact as any)?._id ?? undefined,
         lines,
         untaxedAmount: totalVentaNeta,
         taxAmount: totalImpuesto,

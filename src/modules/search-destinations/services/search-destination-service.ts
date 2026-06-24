@@ -119,7 +119,7 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
         Array.isArray(dest.keywords) &&
         dest.keywords.length > 0
       ) {
-        existing.keywords = dest.keywords;
+        existing.keywords = dest.keywords as any;
       }
 
       await existing.save({ session: session ?? undefined });

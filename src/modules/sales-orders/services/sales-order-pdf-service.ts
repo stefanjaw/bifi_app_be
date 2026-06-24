@@ -51,7 +51,7 @@ export class SalesOrderPdfService {
     const browser = await puppeteer.launch({
       executablePath: CHROMIUM_EXECUTABLE,
       args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
-      headless: chromium.headless,
+      headless: true,
     });
 
     try {

@@ -102,7 +102,7 @@ export function authenticateMiddleware(userService: UserService) {
       };
 
       if (!user && firebaseUser.email) {
-        user = await rebindExistingByEmail(firebaseUser.email);
+        user = (await rebindExistingByEmail(firebaseUser.email))!;
       }
 
       if (!user) {
@@ -135,7 +135,7 @@ export function authenticateMiddleware(userService: UserService) {
             (createError as { code?: number })?.code === 11000 &&
             firebaseUser.email
           ) {
-            user = await rebindExistingByEmail(firebaseUser.email);
+            user = (await rebindExistingByEmail(firebaseUser.email))!;
           }
           if (!user) throw createError;
         }

@@ -115,7 +115,10 @@ export class ContactService extends BaseService<ContactDocument> {
 
         const newChildIds =
           data.childIds?.filter(
-            (id) => !existingContact.childIds?.includes(id),
+            (id) =>
+              !existingContact.childIds?.some(
+                (child) => child._id.toString() === id,
+              ),
           ) || [];
 
         if (newChildIds.length > 0) {

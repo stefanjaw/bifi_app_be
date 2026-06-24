@@ -47,7 +47,7 @@ export class TicketRuleService extends BaseService<TicketRuleDocument> {
     const rules = (await model
       .find({ active: true })
       .sort({ order: 1 })
-      .lean()) as (TicketRuleDocument & {
+      .lean()) as unknown as (TicketRuleDocument & {
       field: MatchField;
       operator: Operator;
       value: string;
