@@ -1,3 +1,4 @@
+import { ValidationException } from "src/system";
 import { ConnectionManager } from "../../../system/libraries/base-module/connection-manager";
 import { CrEinvoiceSettingsDocument } from "../settings/models/cr-einvoice-settings.model";
 import { crEinvoicePdfService } from "./cr-einvoice-pdf.service";
@@ -56,6 +57,10 @@ export class CrEinvoiceJsonBuilderService {
 
     // ── Receptor ─────────────────────────────────────────────────────────────
     const contactData = entry.contactId as any;
+    // FEE: Receptor.Ubicacion is inexistente (spec condition 4); also route
+    // foreign-buyer ID through IdentificacionExtranjero when crVatType === '05'.
+    const einvoiceType: string = entry.crEinvoiceType ?? "FE";
+    const isFEE = einvoiceType === "FEE";
     let receptor: any = undefined;
 
     if (contactData) {
@@ -64,14 +69,20 @@ export class CrEinvoiceJsonBuilderService {
         contactData.name ||
         "";
 
+      // crVatType '05' = Extranjero No Domiciliado → use IdentificacionExtranjero
+      const isExtranjero = contactData.crVatType === "05";
+
       const receptorIdentificacion =
-        contactData.crVatType && contactData.vat
+        !isExtranjero && contactData.crVatType && contactData.vat
           ? { Tipo: contactData.crVatType, Numero: contactData.vat }
           : undefined;
 
-      // Ubicacion is optional for Receptor
+      const identificacionExtranjero =
+        isExtranjero && contactData.vat ? contactData.vat : undefined;
+
+      // Ubicacion: condition 4 (inexistente) for FEE; optional for all others
       let receptorUbicacion: any = undefined;
-      if (contactData.state) {
+      if (!isFEE && contactData.state) {
         receptorUbicacion = { Provincia: contactData.state };
         if (contactData.city) receptorUbicacion.Canton = contactData.city;
         if (contactData.crDistrito)
@@ -83,6 +94,7 @@ export class CrEinvoiceJsonBuilderService {
       receptor = {
         Nombre: receptorNombre,
         Identificacion: receptorIdentificacion,
+        IdentificacionExtranjero: identificacionExtranjero,
         NombreComercial: contactData.commercialName || undefined,
         Ubicacion: receptorUbicacion,
         CorreoElectronico: contactData.email ?? "",
@@ -90,20 +102,25 @@ export class CrEinvoiceJsonBuilderService {
     }
 
     // ── Actividad Económica — use invoice-stored selection, fall back to first ─
-    const codigoActividadEmisor: string =
+    // Pass the raw string as-is: Hacienda expects the exact stored format
+    // (e.g. "4741.0" for FEE which has minLength='6' in the XSD).
+    const _rawActEmisor: string =
       entry.crCodigoActividadEmisor ||
       emisorContact?.crEconomicActivityCodes?.[0]?.code ||
       "";
+    const codigoActividadEmisor: string = _rawActEmisor ?? "";
 
-    // TE XSD does not have CodigoActividadReceptor — omit it for Tiquete Electrónico.
-    // FEC requires it (server throws if absent); all other types accept it as optional.
-    const einvoiceType: string = entry.crEinvoiceType ?? "FE";
-    const codigoActividadReceptor: string | undefined =
-      einvoiceType === "TE"
+    // TE XSD does not have CodigoActividadReceptor — omit for TE.
+    // FEC requires it; FEE omits it (foreign buyers have no CR activity code).
+    // All other types accept it as optional.
+    const _rawActReceptor: string | undefined =
+      einvoiceType === "TE" || isFEE
         ? undefined
         : entry.crCodigoActividadReceptor ||
           contactData?.crEconomicActivityCodes?.[0]?.code ||
           undefined;
+    const codigoActividadReceptor: string | undefined =
+      _rawActReceptor ?? undefined;
 
     // ── LineaDetalle ─────────────────────────────────────────────────────────
     let totalServGravados = 0;
@@ -139,14 +156,25 @@ export class CrEinvoiceJsonBuilderService {
       // Hacienda spec: one Impuesto object per line (use the first applicable tax)
       const firstTax = taxes[0] ?? null;
       const tarifa: number = firstTax
-        ? (firstTax.crTarifa ?? firstTax.percentage ?? 0)
+        ? firstTax.crTarifa ?? firstTax.percentage ?? 0
         : 0;
       const impuestoNeto = firstTax
         ? parseFloat(((subTotal * tarifa) / 100).toFixed(5))
         : 0;
 
-      // Accumulate service/goods subtotals (pre-tax)
-      if (firstTax) {
+      // Accumulate service/goods subtotals (pre-tax).
+      // Classification by CodigoTarifaIVA per Hacienda v4.4 spec (Nota 8.1):
+      //   tarifa '10' (Tarifa Exenta, Ley 9635 Art.8) → exento bucket, not gravado
+      //   tarifa '01'/'11' (No Sujeto)                → exento bucket for now (no sujeto bucket TBD)
+      //   any other non-zero tarifa                   → gravado bucket + taxBreakdown
+      //   no tax block at all                         → exento bucket
+      const isExentoOrNoSujeto =
+        !firstTax ||
+        firstTax.crCodigoTarifa === "10" ||
+        firstTax.crCodigoTarifa === "01" ||
+        firstTax.crCodigoTarifa === "11";
+
+      if (!isExentoOrNoSujeto) {
         if (isService) {
           totalServGravados = parseFloat(
             (totalServGravados + subTotal).toFixed(5),
@@ -156,7 +184,7 @@ export class CrEinvoiceJsonBuilderService {
             (totalMercanciasGravadas + subTotal).toFixed(5),
           );
         }
-        // Tax breakdown per code
+        // Tax breakdown — only for truly gravado lines
         const key = `${firstTax.crCodigo}|${firstTax.crCodigoTarifa ?? ""}`;
         const existing = taxBreakdown.get(key);
         if (existing) {
@@ -198,9 +226,13 @@ export class CrEinvoiceJsonBuilderService {
           }
         : undefined;
 
+      // PartidaArancelaria is required for non-service goods lines in FEE;
+      // server raises a clear error if it is missing.
+      // BaseImponible and ImpuestoNeto follow the same logic for all types:
+      // present when a tax is on the line, absent when no tax is on the line.
       return {
         NumeroLinea: index + 1,
-        PartidaArancelaria: false,
+        PartidaArancelaria: product?.crPartidaArancelaria || false,
         Codigo: codigoProducto,
         Cantidad: cantidad.toFixed(5),
         UnidadMedida: unidadMedida,
@@ -225,9 +257,9 @@ export class CrEinvoiceJsonBuilderService {
     );
     const totalVenta = parseFloat((totalGravado + totalExento).toFixed(5));
     const totalVentaNeta: number =
-      totalVenta > 0 ? totalVenta : (entry.untaxedAmount ?? 0);
+      totalVenta > 0 ? totalVenta : entry.untaxedAmount ?? 0;
     const totalImpuesto: number =
-      totalVenta > 0 ? linesTotalImpuesto : (entry.taxAmount ?? 0);
+      totalVenta > 0 ? linesTotalImpuesto : entry.taxAmount ?? 0;
     const totalComprobante = parseFloat(
       (totalVentaNeta + totalImpuesto).toFixed(5),
     );
@@ -261,8 +293,7 @@ export class CrEinvoiceJsonBuilderService {
     resumenFactura.TotalVentaNeta = totalVentaNeta.toFixed(5);
     if (totalDesgloseImpuesto)
       resumenFactura.TotalDesgloseImpuesto = totalDesgloseImpuesto;
-    if (totalImpuesto > 0)
-      resumenFactura.TotalImpuesto = totalImpuesto.toFixed(5);
+    resumenFactura.TotalImpuesto = totalImpuesto.toFixed(5);
     resumenFactura.TotalComprobante = totalComprobante.toFixed(5);
 
     const facturaElectronica: any = {
@@ -276,7 +307,9 @@ export class CrEinvoiceJsonBuilderService {
       Receptor: receptor,
       CondicionVenta: condicionVenta,
       PlazoCredito:
-        entry.crPlazoCredito != null ? String(entry.crPlazoCredito) : undefined,
+        condicionVenta === "02" && entry.crPlazoCredito != null
+          ? String(entry.crPlazoCredito)
+          : undefined,
       MedioPago: medioPago,
       DetalleServicio: { LineaDetalle: lineaDetalle },
       ResumenFactura: resumenFactura,
@@ -353,7 +386,7 @@ export class CrEinvoiceJsonBuilderService {
         ? (contactData?.vat ?? "").replace(/\D/g, "")
         : "";
     const tipoCedulaEmisor: string =
-      typeof contactData === "object" ? (contactData?.crVatType ?? "02") : "02";
+      typeof contactData === "object" ? contactData?.crVatType ?? "02" : "02";
 
     const rawDate = entry.crFechaEmision ?? entry.date;
     const fechaEmision = rawDate
@@ -366,16 +399,19 @@ export class CrEinvoiceJsonBuilderService {
     // Recalculating from product lines is unreliable because imported invoices have taxIds: [].
     const montoTotalImpuesto: number = entry.taxAmount ?? 0;
 
-    const codigoActividad: string =
+    const _rawActividadMR: string =
       entry.crCodigoActividadEmisor ||
       emisorContact?.crEconomicActivityCodes?.[0]?.code ||
       "";
+    const codigoActividad: string = _rawActividadMR
+      ? String(Math.round(parseFloat(_rawActividadMR)))
+      : "";
 
     const rawClave = String(entry.crClave ?? "");
     if (rawClave && (rawClave.includes("e") || rawClave.includes("E"))) {
       throw new ValidationException(
         "La Clave de este comprobante fue almacenada en notación científica y no puede enviarse a Hacienda. " +
-        "Por favor re-importe el XML del comprobante para corregir el valor.",
+          "Por favor re-importe el XML del comprobante para corregir el valor.",
       );
     }
 
@@ -393,8 +429,10 @@ export class CrEinvoiceJsonBuilderService {
       MontoTotalImpuesto: parseFloat(montoTotalImpuesto.toFixed(5)),
       ActividadEconomica: codigoActividad,
       CondicionImpuesto: entry.crCondicionImpuesto ?? "01",
-      MontoTotalAcreditar: isMR ? 0 : (entry.crMontoTotalImpuestoAcreditar ?? 0),
-      MontoTotalGastoAplicable: isMR ? 0 : (entry.crMontoTotalGastoAplicable ?? 0),
+      MontoTotalAcreditar: isMR ? 0 : entry.crMontoTotalImpuestoAcreditar ?? 0,
+      MontoTotalGastoAplicable: isMR
+        ? 0
+        : entry.crMontoTotalGastoAplicable ?? 0,
       TotalFactura: entry.totalAmount ?? 0,
       TipoCedulaEmisor: tipoCedulaEmisor,
       NumeroCedulaReceptor: receptorCedula,

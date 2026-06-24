@@ -153,10 +153,10 @@ export class CrEinvoiceActionService {
       rawState === "aceptado"
         ? "accepted"
         : rawState === "rechazado"
-          ? "rejected"
-          : rawState === "recibido"
-            ? "received"
-            : (invoice as any).crEinvoiceStatus ?? "sent";
+        ? "rejected"
+        : rawState === "recibido" || rawState === "procesando"
+        ? "received"
+        : (invoice as any).crEinvoiceStatus ?? "sent";
 
     return model.findByIdAndUpdate(
       id,
@@ -180,8 +180,12 @@ export class CrEinvoiceActionService {
 
     const sourceType: string = (source as any).crEinvoiceType ?? "FE";
     const tipoDocMap: Record<string, string> = {
-      FE: "01", ND: "02", NC: "03", TE: "04",
-      FEE: "01", REP: "01",
+      FE: "01",
+      ND: "02",
+      NC: "03",
+      TE: "04",
+      FEE: "01",
+      REP: "01",
     };
     let sourceTipoDoc: string;
     if (sourceType === "FEC") {

@@ -73,9 +73,14 @@ const productSchema = new Schema(
       required: true,
       default: "storable",
     },
+    crPartidaArancelaria: {
+      type: String,
+      required: false,
+      default: "",
+    },
     barcode: {
       type: String,
-      default: '',
+      default: "",
     },
     active: {
       type: Boolean,
@@ -92,7 +97,7 @@ const productSchema = new Schema(
       default: [],
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 productSchema.plugin(paginate);

@@ -1,7 +1,15 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import {
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { PartialType } from "../../../system";
-import { TaxType } from "./tax.model";
+import { CrCodigoImpuesto, CrCodigoTarifa, TaxType } from "./tax.model";
 
 export class TaxDTO {
   @IsString()
@@ -23,13 +31,13 @@ export class TaxDTO {
   @IsOptional()
   active?: boolean;
 
-  @IsString()
+  @IsEnum(CrCodigoImpuesto)
   @IsOptional()
-  crCodigo?: string;
+  crCodigo?: CrCodigoImpuesto;
 
-  @IsString()
+  @IsEnum(CrCodigoTarifa)
   @IsOptional()
-  crCodigoTarifa?: string;
+  crCodigoTarifa?: CrCodigoTarifa;
 
   @IsNumber()
   @Min(0)

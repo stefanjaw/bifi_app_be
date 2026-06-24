@@ -94,6 +94,10 @@ export class ProductDTO {
 
   @IsString()
   @IsOptional()
+  crPartidaArancelaria?: string;
+
+  @IsString()
+  @IsOptional()
   barcode?: string;
 
   @IsBoolean()

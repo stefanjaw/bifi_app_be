@@ -625,6 +625,63 @@ export type JournalEntryLine = {
 };
 
 /**
+ * Lean version of JournalEntryCrPdfFileDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `JournalEntryDocument.toObject()`.
+ * ```
+ * const journalentryObject = journalentry.toObject();
+ * ```
+ */
+export type JournalEntryCrPdfFile = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of JournalEntryCrFirmadoXmlFileDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `JournalEntryDocument.toObject()`.
+ * ```
+ * const journalentryObject = journalentry.toObject();
+ * ```
+ */
+export type JournalEntryCrFirmadoXmlFile = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of JournalEntryCrHaciendaXmlFileDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `JournalEntryDocument.toObject()`.
+ * ```
+ * const journalentryObject = journalentry.toObject();
+ * ```
+ */
+export type JournalEntryCrHaciendaXmlFile = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
  * Lean version of JournalEntryDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `JournalEntryDocument.toObject()`. To avoid conflicts with model names, use the type alias `JournalEntryObject`.
@@ -653,7 +710,17 @@ export type JournalEntry = {
   taxAmount?: number;
   totalAmount?: number;
   amountDue?: number;
-  crEinvoiceType?: "FE" | "ND" | "NC" | "TE" | "FEC" | "FEE" | "REP";
+  crEinvoiceType?:
+    | "FE"
+    | "ND"
+    | "NC"
+    | "TE"
+    | "FEC"
+    | "FEE"
+    | "REP"
+    | "MA"
+    | "MAP"
+    | "MR";
   crEinvoiceStatus?:
     | "draft"
     | "pending"
@@ -680,6 +747,16 @@ export type JournalEntry = {
     codigoReferenciaOTRO?: string;
     razon?: string;
   };
+  crPdfFile?: JournalEntryCrHaciendaXmlFile;
+  crFirmadoXmlFile?: JournalEntryCrHaciendaXmlFile;
+  crHaciendaXmlFile?: JournalEntryCrHaciendaXmlFile;
+  crMensajeReceptorNumeroConsecutivo?: string;
+  crCondicionImpuesto?: "01" | "02" | "03" | "04" | "05";
+  crMontoTotalImpuestoAcreditar?: number;
+  crMontoTotalGastoAplicable?: number;
+  crDetalleMensaje?: string;
+  crAcceptanceStatus?: "draft" | "sent" | "accepted" | "rejected";
+  crAcceptanceHaciendaResponse?: any;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -784,6 +861,66 @@ export type JournalEntryLineDocument =
  * const JournalEntry = mongoose.model<JournalEntryDocument, JournalEntryModel>("JournalEntry", JournalEntrySchema);
  * ```
  */
+export type JournalEntryCrPdfFileDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const JournalEntry = mongoose.model<JournalEntryDocument, JournalEntryModel>("JournalEntry", JournalEntrySchema);
+ * ```
+ */
+export type JournalEntryCrFirmadoXmlFileDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const JournalEntry = mongoose.model<JournalEntryDocument, JournalEntryModel>("JournalEntry", JournalEntrySchema);
+ * ```
+ */
+export type JournalEntryCrHaciendaXmlFileDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const JournalEntry = mongoose.model<JournalEntryDocument, JournalEntryModel>("JournalEntry", JournalEntrySchema);
+ * ```
+ */
 export type JournalEntryDocument = mongoose.Document<
   mongoose.Types.ObjectId,
   JournalEntryQueries
@@ -809,7 +946,17 @@ export type JournalEntryDocument = mongoose.Document<
     taxAmount?: number;
     totalAmount?: number;
     amountDue?: number;
-    crEinvoiceType?: "FE" | "ND" | "NC" | "TE" | "FEC" | "FEE" | "REP";
+    crEinvoiceType?:
+      | "FE"
+      | "ND"
+      | "NC"
+      | "TE"
+      | "FEC"
+      | "FEE"
+      | "REP"
+      | "MA"
+      | "MAP"
+      | "MR";
     crEinvoiceStatus?:
       | "draft"
       | "pending"
@@ -836,6 +983,16 @@ export type JournalEntryDocument = mongoose.Document<
       codigoReferenciaOTRO?: string;
       razon?: string;
     };
+    crPdfFile?: JournalEntryCrHaciendaXmlFileDocument;
+    crFirmadoXmlFile?: JournalEntryCrHaciendaXmlFileDocument;
+    crHaciendaXmlFile?: JournalEntryCrHaciendaXmlFileDocument;
+    crMensajeReceptorNumeroConsecutivo?: string;
+    crCondicionImpuesto?: "01" | "02" | "03" | "04" | "05";
+    crMontoTotalImpuestoAcreditar?: number;
+    crMontoTotalGastoAplicable?: number;
+    crDetalleMensaje?: string;
+    crAcceptanceStatus?: "draft" | "sent" | "accepted" | "rejected";
+    crAcceptanceHaciendaResponse?: any;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -1222,8 +1379,30 @@ export type Tax = {
   percentage: number;
   accountId: Account;
   active?: boolean;
-  crCodigo?: string;
-  crCodigoTarifa?: string;
+  crCodigo?:
+    | "01"
+    | "02"
+    | "03"
+    | "04"
+    | "05"
+    | "06"
+    | "07"
+    | "08"
+    | "12"
+    | "99";
+  crCodigoTarifa?:
+    | "01"
+    | "02"
+    | "03"
+    | "04"
+    | "05"
+    | "06"
+    | "07"
+    | "08"
+    | "09"
+    | "10"
+    | "11"
+    | "13";
   crTarifa?: number;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -1310,8 +1489,30 @@ export type TaxDocument = mongoose.Document<
     percentage: number;
     accountId: AccountDocument;
     active?: boolean;
-    crCodigo?: string;
-    crCodigoTarifa?: string;
+    crCodigo?:
+      | "01"
+      | "02"
+      | "03"
+      | "04"
+      | "05"
+      | "06"
+      | "07"
+      | "08"
+      | "12"
+      | "99";
+    crCodigoTarifa?:
+      | "01"
+      | "02"
+      | "03"
+      | "04"
+      | "05"
+      | "06"
+      | "07"
+      | "08"
+      | "09"
+      | "10"
+      | "11"
+      | "13";
     crTarifa?: number;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -1429,7 +1630,7 @@ export type ActivityHistoryDocument = mongoose.Document<
     details?: string;
     performDate: Date;
     model: string;
-    modelId: mongoose.Types.ObjectId;
+    modelId: mongoose.Types.ObjectId | mongoose.Document;
     metadata?: any | null;
     userId?: UserDocument;
     _id: mongoose.Types.ObjectId;
@@ -2013,8 +2214,8 @@ export type AssetRoster = {
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
-  assetCommission: any;
-  assetMaintenances: any;
+  assetCommission: AssetCommissioning | null;
+  assetMaintenances: AssetMaintenance[];
 };
 
 /**
@@ -2206,8 +2407,8 @@ export type AssetRosterDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
-    assetCommission: any;
-    assetMaintenances: any;
+    assetCommission: AssetCommissioningDocument | null;
+    assetMaintenances: mongoose.Types.Array<AssetMaintenanceDocument>;
   };
 
 /**
@@ -4160,7 +4361,7 @@ export type Contact = {
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
-  childIds: any;
+  childIds: Contact[];
   fullName: string;
   displayName: string;
   fullAddress: string;
@@ -4281,7 +4482,7 @@ export type ContactDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
-    childIds: any;
+    childIds: mongoose.Types.Array<ContactDocument>;
     fullName: string;
     displayName: string;
     fullAddress: string;
@@ -6125,7 +6326,7 @@ export type Facility = {
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
-  rooms: any;
+  rooms: Room[];
 };
 
 /**
@@ -6214,7 +6415,7 @@ export type FacilityDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
-    rooms: any;
+    rooms: mongoose.Types.Array<RoomDocument>;
   };
 
 /**
@@ -6697,6 +6898,7 @@ export type InventoryProduct = {
   defaultPurchaseTaxIds: (Tax["_id"] | Tax)[];
   codigoComercial?: string;
   productKind: "consumable" | "service" | "storable";
+  crPartidaArancelaria?: string;
   barcode?: string;
   active?: boolean;
   photo?: mongoose.Types.ObjectId | null;
@@ -6823,6 +7025,7 @@ export type InventoryProductDocument = mongoose.Document<
     >;
     codigoComercial?: string;
     productKind: "consumable" | "service" | "storable";
+    crPartidaArancelaria?: string;
     barcode?: string;
     active?: boolean;
     photo?: mongoose.Types.ObjectId | null;
@@ -10764,7 +10967,7 @@ export type Shipping = {
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
-  bcds: any;
+  bcds: BCD[];
 };
 
 /**
@@ -10997,7 +11200,7 @@ export type ShippingDocument = mongoose.Document<
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
-    bcds: any;
+    bcds: mongoose.Types.Array<BCDDocument>;
   };
 
 /**

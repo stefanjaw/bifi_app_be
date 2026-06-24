@@ -50,7 +50,9 @@ export class HaciendaSubmissionService {
         const msg =
           unwrapped?.message ??
           unwrapped?.detalleMensaje ??
-          (typeof data?.error === "string" ? data.error : data?.error?.message) ??
+          (typeof data?.error === "string"
+            ? data.error
+            : data?.error?.message) ??
           data?.error_description ??
           "Custom FE server returned an error response.";
         const err: any = new Error(msg);
@@ -91,7 +93,10 @@ export class HaciendaSubmissionService {
         headers: { "Content-Type": "application/json" },
         data: {},
       });
-      
+      console.log(
+        "[Hacienda] Poll raw response:",
+        JSON.stringify(response.data),
+      );
       return response.data;
     }
 
