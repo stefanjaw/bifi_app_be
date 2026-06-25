@@ -36,6 +36,7 @@ export function resolveChromiumPath(): string {
 
 /** Resolved once at module load */
 export const CHROMIUM_EXECUTABLE = resolveChromiumPath();
+console.log("Launching puppeteer with executable path:", CHROMIUM_EXECUTABLE);
 
 /**
  * Default Puppeteer launch arguments.
@@ -47,7 +48,7 @@ export function getLaunchArgs(): string[] {
     "--disable-setuid-sandbox",
     "--disable-dev-shm-usage",
   ];
-  
+
   try {
     const chromium = require("@sparticuz/chromium");
     return [...chromium.args, ...base];
