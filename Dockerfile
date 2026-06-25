@@ -34,15 +34,10 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# install packages for puppeteer
+# install fonts + certs for PDF rendering (chromium comes via @sparticuz/chromium)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    chromium \
     ca-certificates \
     fonts-liberation \
-    libnss3 \
-    libxss1 \
-    libgbm1 \
-    libasound2 \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -56,9 +51,8 @@ COPY --from=build /app/bifi_app_be/dist ./dist
 # expose port
 EXPOSE 8081
 
-# Puppeteer setup: Skip Chromium download and use the installed Chromium
+# Puppeteer setup: Skip built-in Chromium download (@sparticuz/chromium provides its own)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH="/usr/bin/chromium"
 
 # run app
 CMD ["node", "dist/index.js"]

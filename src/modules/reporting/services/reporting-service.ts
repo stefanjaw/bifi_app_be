@@ -4,6 +4,10 @@ import {
   runTransaction,
   ValidationException,
 } from "../../../system";
+import {
+  CHROMIUM_EXECUTABLE,
+  getLaunchArgs,
+} from "../../../system/libraries/pdf";
 import { ClientSession } from "mongoose";
 import puppeteer from "puppeteer";
 import dayjs from "dayjs";
@@ -121,16 +125,16 @@ export class ReportingService extends BaseService<ReportingDocument> {
         const reportingTemplate = reportId
           ? await this.getById(reportId, newSession)
           : modelName
-            ? (
-                await this.get(
-                  { model: modelName },
-                  undefined,
-                  undefined,
-                  undefined,
-                  newSession,
-                )
-              )[0]
-            : undefined;
+          ? (
+              await this.get(
+                { model: modelName },
+                undefined,
+                undefined,
+                undefined,
+                newSession,
+              )
+            )[0]
+          : undefined;
 
         if (!reportingTemplate)
           throw new ValidationException(
@@ -172,12 +176,9 @@ export class ReportingService extends BaseService<ReportingDocument> {
 
         // generate pdf buffer
         const browser = await puppeteer.launch({
+          executablePath: CHROMIUM_EXECUTABLE,
+          args: getLaunchArgs(),
           headless: true,
-          args: [
-            "--no-sandbox",
-            "--disable-setuid-sandbox",
-            "--disable-dev-shm-usage",
-          ],
         });
 
         const page = await browser.newPage();

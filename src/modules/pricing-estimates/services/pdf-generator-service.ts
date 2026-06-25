@@ -1,29 +1,12 @@
 import puppeteer from "puppeteer";
-import chromium from "@sparticuz/chromium";
-import { existsSync, readdirSync } from "fs";
-import * as nodePath from "path";
+import {
+  CHROMIUM_EXECUTABLE,
+  getLaunchArgs,
+} from "../../../system/libraries/pdf";
 import {
   PricingEstimateDocument,
   PricingEstimateLineItemDocument,
 } from "@mongodb-types";
-
-function resolveChromiumPath(): string {
-  if (process.env.CHROMIUM_PATH && existsSync(process.env.CHROMIUM_PATH)) {
-    return process.env.CHROMIUM_PATH;
-  }
-  for (const dir of (process.env.PATH || "").split(":")) {
-    const p = nodePath.join(dir, "chromium");
-    if (existsSync(p)) return p;
-  }
-  try {
-    const entries = readdirSync("/nix/store");
-    const found = entries.find((e) => /-chromium-/.test(e));
-    if (found) return `/nix/store/${found}/bin/chromium`;
-  } catch {}
-  throw new Error("Chromium not found. Install via Nix or set CHROMIUM_PATH.");
-}
-
-const CHROMIUM_EXECUTABLE = resolveChromiumPath();
 
 function esc(value: unknown): string {
   const str = String(value ?? "");
@@ -41,7 +24,7 @@ export class PdfGeneratorService {
 
     const browser = await puppeteer.launch({
       executablePath: CHROMIUM_EXECUTABLE,
-      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+      args: getLaunchArgs(),
       headless: true,
     });
 

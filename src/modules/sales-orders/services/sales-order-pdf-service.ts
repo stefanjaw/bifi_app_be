@@ -1,25 +1,8 @@
 import puppeteer from "puppeteer";
-import chromium from "@sparticuz/chromium";
-import { existsSync, readdirSync } from "fs";
-import * as nodePath from "path";
-
-function resolveChromiumPath(): string {
-  if (process.env.CHROMIUM_PATH && existsSync(process.env.CHROMIUM_PATH)) {
-    return process.env.CHROMIUM_PATH;
-  }
-  for (const dir of (process.env.PATH || "").split(":")) {
-    const p = nodePath.join(dir, "chromium");
-    if (existsSync(p)) return p;
-  }
-  try {
-    const entries = readdirSync("/nix/store");
-    const found = entries.find((e) => /-chromium-/.test(e));
-    if (found) return `/nix/store/${found}/bin/chromium`;
-  } catch {}
-  throw new Error("Chromium not found. Install via Nix or set CHROMIUM_PATH.");
-}
-
-const CHROMIUM_EXECUTABLE = resolveChromiumPath();
+import {
+  CHROMIUM_EXECUTABLE,
+  getLaunchArgs,
+} from "../../../system/libraries/pdf";
 
 function esc(value: unknown): string {
   const str = String(value ?? "");
@@ -50,7 +33,7 @@ export class SalesOrderPdfService {
 
     const browser = await puppeteer.launch({
       executablePath: CHROMIUM_EXECUTABLE,
-      args: [...chromium.args, "--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"],
+      args: getLaunchArgs(),
       headless: true,
     });
 
@@ -73,7 +56,9 @@ export class SalesOrderPdfService {
 
   private buildHtml(order: any): string {
     const contact = order.contact ?? {};
-    const contactName = contact.fullName ?? (`${contact.name ?? ""} ${contact.lastName ?? ""}`.trim() || "—");
+    const contactName =
+      contact.fullName ??
+      (`${contact.name ?? ""} ${contact.lastName ?? ""}`.trim() || "—");
     const contactEmail = contact.email ?? "";
 
     const company = order.company ?? {};
@@ -85,7 +70,9 @@ export class SalesOrderPdfService {
     const currency = order.currency ?? {};
     const currencyCode = currency.code ?? "";
     const currencySymbol = currency.symbol ?? "";
-    const currencyLabel = currencyCode ? `${currencyCode}${currencySymbol ? ` (${currencySymbol})` : ""}` : "";
+    const currencyLabel = currencyCode
+      ? `${currencyCode}${currencySymbol ? ` (${currencySymbol})` : ""}`
+      : "";
 
     const statusLabel = this.formatStatus(order.status ?? "draft");
     const lineItems: any[] = order.lineItems ?? [];
@@ -101,7 +88,9 @@ export class SalesOrderPdfService {
           : "—";
         return `
         <tr>
-          <td class="left">${esc(item.description || (item.productId?.name ?? ""))}</td>
+          <td class="left">${esc(
+            item.description || (item.productId?.name ?? ""),
+          )}</td>
           <td class="right">${esc(item.quantity ?? 0)}</td>
           <td class="right">${fmt(item.unitPrice)}</td>
           <td class="left">${esc(discountLabel)}</td>
@@ -121,11 +110,21 @@ export class SalesOrderPdfService {
       .join("");
 
     const quoteStatuses = ["draft", "quote"];
-    const docTitle = quoteStatuses.includes(order.status ?? "draft") ? "QUOTE" : "SALES ORDER";
-    const accentColor = quoteStatuses.includes(order.status ?? "draft") ? "#7c3aed" : "#16a34a";
-    const badgeBg = quoteStatuses.includes(order.status ?? "draft") ? "#f5f3ff" : "#f0fdf4";
-    const badgeColor = quoteStatuses.includes(order.status ?? "draft") ? "#7c3aed" : "#16a34a";
-    const badgeBorder = quoteStatuses.includes(order.status ?? "draft") ? "#ddd6fe" : "#bbf7d0";
+    const docTitle = quoteStatuses.includes(order.status ?? "draft")
+      ? "QUOTE"
+      : "SALES ORDER";
+    const accentColor = quoteStatuses.includes(order.status ?? "draft")
+      ? "#7c3aed"
+      : "#16a34a";
+    const badgeBg = quoteStatuses.includes(order.status ?? "draft")
+      ? "#f5f3ff"
+      : "#f0fdf4";
+    const badgeColor = quoteStatuses.includes(order.status ?? "draft")
+      ? "#7c3aed"
+      : "#16a34a";
+    const badgeBorder = quoteStatuses.includes(order.status ?? "draft")
+      ? "#ddd6fe"
+      : "#bbf7d0";
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -174,7 +173,13 @@ export class SalesOrderPdfService {
     </div>
     <div style="text-align:right;">
       <div class="status-badge">${esc(statusLabel)}</div>
-      ${currencyLabel ? `<div style="margin-top:6px;font-size:10px;color:#6b7280;">${esc(currencyLabel)}</div>` : ""}
+      ${
+        currencyLabel
+          ? `<div style="margin-top:6px;font-size:10px;color:#6b7280;">${esc(
+              currencyLabel,
+            )}</div>`
+          : ""
+      }
     </div>
   </div>
 
@@ -187,8 +192,16 @@ export class SalesOrderPdfService {
     </div>
     <div class="meta-block">
       <h3>Details</h3>
-      <p><span class="label">Close Date:</span> ${esc(fmtDate(order.closeDate))}</p>
-      ${salespersonName !== "—" ? `<p><span class="label">Salesperson:</span> ${esc(salespersonName)}</p>` : ""}
+      <p><span class="label">Close Date:</span> ${esc(
+        fmtDate(order.closeDate),
+      )}</p>
+      ${
+        salespersonName !== "—"
+          ? `<p><span class="label">Salesperson:</span> ${esc(
+              salespersonName,
+            )}</p>`
+          : ""
+      }
     </div>
   </div>
 
@@ -204,7 +217,10 @@ export class SalesOrderPdfService {
       </tr>
     </thead>
     <tbody>
-      ${lineRows || '<tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:20px;">No line items</td></tr>'}
+      ${
+        lineRows ||
+        '<tr><td colspan="5" style="text-align:center;color:#9ca3af;padding:20px;">No line items</td></tr>'
+      }
     </tbody>
   </table>
 
@@ -234,7 +250,11 @@ export class SalesOrderPdfService {
   }
 
   <div class="footer">
-    Generated on ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+    Generated on ${new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })}
   </div>
 
 </body>

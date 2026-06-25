@@ -23,3 +23,4 @@ export * from "./partial-types/remove-fields-with-type.type";
 export * from "./partial-types/type-helpers";
 export * from "./partial-types/type.type";
 export * from "./transforms/to-boolean";
+export * from "./pdf";
