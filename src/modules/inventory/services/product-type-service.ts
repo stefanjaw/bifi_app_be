@@ -1,5 +1,8 @@
 import { BaseService } from "../../../system";
-import { productTypeModel, ProductTypeDocument } from "../models/product-type.model";
+import {
+  productTypeModel,
+  ProductTypeDocument,
+} from "../models/product-type.model";
 
 export class ProductTypeService extends BaseService<ProductTypeDocument> {
   constructor() {

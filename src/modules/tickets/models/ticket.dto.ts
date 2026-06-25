@@ -48,7 +48,7 @@ export class TicketDTO {
   @IsArray()
   @IsMongoId({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value,
+    typeof value === "string" ? JSON.parse(value) : value
   )
   followers?: string[];
 
@@ -56,7 +56,7 @@ export class TicketDTO {
   @IsArray()
   @IsString({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value,
+    typeof value === "string" ? JSON.parse(value) : value
   )
   tags?: string[];
 
@@ -85,7 +85,7 @@ export class TicketDTO {
   @IsArray()
   @IsMongoId({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value,
+    typeof value === "string" ? JSON.parse(value) : value
   )
   taskIds?: string[];
 

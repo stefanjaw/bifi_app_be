@@ -13,7 +13,7 @@ export class ActivityHistoryController extends BaseController<ActivityHistoryDoc
   protected override async exportCSVHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     try {
       const assetRosterId = req.query.assetRosterId as string;

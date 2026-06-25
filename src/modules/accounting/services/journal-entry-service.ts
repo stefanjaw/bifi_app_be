@@ -41,12 +41,12 @@ export class JournalEntryService extends BaseService<JournalEntryDocument> {
 
   override async create(
     data: JournalEntryDTO,
-    session?: ClientSession,
+    session?: ClientSession
   ): Promise<JournalEntryDocument> {
     const lines = data.lines ?? [];
     if (lines.length < 2) {
       throw new ValidationException(
-        "Journal entry must have at least 2 lines.",
+        "Journal entry must have at least 2 lines."
       );
     }
     const totalDebit = lines.reduce((sum, l) => sum + (l.debit ?? 0), 0);
@@ -70,7 +70,7 @@ export class JournalEntryService extends BaseService<JournalEntryDocument> {
     const updated = await model.findByIdAndUpdate(
       id,
       { status: JournalEntryStatus.POSTED },
-      { new: true },
+      { new: true }
     );
     return updated as JournalEntryDocument;
   }

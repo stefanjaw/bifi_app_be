@@ -17,7 +17,7 @@ export class PricingSearchService {
 
   async searchCatalog(
     query: string,
-    topN: number = 10,
+    topN: number = 10
   ): Promise<CatalogCacheDocument[]> {
     const model = this.connectionManager.bindModelToDb(catalogCacheModel);
     const escaped = this.escapeRegex(query.substring(0, 200));
@@ -38,7 +38,7 @@ export class PricingSearchService {
 
   async searchFreight(
     query: string,
-    topN: number = 10,
+    topN: number = 10
   ): Promise<FreightCacheDocument[]> {
     const model = this.connectionManager.bindModelToDb(freightCacheModel);
     const escaped = this.escapeRegex(query.substring(0, 200));
@@ -64,7 +64,7 @@ export class PricingSearchService {
   async search(
     query: string,
     topN: number = 10,
-    type?: string,
+    type?: string
   ): Promise<(CatalogCacheDocument | FreightCacheDocument)[]> {
     if (type === "catalog" || type === "pricelist") {
       return this.searchCatalog(query, topN);

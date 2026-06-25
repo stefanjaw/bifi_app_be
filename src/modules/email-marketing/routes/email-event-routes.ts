@@ -1,9 +1,6 @@
 import { BaseRoutes } from "../../../system";
 import { EmailEventController } from "../controllers/email-event-controller";
-import {
-  EmailEventDTO,
-  UpdateEmailEventDTO,
-} from "../models/email-event.dto";
+import { EmailEventDTO, UpdateEmailEventDTO } from "../models/email-event.dto";
 import { EmailEventDocument } from "../models/email-event.model";
 
 const emailEventController = new EmailEventController();

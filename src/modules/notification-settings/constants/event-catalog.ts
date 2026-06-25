@@ -33,7 +33,7 @@ export const EVENT_CATALOG: CatalogEvent[] = [
     type: "po_received",
     label: "Purchase Order Received",
     description:
-      "Fires when a PO status is updated to \"Received\" or \"Partially Received\".",
+      'Fires when a PO status is updated to "Received" or "Partially Received".',
     module: "purchases",
     icon: "pi pi-box",
     iconBg: "bg-blue-100 text-blue-600",
@@ -57,8 +57,7 @@ export const EVENT_CATALOG: CatalogEvent[] = [
   {
     type: "invoice_posted",
     label: "Invoice Posted",
-    description:
-      "Fires when an invoice is moved from Draft to Posted status.",
+    description: "Fires when an invoice is moved from Draft to Posted status.",
     module: "accounting",
     icon: "pi pi-send",
     iconBg: "bg-indigo-100 text-indigo-600",
@@ -72,7 +71,7 @@ export const EVENT_CATALOG: CatalogEvent[] = [
     type: "po_sent",
     label: "Purchase Order Sent",
     description:
-      "Fires when a purchase order status is updated to \"Sent\" (dispatched to supplier).",
+      'Fires when a purchase order status is updated to "Sent" (dispatched to supplier).',
     module: "purchases",
     icon: "pi pi-truck",
     iconBg: "bg-orange-100 text-orange-600",
@@ -97,7 +96,7 @@ export const EVENT_CATALOG: CatalogEvent[] = [
     type: "ticket_resolved",
     label: "Helpdesk Ticket Resolved",
     description:
-      "Fires when a helpdesk ticket is moved to a stage whose name contains \"Resolved\".",
+      'Fires when a helpdesk ticket is moved to a stage whose name contains "Resolved".',
     module: "helpdesk",
     icon: "pi pi-check",
     iconBg: "bg-teal-100 text-teal-600",
@@ -111,7 +110,7 @@ export const EVENT_CATALOG: CatalogEvent[] = [
     type: "deal_won",
     label: "CRM Deal Won",
     description:
-      "Fires when a CRM opportunity is moved to a stage whose name contains \"Won\".",
+      'Fires when a CRM opportunity is moved to a stage whose name contains "Won".',
     module: "sales",
     icon: "pi pi-trophy",
     iconBg: "bg-yellow-100 text-yellow-600",

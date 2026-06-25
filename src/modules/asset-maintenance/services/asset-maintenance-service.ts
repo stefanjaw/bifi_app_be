@@ -36,7 +36,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
    */
   override async create(
     data: AssetMaintenanceDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<AssetMaintenanceDocument> {
     return runTransaction<AssetMaintenanceDocument>(
       session,
@@ -47,11 +47,11 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
         if (
           !(await this.assetRosterStatusService.assetRosterHasActiveCommissioning(
             data.assetRosterId,
-            newSession,
+            newSession
           ))
         ) {
           throw new ValidationException(
-            "A commissioning must be issued for this asset roster and approved.",
+            "A commissioning must be issued for this asset roster and approved."
           );
         }
 
@@ -59,11 +59,11 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
           data.type === "preventive-maintenance" &&
           (await this.assetRosterStatusService.assetRosterIsBeforeDueForMaintenance(
             data.assetRosterId,
-            newSession,
+            newSession
           ))
         ) {
           throw new ValidationException(
-            "The asset roster is not yet due for preventive maintenance.",
+            "The asset roster is not yet due for preventive maintenance."
           );
         }
 
@@ -79,7 +79,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
               name: file.originalname,
               mimeType: file.mimetype,
               size: file.size,
-            })),
+            }))
           );
         }
 
@@ -89,7 +89,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
         // HANDLE ASSET ROSTER STATUS
         await this.assetRosterStatusService.updateAssetRosterStatus(
           maintenance.assetRosterId._id,
-          newSession,
+          newSession
         );
 
         // HANDLE NEXT MAINTENANCE DATES ONLY WHEN IT IS A PM, IS ACTIVE AND IS NOT MANUAL
@@ -99,12 +99,12 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
         ) {
           await this.assetRosterStatusService.updateNextAssetRosterMaintenanceDates(
             maintenance.assetRosterId._id,
-            newSession,
+            newSession
           );
         }
 
         return maintenance;
-      },
+      }
     );
   }
 
@@ -118,7 +118,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
    */
   override async update(
     data: UpdateAssetMaintenanceDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<AssetMaintenanceDocument> {
     return runTransaction<AssetMaintenanceDocument>(
       session,
@@ -137,7 +137,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
               name: file.originalname,
               mimeType: file.mimetype,
               size: file.size,
-            })),
+            }))
           );
         }
 
@@ -147,7 +147,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
         // HANDLE ASSET ROSTER STATUS
         await this.assetRosterStatusService.updateAssetRosterStatus(
           maintenance.assetRosterId._id,
-          newSession,
+          newSession
         );
 
         // ADD ACTIVITY HISTORY IF DISABLED
@@ -160,13 +160,13 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
                   : maintenance.name
                       .split("-")
                       .map(
-                        (w) => `${w.charAt(0).toUpperCase()}${w.substring(1)}`,
+                        (w) => `${w.charAt(0).toUpperCase()}${w.substring(1)}`
                       )
                       .join(" "),
               details: `Finished (${dayjs(maintenance.dateStart).format(
-                "DD MMM YYYY",
+                "DD MMM YYYY"
               )} - ${dayjs(maintenance.dateEnd).format(
-                "DD MMM YYYY",
+                "DD MMM YYYY"
               )}). Notes: ${
                 maintenance.notes ? maintenance.notes : "No notes provided."
               } ${maintenance.manual ? "(Manual)" : ""}`,
@@ -177,12 +177,12 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
                 assetRosterId: maintenance.assetRosterId._id.toString(),
               },
             },
-            newSession,
+            newSession
           );
         }
 
         return maintenance;
-      },
+      }
     );
   }
 
@@ -196,7 +196,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
    */
   override async delete(
     _id: string,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<boolean> {
     return runTransaction<boolean>(session, async (newSession) => {
       // GET MAINTENANCE TO CHECK ASSET ROSTER ID
@@ -208,7 +208,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
 
       await this.assetRosterStatusService.updateAssetRosterStatus(
         maintenance.assetRosterId._id,
-        newSession,
+        newSession
       );
 
       await this.activityHistoryService.create(
@@ -222,7 +222,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
                   .join(" ")
           } Finished`,
           details: `Finished (${dayjs(maintenance.dateStart).format(
-            "DD MMM YYYY",
+            "DD MMM YYYY"
           )} - ${dayjs(maintenance.dateEnd).format("DD MMM YYYY")}). Notes: ${
             maintenance.type === "preventive-maintenance" ? "PM" : "Service"
           } has concluded`,
@@ -231,7 +231,7 @@ export class AssetMaintenanceService extends BaseService<AssetMaintenanceDocumen
           modelId: maintenance._id,
           metadata: { assetRosterId: maintenance.assetRosterId._id.toString() },
         },
-        newSession,
+        newSession
       );
 
       return deleted;

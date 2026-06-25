@@ -33,7 +33,7 @@ const discountSchema = new Schema(
 discountSchema.plugin(paginate);
 discountSchema.plugin(autopopulate);
 
-export const discountModel = mongoose.model<DiscountDocument, PaginateModel<DiscountDocument>>(
-  "Discount",
-  discountSchema
-);
+export const discountModel = mongoose.model<
+  DiscountDocument,
+  PaginateModel<DiscountDocument>
+>("Discount", discountSchema);

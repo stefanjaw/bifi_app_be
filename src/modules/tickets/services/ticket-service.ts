@@ -51,13 +51,27 @@ interface NotificationEntry {
 }
 
 const HIGH_URGENCY_KEYWORDS = [
-  "critical", "urgent", "crash", "down", "broken", "blocker", "emergency",
+  "critical",
+  "urgent",
+  "crash",
+  "down",
+  "broken",
+  "blocker",
+  "emergency",
 ];
 const HIGH_KEYWORDS = [
-  "error", "fail", "bug", "issue", "not working", "problem",
+  "error",
+  "fail",
+  "bug",
+  "issue",
+  "not working",
+  "problem",
 ];
 
-function inferPriorityFromKeywords(name: string, description?: string): Priority {
+function inferPriorityFromKeywords(
+  name: string,
+  description?: string
+): Priority {
   const text = `${name} ${description ?? ""}`.toLowerCase();
   if (HIGH_URGENCY_KEYWORDS.some((kw) => text.includes(kw))) return "urgent";
   if (HIGH_KEYWORDS.some((kw) => text.includes(kw))) return "high";
@@ -68,7 +82,8 @@ function calculateSlaDates(priority?: string): {
   slaResponseDeadline: Date;
   slaResolutionDeadline: Date;
 } {
-  const responseDays = priority === "urgent" ? 0.125 : priority === "high" ? 0.5 : 1;
+  const responseDays =
+    priority === "urgent" ? 0.125 : priority === "high" ? 0.5 : 1;
   const resolutionDays =
     priority === "urgent" ? 1 : priority === "high" ? 2 : 3;
   return {
@@ -88,7 +103,7 @@ function toObjectId(value: unknown): mongoose.Types.ObjectId | null {
 function buildNotifications(
   followerIds: mongoose.Types.ObjectId[],
   eventType: NotificationEventType,
-  message: string,
+  message: string
 ): NotificationEntry[] {
   return followerIds.map((recipientId) => ({
     recipientId,
@@ -104,7 +119,9 @@ function getDocumentIdString(value: unknown): string {
   if (value instanceof mongoose.Types.ObjectId) return value.toString();
   if (typeof value === "object" && value !== null && "_id" in value) {
     const id = (value as mongoose.Document)._id;
-    return id instanceof mongoose.Types.ObjectId ? id.toString() : String(id ?? "");
+    return id instanceof mongoose.Types.ObjectId
+      ? id.toString()
+      : String(id ?? "");
   }
   return String(value);
 }
@@ -126,43 +143,39 @@ export class TicketService extends BaseService<TicketDocument> {
         {
           path: "stage",
           getModel: () =>
-            this.connectionManager.getModel<HelpdeskStageDocument>("HelpdeskStage"),
+            this.connectionManager.getModel<HelpdeskStageDocument>(
+              "HelpdeskStage"
+            ),
           isArray: false,
         },
         {
           path: "assigned",
-          getModel: () =>
-            this.connectionManager.getModel<UserDocument>("User"),
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
           isArray: false,
         },
         {
           path: "senderUser",
-          getModel: () =>
-            this.connectionManager.getModel<UserDocument>("User"),
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
           isArray: false,
         },
         {
           path: "followers",
-          getModel: () =>
-            this.connectionManager.getModel<UserDocument>("User"),
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
           isArray: true,
         },
         {
           path: "taskIds",
-          getModel: () =>
-            this.connectionManager.getModel<TaskDocument>("Task"),
+          getModel: () => this.connectionManager.getModel<TaskDocument>("Task"),
           isArray: true,
         },
         {
           path: "createdBy",
-          getModel: () =>
-            this.connectionManager.getModel<UserDocument>("User"),
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
           isArray: false,
         },
         {
           path: "updatedBy",
-          getModel: () =>
-            this.connectionManager.getModel<UserDocument>("User"),
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
           isArray: false,
         },
       ],
@@ -171,19 +184,22 @@ export class TicketService extends BaseService<TicketDocument> {
 
   override async create(
     data: TicketDTO,
-    session?: mongoose.ClientSession | undefined,
+    session?: mongoose.ClientSession | undefined
   ): Promise<TicketDocument> {
     return await runTransaction<TicketDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
 
-      if (isValidFileUpload(data.attachments) && Array.isArray(data.attachments)) {
+      if (
+        isValidFileUpload(data.attachments) &&
+        Array.isArray(data.attachments)
+      ) {
         data.attachments = await Promise.all(
           data.attachments.map<Promise<InnerFile>>(async (file) => ({
             fileId: await bucket.uploadFile(file),
             name: file.originalname,
             mimeType: file.mimetype,
             size: file.size,
-          })),
+          }))
         );
       }
 
@@ -193,19 +209,19 @@ export class TicketService extends BaseService<TicketDocument> {
           undefined,
           undefined,
           undefined,
-          newSession,
+          newSession
         );
 
         if (!stages || stages.length === 0)
           throw new ValidationException(
-            "No default helpdesk stage found, please create one",
+            "No default helpdesk stage found, please create one"
           );
 
         data.stage = stages[0]._id.toString();
       }
 
       const ruleResults = await this.ticketRuleService.evaluateRules(
-        data as unknown as Record<string, unknown>,
+        data as unknown as Record<string, unknown>
       );
 
       if (!data.assigned) {
@@ -220,8 +236,9 @@ export class TicketService extends BaseService<TicketDocument> {
       }
 
       if (!data.priority) {
-        data.priority = (ruleResults.priority as Priority | undefined)
-          ?? inferPriorityFromKeywords(data.name, data.description);
+        data.priority =
+          (ruleResults.priority as Priority | undefined) ??
+          inferPriorityFromKeywords(data.name, data.description);
       }
 
       const slaDates = calculateSlaDates(data.priority);
@@ -236,14 +253,17 @@ export class TicketService extends BaseService<TicketDocument> {
         "Tickets",
         "TKT-",
         5,
-        1,
+        1
       );
 
-      const ticket = await super.create({
-        ...data,
-        number,
-        createdBy: userStorage.getStore()?.user?._id,
-      }, newSession);
+      const ticket = await super.create(
+        {
+          ...data,
+          number,
+          createdBy: userStorage.getStore()?.user?._id,
+        },
+        newSession
+      );
 
       const followerIds: mongoose.Types.ObjectId[] = (data.followers ?? [])
         .map(toObjectId)
@@ -253,13 +273,13 @@ export class TicketService extends BaseService<TicketDocument> {
         const notifications = buildNotifications(
           followerIds,
           "ticket_created",
-          `Ticket "${data.name}" has been created`,
+          `Ticket "${data.name}" has been created`
         );
         const model = this.connectionManager.bindModelToDb(this.model);
         await model.findByIdAndUpdate(
           ticket._id,
           { $push: { notifications: { $each: notifications } } },
-          { session: newSession },
+          { session: newSession }
         );
       }
 
@@ -269,19 +289,22 @@ export class TicketService extends BaseService<TicketDocument> {
 
   override async update(
     data: UpdateTicketDTO,
-    session?: mongoose.ClientSession | undefined,
+    session?: mongoose.ClientSession | undefined
   ): Promise<TicketDocument> {
     return await runTransaction<TicketDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
 
-      if (isValidFileUpload(data.attachments) && Array.isArray(data.attachments)) {
+      if (
+        isValidFileUpload(data.attachments) &&
+        Array.isArray(data.attachments)
+      ) {
         data.attachments = await Promise.all(
           data.attachments.map<Promise<InnerFile>>(async (file) => ({
             fileId: await bucket.uploadFile(file),
             name: file.originalname,
             mimeType: file.mimetype,
             size: file.size,
-          })),
+          }))
         );
       }
 
@@ -294,11 +317,15 @@ export class TicketService extends BaseService<TicketDocument> {
       const notificationsToAdd: NotificationEntry[] = [];
 
       const existingFollowerIds: mongoose.Types.ObjectId[] = (
-        (existing?.followers as unknown as (mongoose.Types.ObjectId | UserDocument)[]) ?? []
-      ).map((item): mongoose.Types.ObjectId =>
-        item instanceof mongoose.Types.ObjectId
-          ? item
-          : new mongoose.Types.ObjectId((item as UserDocument)._id.toString()),
+        (existing?.followers as unknown as (
+          | mongoose.Types.ObjectId
+          | UserDocument
+        )[]) ?? []
+      ).map(
+        (item): mongoose.Types.ObjectId =>
+          item instanceof mongoose.Types.ObjectId
+            ? item
+            : new mongoose.Types.ObjectId((item as UserDocument)._id.toString())
       );
 
       const scalarFields: Array<keyof UpdateTicketDTO> = [
@@ -323,7 +350,12 @@ export class TicketService extends BaseService<TicketDocument> {
         const oldVal = getDocumentIdString(rawOld) || String(rawOld ?? "");
         const newVal = String(data[field] ?? "");
         if (oldVal !== newVal) {
-          activityEntries.push({ field, oldValue: oldVal, newValue: newVal, changedBy });
+          activityEntries.push({
+            field,
+            oldValue: oldVal,
+            newValue: newVal,
+            changedBy,
+          });
         }
       }
 
@@ -350,14 +382,23 @@ export class TicketService extends BaseService<TicketDocument> {
           });
 
           notificationsToAdd.push(
-            ...buildNotifications(addedIds, "follower_added", "You have been added as a follower"),
-            ...buildNotifications(removedIds, "follower_removed", "You have been removed as a follower"),
+            ...buildNotifications(
+              addedIds,
+              "follower_added",
+              "You have been added as a follower"
+            ),
+            ...buildNotifications(
+              removedIds,
+              "follower_removed",
+              "You have been removed as a follower"
+            )
           );
         }
       }
 
       if (data.tags !== undefined) {
-        const existingTags: string[] = (existing?.tags as unknown as string[]) ?? [];
+        const existingTags: string[] =
+          (existing?.tags as unknown as string[]) ?? [];
         if (
           JSON.stringify([...existingTags].sort()) !==
           JSON.stringify([...(data.tags ?? [])].sort())
@@ -373,7 +414,7 @@ export class TicketService extends BaseService<TicketDocument> {
 
       if (data.taskIds !== undefined) {
         const existingTaskIds = arrayIdsToStrings(
-          (existing?.taskIds as unknown as unknown[]) ?? [],
+          (existing?.taskIds as unknown as unknown[]) ?? []
         );
         const incomingTaskIds = data.taskIds.map(String);
         if (
@@ -391,7 +432,9 @@ export class TicketService extends BaseService<TicketDocument> {
 
       if (data.attachments !== undefined && Array.isArray(data.attachments)) {
         const existingAttachments = (
-          (existing?.attachments as unknown as { fileId: mongoose.Types.ObjectId }[]) ?? []
+          (existing?.attachments as unknown as {
+            fileId: mongoose.Types.ObjectId;
+          }[]) ?? []
         ).map((a) => a.fileId?.toString() ?? "");
         const incomingAttachments = (
           data.attachments as unknown as { fileId?: mongoose.Types.ObjectId }[]
@@ -412,13 +455,16 @@ export class TicketService extends BaseService<TicketDocument> {
       const model = this.connectionManager.bindModelToDb(this.model);
       const sideEffects: Record<string, unknown> = {};
 
-      if (data.stage !== undefined && data.stage !== getDocumentIdString(existing?.stage)) {
+      if (
+        data.stage !== undefined &&
+        data.stage !== getDocumentIdString(existing?.stage)
+      ) {
         const stages = await this.helpdeskStageService.get(
           { _id: data.stage },
           undefined,
           undefined,
           undefined,
-          newSession,
+          newSession
         );
         const stageName = stages?.[0]?.name?.toLowerCase() ?? "";
 
@@ -433,7 +479,9 @@ export class TicketService extends BaseService<TicketDocument> {
               reporter: getDocumentIdString(existing?.senderUser),
             },
             title: "Helpdesk ticket resolved",
-            body: `Ticket "${(existing as any)?.name ?? data._id}" has been resolved.`,
+            body: `Ticket "${
+              (existing as any)?.name ?? data._id
+            }" has been resolved.`,
             link: `/helpdesk/${(data as any)._id}`,
             module: "helpdesk",
           });
@@ -451,14 +499,16 @@ export class TicketService extends BaseService<TicketDocument> {
           ...buildNotifications(
             existingFollowerIds,
             stageEventType,
-            `Ticket stage changed to "${stages?.[0]?.name ?? data.stage}"`,
-          ),
+            `Ticket stage changed to "${stages?.[0]?.name ?? data.stage}"`
+          )
         );
 
-        const recalcPriority = data.priority ?? (existing?.priority as string | undefined);
+        const recalcPriority =
+          data.priority ?? (existing?.priority as string | undefined);
         const recalcSlaDates = calculateSlaDates(recalcPriority);
         if (data.slaResponseDeadline === undefined) {
-          sideEffects["slaResponseDeadline"] = recalcSlaDates.slaResponseDeadline;
+          sideEffects["slaResponseDeadline"] =
+            recalcSlaDates.slaResponseDeadline;
         }
         if (data.slaResolutionDeadline === undefined) {
           const isClosed =
@@ -477,11 +527,14 @@ export class TicketService extends BaseService<TicketDocument> {
           ...buildNotifications(
             existingFollowerIds,
             "priority_changed",
-            `Ticket priority changed to "${data.priority}"`,
-          ),
+            `Ticket priority changed to "${data.priority}"`
+          )
         );
 
-        if (data.slaResponseDeadline === undefined && data.stage === undefined) {
+        if (
+          data.slaResponseDeadline === undefined &&
+          data.stage === undefined
+        ) {
           const newSla = calculateSlaDates(data.priority);
           sideEffects["slaResponseDeadline"] = newSla.slaResponseDeadline;
           sideEffects["slaResolutionDeadline"] = newSla.slaResolutionDeadline;
@@ -496,8 +549,8 @@ export class TicketService extends BaseService<TicketDocument> {
           ...buildNotifications(
             existingFollowerIds,
             "assigned_changed",
-            "Ticket assigned user has changed",
-          ),
+            "Ticket assigned user has changed"
+          )
         );
         const newAssignedId = toObjectId(data.assigned);
         if (newAssignedId) {
@@ -516,7 +569,9 @@ export class TicketService extends BaseService<TicketDocument> {
             creator: getDocumentIdString(changedBy),
           },
           title: "Helpdesk ticket assigned to you",
-          body: `Ticket "${(existing as any)?.name ?? data._id}" has been assigned to you.`,
+          body: `Ticket "${
+            (existing as any)?.name ?? data._id
+          }" has been assigned to you.`,
           link: `/helpdesk/${(data as any)._id}`,
           module: "helpdesk",
         });
@@ -538,10 +593,12 @@ export class TicketService extends BaseService<TicketDocument> {
         await model.findByIdAndUpdate(
           data._id,
           {
-            ...(Object.keys(sideEffects).length > 0 ? { $set: sideEffects } : {}),
+            ...(Object.keys(sideEffects).length > 0
+              ? { $set: sideEffects }
+              : {}),
             ...(Object.keys(pushOps).length > 0 ? { $push: pushOps } : {}),
           },
-          { session: newSession },
+          { session: newSession }
         );
       }
 
@@ -584,10 +641,18 @@ export class TicketService extends BaseService<TicketDocument> {
           const refType = refFieldType[entry.field];
           if (!refType) continue;
           const targets =
-            refType === "stage" ? stageIds : refType === "user" ? userIds : taskRefIds;
+            refType === "stage"
+              ? stageIds
+              : refType === "user"
+              ? userIds
+              : taskRefIds;
           const combined = [
-            ...(Array.isArray(entry.oldValue) ? (entry.oldValue as string[]) : [String(entry.oldValue ?? "")]),
-            ...(Array.isArray(entry.newValue) ? (entry.newValue as string[]) : [String(entry.newValue ?? "")]),
+            ...(Array.isArray(entry.oldValue)
+              ? (entry.oldValue as string[])
+              : [String(entry.oldValue ?? "")]),
+            ...(Array.isArray(entry.newValue)
+              ? (entry.newValue as string[])
+              : [String(entry.newValue ?? "")]),
           ];
           for (const id of combined) {
             if (id && mongoose.isValidObjectId(id)) targets.add(id);
@@ -596,38 +661,52 @@ export class TicketService extends BaseService<TicketDocument> {
 
         // Batch-fetch display names from DB (one query per collection)
         const stageModel = this.connectionManager.bindModelToDb(
-          this.connectionManager.getModel<HelpdeskStageDocument>("HelpdeskStage"),
+          this.connectionManager.getModel<HelpdeskStageDocument>(
+            "HelpdeskStage"
+          )
         );
         const userModel = this.connectionManager.bindModelToDb(
-          this.connectionManager.getModel<UserDocument>("User"),
+          this.connectionManager.getModel<UserDocument>("User")
         );
         const taskModel = this.connectionManager.bindModelToDb(
-          this.connectionManager.getModel<TaskDocument>("Task"),
+          this.connectionManager.getModel<TaskDocument>("Task")
         );
 
         const [stageDocs, userDocs, taskDocs] = await Promise.all([
           stageIds.size > 0
-            ? stageModel.find({ _id: { $in: [...stageIds] } }, { name: 1 }).session(newSession)
+            ? stageModel
+                .find({ _id: { $in: [...stageIds] } }, { name: 1 })
+                .session(newSession)
             : [],
           userIds.size > 0
-            ? userModel.find({ _id: { $in: [...userIds] } }, { username: 1, email: 1 }).session(newSession)
+            ? userModel
+                .find({ _id: { $in: [...userIds] } }, { username: 1, email: 1 })
+                .session(newSession)
             : [],
           taskRefIds.size > 0
-            ? taskModel.find({ _id: { $in: [...taskRefIds] } }, { name: 1 }).session(newSession)
+            ? taskModel
+                .find({ _id: { $in: [...taskRefIds] } }, { name: 1 })
+                .session(newSession)
             : [],
         ]);
 
         const stageMap = new Map<string, string>(
-          (stageDocs as any[]).map((s) => [s._id.toString(), String(s.name ?? "—")]),
+          (stageDocs as any[]).map((s) => [
+            s._id.toString(),
+            String(s.name ?? "—"),
+          ])
         );
         const userMap = new Map<string, string>(
           (userDocs as any[]).map((u) => [
             u._id.toString(),
             String(u.username || u.email || "—"),
-          ]),
+          ])
         );
         const taskLabelMap = new Map<string, string>(
-          (taskDocs as any[]).map((t) => [t._id.toString(), String(t.name ?? "—")]),
+          (taskDocs as any[]).map((t) => [
+            t._id.toString(),
+            String(t.name ?? "—"),
+          ])
         );
 
         const resolveId = (id: string, field: string): string => {
@@ -684,16 +763,19 @@ export class TicketService extends BaseService<TicketDocument> {
                   newValue: buildMetaValue(entry.newValue, entry.field),
                 },
               },
-              newSession,
+              newSession
             );
-          }),
+          })
         );
       }
 
-      return await super.update({
-        ...data,
-        updatedBy: changedBy,
-      }, newSession);
+      return await super.update(
+        {
+          ...data,
+          updatedBy: changedBy,
+        },
+        newSession
+      );
     });
   }
 
@@ -713,17 +795,17 @@ export class TicketService extends BaseService<TicketDocument> {
   }> {
     const model = this.connectionManager.bindModelToDb(this.model);
 
-    const byStageRaw = await model.aggregate([
+    const byStageRaw = (await model.aggregate([
       { $match: { active: true } },
       { $group: { _id: "$stage", count: { $sum: 1 } } },
-    ]) as { _id: mongoose.Types.ObjectId | null; count: number }[];
+    ])) as { _id: mongoose.Types.ObjectId | null; count: number }[];
 
     const byStage = byStageRaw.map((r) => ({
       stage: r._id?.toString() ?? "unassigned",
       count: r.count,
     }));
 
-    const resolutionRaw = await model.aggregate([
+    const resolutionRaw = (await model.aggregate([
       {
         $match: {
           active: true,
@@ -736,16 +818,17 @@ export class TicketService extends BaseService<TicketDocument> {
           assigned: 1,
         },
       },
-    ]) as { resolutionMs: number; assigned: mongoose.Types.ObjectId | null }[];
+    ])) as { resolutionMs: number; assigned: mongoose.Types.ObjectId | null }[];
 
     const resolutionMinutes = resolutionRaw.map((r) =>
-      Math.round(r.resolutionMs / 1000 / 60),
+      Math.round(r.resolutionMs / 1000 / 60)
     );
 
     const avgResolutionMinutes =
       resolutionMinutes.length > 0
         ? Math.round(
-            resolutionMinutes.reduce((s, t) => s + t, 0) / resolutionMinutes.length,
+            resolutionMinutes.reduce((s, t) => s + t, 0) /
+              resolutionMinutes.length
           )
         : null;
     const minResolutionMinutes =
@@ -770,7 +853,7 @@ export class TicketService extends BaseService<TicketDocument> {
       }
     }
 
-    const byAssignedRaw = await model.aggregate([
+    const byAssignedRaw = (await model.aggregate([
       { $match: { active: true } },
       {
         $group: {
@@ -787,7 +870,7 @@ export class TicketService extends BaseService<TicketDocument> {
           },
         },
       },
-    ]) as {
+    ])) as {
       _id: mongoose.Types.ObjectId | null;
       count: number;
       resolvedTimes: (number | null)[];
@@ -798,7 +881,7 @@ export class TicketService extends BaseService<TicketDocument> {
       const avg =
         times.length > 0
           ? Math.round(
-              times.reduce((s, t) => s + t, 0) / times.length / 1000 / 60,
+              times.reduce((s, t) => s + t, 0) / times.length / 1000 / 60
             )
           : null;
       return {

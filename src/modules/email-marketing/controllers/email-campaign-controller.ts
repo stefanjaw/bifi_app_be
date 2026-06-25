@@ -14,9 +14,7 @@ export class EmailCampaignController extends BaseController<EmailCampaignDocumen
 
   dashboard = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await (
-        this.service as EmailCampaignService
-      ).dashboard();
+      const data = await (this.service as EmailCampaignService).dashboard();
       this.sendData(res, data);
     } catch (error) {
       next(error);
@@ -54,9 +52,10 @@ export class EmailCampaignController extends BaseController<EmailCampaignDocumen
       const date = new Date(scheduledAt);
       if (isNaN(date.getTime()))
         throw new ValidationException("scheduledAt is invalid.");
-      const result = await (
-        this.service as EmailCampaignService
-      ).setSchedule(id, date);
+      const result = await (this.service as EmailCampaignService).setSchedule(
+        id,
+        date
+      );
       this.sendData(res, result);
     } catch (error) {
       next(error);

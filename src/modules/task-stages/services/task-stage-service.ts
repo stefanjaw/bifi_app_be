@@ -20,7 +20,7 @@ export class TaskStageService extends BaseService<TaskStageDocument> {
    */
   override async create(
     data: TaskStageDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<TaskStageDocument> {
     return await runTransaction<TaskStageDocument>(
       session,
@@ -32,12 +32,12 @@ export class TaskStageService extends BaseService<TaskStageDocument> {
           await model.updateMany(
             { isDefault: true },
             { isDefault: false },
-            { session: newSession },
+            { session: newSession }
           );
         }
 
         return await super.create(data, newSession);
-      },
+      }
     );
   }
 
@@ -50,7 +50,7 @@ export class TaskStageService extends BaseService<TaskStageDocument> {
    */
   override async update(
     data: UpdateTaskStageDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<TaskStageDocument> {
     return await runTransaction<TaskStageDocument>(
       session,
@@ -62,12 +62,12 @@ export class TaskStageService extends BaseService<TaskStageDocument> {
           await model.updateMany(
             { isDefault: true },
             { isDefault: false },
-            { session: newSession },
+            { session: newSession }
           );
         }
 
         return await super.update(data, newSession);
-      },
+      }
     );
   }
 }

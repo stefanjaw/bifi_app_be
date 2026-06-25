@@ -42,7 +42,7 @@ export class PricingIndexingService {
     connectionManager = new ConnectionManager(),
     driveSettingsService = new DriveSettingsService(),
     pricingSettingsService = new PricingSettingsService(),
-    aiSettingsService = new AiSettingsService(),
+    aiSettingsService = new AiSettingsService()
   ) {
     this.connectionManager = connectionManager;
     this.driveSettingsService = driveSettingsService;
@@ -54,12 +54,12 @@ export class PricingIndexingService {
     this.catalogIndexer = new CatalogIndexer(
       this.connectionManager,
       fileParserService,
-      driveFileService,
+      driveFileService
     );
     this.freightIndexer = new FreightIndexer(
       this.connectionManager,
       fileParserService,
-      driveFileService,
+      driveFileService
     );
   }
 
@@ -67,7 +67,7 @@ export class PricingIndexingService {
     const aiSettings = await this.aiSettingsService.getSettings();
     if (!aiSettings?.apiKey) {
       throw new ValidationException(
-        "AI settings not configured. Please add an API key in AI Settings.",
+        "AI settings not configured. Please add an API key in AI Settings."
       );
     }
     return new GemsService({
@@ -79,7 +79,7 @@ export class PricingIndexingService {
 
   async triggerIndexing(
     type?: IndexType,
-    force?: boolean,
+    force?: boolean
   ): Promise<IndexingSummary> {
     if (PricingIndexingService.isRunning) {
       return {
@@ -117,12 +117,12 @@ export class PricingIndexingService {
 
   private async runIndexing(
     type?: IndexType,
-    force?: boolean,
+    force?: boolean
   ): Promise<IndexingSummary> {
     const driveSettings = await this.driveSettingsService.getSettings();
     if (!driveSettings?.serviceAccountKey) {
       throw new ValidationException(
-        "Google Drive settings not configured. Please add a service account key.",
+        "Google Drive settings not configured. Please add a service account key."
       );
     }
 
@@ -131,14 +131,14 @@ export class PricingIndexingService {
 
     if (folders.length === 0) {
       throw new ValidationException(
-        "No folders configured. Add folder mappings in Pricing Settings.",
+        "No folders configured. Add folder mappings in Pricing Settings."
       );
     }
 
     const configFolder = folders.find((f) => f.type === "config");
     if (!configFolder) {
       throw new ValidationException(
-        "No config folder mapped. Add a folder with type 'config' in Pricing Settings to store generated master CSVs.",
+        "No config folder mapped. Add a folder with type 'config' in Pricing Settings to store generated master CSVs."
       );
     }
 
@@ -155,14 +155,14 @@ export class PricingIndexingService {
         lastIndexedAt: new Date(),
         errors: [
           `AI settings not available — skipping file extraction: ${toErrorMessage(
-            err,
+            err
           )}`,
         ],
       };
     }
 
     const driveConnector = new GoogleDriveConnectorService(
-      driveSettings.serviceAccountKey,
+      driveSettings.serviceAccountKey
     );
     const indexType: IndexType = type ?? "all";
     const now = new Date();
@@ -184,7 +184,7 @@ export class PricingIndexingService {
         driveConnector,
         pricingFolders,
         configFolder.folderId,
-        lastIndexed,
+        lastIndexed
       );
 
       filesProcessed += result.filesProcessed;
@@ -195,7 +195,7 @@ export class PricingIndexingService {
       if (result.errors.length === 0) {
         await this.pricingSettingsService.updateTimestamp(
           "catalogLastIndexed",
-          now,
+          now
         );
       }
     }
@@ -213,7 +213,7 @@ export class PricingIndexingService {
         driveConnector,
         freightFolders,
         configFolder.folderId,
-        lastIndexed,
+        lastIndexed
       );
 
       filesProcessed += result.filesProcessed;
@@ -224,19 +224,19 @@ export class PricingIndexingService {
       if (result.errors.length === 0) {
         await this.pricingSettingsService.updateTimestamp(
           "freightLastIndexed",
-          now,
+          now
         );
       }
     }
 
     const suppliersFound = [
       ...new Set(
-        catalogRecords.map((r) => r.supplier).filter((s): s is string => !!s),
+        catalogRecords.map((r) => r.supplier).filter((s): s is string => !!s)
       ),
     ];
     const freightTypesFound = [
       ...new Set(
-        freightRecords.map((r) => r.rate_type).filter((t): t is string => !!t),
+        freightRecords.map((r) => r.rate_type).filter((t): t is string => !!t)
       ),
     ];
 
@@ -265,7 +265,7 @@ export class PricingIndexingService {
         this.catalogIndexer.getActiveRecordCount(),
         this.freightIndexer.getActiveRecordCount(),
         this.pricingSettingsService.getSettings().catch(() => null),
-      ],
+      ]
     );
 
     return {

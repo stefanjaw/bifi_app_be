@@ -9,17 +9,20 @@ export class JournalService extends BaseService<JournalDocument> {
       refFields: [
         {
           path: "defaultDebitAccountId",
-          getModel: () => this.connectionManager.getModel<AccountDocument>("Account"),
+          getModel: () =>
+            this.connectionManager.getModel<AccountDocument>("Account"),
           isArray: false,
         },
         {
           path: "defaultCreditAccountId",
-          getModel: () => this.connectionManager.getModel<AccountDocument>("Account"),
+          getModel: () =>
+            this.connectionManager.getModel<AccountDocument>("Account"),
           isArray: false,
         },
         {
           path: "currencyId",
-          getModel: () => this.connectionManager.getModel<CurrencyDocument>("Currency"),
+          getModel: () =>
+            this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
       ],

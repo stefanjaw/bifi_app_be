@@ -54,7 +54,14 @@ export class PurchaseOrderDTO {
   @IsMongoId()
   contactId!: string;
 
-  @IsEnum(["draft", "confirmed", "sent", "partially_received", "received", "cancelled"])
+  @IsEnum([
+    "draft",
+    "confirmed",
+    "sent",
+    "partially_received",
+    "received",
+    "cancelled",
+  ])
   @IsOptional()
   status?: string;
 
@@ -95,6 +102,13 @@ export class UpdatePurchaseOrderDTO extends PartialType(PurchaseOrderDTO) {
 }
 
 export class UpdatePurchaseOrderStatusDTO {
-  @IsEnum(["draft", "confirmed", "sent", "partially_received", "received", "cancelled"])
+  @IsEnum([
+    "draft",
+    "confirmed",
+    "sent",
+    "partially_received",
+    "received",
+    "cancelled",
+  ])
   status!: string;
 }

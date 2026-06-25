@@ -138,7 +138,7 @@ app.use((req, res, next) => {
       token: undefined,
       dbName: undefined,
     },
-    () => next(),
+    () => next()
   );
 });
 
@@ -151,7 +151,7 @@ app.use(
     origin: "*",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     exposedHeaders: ["Content-Disposition"],
-  }),
+  })
 );
 
 app.use(express.json());

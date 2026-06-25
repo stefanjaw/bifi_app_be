@@ -1,7 +1,10 @@
 import { BaseRoutes, authorizeMiddleware } from "../../../system";
 import { JournalEntryDocument } from "../models/journal-entry.model";
 import { JournalEntryController } from "../controllers/journal-entry-controller";
-import { JournalEntryDTO, UpdateJournalEntryDTO } from "../models/journal-entry.dto";
+import {
+  JournalEntryDTO,
+  UpdateJournalEntryDTO,
+} from "../models/journal-entry.dto";
 
 const journalEntryController = new JournalEntryController();
 

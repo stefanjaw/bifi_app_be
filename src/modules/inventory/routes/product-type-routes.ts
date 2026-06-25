@@ -1,7 +1,10 @@
 import { BaseRoutes } from "../../../system";
 import { ProductTypeDocument } from "../models/product-type.model";
 import { ProductTypeController } from "../controllers/product-type-controller";
-import { ProductTypeDTO, UpdateProductTypeDTO } from "../models/product-type.dto";
+import {
+  ProductTypeDTO,
+  UpdateProductTypeDTO,
+} from "../models/product-type.dto";
 
 const productTypeController = new ProductTypeController();
 

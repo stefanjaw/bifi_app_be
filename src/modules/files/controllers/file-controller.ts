@@ -33,18 +33,18 @@ export class FileController {
 
       if (imageSize && !["icon", "full", "preview"].includes(imageSize))
         throw new BadRequestException(
-          "Invalid image size parameter, must be 'icon', 'full' or 'preview'",
+          "Invalid image size parameter, must be 'icon', 'full' or 'preview'"
         );
 
       const { file, bufferDownload } = await bucket.downloadFile(id);
 
       res.setHeader(
         "Content-Type",
-        file.metadata?.mimetype || "application/octet-stream",
+        file.metadata?.mimetype || "application/octet-stream"
       );
       res.setHeader(
         "Content-Disposition",
-        `inline; filename="${file.filename}"`,
+        `inline; filename="${file.filename}"`
       );
 
       // Write the buffer to the response

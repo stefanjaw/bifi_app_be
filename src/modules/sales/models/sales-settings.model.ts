@@ -29,9 +29,9 @@ const salesSettingsSchema = new Schema(
 salesSettingsSchema.plugin(paginate);
 salesSettingsSchema.plugin(autopopulate);
 
-const salesSettingsModel = mongoose.model<SalesSettingsDocument, PaginateModel<SalesSettingsDocument>>(
-  "SalesSettings",
-  salesSettingsSchema
-);
+const salesSettingsModel = mongoose.model<
+  SalesSettingsDocument,
+  PaginateModel<SalesSettingsDocument>
+>("SalesSettings", salesSettingsSchema);
 
 export { salesSettingsModel };

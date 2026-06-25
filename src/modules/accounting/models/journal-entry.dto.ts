@@ -1,4 +1,15 @@
-import { IsArray, IsDate, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, Min, ValidateNested } from "class-validator";
+import {
+  IsArray,
+  IsDate,
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from "class-validator";
 import { plainToInstance, Transform, Type } from "class-transformer";
 import { PartialType } from "../../../system";
 import { JournalEntryStatus } from "./journal-entry.model";

@@ -60,9 +60,9 @@ const sequenceSchema = new Schema(
 sequenceSchema.plugin(paginate);
 sequenceSchema.plugin(autopopulate);
 
-const sequenceModel = mongoose.model<SequenceDocument, PaginateModel<SequenceDocument>>(
-  "Sequence",
-  sequenceSchema
-);
+const sequenceModel = mongoose.model<
+  SequenceDocument,
+  PaginateModel<SequenceDocument>
+>("Sequence", sequenceSchema);
 
 export { sequenceModel };

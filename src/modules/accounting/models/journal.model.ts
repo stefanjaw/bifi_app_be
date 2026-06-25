@@ -64,7 +64,7 @@ const journalSchema = new Schema(
 journalSchema.plugin(paginate);
 journalSchema.plugin(autopopulate);
 
-export const journalModel = mongoose.model<JournalDocument, PaginateModel<JournalDocument>>(
-  "Journal",
-  journalSchema
-);
+export const journalModel = mongoose.model<
+  JournalDocument,
+  PaginateModel<JournalDocument>
+>("Journal", journalSchema);

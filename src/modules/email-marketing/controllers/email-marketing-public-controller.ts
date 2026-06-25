@@ -27,8 +27,7 @@ export class EmailMarketingPublicController {
   private async incrementStat(campaignId: any, type: string) {
     const field = STAT_FIELD[type];
     if (!campaignId || !field) return;
-    const campaigns =
-      this.connectionManager.bindModelToDb(emailCampaignModel);
+    const campaigns = this.connectionManager.bindModelToDb(emailCampaignModel);
     await campaigns.findByIdAndUpdate(campaignId, {
       $inc: { [`stats.${field}`]: 1 },
     });
@@ -88,12 +87,16 @@ export class EmailMarketingPublicController {
     if (!payload) {
       res
         .status(400)
-        .send(this.htmlPage("Invalid link", "This unsubscribe link is invalid or has expired."));
+        .send(
+          this.htmlPage(
+            "Invalid link",
+            "This unsubscribe link is invalid or has expired."
+          )
+        );
       return;
     }
     try {
-      const subscribers =
-        this.connectionManager.bindModelToDb(subscriberModel);
+      const subscribers = this.connectionManager.bindModelToDb(subscriberModel);
       const sub = await subscribers.findByIdAndUpdate(payload.subscriberId, {
         status: "unsubscribed",
         unsubscribedAt: new Date(),
@@ -161,16 +164,14 @@ export class EmailMarketingPublicController {
     });
 
     if ((ev.type === "bounce" || ev.type === "complaint") && subscriberId) {
-      const subscribers =
-        this.connectionManager.bindModelToDb(subscriberModel);
+      const subscribers = this.connectionManager.bindModelToDb(subscriberModel);
       await subscribers.findByIdAndUpdate(subscriberId, {
         status: ev.type === "bounce" ? "bounced" : "complained",
         bouncedAt: new Date(),
       });
     }
     if (ev.type === "unsubscribe" && subscriberId) {
-      const subscribers =
-        this.connectionManager.bindModelToDb(subscriberModel);
+      const subscribers = this.connectionManager.bindModelToDb(subscriberModel);
       await subscribers.findByIdAndUpdate(subscriberId, {
         status: "unsubscribed",
         unsubscribedAt: new Date(),

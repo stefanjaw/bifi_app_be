@@ -21,9 +21,7 @@ export class AiSettingsController extends BaseController<AiSettingsDocument> {
     next: NextFunction
   ) {
     try {
-      const settings = await (
-        this.service as AiSettingsService
-      ).getSettings();
+      const settings = await (this.service as AiSettingsService).getSettings();
       if (settings) {
         const sanitized = settings.toObject();
         sanitized.apiKey = this.maskApiKey(sanitized.apiKey);
@@ -46,9 +44,9 @@ export class AiSettingsController extends BaseController<AiSettingsDocument> {
       if (data.apiKey && data.apiKey.includes("••••")) {
         delete data.apiKey;
       }
-      const result = await (
-        this.service as AiSettingsService
-      ).upsertSettings(data);
+      const result = await (this.service as AiSettingsService).upsertSettings(
+        data
+      );
       const sanitized = result.toObject();
       sanitized.apiKey = this.maskApiKey(sanitized.apiKey);
       this.sendData(res, sanitized);

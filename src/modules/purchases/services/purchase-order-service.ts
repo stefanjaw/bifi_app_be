@@ -1,7 +1,10 @@
 import { ClientSession, Types } from "mongoose";
 import { BaseService } from "../../../system";
 import { fireNotification } from "../../notifications/services/notification-service";
-import { purchaseOrderModel, PurchaseOrderDocument } from "../models/purchase-order.model";
+import {
+  purchaseOrderModel,
+  PurchaseOrderDocument,
+} from "../models/purchase-order.model";
 import { PurchaseSettingsService } from "./purchase-settings-service";
 import { SequenceService } from "../../sequences/services/sequence-service";
 import { taxModel, TaxType } from "../../accounting/models/tax.model";
@@ -36,7 +39,7 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
    */
   private async assertLineTaxesValid(
     lineItems: { taxIds?: string[] }[],
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ): Promise<Map<string, TaxInput>> {
     const allIds = new Set<string>();
     for (const item of lineItems) {
@@ -75,7 +78,7 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
       }
       if (tax.taxType !== TaxType.PURCHASE) {
         const err: any = new Error(
-          `Tax "${tax.name}" is not a purchase tax (taxType: ${tax.taxType})`,
+          `Tax "${tax.name}" is not a purchase tax (taxType: ${tax.taxType})`
         );
         err.status = 400;
         throw err;
@@ -95,7 +98,7 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
    */
   private recomputeTotals(
     data: Record<string, any>,
-    taxDocsMap: Map<string, TaxInput>,
+    taxDocsMap: Map<string, TaxInput>
   ): void {
     const lineItems: NormalizedLineItem[] = Array.isArray(data.lineItems)
       ? data.lineItems.map((item: any) => {
@@ -116,7 +119,10 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
     }
 
     const subtotal = calculateSubtotal(lineItems);
-    const { taxTotal, appliedTaxes } = calculateTaxesPerLine(lineItems, taxDocsMap);
+    const { taxTotal, appliedTaxes } = calculateTaxesPerLine(
+      lineItems,
+      taxDocsMap
+    );
     const grandTotal = calculateGrandTotal(subtotal, taxTotal);
 
     data.subtotal = subtotal;
@@ -144,7 +150,7 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
 
   override async create(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined,
+    session: ClientSession | undefined = undefined
   ): Promise<PurchaseOrderDocument> {
     const rawLineItems: { taxIds?: string[] }[] = Array.isArray(data.lineItems)
       ? data.lineItems
@@ -157,10 +163,13 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
 
   override async update(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined,
+    session: ClientSession | undefined = undefined
   ): Promise<PurchaseOrderDocument> {
     if (Array.isArray(data.lineItems)) {
-      const taxDocsMap = await this.assertLineTaxesValid(data.lineItems, session);
+      const taxDocsMap = await this.assertLineTaxesValid(
+        data.lineItems,
+        session
+      );
       this.recomputeTotals(data, taxDocsMap);
     }
     return super.update(data, session);
@@ -181,7 +190,9 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
       }
     }
 
-    const result = await boundModel.findByIdAndUpdate(id, update, { new: true });
+    const result = await boundModel.findByIdAndUpdate(id, update, {
+      new: true,
+    });
 
     // Alert 5: PO sent to supplier
     if (status === "sent" && (existing as any)?.createdBy) {
@@ -189,7 +200,9 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
         context: { creator: (existing as any).createdBy },
         type: "po_sent",
         title: "Purchase Order sent",
-        body: `PO ${(existing as any).poNumber ?? id} has been sent to the supplier.`,
+        body: `PO ${
+          (existing as any).poNumber ?? id
+        } has been sent to the supplier.`,
         link: `/purchases/orders/${id}`,
         module: "purchases",
       });

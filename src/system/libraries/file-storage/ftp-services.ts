@@ -5,6 +5,10 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import utc from "dayjs/plugin/utc";
 import dayjs from "dayjs";
 import { ftpResponse } from "./ftp.types";
+import {
+  InternalServerException,
+  NotFoundException,
+} from "../exceptions/service-exception";
 
 dayjs.extend(isSameOrAfter);
 dayjs.extend(utc);
@@ -50,7 +54,9 @@ export class FTPService {
    */
   static getInstance() {
     if (!FTPService.instace)
-      throw new Error("FTPService is not initialized. Call initiate first.");
+      throw new InternalServerException(
+        "FTPService is not initialized. Call initiate first."
+      );
 
     return FTPService.instace;
   }
@@ -77,7 +83,9 @@ export class FTPService {
 
       return client;
     } catch (error: any) {
-      throw new Error("Error connecting to FTP server: " + error.message);
+      throw new InternalServerException(
+        "Error connecting to FTP server: " + error.message
+      );
     }
   }
 
@@ -97,7 +105,7 @@ export class FTPService {
 
       // check that the path exists
       if (!(await this.pathExists(client, this.createPath(path))))
-        throw new Error("Path does not exist");
+        throw new NotFoundException("FTP path does not exist");
 
       let stream: Readable;
 
@@ -202,7 +210,7 @@ export class FTPService {
 
         await client.downloadTo(
           writable,
-          `${this.createPath(path)}/${file.name}`,
+          `${this.createPath(path)}/${file.name}`
         );
         response.push({
           buffer: Buffer.concat(chunks),
@@ -231,7 +239,7 @@ export class FTPService {
    */
   async moveFiles(
     files: { path: string; filename: string }[],
-    newPath: string,
+    newPath: string
   ) {
     let client: ftp.Client | undefined = undefined;
 

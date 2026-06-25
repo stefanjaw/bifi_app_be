@@ -3,14 +3,20 @@ import { BaseService } from "../../../system";
 import { ticketRuleModel } from "../models/ticket-rule.model";
 import { TicketRuleDTO, UpdateTicketRuleDTO } from "../models/ticket-rule.dto";
 
-type MatchField = "name" | "description" | "category" | "appModule" | "type" | "tags";
+type MatchField =
+  | "name"
+  | "description"
+  | "category"
+  | "appModule"
+  | "type"
+  | "tags";
 type Operator = "contains" | "equals" | "startsWith" | "endsWith";
 
 function matchesRule(
   document: Record<string, unknown>,
   field: MatchField,
   operator: Operator,
-  ruleValue: string,
+  ruleValue: string
 ): boolean {
   const raw = document[field];
   const fieldStr = Array.isArray(raw)
@@ -37,9 +43,7 @@ export class TicketRuleService extends BaseService<TicketRuleDocument> {
     super({ model: ticketRuleModel, refFields: [] });
   }
 
-  async evaluateRules(
-    data: Record<string, unknown>,
-  ): Promise<{
+  async evaluateRules(data: Record<string, unknown>): Promise<{
     assigned?: string;
     priority?: string;
   }> {

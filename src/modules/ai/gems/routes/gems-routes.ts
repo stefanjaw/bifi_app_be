@@ -1,6 +1,9 @@
 import { Router } from "express";
 import multer from "multer";
-import { authorizeMiddleware, validateBodyMiddleware } from "../../../../system";
+import {
+  authorizeMiddleware,
+  validateBodyMiddleware,
+} from "../../../../system";
 import { GemsController } from "../controllers/gems-controller";
 import { GemsDTO, GemsEmbedDTO } from "../models/gems.dto";
 

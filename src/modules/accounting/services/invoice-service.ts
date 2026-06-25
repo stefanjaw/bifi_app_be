@@ -72,7 +72,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           path: "fiscalPositionId",
           getModel: () =>
             this.connectionManager.getModel<FiscalPositionDocument>(
-              "FiscalPosition",
+              "FiscalPosition"
             ),
           isArray: false,
         },
@@ -94,7 +94,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
 
   override async getById(
     id: string,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ): Promise<JournalEntryDocument | undefined> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const doc = await model
@@ -108,7 +108,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     paginationOptions: undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
     count: boolean | undefined,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ): Promise<JournalEntryDocument[]>;
 
   override async get(
@@ -116,7 +116,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     paginationOptions: paginationOptions & { paginate: true },
     orderBy: orderByQuery["orderBy"] | undefined,
     count: boolean | undefined,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ): Promise<PaginateResult<JournalEntryDocument>>;
 
   override async get(
@@ -124,14 +124,14 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     paginationOptions: paginationOptions | undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
     count: boolean | undefined,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ): Promise<PaginateResult<JournalEntryDocument> | JournalEntryDocument[]> {
     return super.get(
       { ...searchParams, isInvoice: true },
       paginationOptions as any,
       orderBy,
       count,
-      session,
+      session
     );
   }
 
@@ -153,7 +153,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     const seq = await boundInvoiceSeqModel.findOneAndUpdate(
       { year },
       { $inc: { counter: 1 } },
-      { new: true, upsert: true, session },
+      { new: true, upsert: true, session }
     );
     const counter = String(seq.counter).padStart(5, "0");
     return `INV/${year}/${counter}`;
@@ -161,7 +161,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
 
   private calculateDueDate(
     invoiceDate: Date,
-    paymentTerm: any,
+    paymentTerm: any
   ): Date | undefined {
     if (!paymentTerm || !paymentTerm.lines || paymentTerm.lines.length === 0) {
       return undefined;
@@ -202,7 +202,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           const existingLine = taxLines.find(
             (t) =>
               t.accountId.toString() ===
-              (tax.accountId._id ?? tax.accountId).toString(),
+              (tax.accountId._id ?? tax.accountId).toString()
           );
           if (existingLine) {
             existingLine.amount += taxAmt;
@@ -221,7 +221,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
 
   private async enrichLines(
     rawLines: any[],
-    session: ClientSession,
+    session: ClientSession
   ): Promise<any[]> {
     const boundTaxModel = this.connectionManager.bindModelToDb(taxModel);
     const boundDiscountModel =
@@ -251,7 +251,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     enrichedLines: any[],
     taxLines: { accountId: string; amount: number }[],
     totalAmount: number,
-    debitAccountId: any,
+    debitAccountId: any
   ): any[] {
     const productLines = enrichedLines.map((line) => ({
       lineType: "product",
@@ -292,7 +292,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
 
   override async create(
     data: AccountingInvoiceDTO,
-    session?: ClientSession,
+    session?: ClientSession
   ): Promise<JournalEntryDocument> {
     return await runTransaction(session, async (s) => {
       const number = await this.generateNumber(s);
@@ -329,7 +329,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         enrichedLines,
         taxLines,
         totalAmount,
-        journal.defaultDebitAccountId,
+        journal.defaultDebitAccountId
       );
 
       const model = this.connectionManager.bindModelToDb(this.model);
@@ -364,7 +364,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
             crCodigoActividadReceptor: data.crCodigoActividadReceptor,
           },
         ],
-        { session: s },
+        { session: s }
       );
 
       return docs[0];
@@ -373,7 +373,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
 
   override async update(
     data: any,
-    session?: ClientSession,
+    session?: ClientSession
   ): Promise<JournalEntryDocument> {
     return await runTransaction(session, async (s) => {
       const { _id, ...fields } = data;
@@ -406,12 +406,12 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       const dueDate = fields.dueDate
         ? new Date(fields.dueDate)
         : fields.invoiceDate
-          ? this.calculateDueDate(invoiceDate, paymentTerm)
-          : existing.dueDate;
+        ? this.calculateDueDate(invoiceDate, paymentTerm)
+        : existing.dueDate;
 
       const rawLines = fields.lines ?? [];
       const productLines = rawLines.filter(
-        (l: any) => !l.lineType || l.lineType === "product",
+        (l: any) => !l.lineType || l.lineType === "product"
       );
       const enrichedProductLines = await this.enrichLines(productLines, s);
       const { untaxedAmount, taxAmount } =
@@ -428,9 +428,11 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       if (fields.crPlazoCredito !== undefined)
         crUpdate.crPlazoCredito = fields.crPlazoCredito;
       if (fields.crCodigoActividadEmisor !== undefined)
-        crUpdate.crCodigoActividadEmisor = fields.crCodigoActividadEmisor || null;
+        crUpdate.crCodigoActividadEmisor =
+          fields.crCodigoActividadEmisor || null;
       if (fields.crCodigoActividadReceptor !== undefined)
-        crUpdate.crCodigoActividadReceptor = fields.crCodigoActividadReceptor || null;
+        crUpdate.crCodigoActividadReceptor =
+          fields.crCodigoActividadReceptor || null;
       if (fields.crReferenciaInvoiceId !== undefined)
         crUpdate.crReferenciaInvoiceId = fields.crReferenciaInvoiceId || null;
       if (fields.crInformacionReferencia !== undefined)
@@ -438,7 +440,8 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       if (fields.crCondicionImpuesto !== undefined)
         crUpdate.crCondicionImpuesto = fields.crCondicionImpuesto || null;
       if (fields.crMontoTotalImpuestoAcreditar !== undefined)
-        crUpdate.crMontoTotalImpuestoAcreditar = fields.crMontoTotalImpuestoAcreditar;
+        crUpdate.crMontoTotalImpuestoAcreditar =
+          fields.crMontoTotalImpuestoAcreditar;
       if (fields.crMontoTotalGastoAplicable !== undefined)
         crUpdate.crMontoTotalGastoAplicable = fields.crMontoTotalGastoAplicable;
       if (fields.crDetalleMensaje !== undefined)
@@ -466,7 +469,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           lines: rawLines,
           ...crUpdate,
         },
-        { new: true, session: s },
+        { new: true, session: s }
       ) as any;
     });
   }
@@ -482,7 +485,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
   async registerPayment(
     invoiceId: string,
     data: RegisterPaymentDTO,
-    session?: ClientSession,
+    session?: ClientSession
   ): Promise<any> {
     return await runTransaction(session, async (s) => {
       const model = this.connectionManager.bindModelToDb(this.model);
@@ -492,7 +495,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         throw new ValidationException("Document is not an invoice.");
       if (invoice.status === JournalEntryStatus.CANCEL)
         throw new ValidationException(
-          "Cannot register payment on a cancelled invoice.",
+          "Cannot register payment on a cancelled invoice."
         );
 
       const boundPaymentModel =
@@ -511,7 +514,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
             active: true,
           },
         ],
-        { session: s },
+        { session: s }
       );
 
       const allPayments = await boundPaymentModel
@@ -520,7 +523,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         .lean();
       const totalPaid = allPayments.reduce(
         (sum, p) => sum + (p.amount ?? 0),
-        0,
+        0
       );
       const amountDue = Math.max(0, (invoice.totalAmount ?? 0) - totalPaid);
 
@@ -535,7 +538,9 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           },
           type: "invoice_paid",
           title: "Invoice fully paid",
-          body: `Invoice ${(invoice as any).number ?? invoiceId} has been fully paid.`,
+          body: `Invoice ${
+            (invoice as any).number ?? invoiceId
+          } has been fully paid.`,
           link: `/accounting/invoices/edit/${invoiceId}`,
           module: "accounting",
         });
@@ -558,7 +563,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       const result = await model.findByIdAndUpdate(
         id,
         { status: JournalEntryStatus.POSTED },
-        { new: true, session: s },
+        { new: true, session: s }
       );
 
       await fireNotification({
@@ -589,8 +594,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     return model.findByIdAndUpdate(
       id,
       { status: JournalEntryStatus.CANCEL },
-      { new: true },
+      { new: true }
     ) as any;
   }
-
 }

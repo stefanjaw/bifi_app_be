@@ -8,15 +8,15 @@ const ASSETS_DIR = path.resolve(process.cwd(), "../attached_assets");
 
 const CHAPTERS_FILE = path.join(
   ASSETS_DIR,
-  "lhmeds_customs_db.chapters_1773769810210.json",
+  "lhmeds_customs_db.chapters_1773769810210.json"
 );
 const HEADINGS_FILE = path.join(
   ASSETS_DIR,
-  "lhmeds_customs_db.headings_1773769810214.json",
+  "lhmeds_customs_db.headings_1773769810214.json"
 );
 const TARIFFS_FILE = path.join(
   ASSETS_DIR,
-  "lhmeds_customs_db.tariffs_1773769810212.json",
+  "lhmeds_customs_db.tariffs_1773769810212.json"
 );
 
 function readJsonFile<T>(filePath: string): T[] {
@@ -49,7 +49,7 @@ async function seedChapters(): Promise<void> {
 
   const result = await customsChapterModel.bulkWrite(ops, { ordered: false });
   console.log(
-    `[customs-seed] Chapters: ${result.upsertedCount} inserted, ${result.modifiedCount} updated`,
+    `[customs-seed] Chapters: ${result.upsertedCount} inserted, ${result.modifiedCount} updated`
   );
 }
 
@@ -74,7 +74,7 @@ async function seedHeadings(): Promise<void> {
 
   const result = await customsHeadingModel.bulkWrite(ops, { ordered: false });
   console.log(
-    `[customs-seed] Headings: ${result.upsertedCount} inserted, ${result.modifiedCount} updated`,
+    `[customs-seed] Headings: ${result.upsertedCount} inserted, ${result.modifiedCount} updated`
   );
 }
 
@@ -115,7 +115,7 @@ async function seedTariffs(): Promise<void> {
   }
 
   console.log(
-    `[customs-seed] Tariffs: ${totalUpserted} inserted, ${totalModified} updated`,
+    `[customs-seed] Tariffs: ${totalUpserted} inserted, ${totalModified} updated`
   );
 }
 

@@ -29,9 +29,9 @@ const purchaseSettingsSchema = new Schema(
 purchaseSettingsSchema.plugin(paginate);
 purchaseSettingsSchema.plugin(autopopulate);
 
-const purchaseSettingsModel = mongoose.model<PurchaseSettingsDocument, PaginateModel<PurchaseSettingsDocument>>(
-  "PurchaseSettings",
-  purchaseSettingsSchema
-);
+const purchaseSettingsModel = mongoose.model<
+  PurchaseSettingsDocument,
+  PaginateModel<PurchaseSettingsDocument>
+>("PurchaseSettings", purchaseSettingsSchema);
 
 export { purchaseSettingsModel };

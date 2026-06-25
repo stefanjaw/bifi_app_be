@@ -47,7 +47,7 @@ export class CrInformacionReferenciaDTO {
 
 export class AccountingInvoiceLineDTO {
   @IsString()
-  @IsIn(['product', 'tax', 'counterpart'])
+  @IsIn(["product", "tax", "counterpart"])
   @IsOptional()
   lineType?: string;
 
@@ -184,7 +184,9 @@ export class AccountingInvoiceDTO {
   @Type(() => CrInformacionReferenciaDTO)
   @Transform(({ value }) => {
     const parsed = typeof value === "string" ? JSON.parse(value) : value;
-    return parsed ? plainToInstance(CrInformacionReferenciaDTO, parsed) : parsed;
+    return parsed
+      ? plainToInstance(CrInformacionReferenciaDTO, parsed)
+      : parsed;
   })
   @IsOptional()
   crInformacionReferencia?: CrInformacionReferenciaDTO;
@@ -211,7 +213,9 @@ export class AccountingInvoiceDTO {
   crDetalleMensaje?: string;
 }
 
-export class UpdateAccountingInvoiceDTO extends PartialType(AccountingInvoiceDTO) {
+export class UpdateAccountingInvoiceDTO extends PartialType(
+  AccountingInvoiceDTO
+) {
   @IsMongoId()
   _id!: string;
 }

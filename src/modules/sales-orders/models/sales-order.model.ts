@@ -125,8 +125,15 @@ const salesOrderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ['draft', 'quote', 'confirmed', 'shipped', 'completed', 'cancelled'],
-      default: 'draft',
+      enum: [
+        "draft",
+        "quote",
+        "confirmed",
+        "shipped",
+        "completed",
+        "cancelled",
+      ],
+      default: "draft",
     },
     notes: {
       type: String,

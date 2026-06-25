@@ -1,7 +1,10 @@
 import { BaseRoutes } from "../../../system/libraries/base-module/base-routes";
 import { authorizeMiddleware } from "../../../system/middlewares";
 import { SupplierController } from "../controllers/supplier-controller";
-import { ContactDTO, UpdateContactDTO } from "../../contacts/models/contact.dto";
+import {
+  ContactDTO,
+  UpdateContactDTO,
+} from "../../contacts/models/contact.dto";
 import { ContactDocument } from "@mongodb-types";
 
 const supplierController = new SupplierController();

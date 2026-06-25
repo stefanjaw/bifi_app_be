@@ -1,5 +1,6 @@
 import { existsSync, readdirSync } from "fs";
 import * as nodePath from "path";
+import { InternalServerException } from "../exceptions/service-exception";
 
 let _resolvedPath: string | null = null;
 
@@ -34,14 +35,15 @@ export async function resolveChromiumPath(): Promise<string> {
     if (found) return `/nix/store/${found}/bin/chromium`;
   } catch {}
 
-  throw new Error("Chromium not found. Install via Nix or set CHROMIUM_PATH.");
+  throw new InternalServerException(
+    "Chromium not found. Install via Nix or set CHROMIUM_PATH."
+  );
 }
 
 /** Lazy-resolved Chromium path — cached after first call */
 export async function getChromiumExecutablePath(): Promise<string> {
   if (_resolvedPath) return _resolvedPath;
   _resolvedPath = await resolveChromiumPath();
-  console.log(`Resolved Chromium path: ${_resolvedPath}`);
   return _resolvedPath;
 }
 

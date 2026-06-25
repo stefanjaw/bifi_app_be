@@ -1,6 +1,9 @@
 import { ClientSession } from "mongoose";
 import { BaseService } from "../../../system";
-import { purchaseStageModel, PurchaseStageDocument } from "../models/purchase-stage.model";
+import {
+  purchaseStageModel,
+  PurchaseStageDocument,
+} from "../models/purchase-stage.model";
 
 export class PurchaseStageService extends BaseService<PurchaseStageDocument> {
   constructor() {
@@ -17,7 +20,7 @@ export class PurchaseStageService extends BaseService<PurchaseStageDocument> {
 
   override async create(
     data: Record<string, any>,
-    session?: ClientSession,
+    session?: ClientSession
   ): Promise<PurchaseStageDocument> {
     if (data.isDefault) {
       await this.clearOtherDefaults();
@@ -27,7 +30,7 @@ export class PurchaseStageService extends BaseService<PurchaseStageDocument> {
 
   override async update(
     data: Record<string, any>,
-    session?: ClientSession,
+    session?: ClientSession
   ): Promise<PurchaseStageDocument> {
     if (data.isDefault) {
       await this.clearOtherDefaults(data._id);

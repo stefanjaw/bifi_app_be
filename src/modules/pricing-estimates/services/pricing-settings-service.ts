@@ -18,7 +18,7 @@ export class PricingSettingsService extends BaseService<PricingSettingsDocument>
   }
 
   async upsertSettings(
-    data: PricingSettingsDTO,
+    data: PricingSettingsDTO
   ): Promise<PricingSettingsDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const existing = await model.findOne();
@@ -31,7 +31,7 @@ export class PricingSettingsService extends BaseService<PricingSettingsDocument>
 
   async updateTimestamp(
     field: "catalogLastIndexed" | "freightLastIndexed",
-    value: Date,
+    value: Date
   ): Promise<void> {
     const model = this.connectionManager.bindModelToDb(this.model);
     await model.updateOne({}, { $set: { [field]: value } });

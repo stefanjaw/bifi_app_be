@@ -12,12 +12,14 @@ export class ExchangeRateService extends BaseService<ExchangeRateDocument> {
       refFields: [
         {
           path: "fromCurrencyId",
-          getModel: () => this.connectionManager.getModel<CurrencyDocument>("Currency"),
+          getModel: () =>
+            this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
         {
           path: "toCurrencyId",
-          getModel: () => this.connectionManager.getModel<CurrencyDocument>("Currency"),
+          getModel: () =>
+            this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
       ],

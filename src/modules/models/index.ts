@@ -1,2 +1,2 @@
-export * from './controllers/model-controller';
-export * from './routes/model-routes';
+export * from "./controllers/model-controller";
+export * from "./routes/model-routes";

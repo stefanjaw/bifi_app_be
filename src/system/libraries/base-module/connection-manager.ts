@@ -1,6 +1,7 @@
 import mongoose, { PaginateModel } from "mongoose";
 import { userStorage } from "../auth/user-storage";
 import { GridFSBucketService } from "../file-storage/grid-fs-bucket-service";
+import { InternalServerException } from "../exceptions/service-exception";
 
 export class ConnectionManager {
   private static dbCache: Record<string, mongoose.Connection> = {};
@@ -48,7 +49,7 @@ export class ConnectionManager {
 
     if (!dbName && defaultDBName) dbName = defaultDBName;
 
-    if (!dbName) throw new Error("No database name provided");
+    if (!dbName) throw new InternalServerException("No database name provided");
 
     const db = this.getDbByName(dbName);
 
@@ -70,11 +71,11 @@ export class ConnectionManager {
 
     if (!dbName && defaultDBName) dbName = defaultDBName;
 
-    if (!dbName) throw new Error("No database name provided");
+    if (!dbName) throw new InternalServerException("No database name provided");
 
     const db = this.getDbByName(dbName).db;
 
-    if (!db) throw new Error("No database found");
+    if (!db) throw new InternalServerException("No database found");
 
     return new GridFSBucketService(db);
   }
@@ -93,7 +94,7 @@ export class ConnectionManager {
 
     if (!dbName && defaultDBName) dbName = defaultDBName;
 
-    if (!dbName) throw new Error("No database name provided");
+    if (!dbName) throw new InternalServerException("No database name provided");
 
     const db = this.getDbByName(dbName);
 
@@ -116,7 +117,7 @@ export class ConnectionManager {
 
     if (!dbName && defaultDBName) dbName = defaultDBName;
 
-    if (!dbName) throw new Error("No database name provided");
+    if (!dbName) throw new InternalServerException("No database name provided");
 
     return this.getDbByName(dbName).modelNames();
   }

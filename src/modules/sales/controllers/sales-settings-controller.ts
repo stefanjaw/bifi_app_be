@@ -9,19 +9,31 @@ export class SalesSettingsController extends BaseController<SalesSettingsDocumen
     super({ service: new SalesSettingsService() });
   }
 
-  protected async getSettingsHandler(req: Request, res: Response, next: NextFunction) {
+  protected async getSettingsHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const settings = await (this.service as SalesSettingsService).getSettings();
+      const settings = await (
+        this.service as SalesSettingsService
+      ).getSettings();
       this.sendData(res, settings ?? {});
     } catch (error) {
       next(error);
     }
   }
 
-  protected async upsertSettingsHandler(req: Request, res: Response, next: NextFunction) {
+  protected async upsertSettingsHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const data = req.body as SalesSettingsDTO;
-      const result = await (this.service as SalesSettingsService).upsertSettings(data);
+      const result = await (
+        this.service as SalesSettingsService
+      ).upsertSettings(data);
       this.sendData(res, result);
     } catch (error) {
       next(error);

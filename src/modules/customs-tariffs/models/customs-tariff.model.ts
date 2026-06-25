@@ -49,7 +49,7 @@ const customsTariffSchema = new Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 customsTariffSchema.index({ chapter: 1, heading: 1, subheading: 1 });

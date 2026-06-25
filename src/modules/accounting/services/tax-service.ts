@@ -9,7 +9,8 @@ export class TaxService extends BaseService<TaxDocument> {
       refFields: [
         {
           path: "accountId",
-          getModel: () => this.connectionManager.getModel<AccountDocument>("Account"),
+          getModel: () =>
+            this.connectionManager.getModel<AccountDocument>("Account"),
           isArray: false,
         },
       ],

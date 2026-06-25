@@ -26,7 +26,7 @@ export class BranchOfficeService extends BaseService<BranchOfficeDocument> {
 
   override async create(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined,
+    session: ClientSession | undefined = undefined
   ): Promise<BranchOfficeDocument> {
     return await runTransaction<BranchOfficeDocument>(
       session,
@@ -37,21 +37,19 @@ export class BranchOfficeService extends BaseService<BranchOfficeDocument> {
           await model.updateMany(
             { companyId: data.companyId, isDefault: true },
             { $set: { isDefault: false } },
-            { session: newSession },
+            { session: newSession }
           );
         }
 
-        const record = (
-          await model.create([data], { session: newSession })
-        )[0];
+        const record = (await model.create([data], { session: newSession }))[0];
         return record as BranchOfficeDocument;
-      },
+      }
     );
   }
 
   override async update(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined,
+    session: ClientSession | undefined = undefined
   ): Promise<BranchOfficeDocument> {
     return await runTransaction<BranchOfficeDocument>(
       session,
@@ -69,7 +67,7 @@ export class BranchOfficeService extends BaseService<BranchOfficeDocument> {
             await model.updateMany(
               { companyId, isDefault: true },
               { $set: { isDefault: false } },
-              { session: newSession },
+              { session: newSession }
             );
           }
         }
@@ -80,7 +78,7 @@ export class BranchOfficeService extends BaseService<BranchOfficeDocument> {
         });
 
         return record as BranchOfficeDocument;
-      },
+      }
     );
   }
 }

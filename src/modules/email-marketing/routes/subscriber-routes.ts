@@ -1,10 +1,7 @@
 import { BaseRoutes } from "../../../system";
 import { authorizeMiddleware } from "../../../system";
 import { SubscriberController } from "../controllers/subscriber-controller";
-import {
-  SubscriberDTO,
-  UpdateSubscriberDTO,
-} from "../models/subscriber.dto";
+import { SubscriberDTO, UpdateSubscriberDTO } from "../models/subscriber.dto";
 import { SubscriberDocument } from "../models/subscriber.model";
 
 const subscriberController = new SubscriberController();

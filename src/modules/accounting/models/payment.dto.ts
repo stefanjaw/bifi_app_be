@@ -1,4 +1,13 @@
-import { IsDate, IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import {
+  IsDate,
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { PartialType } from "../../../system";
 import { PaymentType } from "./payment.model";

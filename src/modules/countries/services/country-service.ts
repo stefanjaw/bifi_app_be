@@ -23,7 +23,7 @@ export class CountryService extends BaseService<CountryDocument> {
 
         // FETCH COUNTRIES FROM EXTERNAL API
         const countries = await axios.get(
-          "https://www.apicountries.com/countries",
+          "https://www.apicountries.com/countries"
         );
 
         // MAP THE DATA TO MATCH THE COUNTRY SCHEMA
@@ -44,18 +44,18 @@ export class CountryService extends BaseService<CountryDocument> {
 
         const countriesToUpdate = formattedCountries
           .filter((c) =>
-            existingCountriesQuery.some((ec) => ec.code === c.code),
+            existingCountriesQuery.some((ec) => ec.code === c.code)
           )
           .map((c) => {
             const existing = existingCountriesQuery.find(
-              (ec) => ec.code === c.code,
+              (ec) => ec.code === c.code
             );
 
             return { ...c, _id: existing!._id };
           });
 
         const countriesToCreate = formattedCountries.filter(
-          (c) => !existingCountriesQuery.some((ec) => ec.code === c.code),
+          (c) => !existingCountriesQuery.some((ec) => ec.code === c.code)
         );
 
         // PERFORM BULK UPDATES AND CREATIONS
@@ -64,8 +64,8 @@ export class CountryService extends BaseService<CountryDocument> {
             async (c) =>
               await model.findByIdAndUpdate(c._id, c, {
                 session: newSession,
-              }),
-          ),
+              })
+          )
         );
 
         // PERFORM BULK INSERTION
@@ -75,7 +75,7 @@ export class CountryService extends BaseService<CountryDocument> {
 
         // RETURN THE NEWLY CREATED COUNTRIES
         return [...updatedCountries, ...createdCountries] as CountryDocument[];
-      },
+      }
     );
   }
 }

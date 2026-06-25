@@ -10,7 +10,11 @@ export class PurchaseSuppliersService extends BaseService<ContactDocument> {
 
   async getAll(
     searchParams: Record<string, any> = {},
-    paginationOptions: { page?: number; limit?: number; paginate?: boolean } = {},
+    paginationOptions: {
+      page?: number;
+      limit?: number;
+      paginate?: boolean;
+    } = {}
   ) {
     const { showAll, ...filters } = searchParams;
     const query =
@@ -18,7 +22,8 @@ export class PurchaseSuppliersService extends BaseService<ContactDocument> {
         ? filters
         : await this._contactsWithOrdersQuery(filters);
 
-    const boundContactModel = this.connectionManager.bindModelToDb(contactModel);
+    const boundContactModel =
+      this.connectionManager.bindModelToDb(contactModel);
 
     if (paginationOptions.paginate) {
       return await boundContactModel.paginate(query, {
@@ -31,12 +36,16 @@ export class PurchaseSuppliersService extends BaseService<ContactDocument> {
   }
 
   async getSupplierById(id: string) {
-    const boundContactModel = this.connectionManager.bindModelToDb(contactModel);
+    const boundContactModel =
+      this.connectionManager.bindModelToDb(contactModel);
     return await boundContactModel.findById(id);
   }
 
-  private async _contactsWithOrdersQuery(extraFilters: Record<string, any> = {}) {
-    const boundPurchaseOrderModel = this.connectionManager.bindModelToDb(purchaseOrderModel);
+  private async _contactsWithOrdersQuery(
+    extraFilters: Record<string, any> = {}
+  ) {
+    const boundPurchaseOrderModel =
+      this.connectionManager.bindModelToDb(purchaseOrderModel);
     const contactIds = await boundPurchaseOrderModel.distinct("contactId");
     return { _id: { $in: contactIds }, ...extraFilters };
   }

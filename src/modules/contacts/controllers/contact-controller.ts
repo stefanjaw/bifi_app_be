@@ -1,8 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import {
-  BaseController,
-  FileValidatorService,
-} from "../../../system";
+import { BaseController, FileValidatorService } from "../../../system";
 import { ContactDocument } from "../../../types/mongoose.gen";
 import { ContactService } from "../services/contact-service";
 
@@ -18,11 +15,9 @@ export class ContactController extends BaseController<ContactDocument> {
   protected override async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
-    const files = req.files as
-      | { photo?: Express.Multer.File[] }
-      | undefined;
+    const files = req.files as { photo?: Express.Multer.File[] } | undefined;
 
     const photo = files?.photo?.[0];
 
@@ -43,11 +38,9 @@ export class ContactController extends BaseController<ContactDocument> {
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
-    const files = req.files as
-      | { photo?: Express.Multer.File[] }
-      | undefined;
+    const files = req.files as { photo?: Express.Multer.File[] } | undefined;
 
     const photo = files?.photo?.[0];
 

@@ -116,7 +116,7 @@ export class ReportingService extends BaseService<ReportingDocument> {
     reportId: string | undefined,
     searchParams: Record<string, any> | undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ) {
     return await runTransaction<Uint8Array<ArrayBufferLike>>(
       session,
@@ -131,14 +131,14 @@ export class ReportingService extends BaseService<ReportingDocument> {
                 undefined,
                 undefined,
                 undefined,
-                newSession,
+                newSession
               )
             )[0]
           : undefined;
 
         if (!reportingTemplate)
           throw new ValidationException(
-            "No reporting template matches the configuration sent",
+            "No reporting template matches the configuration sent"
           );
 
         // check that model is valid and get model
@@ -151,7 +151,7 @@ export class ReportingService extends BaseService<ReportingDocument> {
 
         // finding data
         const model = this.connectionManager.getModel<Document>(
-          reportingTemplate.model,
+          reportingTemplate.model
         );
 
         // if orderBy sent by user, build the object
@@ -198,30 +198,30 @@ export class ReportingService extends BaseService<ReportingDocument> {
         await browser.close();
 
         return pdfBuffer;
-      },
+      }
     );
   }
 
   override async create(
     data: ReportingDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<ReportingDocument> {
     return await runTransaction<ReportingDocument>(
       session,
       async (newSession) => {
         if (!this.connectionManager.getModeList().includes(data.model))
           throw new ValidationException(
-            "Model is not valid and included in models list",
+            "Model is not valid and included in models list"
           );
 
         return await super.create(data, newSession);
-      },
+      }
     );
   }
 
   override async update(
     data: UpdateReportingDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<ReportingDocument> {
     return await runTransaction<ReportingDocument>(
       session,
@@ -231,11 +231,11 @@ export class ReportingService extends BaseService<ReportingDocument> {
           !this.connectionManager.getModeList().includes(data.model)
         )
           throw new ValidationException(
-            "Model is not valid and included in models list",
+            "Model is not valid and included in models list"
           );
 
         return await super.update(data, newSession);
-      },
+      }
     );
   }
 }

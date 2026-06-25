@@ -17,18 +17,17 @@ export class NotificationController {
         return;
       }
       const limit = parseInt(req.query["limit"] as string) || 20;
-      const data = await notificationService.getMyNotifications(user._id, limit);
+      const data = await notificationService.getMyNotifications(
+        user._id,
+        limit
+      );
       res.json(data);
     } catch (e) {
       next(e);
     }
   };
 
-  getUnreadCount = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) => {
+  getUnreadCount = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = userStorage.getStore()?.user;
       if (!user) {

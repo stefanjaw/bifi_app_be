@@ -11,18 +11,29 @@ export class PurchaseOrderController extends BaseController<PurchaseOrderDocumen
     super({ service: new PurchaseOrderService() });
   }
 
-  updateStatus = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  updateStatus = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { id } = req.params;
       const { status } = req.body;
-      const updated = await (this.service as PurchaseOrderService).updateStatus(id, status);
+      const updated = await (this.service as PurchaseOrderService).updateStatus(
+        id,
+        status
+      );
       this.sendData(res, updated);
     } catch (error) {
       next(error);
     }
   };
 
-  exportPdf = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  exportPdf = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
     try {
       const { id } = req.params;
       const record = await this.service.getById(id, undefined);

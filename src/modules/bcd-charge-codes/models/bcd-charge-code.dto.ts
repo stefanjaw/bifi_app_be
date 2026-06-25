@@ -44,7 +44,7 @@ export class BCDChargeCodeDTO {
   @IsArray()
   @IsEnum(BCDChargeCodeLevelEnum, { each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value,
+    typeof value === "string" ? JSON.parse(value) : value
   )
   levels!: string[];
 
@@ -52,7 +52,10 @@ export class BCDChargeCodeDTO {
   @ValidateNested()
   @Type(() => BCDChargeCodeImpactDTO)
   @Transform(({ value }) =>
-    plainToInstance(BCDChargeCodeImpactDTO, typeof value === "string" ? JSON.parse(value) : value),
+    plainToInstance(
+      BCDChargeCodeImpactDTO,
+      typeof value === "string" ? JSON.parse(value) : value
+    )
   )
   impact?: BCDChargeCodeImpactDTO;
 

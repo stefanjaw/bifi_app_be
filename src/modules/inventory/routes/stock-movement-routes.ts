@@ -1,7 +1,15 @@
-import { BaseRoutes, validateBodyMiddleware, authorizeMiddleware } from "../../../system";
+import {
+  BaseRoutes,
+  validateBodyMiddleware,
+  authorizeMiddleware,
+} from "../../../system";
 import { StockMovementDocument } from "../models/stock-movement.model";
 import { StockMovementController } from "../controllers/stock-movement-controller";
-import { StockMovementDTO, TransferDTO, UpdateStockMovementDTO } from "../models/stock-movement.dto";
+import {
+  StockMovementDTO,
+  TransferDTO,
+  UpdateStockMovementDTO,
+} from "../models/stock-movement.dto";
 
 const stockMovementController = new StockMovementController();
 

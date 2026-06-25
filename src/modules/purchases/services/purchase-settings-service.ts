@@ -1,5 +1,8 @@
 import { BaseService } from "../../../system";
-import { purchaseSettingsModel, PurchaseSettingsDocument } from "../models/purchase-settings.model";
+import {
+  purchaseSettingsModel,
+  PurchaseSettingsDocument,
+} from "../models/purchase-settings.model";
 import { PurchaseSettingsDTO } from "../models/purchase-settings.dto";
 
 export class PurchaseSettingsService extends BaseService<PurchaseSettingsDocument> {
@@ -14,7 +17,9 @@ export class PurchaseSettingsService extends BaseService<PurchaseSettingsDocumen
     return model.findOne();
   }
 
-  async upsertSettings(data: PurchaseSettingsDTO): Promise<PurchaseSettingsDocument> {
+  async upsertSettings(
+    data: PurchaseSettingsDTO
+  ): Promise<PurchaseSettingsDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const existing = await model.findOne();
     if (existing) {

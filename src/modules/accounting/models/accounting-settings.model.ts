@@ -29,9 +29,9 @@ const accountingSettingsSchema = new Schema(
 accountingSettingsSchema.plugin(paginate);
 accountingSettingsSchema.plugin(autopopulate);
 
-const accountingSettingsModel = mongoose.model<AccountingSettingsDocument, PaginateModel<AccountingSettingsDocument>>(
-  "AccountingSettings",
-  accountingSettingsSchema
-);
+const accountingSettingsModel = mongoose.model<
+  AccountingSettingsDocument,
+  PaginateModel<AccountingSettingsDocument>
+>("AccountingSettings", accountingSettingsSchema);
 
 export { accountingSettingsModel };

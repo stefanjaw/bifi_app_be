@@ -1,9 +1,14 @@
 import { BaseService } from "../../../../system";
-import { crEinvoiceSettingsModel, CrEinvoiceSettingsDocument } from "../models/cr-einvoice-settings.model";
+import {
+  crEinvoiceSettingsModel,
+  CrEinvoiceSettingsDocument,
+} from "../models/cr-einvoice-settings.model";
 import { CrEinvoiceSettingsDTO } from "../models/cr-einvoice-settings.dto";
 import { isValidFileUpload } from "../../../../system/libraries/file-storage/file-utils";
 
-type UpsertData = CrEinvoiceSettingsDTO & { certificateFile?: Express.Multer.File };
+type UpsertData = CrEinvoiceSettingsDTO & {
+  certificateFile?: Express.Multer.File;
+};
 
 export class CrEinvoiceSettingsService extends BaseService<CrEinvoiceSettingsDocument> {
   constructor() {

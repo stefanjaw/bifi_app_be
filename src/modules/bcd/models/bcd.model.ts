@@ -375,7 +375,7 @@ const bcdSchema = new Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 bcdSchema.plugin(paginate);
@@ -383,6 +383,6 @@ bcdSchema.plugin(autopopulate);
 
 const bcdModel = mongoose.model<BCDDocument, PaginateModel<BCDDocument>>(
   "BCD",
-  bcdSchema,
+  bcdSchema
 );
 export { bcdModel };

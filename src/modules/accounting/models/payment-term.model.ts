@@ -28,7 +28,7 @@ const paymentTermSchema = new Schema(
 paymentTermSchema.plugin(paginate);
 paymentTermSchema.plugin(autopopulate);
 
-export const paymentTermModel = mongoose.model<PaymentTermDocument, PaginateModel<PaymentTermDocument>>(
-  "PaymentTerm",
-  paymentTermSchema
-);
+export const paymentTermModel = mongoose.model<
+  PaymentTermDocument,
+  PaginateModel<PaymentTermDocument>
+>("PaymentTerm", paymentTermSchema);

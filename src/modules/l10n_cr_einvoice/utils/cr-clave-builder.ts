@@ -1,3 +1,5 @@
+import { ValidationException } from "../../../system/libraries/exceptions/service-exception";
+
 export const TIPO_COMPROBANTE_CODES: Record<string, string> = {
   FE: "01",
   ND: "02",
@@ -9,7 +11,9 @@ export const TIPO_COMPROBANTE_CODES: Record<string, string> = {
 };
 
 export function generateSecurityCode(): string {
-  return Array.from({ length: 8 }, () => Math.floor(Math.random() * 10)).join("");
+  return Array.from({ length: 8 }, () => Math.floor(Math.random() * 10)).join(
+    ""
+  );
 }
 
 export function padCedula(cedula: string): string {
@@ -45,7 +49,9 @@ export function buildClave(
   const securityCode = generateSecurityCode();
   const clave = `${countryCode}${dd}${mm}${yy}${cedula}${numeroConsecutivo}${situacion}${securityCode}`;
   if (clave.length !== 50) {
-    throw new Error(`Clave length mismatch: expected 50, got ${clave.length}`);
+    throw new ValidationException(
+      `Clave length mismatch: expected 50, got ${clave.length}`
+    );
   }
   return clave;
 }

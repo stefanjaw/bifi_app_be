@@ -36,7 +36,7 @@ export class UserRouter extends BaseRoutes<UserDocument> {
       this.endpoint + "/profile",
       this.upload.any(),
       validateBodyMiddleware(this.dtoUpdateClass),
-      userController.updateProfile,
+      userController.updateProfile
     );
   }
 }

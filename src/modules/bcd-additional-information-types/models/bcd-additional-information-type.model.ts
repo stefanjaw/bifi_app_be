@@ -25,7 +25,7 @@ const bcdAdditionalInformationTypeSchema = new Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 bcdAdditionalInformationTypeSchema.plugin(paginate);

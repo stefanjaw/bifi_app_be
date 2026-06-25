@@ -1,7 +1,10 @@
 import { BaseRoutes } from "../../../system";
 import { PurchaseStageDocument } from "../models/purchase-stage.model";
 import { PurchaseStageController } from "../controllers/purchase-stage-controller";
-import { PurchaseStageDTO, UpdatePurchaseStageDTO } from "../models/purchase-stage.dto";
+import {
+  PurchaseStageDTO,
+  UpdatePurchaseStageDTO,
+} from "../models/purchase-stage.dto";
 
 const purchaseStageController = new PurchaseStageController();
 

@@ -8,7 +8,11 @@ export class SupplierController extends BaseController<ContactDocument> {
     super({ service: new PurchaseSuppliersService() });
   }
 
-  protected async getAllHandler(req: Request, res: Response, next: NextFunction) {
+  protected async getAllHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const searchParams = req.query.searchParams
         ? JSON.parse(req.query.searchParams as string)
@@ -17,16 +21,25 @@ export class SupplierController extends BaseController<ContactDocument> {
         ? JSON.parse(req.query.paginationOptions as string)
         : {};
 
-      const result = await (this.service as PurchaseSuppliersService).getAll(searchParams, paginationOptions);
+      const result = await (this.service as PurchaseSuppliersService).getAll(
+        searchParams,
+        paginationOptions
+      );
       this.sendData(res, result);
     } catch (error) {
       next(error);
     }
   }
 
-  protected async getSupplierByIdHandler(req: Request, res: Response, next: NextFunction) {
+  protected async getSupplierByIdHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const result = await (this.service as PurchaseSuppliersService).getSupplierById(req.params.id);
+      const result = await (
+        this.service as PurchaseSuppliersService
+      ).getSupplierById(req.params.id);
       if (!result) {
         res.status(404).json({ message: "Not found" });
         return;

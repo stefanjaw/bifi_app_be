@@ -1,9 +1,4 @@
-import {
-  IsIn,
-  IsMongoId,
-  IsOptional,
-  IsString,
-} from "class-validator";
+import { IsIn, IsMongoId, IsOptional, IsString } from "class-validator";
 import { PartialType } from "../../../system";
 
 export class EmailEventDTO {

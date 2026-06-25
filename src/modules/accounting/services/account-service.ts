@@ -9,17 +9,20 @@ export class AccountService extends BaseService<AccountDocument> {
       refFields: [
         {
           path: "companyId",
-          getModel: () => this.connectionManager.getModel<CompanyDocument>("Company"),
+          getModel: () =>
+            this.connectionManager.getModel<CompanyDocument>("Company"),
           isArray: false,
         },
         {
           path: "parentAccountId",
-          getModel: () => this.connectionManager.getModel<AccountDocument>("Account"),
+          getModel: () =>
+            this.connectionManager.getModel<AccountDocument>("Account"),
           isArray: false,
         },
         {
           path: "currencyId",
-          getModel: () => this.connectionManager.getModel<CurrencyDocument>("Currency"),
+          getModel: () =>
+            this.connectionManager.getModel<CurrencyDocument>("Currency"),
           isArray: false,
         },
       ],

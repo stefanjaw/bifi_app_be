@@ -1,5 +1,13 @@
-import { BaseService, ValidationException, runTransaction } from "../../../system";
-import { stockMovementModel, StockMovementDocument, MovementType } from "../models/stock-movement.model";
+import {
+  BaseService,
+  ValidationException,
+  runTransaction,
+} from "../../../system";
+import {
+  stockMovementModel,
+  StockMovementDocument,
+  MovementType,
+} from "../models/stock-movement.model";
 import { stockBalanceModel } from "../models/stock-balance.model";
 import { StockMovementDTO, TransferDTO } from "../models/stock-movement.dto";
 import { ClientSession } from "mongoose";
@@ -9,13 +17,19 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
     super({ model: stockMovementModel });
   }
 
-  override async create(data: StockMovementDTO, session?: ClientSession): Promise<StockMovementDocument> {
+  override async create(
+    data: StockMovementDTO,
+    session?: ClientSession
+  ): Promise<StockMovementDocument> {
     return await runTransaction(session, async (s) => {
       const { productId, warehouseId, locationId, quantity, type } = data;
-      const balanceModel = this.connectionManager.bindModelToDb(stockBalanceModel);
+      const balanceModel =
+        this.connectionManager.bindModelToDb(stockBalanceModel);
 
       if (type === MovementType.TRANSFER) {
-        throw new ValidationException("Use the transfer endpoint for TRANSFER movements.");
+        throw new ValidationException(
+          "Use the transfer endpoint for TRANSFER movements."
+        );
       }
 
       if (type === MovementType.IN || type === MovementType.ADJUSTMENT) {
@@ -31,7 +45,9 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
 
         if (!balance || (balance.quantity ?? 0) < quantity) {
           throw new ValidationException(
-            `Insufficient stock at this location. Available: ${balance?.quantity ?? 0}, requested: ${quantity}`
+            `Insufficient stock at this location. Available: ${
+              balance?.quantity ?? 0
+            }, requested: ${quantity}`
           );
         }
 
@@ -58,19 +74,28 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
         reference,
         notes,
       } = data;
-      const balanceModel = this.connectionManager.bindModelToDb(stockBalanceModel);
+      const balanceModel =
+        this.connectionManager.bindModelToDb(stockBalanceModel);
 
       if (fromLocationId === toLocationId) {
-        throw new ValidationException("Source and destination locations must be different.");
+        throw new ValidationException(
+          "Source and destination locations must be different."
+        );
       }
 
       const sourceBalance = await balanceModel
-        .findOne({ productId, locationId: fromLocationId, warehouseId: fromWarehouseId })
+        .findOne({
+          productId,
+          locationId: fromLocationId,
+          warehouseId: fromWarehouseId,
+        })
         .session(s);
 
       if (!sourceBalance || (sourceBalance.quantity ?? 0) < quantity) {
         throw new ValidationException(
-          `Insufficient stock at source location. Available: ${sourceBalance?.quantity ?? 0}, requested: ${quantity}`
+          `Insufficient stock at source location. Available: ${
+            sourceBalance?.quantity ?? 0
+          }, requested: ${quantity}`
         );
       }
 

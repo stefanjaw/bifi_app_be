@@ -88,7 +88,7 @@ const paymentSchema = new Schema(
 paymentSchema.plugin(paginate);
 paymentSchema.plugin(autopopulate);
 
-export const paymentModel = mongoose.model<PaymentDocument, PaginateModel<PaymentDocument>>(
-  "Payment",
-  paymentSchema
-);
+export const paymentModel = mongoose.model<
+  PaymentDocument,
+  PaginateModel<PaymentDocument>
+>("Payment", paymentSchema);

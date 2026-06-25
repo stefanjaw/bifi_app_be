@@ -1,4 +1,12 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import {
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+} from "class-validator";
 import { Type } from "class-transformer";
 import { PartialType } from "../../../system";
 import { DiscountType } from "./discount.model";

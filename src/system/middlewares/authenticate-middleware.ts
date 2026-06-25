@@ -27,7 +27,7 @@ export function authenticateMiddleware(userService: UserService) {
 
     if (
       ignoreEndpoints.some(
-        (x) => req.path.includes(x.endpoint) && req.method === x.method,
+        (x) => req.path.includes(x.endpoint) && req.method === x.method
       )
     ) {
       next();
@@ -61,7 +61,7 @@ export function authenticateMiddleware(userService: UserService) {
           undefined,
           undefined,
           undefined,
-          undefined,
+          undefined
         )
       )?.[0];
 
@@ -87,7 +87,7 @@ export function authenticateMiddleware(userService: UserService) {
 
         await boundUserModel.updateOne(
           { _id: existing._id },
-          { $set: { authId: firebaseUser.uid } },
+          { $set: { authId: firebaseUser.uid } }
         );
 
         return (
@@ -96,7 +96,7 @@ export function authenticateMiddleware(userService: UserService) {
             undefined,
             undefined,
             undefined,
-            undefined,
+            undefined
           )
         )?.[0];
       };
@@ -125,7 +125,7 @@ export function authenticateMiddleware(userService: UserService) {
                 type: "individual",
               },
             },
-            undefined,
+            undefined
           );
         } catch (createError) {
           // A case-different / concurrently-created account already owns this
@@ -154,8 +154,8 @@ export function authenticateMiddleware(userService: UserService) {
         if (!user.active) {
           next(
             new UnauthorizedException(
-              "Error authenticating, account is disabled",
-            ),
+              "Error authenticating, account is disabled"
+            )
           );
           return;
         }

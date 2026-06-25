@@ -1,6 +1,9 @@
 import { Router } from "express";
 import multer from "multer";
-import { authorizeMiddleware, validateBodyMiddleware } from "../../../../system";
+import {
+  authorizeMiddleware,
+  validateBodyMiddleware,
+} from "../../../../system";
 import { CrEinvoiceSettingsController } from "../controllers/cr-einvoice-settings-controller";
 import { CrEinvoiceSettingsDTO } from "../models/cr-einvoice-settings.dto";
 

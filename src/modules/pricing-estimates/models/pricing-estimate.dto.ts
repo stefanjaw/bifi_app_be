@@ -219,7 +219,7 @@ export class PricingEstimateCreateDTO {
 }
 
 export class PricingEstimateUpdateDTO extends PartialType(
-  PricingEstimateCreateDTO,
+  PricingEstimateCreateDTO
 ) {
   @IsString()
   @IsNotEmpty()

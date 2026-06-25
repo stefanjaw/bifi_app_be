@@ -89,7 +89,10 @@ const journalEntryLineSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "InventoryProduct",
       required: false,
-      autopopulate: { select: "name salePrice codigoComercial unitOfMeasureId productKind", maxDepth: 1 },
+      autopopulate: {
+        select: "name salePrice codigoComercial unitOfMeasureId productKind",
+        maxDepth: 1,
+      },
     },
     quantity: { type: Number, required: false },
     unitPrice: { type: Number, required: false },
@@ -98,7 +101,10 @@ const journalEntryLineSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "Tax",
         required: false,
-        autopopulate: { select: "name percentage crCodigo crCodigoTarifa crTarifa", maxDepth: 1 },
+        autopopulate: {
+          select: "name percentage crCodigo crCodigoTarifa crTarifa",
+          maxDepth: 1,
+        },
       },
     ],
     discountId: {
@@ -158,7 +164,8 @@ const journalEntrySchema = new Schema(
       ref: "Contact",
       required: false,
       autopopulate: {
-        select: "name lastName email vat crVatType state city crDistrito streetAddress crEconomicActivityCodes commercialName",
+        select:
+          "name lastName email vat crVatType state city crDistrito streetAddress crEconomicActivityCodes commercialName",
         maxDepth: 1,
       },
     },
@@ -193,7 +200,15 @@ const journalEntrySchema = new Schema(
     },
     crEinvoiceStatus: {
       type: String,
-      enum: ["draft", "pending", "sent", "accepted", "rejected", "received", "failed"],
+      enum: [
+        "draft",
+        "pending",
+        "sent",
+        "accepted",
+        "rejected",
+        "received",
+        "failed",
+      ],
       required: false,
     },
     crClave: { type: String, maxlength: 50, required: false },
@@ -220,13 +235,13 @@ const journalEntrySchema = new Schema(
       required: false,
     },
     crInformacionReferencia: {
-      tipoDocIR:      { type: String, required: false },
+      tipoDocIR: { type: String, required: false },
       tipoDocRefOTRO: { type: String, required: false },
-      numero:                { type: String, required: false },
-      fechaEmisionIR:        { type: Date,   required: false },
-      codigo:                { type: String, required: false },
-      codigoReferenciaOTRO:  { type: String, required: false },
-      razon:                 { type: String, maxlength: 180, required: false },
+      numero: { type: String, required: false },
+      fechaEmisionIR: { type: Date, required: false },
+      codigo: { type: String, required: false },
+      codigoReferenciaOTRO: { type: String, required: false },
+      razon: { type: String, maxlength: 180, required: false },
       _id: false,
     },
     crPdfFile: { type: fileSchema, required: false },
@@ -255,7 +270,7 @@ const journalEntrySchema = new Schema(
 journalEntrySchema.plugin(paginate);
 journalEntrySchema.plugin(autopopulate);
 
-export const journalEntryModel = mongoose.model<JournalEntryDocument, PaginateModel<JournalEntryDocument>>(
-  "JournalEntry",
-  journalEntrySchema
-);
+export const journalEntryModel = mongoose.model<
+  JournalEntryDocument,
+  PaginateModel<JournalEntryDocument>
+>("JournalEntry", journalEntrySchema);

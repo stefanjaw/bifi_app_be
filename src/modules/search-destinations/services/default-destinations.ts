@@ -605,7 +605,12 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     route: "/settings/email-marketing/config",
     icon: "pi pi-cog",
     group: "Settings",
-    keywords: ["email marketing configuration", "esp", "email settings", "settings"],
+    keywords: [
+      "email marketing configuration",
+      "esp",
+      "email settings",
+      "settings",
+    ],
     resource: "email-marketing/menu",
   },
 ];

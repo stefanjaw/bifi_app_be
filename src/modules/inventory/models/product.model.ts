@@ -97,7 +97,7 @@ const productSchema = new Schema(
       default: [],
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 productSchema.plugin(paginate);

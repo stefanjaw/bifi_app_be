@@ -28,7 +28,7 @@ export class ProductController extends BaseController<ProductDocument> {
   protected override async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const files = req.files as
       | { photo?: Express.Multer.File[]; attachments?: Express.Multer.File[] }
@@ -50,7 +50,10 @@ export class ProductController extends BaseController<ProductDocument> {
     if (attachments) {
       try {
         for (const attachment of attachments) {
-          this.fileValidator.validateFileType(attachment, this.acceptedAttachmentTypes);
+          this.fileValidator.validateFileType(
+            attachment,
+            this.acceptedAttachmentTypes
+          );
         }
         req.body.attachments = attachments;
       } catch (error: any) {
@@ -65,7 +68,7 @@ export class ProductController extends BaseController<ProductDocument> {
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const files = req.files as
       | { photo?: Express.Multer.File[]; attachments?: Express.Multer.File[] }
@@ -87,7 +90,10 @@ export class ProductController extends BaseController<ProductDocument> {
     if (attachments) {
       try {
         for (const attachment of attachments) {
-          this.fileValidator.validateFileType(attachment, this.acceptedAttachmentTypes);
+          this.fileValidator.validateFileType(
+            attachment,
+            this.acceptedAttachmentTypes
+          );
         }
         req.body.attachments = attachments;
       } catch (error: any) {

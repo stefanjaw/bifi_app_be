@@ -19,14 +19,8 @@ export class EmailMarketingPublicRouter {
   }
 
   private initRoutes() {
-    this.router.get(
-      "/email-marketing/track/open",
-      this.controller.trackOpen
-    );
-    this.router.get(
-      "/email-marketing/track/click",
-      this.controller.trackClick
-    );
+    this.router.get("/email-marketing/track/open", this.controller.trackOpen);
+    this.router.get("/email-marketing/track/click", this.controller.trackClick);
     this.router.get(
       "/email-marketing/unsubscribe",
       this.controller.unsubscribe

@@ -27,7 +27,7 @@ export class BCDAdditionalInformationTypeDTO {
 }
 
 export class UpdateBCDAdditionalInformationTypeDTO extends PartialType(
-  BCDAdditionalInformationTypeDTO,
+  BCDAdditionalInformationTypeDTO
 ) {
   @IsMongoId()
   _id!: string;

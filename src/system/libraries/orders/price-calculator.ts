@@ -22,23 +22,37 @@ export interface TaxCalculationResult {
   appliedTaxes: AppliedTax[];
 }
 
-export function calculateLineItemTotal(quantity: number, unitPrice: number): number {
+export function calculateLineItemTotal(
+  quantity: number,
+  unitPrice: number
+): number {
   return Number((quantity * unitPrice).toFixed(2));
 }
 
 export function calculateSubtotal(lineItems: LineItemInput[]): number {
   const raw = lineItems.reduce((sum, item) => {
-    return sum + calculateLineItemTotal(Number(item.quantity ?? 0), Number(item.unitPrice ?? 0));
+    return (
+      sum +
+      calculateLineItemTotal(
+        Number(item.quantity ?? 0),
+        Number(item.unitPrice ?? 0)
+      )
+    );
   }, 0);
   return Number(raw.toFixed(2));
 }
 
-export function calculateTaxes(subtotal: number, taxDocs: TaxInput[]): TaxCalculationResult {
+export function calculateTaxes(
+  subtotal: number,
+  taxDocs: TaxInput[]
+): TaxCalculationResult {
   let taxTotal = 0;
   const appliedTaxes: AppliedTax[] = [];
 
   for (const tax of taxDocs) {
-    const amount = Number((subtotal * ((tax.percentage ?? 0) / 100)).toFixed(2));
+    const amount = Number(
+      (subtotal * ((tax.percentage ?? 0) / 100)).toFixed(2)
+    );
     taxTotal += amount;
     appliedTaxes.push({ taxId: tax._id.toString(), amount });
   }
@@ -58,20 +72,25 @@ export function calculateTaxes(subtotal: number, taxDocs: TaxInput[]): TaxCalcul
  */
 export function calculateTaxesPerLine(
   lineItems: LineItemWithTaxIds[],
-  taxDocsMap: Map<string, TaxInput>,
+  taxDocsMap: Map<string, TaxInput>
 ): TaxCalculationResult {
   const aggregated = new Map<string, number>();
 
   for (const item of lineItems) {
     const lineBase = calculateLineItemTotal(
       Number(item.quantity ?? 0),
-      Number(item.unitPrice ?? 0),
+      Number(item.unitPrice ?? 0)
     );
     for (const taxId of item.taxIds ?? []) {
       const tax = taxDocsMap.get(taxId);
       if (!tax) continue;
-      const amount = Number((lineBase * ((tax.percentage ?? 0) / 100)).toFixed(2));
-      aggregated.set(taxId, Number(((aggregated.get(taxId) ?? 0) + amount).toFixed(2)));
+      const amount = Number(
+        (lineBase * ((tax.percentage ?? 0) / 100)).toFixed(2)
+      );
+      aggregated.set(
+        taxId,
+        Number(((aggregated.get(taxId) ?? 0) + amount).toFixed(2))
+      );
     }
   }
 
@@ -85,6 +104,9 @@ export function calculateTaxesPerLine(
   return { taxTotal: Number(taxTotal.toFixed(2)), appliedTaxes };
 }
 
-export function calculateGrandTotal(subtotal: number, taxTotal: number): number {
+export function calculateGrandTotal(
+  subtotal: number,
+  taxTotal: number
+): number {
   return Number((subtotal + taxTotal).toFixed(2));
 }

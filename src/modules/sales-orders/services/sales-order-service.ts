@@ -39,7 +39,7 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
    */
   private async assertLineTaxesValid(
     lineItems: { taxIds?: string[] }[],
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ): Promise<Map<string, TaxInput>> {
     const allIds = new Set<string>();
     for (const item of lineItems) {
@@ -78,7 +78,7 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
       }
       if (tax.taxType !== TaxType.SALES) {
         const err: any = new Error(
-          `Tax "${tax.name}" is not a sales tax (taxType: ${tax.taxType})`,
+          `Tax "${tax.name}" is not a sales tax (taxType: ${tax.taxType})`
         );
         err.status = 400;
         throw err;
@@ -99,7 +99,7 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
    */
   private recomputeTotals(
     data: Record<string, any>,
-    taxDocsMap: Map<string, TaxInput>,
+    taxDocsMap: Map<string, TaxInput>
   ): void {
     const lineItems: NormalizedLineItem[] = Array.isArray(data.lineItems)
       ? data.lineItems.map((item: any) => {
@@ -120,7 +120,10 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
     }
 
     const subtotal = calculateSubtotal(lineItems);
-    const { taxTotal, appliedTaxes } = calculateTaxesPerLine(lineItems, taxDocsMap);
+    const { taxTotal, appliedTaxes } = calculateTaxesPerLine(
+      lineItems,
+      taxDocsMap
+    );
     const grandTotal = calculateGrandTotal(subtotal, taxTotal);
 
     data.subtotal = subtotal;
@@ -157,7 +160,7 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
 
   override async create(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined,
+    session: ClientSession | undefined = undefined
   ): Promise<SalesOrderDocument> {
     await this.assertCurrencyExists(data.currency);
 
@@ -182,26 +185,25 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
 
   async updateStatus(
     id: string,
-    status: string,
+    status: string
   ): Promise<SalesOrderDocument | null> {
     const boundModel = this.connectionManager.bindModelToDb(salesOrderModel);
-    return boundModel.findByIdAndUpdate(
-      id,
-      { status },
-      { new: true },
-    );
+    return boundModel.findByIdAndUpdate(id, { status }, { new: true });
   }
 
   override async update(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined,
+    session: ClientSession | undefined = undefined
   ): Promise<SalesOrderDocument> {
     if (data.currency !== undefined) {
       await this.assertCurrencyExists(data.currency);
     }
 
     if (Array.isArray(data.lineItems)) {
-      const taxDocsMap = await this.assertLineTaxesValid(data.lineItems, session);
+      const taxDocsMap = await this.assertLineTaxesValid(
+        data.lineItems,
+        session
+      );
       this.recomputeTotals(data, taxDocsMap);
     }
 

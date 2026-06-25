@@ -4,7 +4,8 @@ import { NotificationEventSettingsController } from "../controllers/notification
 import { UpdateNotificationSettingsDTO } from "../models/notification-settings.dto";
 import { NotificationEventSettingsDocument } from "../models/notification-settings.model";
 
-const notificationSettingsController = new NotificationEventSettingsController();
+const notificationSettingsController =
+  new NotificationEventSettingsController();
 
 export class NotificationSettingsRouter extends BaseRoutes<NotificationEventSettingsDocument> {
   constructor() {

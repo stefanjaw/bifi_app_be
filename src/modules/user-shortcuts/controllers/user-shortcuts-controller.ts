@@ -17,9 +17,9 @@ export class UserShortcutsController extends BaseController<UserShortcutsDocumen
         this.sendData(res, { shortcuts: [] });
         return;
       }
-      const doc = await (
-        this.service as UserShortcutsService
-      ).getMyShortcuts(user._id);
+      const doc = await (this.service as UserShortcutsService).getMyShortcuts(
+        user._id
+      );
       this.sendData(res, doc ?? { shortcuts: [] });
     } catch (error) {
       next(error);

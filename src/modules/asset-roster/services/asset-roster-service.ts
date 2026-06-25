@@ -75,7 +75,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
    */
   override async create(
     data: AssetRosterDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<AssetRosterDocument> {
     return runTransaction<AssetRosterDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
@@ -83,7 +83,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
       // Handle file upload if provided
       if (isValidFileUpload(data.photo)) {
         const fileId = await bucket.uploadFile(
-          Array.isArray(data.photo) ? data.photo[0] : data.photo,
+          Array.isArray(data.photo) ? data.photo[0] : data.photo
         );
         data.photo = fileId; // Store the file ID in the assetRoster data
       }
@@ -95,7 +95,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
       // Create the assetRoster
       let assetRoster = await super.create(
         { ...data, makeIds: [makeId], assetTypeIds: [assetTypeId] },
-        newSession,
+        newSession
       );
 
       // If maintenance was sent, then update the maintenance dates
@@ -103,7 +103,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         assetRoster =
           await this.assetRosterStatusService.updateAssetRosterMaintenanceDates(
             assetRoster._id,
-            newSession,
+            newSession
           );
       }
 
@@ -122,7 +122,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
    */
   override async update(
     data: UpdateAssetRosterDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<AssetRosterDocument> {
     return runTransaction<AssetRosterDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
@@ -136,7 +136,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
       // If a file is provided, upload it and store the file ID in the assetRoster data
       if (isValidFileUpload(photo)) {
         const fileId = await bucket.uploadFile(
-          Array.isArray(photo) ? photo[0] : photo,
+          Array.isArray(photo) ? photo[0] : photo
         );
         photo = fileId; // Store the file ID in the assetRoster data
       } else if (photo !== undefined) {
@@ -156,7 +156,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
             mimeType: file.mimetype,
             size: file.size,
             fileMetadata: attachmentsMetadata?.[i],
-          })),
+          }))
         );
       } else if (attachments !== undefined) {
         // Delete the file if no file is provided and there is a value on the photo field
@@ -176,7 +176,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
           ...(makeId && { makeIds: [makeId] }),
           ...(assetTypeId && { assetTypeIds: [assetTypeId] }),
         },
-        newSession,
+        newSession
       );
 
       // If maintenance was sent, then update the maintenance dates
@@ -184,7 +184,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         assetRoster =
           await this.assetRosterStatusService.updateAssetRosterMaintenanceDates(
             assetRoster._id,
-            newSession,
+            newSession
           );
       }
 
@@ -201,7 +201,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
    */
   async skipAssetPM(
     data: SkipAssetRosterPMDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<AssetRosterDocument> {
     return await runTransaction<AssetRosterDocument>(
       session,
@@ -209,7 +209,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         const assetRoster =
           await this.assetRosterStatusService.updateNextAssetRosterMaintenanceDates(
             data._id,
-            newSession,
+            newSession
           );
 
         await this.activityHistoryService.create(
@@ -220,11 +220,11 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
             model: "AssetRoster",
             modelId: data._id,
           },
-          newSession,
+          newSession
         );
 
         return assetRoster;
-      },
+      }
     );
   }
 
@@ -240,7 +240,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
   private async createAssetTypeId(
     data: AssetRosterDTO | UpdateAssetRosterDTO,
     isUpdate: boolean,
-    session: ClientSession,
+    session: ClientSession
   ) {
     return await runTransaction<string | undefined>(
       session,
@@ -256,11 +256,11 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
                     ...data.assetTypeInformation,
                     _id: data.assetTypeInformation._id || "",
                   },
-                  newSession,
+                  newSession
                 )
               : await this.assetTypeService.create(
                   data.assetTypeInformation,
-                  newSession,
+                  newSession
                 )
           )._id.toString();
         }
@@ -269,7 +269,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
           throw new ValidationException("Asset type is required");
 
         return assetTypeId;
-      },
+      }
     );
   }
 
@@ -286,7 +286,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
   private async createMakeId(
     data: AssetRosterDTO | UpdateAssetRosterDTO,
     isUpdate: boolean,
-    session: ClientSession,
+    session: ClientSession
   ) {
     return await runTransaction<string | undefined>(
       session,
@@ -302,11 +302,11 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
                     ...data.makeInformation,
                     _id: data.makeInformation._id || "",
                   },
-                  newSession,
+                  newSession
                 )
               : await this.contactsService.create(
                   data.makeInformation,
-                  newSession,
+                  newSession
                 )
           )._id.toString();
         }
@@ -315,7 +315,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
           throw new ValidationException("Make is required");
 
         return makeId;
-      },
+      }
     );
   }
 
@@ -349,7 +349,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         undefined,
         undefined,
         undefined,
-        newSession,
+        newSession
       );
 
       const json = assetRosters.map((p) => ({
@@ -393,13 +393,13 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
    */
   override async importCSV(
     data: AssetRosterCSVDTO[],
-    session?: ClientSession,
+    session?: ClientSession
   ): Promise<AssetRosterDocument[]> {
     return await runTransaction<AssetRosterDocument[]>(
       session,
       async (newSession) => {
         if (!data || !Array.isArray(data)) {
-          throw new Error("Invalid data format");
+          throw new ValidationException("Invalid data format");
         }
 
         const assetRosters: any[] = [];
@@ -418,7 +418,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
                   undefined,
                   undefined,
                   undefined,
-                  newSession,
+                  newSession
                 )
               )[0];
 
@@ -427,11 +427,11 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
                   {
                     name,
                   },
-                  newSession,
+                  newSession
                 );
 
               return assetType._id;
-            }),
+            })
           );
 
           // Find or create vendors
@@ -444,7 +444,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
                       undefined,
                       undefined,
                       undefined,
-                      newSession,
+                      newSession
                     )
                   )[0];
 
@@ -457,11 +457,11 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
                         phoneNumber: "0000000000",
                         type: "company",
                       },
-                      newSession,
+                      newSession
                     );
 
                   return vendor._id;
-                }),
+                })
               )
             : [];
 
@@ -475,7 +475,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
                       undefined,
                       undefined,
                       undefined,
-                      newSession,
+                      newSession
                     )
                   )[0];
 
@@ -488,11 +488,11 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
                         phoneNumber: "0000000000",
                         type: "company",
                       },
-                      newSession,
+                      newSession
                     );
 
                   return make._id;
-                }),
+                })
               )
             : [];
 
@@ -513,7 +513,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         }
 
         return await super.importCSV(assetRosters, newSession);
-      },
+      }
     );
   }
 
@@ -528,11 +528,11 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
    */
   async readMaintenanceDocuments(
     files: Express.Multer.File[],
-    question?: string,
+    question?: string
   ): Promise<any> {
     try {
       const parts = files.map((file) =>
-        this.genAIService.fileToGenerativePart(file),
+        this.genAIService.fileToGenerativePart(file)
       );
 
       const response = await this.genAIService.generate({
@@ -551,7 +551,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
     } catch (error: any) {
       console.error("GenAI error:", error);
       throw new InternalServerException(
-        "Error processing maintenance documents",
+        "Error processing maintenance documents"
       );
     }
   }

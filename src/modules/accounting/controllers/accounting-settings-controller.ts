@@ -9,19 +9,31 @@ export class AccountingSettingsController extends BaseController<AccountingSetti
     super({ service: new AccountingSettingsService() });
   }
 
-  protected async getSettingsHandler(req: Request, res: Response, next: NextFunction) {
+  protected async getSettingsHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const settings = await (this.service as AccountingSettingsService).getSettings();
+      const settings = await (
+        this.service as AccountingSettingsService
+      ).getSettings();
       this.sendData(res, settings ?? {});
     } catch (error) {
       next(error);
     }
   }
 
-  protected async upsertSettingsHandler(req: Request, res: Response, next: NextFunction) {
+  protected async upsertSettingsHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const data = req.body as AccountingSettingsDTO;
-      const result = await (this.service as AccountingSettingsService).upsertSettings(data);
+      const result = await (
+        this.service as AccountingSettingsService
+      ).upsertSettings(data);
       this.sendData(res, result);
     } catch (error) {
       next(error);

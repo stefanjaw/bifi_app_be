@@ -87,7 +87,7 @@ const shippingSchema = new Schema(
     timestamps: true,
     toObject: { virtuals: true }, // Include virtuals in toObject output
     toJSON: { virtuals: true }, // Include virtuals in toJSON output
-  },
+  }
 );
 
 shippingSchema.virtual("bcds", {

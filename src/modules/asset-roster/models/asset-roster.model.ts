@@ -256,9 +256,9 @@ const assetRosterSchema = new Schema(
     },
     depreciationMethod: {
       type: String,
-      enum: ['straight-line', 'accelerated-declining-balance'],
+      enum: ["straight-line", "accelerated-declining-balance"],
       required: false,
-      default: 'straight-line',
+      default: "straight-line",
     },
     accelerationFactor: {
       type: Number,
@@ -274,7 +274,7 @@ const assetRosterSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  },
+  }
 );
 
 assetRosterSchema.virtual("assetCommission", {

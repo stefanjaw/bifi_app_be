@@ -17,8 +17,7 @@ export class MailingListService extends BaseService<MailingListDocument> {
    */
   async refreshSubscriberCount(listId: string): Promise<number> {
     const listModelBound = this.connectionManager.bindModelToDb(this.model);
-    const subModelBound =
-      this.connectionManager.bindModelToDb(subscriberModel);
+    const subModelBound = this.connectionManager.bindModelToDb(subscriberModel);
     const count = await subModelBound.countDocuments({
       listId,
       status: "subscribed",

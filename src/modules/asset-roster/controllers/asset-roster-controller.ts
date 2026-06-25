@@ -32,7 +32,7 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
   protected override async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const files = req.files as
       | { photo?: Express.Multer.File[]; attachments?: Express.Multer.File[] }
@@ -57,7 +57,7 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
         for (const attachment of attachments) {
           this.fileValidator.validateFileType(
             attachment,
-            this.acceptedAttarchmentTypes,
+            this.acceptedAttarchmentTypes
           );
         }
       } catch (error: any) {
@@ -72,7 +72,7 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     const files = req.files as
       | { photo?: Express.Multer.File[]; attachments?: Express.Multer.File[] }
@@ -97,7 +97,7 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
         for (const attachment of attachments) {
           this.fileValidator.validateFileType(
             attachment,
-            this.acceptedAttarchmentTypes,
+            this.acceptedAttarchmentTypes
           );
         }
 
@@ -115,7 +115,7 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
   protected async updateSkipAssetPMHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) {
     try {
       const body = req.body;
@@ -130,7 +130,7 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
   updateSkipAssetPM = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     await this.updateSkipAssetPMHandler(req, res, next);
   };
@@ -138,7 +138,7 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
   protected async readDocumentsHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ): Promise<void> {
     try {
       const files = req.files as Express.Multer.File[];
@@ -151,7 +151,7 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
       for (const attachment of files) {
         this.fileValidator.validateFileType(
           attachment,
-          this.acceptedAttarchmentTypes,
+          this.acceptedAttarchmentTypes
         );
       }
 

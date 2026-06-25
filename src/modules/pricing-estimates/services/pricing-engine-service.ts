@@ -91,7 +91,7 @@ export class PricingEngineService {
     const aiSettings = await this.aiSettingsService.getSettings();
     if (!aiSettings || !aiSettings.apiKey) {
       throw new ValidationException(
-        "AI settings not configured. Please add an API key.",
+        "AI settings not configured. Please add an API key."
       );
     }
 
@@ -157,12 +157,12 @@ export class PricingEngineService {
         `${product.supplier ?? ""} ${product.product} ${
           product.partNo ?? ""
         }`.trim(),
-        5,
+        5
       );
 
       const freightResults = await this.searchService.searchFreight(
         `${params.shippingMethod ?? "sea"} ${product.product}`.trim(),
-        3,
+        3
       );
 
       const unitPrice =
@@ -298,8 +298,8 @@ export class PricingEngineService {
     const productCount = Math.max(
       1,
       words.filter((w) =>
-        ["need", "want", "order", "buy", "quote", "price", "get"].includes(w),
-      ).length || Math.ceil(words.length / 5),
+        ["need", "want", "order", "buy", "quote", "price", "get"].includes(w)
+      ).length || Math.ceil(words.length / 5)
     );
     const estimatedOutputTokens = productCount * OUTPUT_TOKENS_PER_PRODUCT;
 

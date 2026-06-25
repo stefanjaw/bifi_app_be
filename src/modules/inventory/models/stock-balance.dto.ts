@@ -1,9 +1,5 @@
 import { Type } from "class-transformer";
-import {
-  IsMongoId,
-  IsNumber,
-  Min,
-} from "class-validator";
+import { IsMongoId, IsNumber, Min } from "class-validator";
 import { PartialType } from "../../../system";
 
 export class StockBalanceDTO {

@@ -78,7 +78,7 @@ export class PurchaseOrderPdfService {
         return `
         <tr>
           <td class="left">${esc(
-            item.description || (item.productId?.name ?? ""),
+            item.description || (item.productId?.name ?? "")
           )}</td>
           <td class="right">${esc(item.quantity ?? 0)}</td>
           <td class="right">${fmt(item.unitPrice)}</td>
@@ -94,7 +94,7 @@ export class PurchaseOrderPdfService {
       <div class="totals-row">
         <span>Tax</span>
         <span>${fmt(t.amount)}</span>
-      </div>`,
+      </div>`
       )
       .join("");
 
@@ -158,12 +158,12 @@ export class PurchaseOrderPdfService {
     <div class="meta-block">
       <h3>Dates</h3>
       <p><span class="label">Issue Date:</span> ${esc(
-        fmtDate(order.issueDate),
+        fmtDate(order.issueDate)
       )}</p>
       ${
         order.expectedDeliveryDate
           ? `<p><span class="label">Expected Delivery:</span> ${esc(
-              fmtDate(order.expectedDeliveryDate),
+              fmtDate(order.expectedDeliveryDate)
             )}</p>`
           : ""
       }

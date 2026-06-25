@@ -61,7 +61,7 @@ export class BCDService extends BaseService<BCDDocument> {
    */
   override async update(
     data: UpdateBcdDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ) {
     // Fetch BCD data by ID
     const bcd = await this.getById(data._id, undefined);
@@ -70,7 +70,7 @@ export class BCDService extends BaseService<BCDDocument> {
     if (!bcd) throw new ValidationException("BCD data not found");
     if (bcd.status !== "DRAFT") {
       throw new ValidationException(
-        "BCD data has already been sent to the government",
+        "BCD data has already been sent to the government"
       );
     }
 
@@ -112,7 +112,7 @@ export class BCDService extends BaseService<BCDDocument> {
       // * Validate a file is not already uploaded
       if (bcd.status !== "DRAFT")
         throw new ValidationException(
-          "BCD data has already been sent to the government",
+          "BCD data has already been sent to the government"
         );
 
       // * Generate name
@@ -124,7 +124,7 @@ export class BCDService extends BaseService<BCDDocument> {
         undefined,
         undefined,
         undefined,
-        newSession,
+        newSession
       );
 
       // * get csv string
@@ -133,7 +133,7 @@ export class BCDService extends BaseService<BCDDocument> {
       // * Convert CSV string to a Blob/File
       const filename = this.getNewEBCDSentCSVName(
         bcd.declarant.companyId,
-        bcds,
+        bcds
       );
 
       const csvBlob = new Blob([csvString], { type: "text/csv" });
@@ -164,7 +164,7 @@ export class BCDService extends BaseService<BCDDocument> {
             },
           ],
         },
-        newSession,
+        newSession
       );
 
       return updatedBCD;
@@ -197,7 +197,7 @@ export class BCDService extends BaseService<BCDDocument> {
         undefined,
         undefined,
         undefined,
-        newSession,
+        newSession
       );
 
       // * get ftp files
@@ -218,7 +218,7 @@ export class BCDService extends BaseService<BCDDocument> {
         const recFile = ftpFiles.find(
           (f) =>
             f.metadata.name.includes("REC.TXT") &&
-            f.buffer.toString("utf-8").includes(this.getSentCSVName(bcd)),
+            f.buffer.toString("utf-8").includes(this.getSentCSVName(bcd))
         );
 
         const proccessedFTPFiles: ftpResponse[] = [];
@@ -227,7 +227,7 @@ export class BCDService extends BaseService<BCDDocument> {
           // * if rec file is found, get number and find all files with that number
           const bcdNumber = this.getBCDNumberFromFTPFile(recFile.buffer);
           const filesWithNumber = ftpFiles.filter((f) =>
-            f.metadata.name.includes(`BCD${bcdNumber}`),
+            f.metadata.name.includes(`BCD${bcdNumber}`)
           );
 
           filesWithNumber.forEach((f) => proccessedFTPFiles.push(f));
@@ -236,7 +236,7 @@ export class BCDService extends BaseService<BCDDocument> {
           const [name, prefix] = this.getSentCSVName(bcd).split(".");
           const errorFilename = `${name}E.${prefix}`;
           const errorFile = ftpFiles.find(
-            (f) => f.metadata.name === errorFilename,
+            (f) => f.metadata.name === errorFilename
           );
 
           if (errorFile) proccessedFTPFiles.push(errorFile);
@@ -262,7 +262,7 @@ export class BCDService extends BaseService<BCDDocument> {
               },
               type: this.resolveEBCDType(ftpFile.metadata.name),
             };
-          }),
+          })
         );
 
         const updatedBCD = await super.update(
@@ -271,7 +271,7 @@ export class BCDService extends BaseService<BCDDocument> {
             ebcds: [...bcd.ebcds, ...files],
             status: this.resolveBCDStatus(files.map((f) => f.type)),
           },
-          newSession,
+          newSession
         );
 
         updatedBCDs.push(updatedBCD);
@@ -284,7 +284,7 @@ export class BCDService extends BaseService<BCDDocument> {
           path: "/outbox",
           filename: f.metadata.name,
         })),
-        "/outbox/proccessed",
+        "/outbox/proccessed"
       );
 
       return updatedBCDs;
@@ -326,7 +326,7 @@ export class BCDService extends BaseService<BCDDocument> {
     const lastDate = csvs[0].file.name.split(".")?.[0]?.slice(-8);
 
     return `${companyName}${lastDate}.${String(
-      Number(lastConsecutive) + 1,
+      Number(lastConsecutive) + 1
     ).padStart(4, "0")}`;
   }
 
@@ -428,7 +428,7 @@ export class BCDService extends BaseService<BCDDocument> {
         ...(bcd.charges?.filter((c) => c.code)?.map((c) => c.code || "") || []),
         ...(bcd.records?.flatMap(
           (r) =>
-            r.charges?.filter((c) => c.code)?.map((c) => c.code || "") || [],
+            r.charges?.filter((c) => c.code)?.map((c) => c.code || "") || []
         ) || []),
       ]);
 
@@ -438,14 +438,14 @@ export class BCDService extends BaseService<BCDDocument> {
         undefined,
         undefined,
         undefined,
-        undefined,
+        undefined
       );
 
       // create Record of custom charges by code
       const customChargesRecord: Record<string, BCDChargeCodeDocument> =
         customCharges.reduce(
           (acc, ch) => ({ ...acc, [ch._id.toString()]: ch }),
-          {},
+          {}
         );
 
       return customChargesRecord;

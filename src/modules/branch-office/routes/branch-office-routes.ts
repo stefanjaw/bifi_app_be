@@ -1,7 +1,10 @@
 import { BaseRoutes } from "../../../system";
 import { BranchOfficeDocument } from "../models/branch-office.model";
 import { BranchOfficeController } from "../controllers/branch-office-controller";
-import { BranchOfficeDTO, UpdateBranchOfficeDTO } from "../models/branch-office.dto";
+import {
+  BranchOfficeDTO,
+  UpdateBranchOfficeDTO,
+} from "../models/branch-office.dto";
 
 const branchOfficeController = new BranchOfficeController();
 

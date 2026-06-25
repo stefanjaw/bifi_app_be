@@ -238,7 +238,10 @@ export class InvoiceDTO {
   @IsObject()
   @Type(() => InvoicePDFDTO)
   @Transform(({ value }) =>
-    plainToInstance(InvoicePDFDTO, typeof value === "string" ? JSON.parse(value) : value)
+    plainToInstance(
+      InvoicePDFDTO,
+      typeof value === "string" ? JSON.parse(value) : value
+    )
   )
   pdf!: InvoicePDFDTO;
 

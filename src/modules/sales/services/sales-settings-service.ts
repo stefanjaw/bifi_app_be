@@ -1,5 +1,8 @@
 import { BaseService } from "../../../system";
-import { salesSettingsModel, SalesSettingsDocument } from "../models/sales-settings.model";
+import {
+  salesSettingsModel,
+  SalesSettingsDocument,
+} from "../models/sales-settings.model";
 import { SalesSettingsDTO } from "../models/sales-settings.dto";
 
 export class SalesSettingsService extends BaseService<SalesSettingsDocument> {

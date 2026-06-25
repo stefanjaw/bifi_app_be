@@ -50,14 +50,21 @@ export class SequenceService extends BaseService<SequenceDocument> {
     // No sequence exists yet — create one; first project gets number 1
     // Store number=2 so the next call returns 2 correctly via the path above
     try {
-      await model.create({ name, prefix, size, step, number: 1 + step, active: true });
+      await model.create({
+        name,
+        prefix,
+        size,
+        step,
+        number: 1 + step,
+        active: true,
+      });
     } catch {
       // Race condition: another request may have created it simultaneously; just use it
-      const seq = await model.findOneAndUpdate(
+      const seq = (await model.findOneAndUpdate(
         { prefix, active: true },
         { $inc: { number: step } },
         { new: false }
-      ) as unknown as SequenceDocument | null;
+      )) as unknown as SequenceDocument | null;
       if (seq) {
         const formatted = seq.number.toString().padStart(seq.size, "0");
         return `${seq.prefix}${formatted}${seq.suffix ?? ""}`;
@@ -77,9 +84,7 @@ export class SequenceService extends BaseService<SequenceDocument> {
     );
 
     if (!seq) {
-      throw new NotFoundException(
-        `No active sequence found for id "${id}"`
-      );
+      throw new NotFoundException(`No active sequence found for id "${id}"`);
     }
 
     const formatted = seq.number.toString().padStart(seq.size, "0");

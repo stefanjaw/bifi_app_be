@@ -27,7 +27,7 @@ export class CustomsTariffController extends BaseController<CustomsTariffDocumen
         result = await this.tariffService.lookupByParts(
           chapter,
           heading,
-          subheading,
+          subheading
         );
       }
 

@@ -12,28 +12,33 @@ export class ProductService extends BaseService<ProductDocument> {
 
   override async create(
     data: ProductDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<ProductDocument> {
     return runTransaction<ProductDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
 
       if (isValidFileUpload(data.photo)) {
         const fileId = await bucket.uploadFile(
-          Array.isArray(data.photo) ? data.photo[0] : data.photo,
+          Array.isArray(data.photo) ? data.photo[0] : data.photo
         );
         data.photo = fileId;
       } else {
         delete (data as any).photo;
       }
 
-      if (isValidFileUpload(data.attachments) && Array.isArray(data.attachments)) {
+      if (
+        isValidFileUpload(data.attachments) &&
+        Array.isArray(data.attachments)
+      ) {
         data.attachments = await Promise.all(
-          (data.attachments as Express.Multer.File[]).map<Promise<InnerFile>>(async (file) => ({
-            fileId: await bucket.uploadFile(file),
-            name: file.originalname,
-            mimeType: file.mimetype,
-            size: file.size,
-          })),
+          (data.attachments as Express.Multer.File[]).map<Promise<InnerFile>>(
+            async (file) => ({
+              fileId: await bucket.uploadFile(file),
+              name: file.originalname,
+              mimeType: file.mimetype,
+              size: file.size,
+            })
+          )
         );
       } else {
         delete (data as any).attachments;
@@ -45,7 +50,7 @@ export class ProductService extends BaseService<ProductDocument> {
 
   override async update(
     data: UpdateProductDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<ProductDocument> {
     return runTransaction<ProductDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
@@ -53,7 +58,7 @@ export class ProductService extends BaseService<ProductDocument> {
       let photo = data.photo;
       if (isValidFileUpload(photo)) {
         const fileId = await bucket.uploadFile(
-          Array.isArray(photo) ? photo[0] : photo,
+          Array.isArray(photo) ? photo[0] : photo
         );
         photo = fileId;
       } else if (photo !== undefined) {
@@ -64,12 +69,14 @@ export class ProductService extends BaseService<ProductDocument> {
       let attachments = data.attachments;
       if (isValidFileUpload(attachments) && Array.isArray(attachments)) {
         attachments = await Promise.all(
-          (attachments as Express.Multer.File[]).map<Promise<InnerFile>>(async (file) => ({
-            fileId: await bucket.uploadFile(file),
-            name: file.originalname,
-            mimeType: file.mimetype,
-            size: file.size,
-          })),
+          (attachments as Express.Multer.File[]).map<Promise<InnerFile>>(
+            async (file) => ({
+              fileId: await bucket.uploadFile(file),
+              name: file.originalname,
+              mimeType: file.mimetype,
+              size: file.size,
+            })
+          )
         );
         data.attachments = attachments;
       } else {

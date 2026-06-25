@@ -19,8 +19,16 @@ const taxMappingSchema = new Schema(
 
 const accountMappingSchema = new Schema(
   {
-    fromAccountId: { type: Schema.Types.ObjectId, ref: "Account", required: true },
-    toAccountId: { type: Schema.Types.ObjectId, ref: "Account", required: true },
+    fromAccountId: {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+      required: true,
+    },
+    toAccountId: {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+      required: true,
+    },
   },
   { _id: false }
 );
@@ -38,7 +46,7 @@ const fiscalPositionSchema = new Schema(
 fiscalPositionSchema.plugin(paginate);
 fiscalPositionSchema.plugin(autopopulate);
 
-export const fiscalPositionModel = mongoose.model<FiscalPositionDocument, PaginateModel<FiscalPositionDocument>>(
-  "FiscalPosition",
-  fiscalPositionSchema
-);
+export const fiscalPositionModel = mongoose.model<
+  FiscalPositionDocument,
+  PaginateModel<FiscalPositionDocument>
+>("FiscalPosition", fiscalPositionSchema);

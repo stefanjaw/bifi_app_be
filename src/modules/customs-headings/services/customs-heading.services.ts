@@ -11,7 +11,7 @@ export class CustomsHeadingService extends BaseService<CustomsHeadingDocument> {
 
   async lookupByChapterAndHeading(
     chapter: string,
-    heading: string,
+    heading: string
   ): Promise<CustomsHeadingDocument | null> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const result = await model.findOne({ chapter, heading });

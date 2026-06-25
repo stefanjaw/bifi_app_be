@@ -16,7 +16,7 @@ const invoiceSequenceSchema = new Schema(
 
 invoiceSequenceSchema.plugin(paginate);
 
-export const invoiceSequenceModel = mongoose.model<InvoiceSequenceDocument, PaginateModel<InvoiceSequenceDocument>>(
-  "InvoiceSequence",
-  invoiceSequenceSchema
-);
+export const invoiceSequenceModel = mongoose.model<
+  InvoiceSequenceDocument,
+  PaginateModel<InvoiceSequenceDocument>
+>("InvoiceSequence", invoiceSequenceSchema);

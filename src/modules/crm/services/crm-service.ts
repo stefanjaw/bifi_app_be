@@ -63,7 +63,9 @@ export class CRMService extends BaseService<CRMDocument> {
               owner: (existing as any)?.owner,
             },
             title: "CRM Deal Won",
-            body: `Deal "${(existing as any)?.name ?? (data as any)._id}" has been marked as Won.`,
+            body: `Deal "${
+              (existing as any)?.name ?? (data as any)._id
+            }" has been marked as Won.`,
             link: `/sales/opportunities/edit/${(data as any)._id}`,
             module: "sales",
           });

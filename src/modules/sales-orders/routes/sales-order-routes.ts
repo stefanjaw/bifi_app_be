@@ -1,7 +1,15 @@
-import { BaseRoutes, authorizeMiddleware, validateBodyMiddleware } from "../../../system";
+import {
+  BaseRoutes,
+  authorizeMiddleware,
+  validateBodyMiddleware,
+} from "../../../system";
 import { SalesOrderDocument } from "@mongodb-types";
 import { SalesOrderController } from "../controllers/sales-order-controller";
-import { SalesOrderDTO, UpdateSalesOrderDTO, UpdateSalesOrderStatusDTO } from "../models/sales-order.dto";
+import {
+  SalesOrderDTO,
+  UpdateSalesOrderDTO,
+  UpdateSalesOrderStatusDTO,
+} from "../models/sales-order.dto";
 
 const salesOrderController = new SalesOrderController();
 
@@ -25,7 +33,7 @@ export class SalesOrderRouter extends BaseRoutes<SalesOrderDocument> {
     this.router.get(
       `${this.endpoint}/:id/pdf`,
       authorizeMiddleware("sales-orders", "read"),
-      salesOrderController.exportPdf,
+      salesOrderController.exportPdf
     );
   }
 
@@ -34,7 +42,7 @@ export class SalesOrderRouter extends BaseRoutes<SalesOrderDocument> {
       "/:id/status",
       authorizeMiddleware("sales-orders", "update"),
       validateBodyMiddleware(UpdateSalesOrderStatusDTO),
-      salesOrderController.updateStatus,
+      salesOrderController.updateStatus
     );
   }
 }

@@ -28,7 +28,7 @@ export class CrEinvoiceActionService {
     }
 
     const settingsModel = this.connectionManager.bindModelToDb(
-      (crEinvoiceSettingsService as any).model,
+      (crEinvoiceSettingsService as any).model
     );
     const settings: any = await settingsModel
       .findById((settingsRaw as any)._id)
@@ -49,7 +49,7 @@ export class CrEinvoiceActionService {
 
     const validationErrors = crEinvoiceValidatorService.validateForSubmission(
       invoice.toObject(),
-      settings,
+      settings
     );
     if (validationErrors.length > 0) {
       throw new ValidationException(validationErrors.join("\n"));
@@ -68,7 +68,7 @@ export class CrEinvoiceActionService {
       codigoEstablecimiento,
       codigoPuntoVenta,
       tipoComprobanteCode,
-      counter,
+      counter
     );
 
     const fechaEmision = new Date();
@@ -92,19 +92,19 @@ export class CrEinvoiceActionService {
 
     const payload = await crEinvoiceJsonBuilderService.buildFromJournalEntry(
       entryData,
-      settings,
+      settings
     );
 
     try {
       const haciendaResponse = await haciendaSubmissionService.submitPayload(
         payload,
         settings,
-        process.env["CR_EINVOICE_CALLBACK_URL"],
+        process.env["CR_EINVOICE_CALLBACK_URL"]
       );
       return model.findByIdAndUpdate(
         id,
         { crHaciendaResponse: haciendaResponse, crEinvoiceStatus: "sent" },
-        { new: true },
+        { new: true }
       ) as any;
     } catch (error: any) {
       const errorDetail =
@@ -133,12 +133,12 @@ export class CrEinvoiceActionService {
     const clave = (invoice as any).crClave;
     if (!clave)
       throw new ValidationException(
-        "Invoice has no CR clave — submit to Hacienda first.",
+        "Invoice has no CR clave — submit to Hacienda first."
       );
 
     const pollResponse = await haciendaSubmissionService.pollStatus(
       clave,
-      settings,
+      settings
     );
     const data = pollResponse?.result ?? pollResponse;
 
@@ -161,7 +161,7 @@ export class CrEinvoiceActionService {
     return model.findByIdAndUpdate(
       id,
       { crHaciendaResponse: data, crEinvoiceStatus: newStatus },
-      { new: true },
+      { new: true }
     ) as any;
   }
 
@@ -170,7 +170,7 @@ export class CrEinvoiceActionService {
     noteType: "NC" | "ND",
     codigo: string,
     razon: string,
-    codigoReferenciaOTRO?: string,
+    codigoReferenciaOTRO?: string
   ): Promise<JournalEntryDocument> {
     const model = this.connectionManager.bindModelToDb(journalEntryModel);
     const source = await model.findById(sourceInvoiceId).lean();

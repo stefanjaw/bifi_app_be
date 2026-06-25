@@ -1,7 +1,10 @@
 import { ProjectStageDocument } from "@mongodb-types";
 import { BaseRoutes } from "../../../system";
 import { ProjectStageController } from "../controllers/project-stage-controller";
-import { ProjectStageDTO, UpdateProjectStageDTO } from "../models/project-stage.dto";
+import {
+  ProjectStageDTO,
+  UpdateProjectStageDTO,
+} from "../models/project-stage.dto";
 
 const projectStageController = new ProjectStageController();
 

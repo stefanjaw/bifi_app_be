@@ -1,7 +1,10 @@
 import { CustomsHeadingDocument } from "@mongodb-types";
 import { BaseRoutes } from "../../../system";
 import { CustomsHeadingController } from "../controllers/customs-heading.controller";
-import { CustomsHeadingDTO, UpdateCustomsHeadingDTO } from "../models/customs-heading.dto";
+import {
+  CustomsHeadingDTO,
+  UpdateCustomsHeadingDTO,
+} from "../models/customs-heading.dto";
 
 export class CustomsHeadingRouter extends BaseRoutes<CustomsHeadingDocument> {
   constructor() {

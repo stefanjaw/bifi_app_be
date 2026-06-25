@@ -31,7 +31,7 @@ export class PricingEstimateRouter extends BaseRoutes<PricingEstimateDocument> {
       this.upload.any(),
       validateBodyMiddleware(GenerateEstimateDTO),
       authorizeMiddleware("pricing-estimates", "create"),
-      controller.generateEstimate,
+      controller.generateEstimate
     );
 
     this.router.post(
@@ -39,25 +39,25 @@ export class PricingEstimateRouter extends BaseRoutes<PricingEstimateDocument> {
       this.upload.any(),
       validateBodyMiddleware(TokenEstimateDTO),
       authorizeMiddleware("pricing-estimates", "read"),
-      controller.tokenEstimate,
+      controller.tokenEstimate
     );
 
     this.router.get(
       "/pricing-estimates/:id/pdf",
       authorizeMiddleware("pricing-estimates", "read"),
-      controller.exportPdf,
+      controller.exportPdf
     );
 
     this.router.get(
       "/pricing-estimates/:id/csv",
       authorizeMiddleware("pricing-estimates", "read"),
-      controller.exportCsv,
+      controller.exportCsv
     );
 
     this.router.get(
       "/pricing-settings",
       authorizeMiddleware("pricing-settings", "read"),
-      controller.getSettings,
+      controller.getSettings
     );
 
     this.router.put(
@@ -65,7 +65,7 @@ export class PricingEstimateRouter extends BaseRoutes<PricingEstimateDocument> {
       this.upload.any(),
       validateBodyMiddleware(PricingSettingsDTO),
       authorizeMiddleware("pricing-settings", "update"),
-      controller.upsertSettings,
+      controller.upsertSettings
     );
 
     super.initRoutes();

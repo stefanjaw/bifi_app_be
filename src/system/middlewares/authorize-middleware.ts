@@ -23,7 +23,7 @@ export function authorizeMiddleware(
   resource: string,
   action: RolePolicy["actions"][number],
   getDocument: (req: Request) => Promise<Record<string, any>> = () =>
-    Promise.resolve({}),
+    Promise.resolve({})
 ) {
   const RBAC_ENABLE = process.env.RBAC_ENABLE
     ? process.env.RBAC_ENABLE === "true"
@@ -48,14 +48,14 @@ export function authorizeMiddleware(
         user?.roles
           .filter(
             (role): role is RoleDocument =>
-              typeof role === "object" && "policies" in role,
+              typeof role === "object" && "policies" in role
           )
           .flatMap((role) => role.policies)
           .filter(
             (policy) =>
               policy.policyId.resource === resource &&
               policy.actions.includes(action) &&
-              policy.policyId.type === "model",
+              policy.policyId.type === "model"
           ) || [];
 
       // Check if policies exist, if not, throw an error
@@ -73,7 +73,7 @@ export function authorizeMiddleware(
         return policy.policyId.conditions.every(
           (condition: PolicyConditionDocument) => {
             return evaluateCondition(document, condition, user);
-          },
+          }
         );
       });
 
@@ -99,7 +99,7 @@ function evaluateCondition(
   resourceData: Record<string, any>,
   condition: PolicyConditionDocument,
   user: UserDocument | undefined,
-  context = {},
+  context = {}
 ): boolean {
   const key = condition.key;
   const operator = condition.operator;
@@ -109,7 +109,7 @@ function evaluateCondition(
     condition.value,
     user,
     resourceData,
-    context,
+    context
   );
 
   if (!(key in document)) return false;
@@ -149,7 +149,7 @@ function resolveConditionValue(
   value: any,
   user: UserDocument | undefined,
   resourceData: Record<string, any>,
-  context: object = {},
+  context: object = {}
 ) {
   // Ejemplo {{user.id}}
   if (

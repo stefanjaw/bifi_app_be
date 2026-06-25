@@ -64,7 +64,7 @@ const accountSchema = new Schema(
 accountSchema.plugin(paginate);
 accountSchema.plugin(autopopulate);
 
-export const accountModel = mongoose.model<AccountDocument, PaginateModel<AccountDocument>>(
-  "Account",
-  accountSchema
-);
+export const accountModel = mongoose.model<
+  AccountDocument,
+  PaginateModel<AccountDocument>
+>("Account", accountSchema);

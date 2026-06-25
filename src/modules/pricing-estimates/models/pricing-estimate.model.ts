@@ -22,7 +22,7 @@ const lineItemSchema = new Schema(
     marginPct: { type: Number, default: 0 },
     totalCust: { type: Number, default: 0 },
   },
-  { _id: true },
+  { _id: true }
 );
 
 const pricingControlsSchema = new Schema(
@@ -32,7 +32,7 @@ const pricingControlsSchema = new Schema(
     markupFactor: { type: Number, default: 1.3 },
     margin: { type: Number, default: 30 },
   },
-  { _id: false },
+  { _id: false }
 );
 
 const pricingEstimateSchema = new Schema(
@@ -138,7 +138,7 @@ const pricingEstimateSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  },
+  }
 );
 
 pricingEstimateSchema.index({ number: 1 });

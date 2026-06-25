@@ -24,7 +24,7 @@ export class FreightIndexer {
   constructor(
     private readonly connectionManager: ConnectionManager,
     private readonly fileParserService: FileParserService,
-    private readonly driveFileService: DriveFileService,
+    private readonly driveFileService: DriveFileService
   ) {}
 
   private getModel(): PaginateModel<FreightCacheDocument> {
@@ -44,7 +44,7 @@ export class FreightIndexer {
     driveConnector: GoogleDriveConnectorService,
     freightFolders: FolderRef[],
     configFolderId: string,
-    lastIndexed?: Date,
+    lastIndexed?: Date
   ): Promise<FreightIndexResult> {
     const allFileParts: (FilePart & { folderId: string })[] = [];
     const errors: string[] = [];
@@ -55,7 +55,7 @@ export class FreightIndexer {
         const downloaded = await this.driveFileService.downloadFolderFiles(
           folder.folderId,
           driveConnector,
-          lastIndexed,
+          lastIndexed
         );
         for (const entry of downloaded.files) {
           allFileParts.push({ ...entry, folderId: folder.folderId });
@@ -65,8 +65,8 @@ export class FreightIndexer {
       } catch (err: unknown) {
         errors.push(
           `Freight folder ${folder.label || folder.folderId}: ${toErrorMessage(
-            err,
-          )}`,
+            err
+          )}`
         );
       }
     }
@@ -76,11 +76,11 @@ export class FreightIndexer {
     if (allFileParts.length > 0) {
       try {
         console.log(
-          `Extracting freight records from ${allFileParts.length} file(s)...`,
+          `Extracting freight records from ${allFileParts.length} file(s)...`
         );
         const extracted = await this.extractBatch(gemsService, allFileParts);
         const filePartMap = new Map(
-          allFileParts.map((fp) => [fp.file.name, fp.folderId]),
+          allFileParts.map((fp) => [fp.file.name, fp.folderId])
         );
 
         let accepted = 0;
@@ -105,7 +105,7 @@ export class FreightIndexer {
 
         if (rejected > 0) {
           console.log(
-            `Freight validity filter: ${accepted} accepted, ${rejected} rejected out of ${extracted.length}`,
+            `Freight validity filter: ${accepted} accepted, ${rejected} rejected out of ${extracted.length}`
           );
         }
       } catch (err: unknown) {
@@ -126,7 +126,7 @@ export class FreightIndexer {
         await driveConnector.uploadFile(
           configFolderId,
           "freight_index.csv",
-          csvBuffer,
+          csvBuffer
         );
       }
     } catch (err: unknown) {
@@ -168,7 +168,7 @@ export class FreightIndexer {
     if (lastCompleteItem > 0) {
       try {
         const parsed = JSON.parse(
-          text.substring(0, lastCompleteItem + 1) + "]",
+          text.substring(0, lastCompleteItem + 1) + "]"
         );
         return Array.isArray(parsed) ? parsed : [parsed];
       } catch {
@@ -180,7 +180,7 @@ export class FreightIndexer {
 
   private async extractFromFile(
     gemsService: GemsService,
-    entry: FilePart,
+    entry: FilePart
   ): Promise<FreightRecord[]> {
     const response = await gemsService.generate({
       question:
@@ -208,14 +208,14 @@ export class FreightIndexer {
       const recovered = this.recoverTruncatedJson(rawText) as FreightRecord[];
       if (recovered.length > 0) {
         console.log(
-          `Freight: recovered ${recovered.length} records from truncated response for "${entry.file.name}"`,
+          `Freight: recovered ${recovered.length} records from truncated response for "${entry.file.name}"`
         );
       }
       records = recovered;
     }
 
     console.log(
-      `Freight: extracted ${records.length} records from "${entry.file.name}"`,
+      `Freight: extracted ${records.length} records from "${entry.file.name}"`
     );
 
     return records.map((r) => ({
@@ -229,7 +229,7 @@ export class FreightIndexer {
 
   private async extractBatch(
     gemsService: GemsService,
-    files: FilePart[],
+    files: FilePart[]
   ): Promise<FreightRecord[]> {
     const allRecords: FreightRecord[] = [];
     for (const entry of files) {
@@ -239,8 +239,8 @@ export class FreightIndexer {
       } catch (err: unknown) {
         console.error(
           `Freight extraction failed for "${entry.file.name}": ${toErrorMessage(
-            err,
-          )}`,
+            err
+          )}`
         );
       }
     }

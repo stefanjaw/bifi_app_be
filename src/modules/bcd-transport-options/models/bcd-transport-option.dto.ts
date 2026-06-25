@@ -32,7 +32,7 @@ export class BCDTransportOptionDTO {
 }
 
 export class UpdateBCDTransportOptionDTO extends PartialType(
-  BCDTransportOptionDTO,
+  BCDTransportOptionDTO
 ) {
   @IsMongoId()
   _id!: string;

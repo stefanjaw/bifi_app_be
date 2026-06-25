@@ -1,7 +1,11 @@
 import { BaseRoutes } from "../../../system";
 import { authorizeMiddleware, validateBodyMiddleware } from "../../../system";
 import { PurchaseOrderController } from "../controllers/purchase-order-controller";
-import { PurchaseOrderDTO, UpdatePurchaseOrderDTO, UpdatePurchaseOrderStatusDTO } from "../models/purchase-order.dto";
+import {
+  PurchaseOrderDTO,
+  UpdatePurchaseOrderDTO,
+  UpdatePurchaseOrderStatusDTO,
+} from "../models/purchase-order.dto";
 import { PurchaseOrderDocument } from "../models/purchase-order.model";
 
 const purchaseOrderController = new PurchaseOrderController();
@@ -26,7 +30,7 @@ export class PurchaseOrderRouter extends BaseRoutes<PurchaseOrderDocument> {
     this.router.get(
       `${this.endpoint}/:id/pdf`,
       authorizeMiddleware("purchases/orders", "read"),
-      purchaseOrderController.exportPdf,
+      purchaseOrderController.exportPdf
     );
   }
 

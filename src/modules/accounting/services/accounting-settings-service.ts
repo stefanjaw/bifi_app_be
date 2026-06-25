@@ -1,5 +1,8 @@
 import { BaseService } from "../../../system";
-import { accountingSettingsModel, AccountingSettingsDocument } from "../models/accounting-settings.model";
+import {
+  accountingSettingsModel,
+  AccountingSettingsDocument,
+} from "../models/accounting-settings.model";
 import { AccountingSettingsDTO } from "../models/accounting-settings.dto";
 
 export class AccountingSettingsService extends BaseService<AccountingSettingsDocument> {
@@ -14,7 +17,9 @@ export class AccountingSettingsService extends BaseService<AccountingSettingsDoc
     return model.findOne();
   }
 
-  async upsertSettings(data: AccountingSettingsDTO): Promise<AccountingSettingsDocument> {
+  async upsertSettings(
+    data: AccountingSettingsDTO
+  ): Promise<AccountingSettingsDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const existing = await model.findOne();
     if (existing) {

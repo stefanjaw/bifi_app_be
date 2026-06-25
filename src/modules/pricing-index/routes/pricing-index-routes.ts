@@ -23,38 +23,38 @@ export class PricingIndexRouter extends BaseRoutes<CatalogCacheDocument> {
     this.router.get(
       "/pricing-index/status",
       authorizeMiddleware("pricing-index", "read"),
-      pricingIndexController.getStatus,
+      pricingIndexController.getStatus
     );
 
     this.router.get(
       "/pricing-index/text-search",
       authorizeMiddleware("pricing-index", "read"),
-      pricingIndexController.textSearch,
+      pricingIndexController.textSearch
     );
 
     this.router.get(
       "/pricing-index",
       authorizeMiddleware("pricing-index", "read"),
-      pricingIndexController.get,
+      pricingIndexController.get
     );
 
     this.router.post(
       "/pricing-index/trigger",
       authorizeMiddleware("pricing-index", "create"),
       validateBodyMiddleware(PricingIndexTriggerDTO),
-      pricingIndexController.triggerIndexing,
+      pricingIndexController.triggerIndexing
     );
 
     this.router.post(
       "/pricing-index/schedule/start",
       authorizeMiddleware("pricing-index", "create"),
-      pricingIndexController.startSchedule,
+      pricingIndexController.startSchedule
     );
 
     this.router.post(
       "/pricing-index/schedule/stop",
       authorizeMiddleware("pricing-index", "create"),
-      pricingIndexController.stopSchedule,
+      pricingIndexController.stopSchedule
     );
   }
 }

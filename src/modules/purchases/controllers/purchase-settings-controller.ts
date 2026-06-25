@@ -9,19 +9,31 @@ export class PurchaseSettingsController extends BaseController<PurchaseSettingsD
     super({ service: new PurchaseSettingsService() });
   }
 
-  protected async getSettingsHandler(req: Request, res: Response, next: NextFunction) {
+  protected async getSettingsHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const settings = await (this.service as PurchaseSettingsService).getSettings();
+      const settings = await (
+        this.service as PurchaseSettingsService
+      ).getSettings();
       this.sendData(res, settings ?? {});
     } catch (error) {
       next(error);
     }
   }
 
-  protected async upsertSettingsHandler(req: Request, res: Response, next: NextFunction) {
+  protected async upsertSettingsHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const data = req.body as PurchaseSettingsDTO;
-      const result = await (this.service as PurchaseSettingsService).upsertSettings(data);
+      const result = await (
+        this.service as PurchaseSettingsService
+      ).upsertSettings(data);
       this.sendData(res, result);
     } catch (error) {
       next(error);

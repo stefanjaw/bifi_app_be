@@ -20,7 +20,9 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
     // Portable provider only. See search-provider.ts for the portability
     // constraint (no Atlas $search). Swapping engines = new implementation.
     this.provider = new MongoTextSearchProvider(async (filter) => {
-      const model = this.connectionManager.bindModelToDb(searchDestinationModel);
+      const model = this.connectionManager.bindModelToDb(
+        searchDestinationModel
+      );
       return (await model
         .find(filter)
         .lean()) as unknown as SearchDestinationDocument[];
@@ -72,9 +74,9 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
       if (!dest || !dest.key) continue;
       incomingKeys.add(dest.key);
 
-      const existing = await model.findOne({ key: dest.key }).session(
-        session ?? null
-      );
+      const existing = await model
+        .findOne({ key: dest.key })
+        .session(session ?? null);
 
       if (!existing) {
         await model.create(

@@ -48,7 +48,14 @@ const purchaseOrderSchema = new Schema(
     },
     status: {
       type: String,
-      enum: ["draft", "confirmed", "sent", "partially_received", "received", "cancelled"],
+      enum: [
+        "draft",
+        "confirmed",
+        "sent",
+        "partially_received",
+        "received",
+        "cancelled",
+      ],
       default: "draft",
     },
     issueDate: { type: Date },
@@ -77,9 +84,9 @@ import { PurchaseOrderDocument } from "@mongodb-types";
 
 export { PurchaseOrderDocument };
 
-const purchaseOrderModel = mongoose.model<PurchaseOrderDocument, PaginateModel<PurchaseOrderDocument>>(
-  "PurchaseOrder",
-  purchaseOrderSchema
-);
+const purchaseOrderModel = mongoose.model<
+  PurchaseOrderDocument,
+  PaginateModel<PurchaseOrderDocument>
+>("PurchaseOrder", purchaseOrderSchema);
 
 export { purchaseOrderModel };

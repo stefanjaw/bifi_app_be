@@ -8,7 +8,7 @@ import { CrEinvoiceSettingsDocument } from "../settings/models/cr-einvoice-setti
 export class CrEinvoicePdfService {
   async generateBase64(
     entry: any,
-    settings: CrEinvoiceSettingsDocument,
+    settings: CrEinvoiceSettingsDocument
   ): Promise<string> {
     const html = this.buildHtml(entry, settings);
 
@@ -66,14 +66,14 @@ export class CrEinvoicePdfService {
     const fecha =
       entry.crFechaEmision ?? entry.date
         ? new Date(entry.crFechaEmision ?? entry.date).toLocaleDateString(
-            "es-CR",
+            "es-CR"
           )
         : "";
 
     const currency = (entry.currencyId as any)?.code ?? "CRC";
 
     const productLines = (entry.lines ?? []).filter(
-      (l: any) => !l.lineType || l.lineType === "product",
+      (l: any) => !l.lineType || l.lineType === "product"
     );
 
     let lineRows = "";
@@ -82,7 +82,7 @@ export class CrEinvoicePdfService {
       const price = line.unitPrice ?? 0;
       const sub = qty * price;
       const taxes: any[] = (line.taxIds ?? []).filter(
-        (t: any) => t && typeof t === "object" && t._id && t.crCodigo,
+        (t: any) => t && typeof t === "object" && t._id && t.crCodigo
       );
       const firstTax = taxes[0] ?? null;
       const tarifa = firstTax
@@ -187,13 +187,13 @@ export class CrEinvoicePdfService {
     <div class="totals">
       <table>
         <tr><td>SubTotal</td><td class="num">${currency} ${subTotal.toFixed(
-      5,
+      5
     )}</td></tr>
         <tr><td>Impuestos</td><td class="num">${currency} ${taxTotal.toFixed(
-      5,
+      5
     )}</td></tr>
         <tr class="grand"><td>TOTAL</td><td class="num">${currency} ${grandTotal.toFixed(
-      5,
+      5
     )}</td></tr>
       </table>
     </div>

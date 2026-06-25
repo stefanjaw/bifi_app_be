@@ -1,4 +1,8 @@
-import { BaseService } from "../../../system";
+import {
+  BaseService,
+  NotFoundException,
+  ValidationException,
+} from "../../../system";
 import {
   emailCampaignModel,
   EmailCampaignDocument,
@@ -103,9 +107,7 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
     campaignId: string,
     toEmail: string
   ): Promise<{ success: boolean; error?: string }> {
-    const campaignModelBound = this.connectionManager.bindModelToDb(
-      this.model
-    );
+    const campaignModelBound = this.connectionManager.bindModelToDb(this.model);
     const campaign = await campaignModelBound.findById(campaignId);
     if (!campaign) return { success: false, error: "Campaign not found." };
 
@@ -144,25 +146,24 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
    * records per-recipient events.
    */
   async sendNow(campaignId: string): Promise<SendSummary> {
-    const campaignModelBound = this.connectionManager.bindModelToDb(
-      this.model
-    );
+    const campaignModelBound = this.connectionManager.bindModelToDb(this.model);
     const subModelBound = this.connectionManager.bindModelToDb(subscriberModel);
-    const eventModelBound = this.connectionManager.bindModelToDb(
-      emailEventModel
-    );
+    const eventModelBound =
+      this.connectionManager.bindModelToDb(emailEventModel);
 
     const campaign = await campaignModelBound.findById(campaignId);
-    if (!campaign) throw new Error("Campaign not found.");
+    if (!campaign) throw new NotFoundException("Campaign not found.");
     if (campaign.status === "sending" || campaign.status === "sent")
-      throw new Error(`Campaign is already ${campaign.status}.`);
+      throw new ValidationException(`Campaign is already ${campaign.status}.`);
 
     const settings = await this.settingsService.getSettings();
-    if (!settings) throw new Error("Email settings are not configured.");
+    if (!settings)
+      throw new NotFoundException("Email settings are not configured.");
 
     const fromEmail = campaign.fromEmail || settings.fromEmail || "";
     const fromName = campaign.fromName || settings.fromName || "";
-    if (!fromEmail) throw new Error("A from email address is required.");
+    if (!fromEmail)
+      throw new ValidationException("A from email address is required.");
 
     const sender = createSender(settings);
     const baseUrl = this.resolveBaseUrl(settings);
@@ -254,9 +255,7 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
    * interval; failures are swallowed per-campaign so the loop never crashes.
    */
   async processScheduled(): Promise<void> {
-    const campaignModelBound = this.connectionManager.bindModelToDb(
-      this.model
-    );
+    const campaignModelBound = this.connectionManager.bindModelToDb(this.model);
     const due = await campaignModelBound.find({
       status: "scheduled",
       scheduledAt: { $lte: new Date() },

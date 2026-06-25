@@ -18,16 +18,12 @@ export class GoogleDriveConnectorService {
       const credentials = JSON.parse(serviceAccountKeyJson);
       const auth = new google.auth.GoogleAuth({
         credentials,
-        scopes: [
-          "https://www.googleapis.com/auth/drive",
-        ],
+        scopes: ["https://www.googleapis.com/auth/drive"],
       });
       this.drive = google.drive({ version: "v3", auth });
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
-      throw new ValidationException(
-        `Invalid service account key: ${msg}`
-      );
+      throw new ValidationException(`Invalid service account key: ${msg}`);
     }
   }
 
@@ -138,7 +134,7 @@ export class GoogleDriveConnectorService {
     if (!driveId) {
       throw new ValidationException(
         "Config folder must be inside a Shared Drive. Service accounts do not have personal storage quota. " +
-        "Please configure a folder that lives within a Shared Drive in Pricing Settings."
+          "Please configure a folder that lives within a Shared Drive in Pricing Settings."
       );
     }
 

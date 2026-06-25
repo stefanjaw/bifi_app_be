@@ -1,4 +1,10 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import {
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from "class-validator";
 import { PartialType } from "../../../system";
 import { AccountType } from "./account.model";
 

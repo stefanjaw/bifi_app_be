@@ -12,7 +12,7 @@ export class CustomsTariffService extends BaseService<CustomsTariffDocument> {
   async lookupByParts(
     chapter: string,
     heading: string,
-    subheading: string,
+    subheading: string
   ): Promise<CustomsTariffDocument | null> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const result = await model.findOne({ chapter, heading, subheading });

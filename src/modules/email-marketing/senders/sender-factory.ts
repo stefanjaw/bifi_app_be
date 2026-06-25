@@ -18,9 +18,7 @@ export function createSender(settings: EmailSettingsDocument): EmailSender {
     }
     case "mailgun": {
       if (!settings.mailgunApiKey || !settings.mailgunDomain)
-        throw new EmailSenderError(
-          "Mailgun API key and domain are required."
-        );
+        throw new EmailSenderError("Mailgun API key and domain are required.");
       return new MailgunSender(
         settings.mailgunApiKey,
         settings.mailgunDomain,

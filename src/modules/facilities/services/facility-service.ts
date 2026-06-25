@@ -31,7 +31,7 @@ export class FacilityService extends BaseService<FacilityDocument> {
    */
   override async create(
     data: FacilityDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<FacilityDocument> {
     return runTransaction<FacilityDocument>(session, async (newSession) => {
       // create facility first
@@ -68,7 +68,7 @@ export class FacilityService extends BaseService<FacilityDocument> {
    */
   override async update(
     data: UpdateFacilityDTO,
-    session?: ClientSession | undefined,
+    session?: ClientSession | undefined
   ): Promise<FacilityDocument> {
     return runTransaction<FacilityDocument>(session, async (newSession) => {
       // create, update rooms if they exist in the data

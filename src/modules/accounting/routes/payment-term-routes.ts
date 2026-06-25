@@ -1,7 +1,10 @@
 import { BaseRoutes } from "../../../system";
 import { PaymentTermDocument } from "../models/payment-term.model";
 import { PaymentTermController } from "../controllers/payment-term-controller";
-import { PaymentTermDTO, UpdatePaymentTermDTO } from "../models/payment-term.dto";
+import {
+  PaymentTermDTO,
+  UpdatePaymentTermDTO,
+} from "../models/payment-term.dto";
 
 const paymentTermController = new PaymentTermController();
 

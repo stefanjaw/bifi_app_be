@@ -20,7 +20,7 @@ export class CountryController extends BaseController<CountryDocument> {
   protected async createPopulateCountriesHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) {
     try {
       const records = await countryService.populateCountries(undefined);
@@ -34,7 +34,7 @@ export class CountryController extends BaseController<CountryDocument> {
   createPopulateCountries = async (
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) => {
     await this.createPopulateCountriesHandler(req, res, next);
   };

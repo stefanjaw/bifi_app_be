@@ -53,11 +53,7 @@ export class GemsController {
     }
   }
 
-  async generateStreamHandler(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  async generateStreamHandler(req: Request, res: Response, next: NextFunction) {
     try {
       const gemsService = await this.resolveGemsService();
       const body = { ...req.body };

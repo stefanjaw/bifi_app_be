@@ -133,7 +133,7 @@ const taskSchema = new Schema(
     timestamps: true,
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
-  },
+  }
 );
 
 // taskSchema.virtual("childIds", {
@@ -151,7 +151,7 @@ taskSchema.plugin(autopopulate);
 
 const taskModel = mongoose.model<TaskDocument, PaginateModel<TaskDocument>>(
   "Task",
-  taskSchema,
+  taskSchema
 );
 
 export { taskModel };

@@ -54,8 +54,11 @@ export class NotificationService extends BaseService<NotificationDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
 
     // `total` = unseen count → drives the bell badge
-    const unseen = await model
-      .countDocuments({ userId, seen: false, active: true });
+    const unseen = await model.countDocuments({
+      userId,
+      seen: false,
+      active: true,
+    });
 
     // `byModule` = unread (read:false) count per module → drives tile badges
     const unread = await model

@@ -63,8 +63,7 @@ export class EmailCampaignService extends BaseService<EmailCampaignDocument> {
       totals.unsubscribed += s.unsubscribed || 0;
     }
 
-    const openRate =
-      totals.sent > 0 ? (totals.opened / totals.sent) * 100 : 0;
+    const openRate = totals.sent > 0 ? (totals.opened / totals.sent) * 100 : 0;
     const clickRate =
       totals.sent > 0 ? (totals.clicked / totals.sent) * 100 : 0;
 

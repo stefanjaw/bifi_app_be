@@ -58,7 +58,7 @@ const bcdCpcSchema = new Schema(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 bcdCpcSchema.plugin(paginate);

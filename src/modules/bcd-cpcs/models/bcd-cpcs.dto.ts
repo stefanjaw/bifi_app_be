@@ -33,16 +33,16 @@ export class BCDCpcDutyRateDTO {
   @Transform(({ value }) =>
     typeof value === "string" && value.trim() !== "" && !isNaN(Number(value))
       ? Number(value)
-      : value,
+      : value
   )
   @ValidateIf(
-    (_, value) => typeof value === "number" || _.type === "MULTIPLIER",
+    (_, value) => typeof value === "number" || _.type === "MULTIPLIER"
   )
   @IsNumber({ allowNaN: false, allowInfinity: false, maxDecimalPlaces: 4 })
   @Min(0)
   @Max(1)
   @ValidateIf(
-    (_, value) => typeof value === "string" || _.type === "SPECIFICATION",
+    (_, value) => typeof value === "string" || _.type === "SPECIFICATION"
   )
   @IsString()
   value!: number | string;
@@ -60,7 +60,7 @@ export class BCDCpcDTO {
   @IsOptional()
   @IsMongoId({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value,
+    typeof value === "string" ? JSON.parse(value) : value
   )
   bcdTypes?: string[];
 
@@ -69,7 +69,9 @@ export class BCDCpcDTO {
   @Type(() => BCDCpcTaxDTO)
   @IsOptional()
   @Transform(({ value }) =>
-    (typeof value === "string" ? JSON.parse(value) : value).map((tax: any) => plainToInstance(BCDCpcTaxDTO, tax)),
+    (typeof value === "string" ? JSON.parse(value) : value).map((tax: any) =>
+      plainToInstance(BCDCpcTaxDTO, tax)
+    )
   )
   tax?: BCDCpcTaxDTO[];
 
@@ -77,7 +79,10 @@ export class BCDCpcDTO {
   @IsObject()
   @Type(() => BCDCpcDutyRateDTO)
   @Transform(({ value }) =>
-    plainToInstance(BCDCpcDutyRateDTO, typeof value === "string" ? JSON.parse(value) : value),
+    plainToInstance(
+      BCDCpcDutyRateDTO,
+      typeof value === "string" ? JSON.parse(value) : value
+    )
   )
   @IsOptional()
   dutyRate?: BCDCpcDutyRateDTO;

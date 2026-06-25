@@ -24,7 +24,7 @@ export class BaseController<T> {
   protected async getByIdHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) {
     try {
       const id = req.params.id;
@@ -63,7 +63,7 @@ export class BaseController<T> {
         paginationOptions,
         orderBy,
         count,
-        undefined,
+        undefined
       );
 
       this.sendData(res, records);
@@ -87,7 +87,7 @@ export class BaseController<T> {
   protected async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) {
     try {
       const body = { ...req.body };
@@ -111,7 +111,7 @@ export class BaseController<T> {
   protected async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) {
     try {
       const body = { ...req.body };
@@ -136,7 +136,7 @@ export class BaseController<T> {
   protected async deleteHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) {
     try {
       const _id = req.query._id;
@@ -162,7 +162,7 @@ export class BaseController<T> {
   protected async exportCSVHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) {
     try {
       const data = await this.service.exportCSV();
@@ -190,7 +190,7 @@ export class BaseController<T> {
   protected async importCSVHandler(
     req: Request,
     res: Response,
-    next: NextFunction,
+    next: NextFunction
   ) {
     try {
       const records = await this.service.importCSV(req.body, undefined);

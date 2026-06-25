@@ -7,7 +7,9 @@ const invoiceService = new InvoiceService();
 
 export class InvoiceController extends BaseController<JournalEntryDocument> {
   constructor() {
-    super({ service: invoiceService as unknown as BaseService<JournalEntryDocument> });
+    super({
+      service: invoiceService as unknown as BaseService<JournalEntryDocument>,
+    });
   }
 
   getPayments = async (req: Request, res: Response, next: NextFunction) => {
@@ -21,7 +23,10 @@ export class InvoiceController extends BaseController<JournalEntryDocument> {
 
   registerPayment = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await invoiceService.registerPayment(req.params.id, req.body);
+      const result = await invoiceService.registerPayment(
+        req.params.id,
+        req.body
+      );
       this.sendData(res, result);
     } catch (error: any) {
       next(error);
@@ -45,5 +50,4 @@ export class InvoiceController extends BaseController<JournalEntryDocument> {
       next(error);
     }
   };
-
 }

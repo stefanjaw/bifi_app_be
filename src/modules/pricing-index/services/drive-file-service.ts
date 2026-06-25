@@ -40,7 +40,7 @@ export class DriveFileService {
     const csvString = this.xlsxBufferToCsvString(buffer);
     return this.bufferToGenerativePart(
       Buffer.from(csvString, "utf-8"),
-      "text/csv",
+      "text/csv"
     );
   }
 
@@ -55,7 +55,7 @@ export class DriveFileService {
 
   private async downloadFile(
     file: DriveFile,
-    driveConnector: GoogleDriveConnectorService,
+    driveConnector: GoogleDriveConnectorService
   ): Promise<Buffer> {
     if (file.mimeType === "application/vnd.google-apps.spreadsheet") {
       return driveConnector.exportGoogleSheet(file.id);
@@ -66,14 +66,14 @@ export class DriveFileService {
   filterModifiedFiles(files: DriveFile[], lastIndexed?: Date): DriveFile[] {
     if (!lastIndexed) return files;
     return files.filter(
-      (f) => !f.modifiedTime || new Date(f.modifiedTime) > lastIndexed,
+      (f) => !f.modifiedTime || new Date(f.modifiedTime) > lastIndexed
     );
   }
 
   async downloadFolderFiles(
     folderId: string,
     driveConnector: GoogleDriveConnectorService,
-    lastIndexed?: Date,
+    lastIndexed?: Date
   ): Promise<{ files: FilePart[]; errors: string[] }> {
     const allFiles = await driveConnector.listFilesInFolder(folderId);
     const candidates = this.filterModifiedFiles(allFiles, lastIndexed);

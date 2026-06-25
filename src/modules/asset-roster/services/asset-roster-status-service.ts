@@ -27,7 +27,7 @@ export class AssetRosterStatusService {
    */
   async updateAssetRosterStatus(
     assetRosterId: string | Types.ObjectId,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ) {
     return await runTransaction<AssetRosterDocument>(
       session,
@@ -51,12 +51,12 @@ export class AssetRosterStatusService {
 
         // check if service is available
         const service = maintenances.find(
-          (m) => m.active && m.type === "service",
+          (m) => m.active && m.type === "service"
         );
 
         // check if preventive maintenance
         const preventive = maintenances.find(
-          (m) => m.active && m.type === "preventive-maintenance",
+          (m) => m.active && m.type === "preventive-maintenance"
         );
 
         if (service) {
@@ -72,9 +72,9 @@ export class AssetRosterStatusService {
           {
             status: assetRosterStatus,
           },
-          { session: newSession, new: true },
+          { session: newSession, new: true }
         )) as AssetRosterDocument;
-      },
+      }
     );
   }
 
@@ -87,7 +87,7 @@ export class AssetRosterStatusService {
    */
   async assetRosterHasActiveCommissioning(
     assetRosterId: string,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ) {
     return await runTransaction<boolean>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(assetRosterModel);
@@ -112,7 +112,7 @@ export class AssetRosterStatusService {
    */
   async updateNextAssetRosterMaintenanceDates(
     assetRosterId: string | Types.ObjectId,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ) {
     return await runTransaction<AssetRosterDocument>(
       session,
@@ -128,7 +128,7 @@ export class AssetRosterStatusService {
           throw new ValidationException("Asset Roster not found");
         if (assetRoster.assetCommission?.outcome !== "pass")
           throw new ValidationException(
-            "Asset Roster not commissioned, must be commissioned to update maintenance dates",
+            "Asset Roster not commissioned, must be commissioned to update maintenance dates"
           );
 
         const window = assetRoster.maintenanceWindowIds?.[0];
@@ -142,23 +142,23 @@ export class AssetRosterStatusService {
         // check if the current date of finalizing the PM is overdue
         const isOverdue = await this.assetRosterIsOverdueForMaintenance(
           assetRosterId,
-          newSession,
+          newSession
         );
 
         // calculate min and max maintenance dates and curr maintenance date
         // if its overdue, use the current date
         const maintenanceDate = dayjs(
-          isOverdue ? Date.now() : assetRoster.maintenanceDate,
+          isOverdue ? Date.now() : assetRoster.maintenanceDate
         ).add(count, unit);
 
         // calculate min and max maintenance dates
         const minMaintenanceDate = dayjs(maintenanceDate).subtract(
           window.daysBefore,
-          "day",
+          "day"
         );
         const maxMaintenanceDate = dayjs(maintenanceDate).add(
           window.daysAfter,
-          "day",
+          "day"
         );
 
         return (await model.findByIdAndUpdate(
@@ -168,9 +168,9 @@ export class AssetRosterStatusService {
             maxMaintenanceDate: maxMaintenanceDate.toDate(),
             maintenanceDate: maintenanceDate.toDate(),
           },
-          { session: newSession, new: true },
+          { session: newSession, new: true }
         )) as AssetRosterDocument;
-      },
+      }
     );
   }
 
@@ -187,7 +187,7 @@ export class AssetRosterStatusService {
    */
   async updateAssetRosterMaintenanceDates(
     assetRosterId: string | Types.ObjectId,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ) {
     return await runTransaction<AssetRosterDocument>(
       session,
@@ -203,7 +203,7 @@ export class AssetRosterStatusService {
           throw new ValidationException("Asset Roster not found");
         if (assetRoster.assetCommission?.outcome !== "pass")
           throw new ValidationException(
-            "Asset Roster not commissioned, must be commissioned to update maintenance dates",
+            "Asset Roster not commissioned, must be commissioned to update maintenance dates"
           );
 
         const window = assetRoster.maintenanceWindowIds?.[0];
@@ -213,11 +213,11 @@ export class AssetRosterStatusService {
 
         const minMaintenanceDate = dayjs(assetRoster.maintenanceDate).subtract(
           window.daysBefore,
-          "day",
+          "day"
         );
         const maxMaintenanceDate = dayjs(assetRoster.maintenanceDate).add(
           window.daysAfter,
-          "day",
+          "day"
         );
 
         return (await model.findByIdAndUpdate(
@@ -226,9 +226,9 @@ export class AssetRosterStatusService {
             minMaintenanceDate: minMaintenanceDate.toDate(),
             maxMaintenanceDate: maxMaintenanceDate.toDate(),
           },
-          { session: newSession, new: true },
+          { session: newSession, new: true }
         )) as AssetRosterDocument;
-      },
+      }
     );
   }
 
@@ -241,7 +241,7 @@ export class AssetRosterStatusService {
    */
   async assetRosterIsDueForMaintenance(
     assetRosterId: string | Types.ObjectId,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ): Promise<boolean> {
     return await runTransaction<boolean>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(assetRosterModel);
@@ -269,7 +269,7 @@ export class AssetRosterStatusService {
    */
   async assetRosterIsOverdueForMaintenance(
     assetRosterId: string | Types.ObjectId,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ): Promise<boolean> {
     return await runTransaction<boolean>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(assetRosterModel);
@@ -296,7 +296,7 @@ export class AssetRosterStatusService {
    */
   async assetRosterIsBeforeDueForMaintenance(
     assetRosterId: string | Types.ObjectId,
-    session: ClientSession | undefined,
+    session: ClientSession | undefined
   ): Promise<boolean> {
     return await runTransaction<boolean>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(assetRosterModel);
