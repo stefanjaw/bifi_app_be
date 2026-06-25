@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y git \
     && rm -rf /var/lib/apt/lists/*
 
 # copy files
-COPY bifi_app_be/package*.json ./bifi_app_be/
+COPY . .
 
 # update submodule
 RUN git submodule update --progress --init --recursive
@@ -19,10 +19,8 @@ RUN git -C ./bifi_app_be checkout nodev22
 # install dependencies
 RUN npm --prefix ./bifi_app_be install
 
-# copy files
-COPY . .
-
 # build
+ENV NODE_OPTIONS=--max_old_space_size=4096
 RUN npm --prefix ./bifi_app_be run build
 
 # =========================
