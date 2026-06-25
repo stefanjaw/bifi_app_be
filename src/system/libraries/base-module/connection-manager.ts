@@ -6,6 +6,10 @@ import { InternalServerException } from "../exceptions/service-exception";
 export class ConnectionManager {
   private static dbCache: Record<string, mongoose.Connection> = {};
 
+  /**
+   * Returns the default database name from the root mongoose connection.
+   * @returns The default database name string, or undefined if no connection exists.
+   */
   getDefaultDBName = () => {
     return mongoose.connection.db?.databaseName!;
   };

@@ -160,6 +160,11 @@ Each l10n module lives in `src/modules/l10n_<locale>/` and extends a core module
   - `POST /:id/submit-acceptance` — Submit MA/MAP/MR message
   - `POST /hacienda-callback` — Public webhook (no auth)
 
+## Code documentation
+- Every exported function, method, and class must have a full JSDoc comment describing its purpose, `@param` (with type and description), and `@returns` (with type and description) where applicable.
+- When editing existing code, update or add JSDoc to any undocumented function you touch.
+- Keep documentation in sync with the code — outdated docs are worse than no docs.
+
 ## Key quirks
 - **No tests, no linter, no formatter** configured in the project
 - `mongoose.gen.ts` (12k+ lines) is **checked into git** — update it after model changes via `npm run generate:types`

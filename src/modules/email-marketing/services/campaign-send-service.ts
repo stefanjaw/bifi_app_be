@@ -144,6 +144,8 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
   /**
    * Sends a campaign to all subscribed members of its lists. Updates stats and
    * records per-recipient events.
+   * @param campaignId - The ID of the campaign to send.
+   * @returns A promise resolving to a SendSummary with success/error info.
    */
   async sendNow(campaignId: string): Promise<SendSummary> {
     const campaignModelBound = this.connectionManager.bindModelToDb(this.model);

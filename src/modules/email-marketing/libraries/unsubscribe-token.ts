@@ -26,6 +26,8 @@ export interface UnsubscribePayload {
 
 /**
  * Creates a signed, URL-safe unsubscribe token (payload.signature).
+ * @param payload - The unsubscribe payload containing subscriberId and optional campaignId.
+ * @returns The URL-safe token string in format "{payload}.{signature}".
  */
 export function createUnsubscribeToken(payload: UnsubscribePayload): string {
   const json = JSON.stringify(payload);
@@ -36,6 +38,8 @@ export function createUnsubscribeToken(payload: UnsubscribePayload): string {
 
 /**
  * Verifies an unsubscribe token and returns its payload, or null when invalid.
+ * @param token - The URL-safe unsubscribe token string.
+ * @returns The parsed UnsubscribePayload if valid, or null if tampered/expired.
  */
 export function verifyUnsubscribeToken(
   token: string

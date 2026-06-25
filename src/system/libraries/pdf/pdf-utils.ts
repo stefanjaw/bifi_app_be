@@ -4,6 +4,11 @@ import { InternalServerException } from "../exceptions/service-exception";
 
 let _resolvedPath: string | null = null;
 
+/**
+ * Resolves the Chromium executable path for Puppeteer.
+ * Checks (in order): @sparticuz/chromium, PUPPETEER_EXECUTABLE_PATH env, CHROMIUM_PATH env, PATH lookup.
+ * @returns The resolved filesystem path to the Chromium executable.
+ */
 export async function resolveChromiumPath(): Promise<string> {
   try {
     const chromium = require("@sparticuz/chromium");

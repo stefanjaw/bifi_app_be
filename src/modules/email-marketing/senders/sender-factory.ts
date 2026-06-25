@@ -7,6 +7,13 @@ import { EmailSettingsDocument } from "../models/email-settings.model";
 
 export class EmailSenderError extends Error {}
 
+/**
+ * Creates the appropriate EmailSender implementation based on the configured provider.
+ * Supported providers: resend, mailgun, ses, sendgrid.
+ * @param settings - The email settings document containing provider config and API keys.
+ * @returns An EmailSender instance for the configured provider.
+ * @throws EmailSenderError if settings are incomplete or provider is unknown.
+ */
 export function createSender(settings: EmailSettingsDocument): EmailSender {
   const provider = settings.provider || "resend";
 

@@ -20,6 +20,7 @@ export class FileValidatorService {
 
   /**
    * Validates if the uploaded file is a valid PDF
+   * @param file - The uploaded file to validate.
    * @throws ValidationException if the file is not a valid PDF
    */
   validatePDFFile(file: Express.Multer.File): void {

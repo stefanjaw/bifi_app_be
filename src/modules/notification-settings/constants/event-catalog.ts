@@ -122,6 +122,7 @@ export const EVENT_CATALOG: CatalogEvent[] = [
   },
 ];
 
+/** Returns a deep copy of the default event configurations (type, enabled=true, default recipients). Useful for initializing per-user notification settings. */
 export function GET_DEFAULT_EVENTS(): Array<{
   type: string;
   enabled: boolean;

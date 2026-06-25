@@ -6,6 +6,10 @@ import { NextFunction, Request, Response } from "express";
 export class BaseController<T> {
   service!: BaseService<T>;
 
+  /**
+   * Creates a new BaseController instance.
+   * @param params - Object containing the service instance to use.
+   */
   constructor(params: Pick<BaseController<T>, "service">) {
     Object.assign(this, params);
   }
@@ -72,6 +76,11 @@ export class BaseController<T> {
     }
   }
 
+  /**
+   * Normalizes a URL-encoded string by decoding URI components and replacing + with spaces.
+   * @param value - The URL-encoded string to normalize.
+   * @returns The decoded and normalized string.
+   */
   protected normalize(value: string) {
     return decodeURIComponent(value.replace(/\+/g, " "));
   }
@@ -202,42 +211,83 @@ export class BaseController<T> {
   //#endregion
 
   //#region Public Methods That Express Will Use
+  /**
+   * Express handler — delegates to getByIdHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   getById = async (req: Request, res: Response, next: NextFunction) => {
     await this.getByIdHandler(req, res, next);
   };
 
+  /**
+   * Express handler — delegates to getHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   get = async (req: Request, res: Response, next: NextFunction) => {
     await this.getHandler(req, res, next);
   };
 
+  /**
+   * Express handler — delegates to createHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   create = async (req: Request, res: Response, next: NextFunction) => {
     await this.createHandler(req, res, next);
   };
 
+  /**
+   * Express handler — delegates to updateHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   update = async (req: Request, res: Response, next: NextFunction) => {
     await this.updateHandler(req, res, next);
   };
 
+  /**
+   * Express handler — delegates to deleteHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   delete = async (req: Request, res: Response, next: NextFunction) => {
     await this.deleteHandler(req, res, next);
   };
 
+  /**
+   * Express handler — delegates to exportCSVHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   exportCSV = async (req: Request, res: Response, next: NextFunction) => {
     await this.exportCSVHandler(req, res, next);
   };
 
+  /**
+   * Express handler — delegates to importCSVHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   importCSV = async (req: Request, res: Response, next: NextFunction) => {
     await this.importCSVHandler(req, res, next);
   };
   //#endregion
 
   /**
-   * Sends a successful HTTP response with the provided data.
-   *
-   * @param res - The express Response object used to send data back to the client.
+   * Sends a successful HTTP response with the provided data wrapped in a data key.
+   * @param res - The express Response object.
    * @param data - The data to be sent in the response body.
+   * @returns void
    */
-
   sendData(res: Response, data: any) {
     res.status(200).json(data);
   }

@@ -18,6 +18,11 @@ export class BaseRoutes<T> {
   protected upload = multer();
   protected resource!: string;
 
+  /**
+   * Creates a new BaseRoutes instance, derives the resource name from the endpoint,
+   * and registers all CRUD + CSV routes.
+   * @param params - Object defining controller, endpoint, DTO classes, and optional csvDtoClass.
+   */
   constructor(
     params: Pick<
       BaseRoutes<T>,
@@ -37,7 +42,11 @@ export class BaseRoutes<T> {
     this.initRoutes();
   }
 
-  protected initRoutes() {
+  /**
+   * Registers all standard routes on the internal router.
+   * Order: exportCSV → getById → get → post → importCSV → put → delete.
+   */
+  protected initRoutes(): void {
     this.initGetExportCSVRoute();
     this.initGetByIdRoute();
     this.initGetRoute();
@@ -47,16 +56,21 @@ export class BaseRoutes<T> {
     this.initDeleteRoute();
   }
 
+  /**
+   * Returns the internal Express Router instance with all registered routes.
+   * @returns The internal Express Router instance.
+   */
   get getRouter() {
     return this.router;
   }
 
   /**
-   * Initialize the GET /{endpoint}/export route.
+   * Initializes the GET /{endpoint}/export route.
    * This route returns a CSV file containing all records of the collection.
    * The `exportCSV` method of the controller is called to generate the CSV file.
+   * Middleware: authorizeMiddleware(`${this.resource}/export`, "read").
    */
-  protected initGetExportCSVRoute() {
+  protected initGetExportCSVRoute(): void {
     this.router.get(
       `${this.endpoint}/export`,
       authorizeMiddleware(`${this.resource}/export`, "read"),
@@ -64,7 +78,11 @@ export class BaseRoutes<T> {
     );
   }
 
-  protected initGetByIdRoute() {
+  /**
+   * Initializes the GET /{endpoint}/:id route.
+   * Middleware: authorizeMiddleware(this.resource, "read").
+   */
+  protected initGetByIdRoute(): void {
     this.router.get(
       `${this.endpoint}/:id`,
       authorizeMiddleware(this.resource, "read"),
@@ -72,7 +90,11 @@ export class BaseRoutes<T> {
     );
   }
 
-  protected initGetRoute() {
+  /**
+   * Initializes the GET /{endpoint} route.
+   * Middleware: authorizeMiddleware(this.resource, "read").
+   */
+  protected initGetRoute(): void {
     this.router.get(
       this.endpoint,
       authorizeMiddleware(this.resource, "read"),
@@ -80,7 +102,12 @@ export class BaseRoutes<T> {
     );
   }
 
-  protected initPostRoute() {
+  /**
+   * Initializes the POST /{endpoint} route.
+   * Accepts multipart uploads, validates the body against dtoCreateClass,
+   * then checks authorizeMiddleware(this.resource, "create").
+   */
+  protected initPostRoute(): void {
     this.router.post(
       this.endpoint,
       this.upload.any(),
@@ -91,14 +118,12 @@ export class BaseRoutes<T> {
   }
 
   /**
-   * Initialize the POST /{endpoint}/import route.
-   *
-   * This route expects a CSV file to be sent in the request body.
-   * The file is validated against the `csvDtoClass` if provided, otherwise
-   * it is validated against the `dtoCreateClass`.
-   * The `importCSV` method of the controller is called with the validated records.
+   * Initializes the POST /{endpoint}/import route.
+   * Expects a CSV file uploaded as multipart form data with field name "csv".
+   * Validates against csvDtoClass (or dtoCreateClass as fallback),
+   * then checks authorizeMiddleware(`${this.resource}/import`, "create").
    */
-  protected initPostImportCSV() {
+  protected initPostImportCSV(): void {
     this.router.post(
       `${this.endpoint}/import`,
       this.upload.single("csv"),
@@ -110,7 +135,12 @@ export class BaseRoutes<T> {
     );
   }
 
-  protected initPutRoute() {
+  /**
+   * Initializes the PUT /{endpoint} route.
+   * Accepts multipart uploads, validates the body against dtoUpdateClass,
+   * then checks authorizeMiddleware(this.resource, "update").
+   */
+  protected initPutRoute(): void {
     this.router.put(
       this.endpoint,
       this.upload.any(),
@@ -120,7 +150,11 @@ export class BaseRoutes<T> {
     );
   }
 
-  protected initDeleteRoute() {
+  /**
+   * Initializes the DELETE /{endpoint} route.
+   * Middleware: authorizeMiddleware(this.resource, "delete").
+   */
+  protected initDeleteRoute(): void {
     this.router.delete(
       this.endpoint,
       authorizeMiddleware(this.resource, "delete"),

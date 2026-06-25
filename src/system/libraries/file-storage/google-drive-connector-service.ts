@@ -27,6 +27,11 @@ export class GoogleDriveConnectorService {
     }
   }
 
+  /**
+   * Lists all non-trashed files inside the given folder (paginated).
+   * @param folderId - The Google Drive folder ID.
+   * @returns An array of DriveFile objects.
+   */
   async listFilesInFolder(folderId: string): Promise<DriveFile[]> {
     const files: DriveFile[] = [];
     let pageToken: string | undefined;
@@ -60,6 +65,11 @@ export class GoogleDriveConnectorService {
     return files;
   }
 
+  /**
+   * Downloads a file from Google Drive as a Buffer.
+   * @param fileId - The Google Drive file ID.
+   * @returns The file contents as a Buffer.
+   */
   async downloadFile(fileId: string): Promise<Buffer> {
     const response = await this.drive.files.get(
       { fileId, alt: "media", supportsAllDrives: true },
@@ -68,6 +78,13 @@ export class GoogleDriveConnectorService {
     return Buffer.from(response.data as ArrayBuffer);
   }
 
+  /**
+   * Checks whether the given MIME type or file extension is supported for processing.
+   * Supported: xlsx, xls, csv, pdf, and Google Sheets.
+   * @param mimeType - The MIME type of the file.
+   * @param fileName - The file name (used to check extension fallback).
+   * @returns True if the file type is supported.
+   */
   isSupportedFile(mimeType: string, fileName: string): boolean {
     const supportedMimeTypes = [
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -84,6 +101,11 @@ export class GoogleDriveConnectorService {
     return ext ? supportedExtensions.includes(`.${ext}`) : false;
   }
 
+  /**
+   * Exports a Google Sheets file to xlsx format and returns it as a Buffer.
+   * @param fileId - The Google Sheets file ID.
+   * @returns The exported spreadsheet as a Buffer.
+   */
   async exportGoogleSheet(fileId: string): Promise<Buffer> {
     const response = await this.drive.files.export(
       {
@@ -96,6 +118,16 @@ export class GoogleDriveConnectorService {
     return Buffer.from(response.data as ArrayBuffer);
   }
 
+  /**
+   * Uploads (or replaces) a file in the given Google Drive folder.
+   * If a file with the same name already exists, it is updated in-place.
+   * The target folder MUST be inside a Shared Drive.
+   * @param folderId - The target folder ID.
+   * @param fileName - The name for the uploaded file.
+   * @param buffer - The file contents.
+   * @param mimeType - The MIME type (default: text/csv).
+   * @returns The Drive file ID.
+   */
   async uploadFile(
     folderId: string,
     fileName: string,

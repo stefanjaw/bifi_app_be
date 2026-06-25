@@ -11,7 +11,6 @@ export class CountryService extends BaseService<CountryDocument> {
 
   /**
    * Populate the countries collection with data from an external API.
-   * @param {string | undefined} dbName - The name of the database to use.
    * @param {ClientSession | undefined} session - The MongoDB session to use.
    * @returns {Promise<CountryDocument[]>} - A promise that resolves to an array of CountryDocument objects, representing the newly created or updated countries.
    */

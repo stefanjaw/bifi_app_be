@@ -9,6 +9,13 @@ import {
 } from "./type-helpers";
 import { RemoveFieldsWithType } from "./remove-fields-with-type.type";
 
+/**
+ * Creates a mapped type where all properties of the referenced class become optional.
+ * Similar to TypeScript's Partial<T> but works at runtime for class-validator/class-transformer decorators.
+ * @param classRef - The source class to make partial.
+ * @param options - Optional configuration: skipNullProperties controls whether validations skip on null values (default true).
+ * @returns A new class with all properties optional.
+ */
 export function PartialType<T>(
   classRef: Type<T>,
   /**

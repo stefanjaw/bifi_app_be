@@ -80,7 +80,9 @@ export class FileController {
    *
    * The request must include the "files" property, which is an array of Express.Multer.File objects.
    * The response will contain the "fileIds" property, which is an array of strings representing the IDs of the uploaded files.
-   *
+   * @param req - The express Request object containing the files in req.files.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
    * @throws InternalServerException if there is an error during the upload process.
    */
   async uploadFilesHandler(req: Request, res: Response, next: NextFunction) {

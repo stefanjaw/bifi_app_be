@@ -22,6 +22,12 @@ export interface TaxCalculationResult {
   appliedTaxes: AppliedTax[];
 }
 
+/**
+ * Calculates a single line-item total = quantity × unitPrice, rounded to 2 decimals.
+ * @param quantity - Item quantity.
+ * @param unitPrice - Price per unit.
+ * @returns The line-item total rounded to 2 decimals.
+ */
 export function calculateLineItemTotal(
   quantity: number,
   unitPrice: number
@@ -29,6 +35,11 @@ export function calculateLineItemTotal(
   return Number((quantity * unitPrice).toFixed(2));
 }
 
+/**
+ * Sums all line-item totals across the given items.
+ * @param lineItems - Array of line items with quantity and unitPrice.
+ * @returns The subtotal rounded to 2 decimals.
+ */
 export function calculateSubtotal(lineItems: LineItemInput[]): number {
   const raw = lineItems.reduce((sum, item) => {
     return (
@@ -42,6 +53,13 @@ export function calculateSubtotal(lineItems: LineItemInput[]): number {
   return Number(raw.toFixed(2));
 }
 
+/**
+ * Calculates taxes as a flat percentage of the subtotal.
+ * Each tax in taxDocs is applied to the full subtotal and aggregated.
+ * @param subtotal - The subtotal to apply taxes on.
+ * @param taxDocs - Array of tax definitions with percentage.
+ * @returns The tax calculation result with total and per-tax breakdown.
+ */
 export function calculateTaxes(
   subtotal: number,
   taxDocs: TaxInput[]
@@ -66,9 +84,9 @@ export function calculateTaxes(
 /**
  * Calculates taxes from per-line taxIds, aggregating amounts across all lines
  * by taxId. Returns the total tax and a flat list of applied taxes.
- *
  * @param lineItems Array of line items, each carrying its own taxIds
  * @param taxDocsMap Map of taxId (string) → TaxInput (must have `percentage`)
+ * @returns The tax calculation result with total and per-tax breakdown.
  */
 export function calculateTaxesPerLine(
   lineItems: LineItemWithTaxIds[],
@@ -104,6 +122,12 @@ export function calculateTaxesPerLine(
   return { taxTotal: Number(taxTotal.toFixed(2)), appliedTaxes };
 }
 
+/**
+ * Returns subtotal + taxTotal, rounded to 2 decimals.
+ * @param subtotal - The subtotal amount.
+ * @param taxTotal - The total tax amount.
+ * @returns The grand total rounded to 2 decimals.
+ */
 export function calculateGrandTotal(
   subtotal: number,
   taxTotal: number

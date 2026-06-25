@@ -119,6 +119,10 @@ async function seedTariffs(): Promise<void> {
   );
 }
 
+/**
+ * Seeds all customs reference data (chapters, headings, tariffs) into the database.
+ * Safe to call on every startup — skips already-seeded data.
+ */
 export async function initializeCustomsData(): Promise<void> {
   try {
     console.log("[customs-seed] Starting customs reference data seeding...");

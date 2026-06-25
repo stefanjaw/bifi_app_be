@@ -338,12 +338,13 @@ export class BaseService<T> {
   /**
    * Checks if the given data is a pagination result.
    * This function is useful for typeguards and distinguishing between plain arrays and pagination results.
+   * @param data - The data to check, either a plain array or a pagination result.
+   * @returns {boolean} True if the given data is a pagination result, false otherwise.
    * @example
    * const someData: any = [...];
    * if (isPagination(someData)) {
    *   // code that knows someData is a pagination result
    * }
-   * @returns {boolean} True if the given data is a pagination result, false otherwise.
    */
   isPagination(data: T[] | PaginateResult<T>): data is PaginateResult<T> {
     return (data as PaginateResult<T>).docs !== undefined;

@@ -1,6 +1,10 @@
 import { catalogCacheModel } from "./models/catalog-cache.model";
 import { freightCacheModel } from "./models/freight-cache.model";
 
+/**
+ * Ensures database indexes exist for pricing index models (catalog cache, freight cache).
+ * Safe to call on startup — warnings are logged but not fatal.
+ */
 export async function initializePricingIndexModels(): Promise<void> {
   try {
     await catalogCacheModel.syncIndexes();

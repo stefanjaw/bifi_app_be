@@ -17,6 +17,14 @@ export class UserController extends BaseController<UserDocument> {
   }
 
   // overrides
+
+  /**
+   * Extends the base update handler to validate and attach an uploaded profile photo
+   * before delegating to the parent.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   protected override async updateHandler(
     req: Request,
     res: Response,
@@ -38,7 +46,13 @@ export class UserController extends BaseController<UserDocument> {
     await super.updateHandler(req, res, next);
   }
 
-  // custom controller for profile update
+  /**
+   * Handles profile update for the currently logged-in user.
+   * Validates and attaches a profile photo if provided, then delegates to UserService.updateProfile.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   protected async updateProfileHandler(
     req: Request,
     res: Response,
@@ -65,11 +79,22 @@ export class UserController extends BaseController<UserDocument> {
     }
   }
 
+  /**
+   * Express handler — delegates to updateProfileHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   updateProfile = async (req: Request, res: Response, next: NextFunction) => {
     await this.updateProfileHandler(req, res, next);
   };
 
-  // Custom controller for profile get
+  /**
+   * Handles fetching the profile of the currently logged-in user by ID.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   protected async getProfileHandler(
     req: Request,
     res: Response,
@@ -79,15 +104,30 @@ export class UserController extends BaseController<UserDocument> {
     this.sendData(res, await this.service.getById(userId || "", undefined));
   }
 
+  /**
+   * Express handler — delegates to getProfileHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
   getProfile = (req: Request, res: Response, next: NextFunction) => {
     this.getProfileHandler(req, res, next);
   };
 
-  // custom controller for me handler
+  /**
+   * Handles returning the currently authenticated user from the request context (userStorage).
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   */
   protected async meHandler(req: Request, res: Response) {
     this.sendData(res, userStorage.getStore()?.user);
   }
 
+  /**
+   * Express handler — delegates to meHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   */
   me = async (req: Request, res: Response) => {
     await this.meHandler(req, res);
   };

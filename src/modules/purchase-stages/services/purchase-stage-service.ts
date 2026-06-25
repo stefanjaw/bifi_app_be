@@ -39,6 +39,7 @@ export class PurchaseStageService extends BaseService<PurchaseStageDocument> {
   }
 }
 
+/** Seeds a default "Draft" purchase stage if no stages exist yet. Safe to call on startup. */
 export async function seedPurchaseStages(): Promise<void> {
   const count = await purchaseStageModel.countDocuments();
   if (count === 0) {

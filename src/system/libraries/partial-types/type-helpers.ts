@@ -1,5 +1,6 @@
 import { Type } from "./type.type";
 
+/** Applies the @IsOptional() decorator from class-validator on a target class property. */
 export function applyIsOptionalDecorator(
   targetClass: Function,
   propertyKey: string
@@ -12,6 +13,7 @@ export function applyIsOptionalDecorator(
   decoratorFactory(targetClass.prototype, propertyKey);
 }
 
+/** Applies the @ValidateIf((_, value) => value !== undefined) decorator on a target class property. */
 export function applyValidateIfDefinedDecorator(
   targetClass: Function,
   propertyKey: string
@@ -26,6 +28,7 @@ export function applyValidateIfDefinedDecorator(
   decoratorFactory(targetClass.prototype, propertyKey);
 }
 
+/** Copies class-validator metadata (validation decorators) from parentClass to targetClass. @param parentClass - The source class with validation metadata. @param targetClass - The target class to copy metadata onto. @param isPropertyInherited - Optional filter function per property key. */
 export function inheritValidationMetadata(
   parentClass: Type<any>,
   targetClass: Function,
@@ -85,6 +88,7 @@ type TransformMetadataKey =
   | "_typeMetadatas"
   | "_transformMetadatas";
 
+/** Copies class-transformer metadata (exclude/expose/transform/type) from parentClass to targetClass. @param parentClass - The source class with transformation metadata. @param targetClass - The target class to copy metadata onto. @param isPropertyInherited - Optional filter function per property key. @param stackDecorators - Whether to merge/stack decorators instead of replacing (default true). */
 export function inheritTransformationMetadata(
   parentClass: Type<any>,
   targetClass: Function,
@@ -202,6 +206,13 @@ function isClassTransformerAvailable() {
   }
 }
 
+/**
+ * Copies default property values from an instance of sourceClass onto target
+ * when the target does not already have a value for that property.
+ * @param target - The target object to copy initializers into.
+ * @param sourceClass - The source class to instantiate for default values.
+ * @param isPropertyInherited - Optional filter function per property key (default: all properties).
+ */
 export function inheritPropertyInitializers(
   target: Record<string, any>,
   sourceClass: Type<any>,

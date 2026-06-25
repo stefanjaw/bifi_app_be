@@ -43,6 +43,9 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
 
   /**
    * Portable ranked search over destinations.
+   * @param query - The search query string.
+   * @param limit - Optional maximum number of results to return.
+   * @returns A promise resolving to an array of ranked SearchResult objects.
    */
   async search(query: string, limit?: number): Promise<SearchResult[]> {
     return this.provider.search(query, limit);

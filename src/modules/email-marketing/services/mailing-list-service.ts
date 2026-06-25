@@ -14,6 +14,8 @@ export class MailingListService extends BaseService<MailingListDocument> {
 
   /**
    * Recomputes the cached subscriber count (status subscribed) for a list.
+   * @param listId - The ID of the mailing list.
+   * @returns A promise resolving to the updated subscriber count.
    */
   async refreshSubscriberCount(listId: string): Promise<number> {
     const listModelBound = this.connectionManager.bindModelToDb(this.model);

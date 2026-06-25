@@ -183,6 +183,7 @@ export class BCDService extends BaseService<BCDDocument> {
    * If an error file is found, the function adds it to the array of files to process.
    * The function then uploads the files to GridFS and updates the BCD documents with the uploaded files.
    * The function then moves the files from the FTP folder "/outbox" to "/outbox/proccessed".
+   * @param session - Optional mongoose session for transactional execution.
    * @returns {Promise<BCDDocument[]>} - An array of updated BCD documents.
    */
   async updateBCDsFromFTP(session?: ClientSession | undefined) {
