@@ -1,4 +1,4 @@
-import { ValidationException } from "src/system";
+import { ValidationException } from "../../../system";
 import { ConnectionManager } from "../../../system/libraries/base-module/connection-manager";
 import { CrEinvoiceSettingsDocument } from "../settings/models/cr-einvoice-settings.model";
 import { crEinvoicePdfService } from "./cr-einvoice-pdf.service";
