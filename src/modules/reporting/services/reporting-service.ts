@@ -5,7 +5,7 @@ import {
   ValidationException,
 } from "../../../system";
 import {
-  CHROMIUM_EXECUTABLE,
+  getChromiumExecutablePath,
   getLaunchArgs,
 } from "../../../system/libraries/pdf";
 import { ClientSession } from "mongoose";
@@ -176,7 +176,7 @@ export class ReportingService extends BaseService<ReportingDocument> {
 
         // generate pdf buffer
         const browser = await puppeteer.launch({
-          executablePath: CHROMIUM_EXECUTABLE,
+          executablePath: await getChromiumExecutablePath(),
           args: getLaunchArgs(),
           headless: true,
         });

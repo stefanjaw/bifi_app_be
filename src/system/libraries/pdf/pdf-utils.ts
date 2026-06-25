@@ -1,11 +1,14 @@
 import { existsSync, readdirSync } from "fs";
 import * as nodePath from "path";
 
-export function resolveChromiumPath(): string {
+let _resolvedPath: string | null = null;
+
+export async function resolveChromiumPath(): Promise<string> {
   try {
     const chromium = require("@sparticuz/chromium");
-    if (chromium.executablePath && existsSync(chromium.executablePath)) {
-      return chromium.executablePath;
+    const path = await chromium.executablePath();
+    if (path && existsSync(path)) {
+      return path;
     }
   } catch {}
 
@@ -34,9 +37,13 @@ export function resolveChromiumPath(): string {
   throw new Error("Chromium not found. Install via Nix or set CHROMIUM_PATH.");
 }
 
-/** Resolved once at module load */
-export const CHROMIUM_EXECUTABLE = resolveChromiumPath();
-console.log("Launching puppeteer with executable path:", CHROMIUM_EXECUTABLE);
+/** Lazy-resolved Chromium path — cached after first call */
+export async function getChromiumExecutablePath(): Promise<string> {
+  if (_resolvedPath) return _resolvedPath;
+  _resolvedPath = await resolveChromiumPath();
+  console.log(`Resolved Chromium path: ${_resolvedPath}`);
+  return _resolvedPath;
+}
 
 /**
  * Default Puppeteer launch arguments.

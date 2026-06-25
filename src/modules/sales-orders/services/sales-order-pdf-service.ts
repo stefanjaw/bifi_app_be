@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import {
-  CHROMIUM_EXECUTABLE,
+  getChromiumExecutablePath,
   getLaunchArgs,
 } from "../../../system/libraries/pdf";
 
@@ -32,7 +32,7 @@ export class SalesOrderPdfService {
     const html = this.buildHtml(order);
 
     const browser = await puppeteer.launch({
-      executablePath: CHROMIUM_EXECUTABLE,
+      executablePath: await getChromiumExecutablePath(),
       args: getLaunchArgs(),
       headless: true,
     });

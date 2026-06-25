@@ -1,6 +1,6 @@
 import puppeteer from "puppeteer";
 import {
-  CHROMIUM_EXECUTABLE,
+  getChromiumExecutablePath,
   getLaunchArgs,
 } from "../../../system/libraries/pdf";
 import { CrEinvoiceSettingsDocument } from "../settings/models/cr-einvoice-settings.model";
@@ -13,7 +13,7 @@ export class CrEinvoicePdfService {
     const html = this.buildHtml(entry, settings);
 
     const browser = await puppeteer.launch({
-      executablePath: CHROMIUM_EXECUTABLE,
+      executablePath: await getChromiumExecutablePath(),
       args: getLaunchArgs(),
       headless: true,
     });
