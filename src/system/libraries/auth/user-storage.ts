@@ -10,6 +10,7 @@ export const userStorage = new AsyncLocalStorage<{
   user?: UserDocument;
   token?: string;
   dbName?: string;
+  locale?: string;
 }>({
-  defaultValue: { user: undefined, token: undefined, dbName: undefined },
+  defaultValue: { user: undefined, token: undefined, dbName: undefined, locale: undefined },
 });

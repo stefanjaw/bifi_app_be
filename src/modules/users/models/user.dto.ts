@@ -44,6 +44,10 @@ export class UserDTO {
   @IsOptional()
   uploadedPictureId?: unknown;
 
+  @IsString()
+  @IsOptional()
+  language?: string;
+
   @IsArray()
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
@@ -87,4 +91,10 @@ export class UserDTO {
 export class UpdateUserDTO extends PartialType(UserDTO) {
   @IsMongoId()
   _id!: string;
+}
+
+export class UpdateLanguageDTO {
+  @IsString()
+  @IsNotEmpty()
+  language!: string;
 }

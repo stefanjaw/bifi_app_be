@@ -131,4 +131,48 @@ export class UserController extends BaseController<UserDocument> {
   me = async (req: Request, res: Response) => {
     await this.meHandler(req, res);
   };
+
+  /**
+   * Handles updating the language preference of the current user.
+   * Updates the user document and refreshes userStorage.locale.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
+  protected async updateLanguageHandler(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = userStorage.getStore()?.user?._id.toString();
+      if (!userId) {
+        res.status(401).json({ error: "Not authenticated" });
+        return;
+      }
+
+      const { language } = req.body as { language: string };
+      const updatedUser = await userService.updateLanguage(userId, language);
+
+      const storage = userStorage.getStore();
+      if (storage) {
+        storage.user = updatedUser;
+        storage.locale = language;
+      }
+
+      this.sendData(res, updatedUser);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  /**
+   * Express handler — delegates to updateLanguageHandler.
+   * @param req - The express Request object.
+   * @param res - The express Response object.
+   * @param next - The express NextFunction callback.
+   */
+  updateLanguage = async (req: Request, res: Response, next: NextFunction) => {
+    await this.updateLanguageHandler(req, res, next);
+  };
 }

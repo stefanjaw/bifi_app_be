@@ -83,6 +83,7 @@ All under `src/modules/<name>/`. Check this before adding new features — impor
 | `sales-order-stages` | sales order pipeline stage definitions | `/sales-order-stages` |
 | `sales-targets` | sales target/goal records | `/sales-targets` |
 | `search-destinations` | search destinations (indexed models) + unified app-wide search | `/search-destinations`, `/search` |
+| `translations` | UI translation key-value storage (locale, scope, key, value) | `/translations` |
 | `sequences` | auto-incrementing document numbering sequences | `/sequences` |
 | `shipping` | shipping records with HS code lookup, tariff generation, import from file | `/shippings` |
 | `tasks` | task records | `/tasks` |
@@ -90,7 +91,7 @@ All under `src/modules/<name>/`. Check this before adding new features — impor
 | `task-types` | task type definitions | `/task-types` |
 | `templates` | reusable document/email templates | `/templates` |
 | `tickets` | helpdesk tickets and ticket rules (auto-assignment/SLA) | `/tickets`, `/ticket-rules` |
-| `users` | user accounts, profile (`/me`), and user management | `/users` |
+| `users` | user accounts, profile (`/me`), user management — **no language/locale field (gap)** | `/users` |
 | `user-shortcuts` | per-user shortcut/favorites configuration | `/user-shortcuts` |
 
 ## System infrastructure (`src/system/`)
@@ -110,7 +111,7 @@ Everything re-exported through `src/system/index.ts` and importable via `"../../
 
 ### DTO validation
 - `PartialType(CreateDTO)` generates `UpdateDTO` with all optional fields — used in every module.
-- `@Transform(toBoolean)` for boolean query/number-string coercion — used in ~25+ DTOs.
+- **`@Transform(toBoolean)` is required on every `boolean` DTO field** — the frontend sends FormData, which serializes booleans as strings `"true"`/`"false"`. Without `@Transform(toBoolean)`, `@IsBoolean()` will reject valid input. Import from `"../../../system"`. Used in ~25+ DTOs.
 - `validateBodyMiddleware(dtoClass)` runs `class-validator` + `class-transformer` on req.body, throws `ValidationException` with structured errors on failure.
 
 ### File handling
@@ -159,6 +160,52 @@ Each l10n module lives in `src/modules/l10n_<locale>/` and extends a core module
   - `POST /:id/create-note` — Generate credit/debit note (NC/ND)
   - `POST /:id/submit-acceptance` — Submit MA/MAP/MR message
   - `POST /hacienda-callback` — Public webhook (no auth)
+
+### Translation / i18n — Current State
+
+Backend-driven translation system using MongoDB-backed `{ locale, scope, key, value }` storage, implemented:
+
+- **Module**: `src/modules/translations/` — model, DTO, service, controller, routes
+- **API**: `GET /api/translations/scope?locale=:locale&scope=:scope` — key-value record for the Transloco frontend loader
+- **Standard CRUD** on `/api/translations` for admin management
+- **User model**: `language` field (string, default `"en"`) on `src/modules/users/models/user.model.ts`
+- **User DTO**: `language` field on `UserDTO`, plus `UpdateLanguageDTO` for the `/me/language` endpoint
+- **userStorage** (`src/system/libraries/auth/user-storage.ts`): `locale` property added, set from `user.language` in auth middleware
+- **Endpoint**: `PUT /api/users/me/language` — updates user language preference and refreshes userStorage.locale
+
+### PDF Services — Hardcoded Locales
+
+| Service | `<html lang>` | Date locale | Status labels |
+|---|---|---|---|
+| `purchases/services/purchase-order-pdf-service.ts` | `"en"` | `"en-US"` | English: "Draft", "Confirmed", etc. |
+| `sales-orders/services/sales-order-pdf-service.ts` | `"en"` | `"en-US"` | English: "Draft", "Quote", etc. |
+| `pricing-estimates/services/pdf-generator-service.ts` | `"en"` | Default (no locale) | English |
+| `l10n_cr_einvoice/services/cr-einvoice-pdf.service.ts` | `"es"` | `"es-CR"` | Spanish: "FACTURA ELECTRÓNICA", "Emisor", etc. |
+
+### CR Validator — Hardcoded Spanish
+
+`l10n_cr_einvoice/services/cr-einvoice-validator.service.ts` has ~40 validation error messages hardcoded in Spanish (277-line file, entirely Spanish).
+
+### Number Formatting
+
+All number formatting uses `.toFixed(2)` or `.toFixed(5)` — no `Intl.NumberFormat` usage.
+
+### Translation Architecture (Implemented)
+
+Backend translation infrastructure is in place:
+- `src/modules/translations/` — MongoDB-backed translations module
+- `GET /api/translations/scope?locale=:locale&scope=:scope` — scope-based key-value read for Transloco loader
+- Standard CRUD on `/api/translations` for admin management
+- `language` field on User model + DTO
+- `PUT /api/users/me/language` — user language preference endpoint
+- `locale` on userStorage, set from `user.language` in auth middleware
+- Frontend: `@jsverse/transloco` with `TranslocoHttpLoader` that fetches from the backend
+- Frontend: Language selector in `UserPanel` menu
+
+Remaining work for full i18n:
+- PDF services accept `locale` parameter instead of hardcoded values (Phase 2)
+- `ValidationMessageService` for `CrEinvoiceValidatorService` (Phase 2)
+- Template string extraction from UI into translation keys (Phase 2)
 
 ## Code documentation
 - Every exported function, method, and class must have a full JSDoc comment describing its purpose, `@param` (with type and description), and `@returns` (with type and description) where applicable.

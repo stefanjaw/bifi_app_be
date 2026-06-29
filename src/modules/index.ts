@@ -60,3 +60,4 @@ export * from "./l10n_cr_einvoice";
 export * from "./search-destinations";
 export * from "./notifications";
 export * from "./notification-settings";
+export * from "./translations";

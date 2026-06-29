@@ -190,6 +190,30 @@ export class UserService extends BaseService<UserDocument> {
    * @returns A promise resolving to the updated user document.
    * @throws ValidationException If the logged user tries to update a different user's profile.
    */
+  /**
+   * Updates the language preference of a user by ID.
+   * @param userId - The user ID.
+   * @param language - The new language/locale string.
+   * @param session - The optional client session to use for the transaction.
+   * @returns A promise resolving to the updated user document.
+   */
+  async updateLanguage(
+    userId: string,
+    language: string,
+    session?: mongoose.ClientSession | undefined
+  ): Promise<UserDocument> {
+    return runTransaction<UserDocument>(session, async (newSession) => {
+      const model = this.connectionManager.bindModelToDb(this.model);
+      const updated = await model.findByIdAndUpdate(
+        userId,
+        { $set: { language } },
+        { new: true, session: newSession }
+      );
+      if (!updated) throw new ValidationException("User not found");
+      return updated;
+    });
+  }
+
   async updateProfile(
     data: UpdateUserDTO,
     session?: mongoose.ClientSession | undefined

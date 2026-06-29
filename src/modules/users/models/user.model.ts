@@ -49,6 +49,10 @@ const userSchema = new Schema(
       autopopulate: false,
       required: true,
     },
+    language: {
+      type: String,
+      default: "en",
+    },
     contactId: {
       type: mongoose.Types.ObjectId,
       ref: "Contact",

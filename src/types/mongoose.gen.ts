@@ -12113,6 +12113,118 @@ export type TicketDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of TranslationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TranslationDocument.toObject()`. To avoid conflicts with model names, use the type alias `TranslationObject`.
+ * ```
+ * const translationObject = translation.toObject();
+ * ```
+ */
+export type Translation = {
+  locale: string;
+  scope: string;
+  key: string;
+  value: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TranslationDocument (type alias of `Translation`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Translation } from "../models"
+ * import { TranslationObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const translationObject: TranslationObject = translation.toObject();
+ * ```
+ */
+export type TranslationObject = Translation;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type TranslationQuery = mongoose.Query<
+  any,
+  TranslationDocument,
+  TranslationQueries
+> &
+  TranslationQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `TranslationSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type TranslationQueries = {
+  paginate: (this: TranslationQuery, ...args: any[]) => TranslationQuery;
+};
+
+export type TranslationMethods = {};
+
+export type TranslationStatics = {
+  paginate: (this: TranslationModel, ...args: any[]) => any;
+  paginateSubDocs: (this: TranslationModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Translation = mongoose.model<TranslationDocument, TranslationModel>("Translation", TranslationSchema);
+ * ```
+ */
+export type TranslationModel = mongoose.Model<
+  TranslationDocument,
+  TranslationQueries
+> &
+  TranslationStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Translation schema instances:
+ * ```
+ * const TranslationSchema: TranslationSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type TranslationSchema = mongoose.Schema<
+  TranslationDocument,
+  TranslationModel,
+  TranslationMethods,
+  TranslationQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Translation = mongoose.model<TranslationDocument, TranslationModel>("Translation", TranslationSchema);
+ * ```
+ */
+export type TranslationDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  TranslationQueries
+> &
+  TranslationMethods & {
+    locale: string;
+    scope: string;
+    key: string;
+    value: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of UserShortcutsShortcutDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `UserShortcutsDocument.toObject()`.
@@ -12263,6 +12375,7 @@ export type User = {
   active?: boolean;
   confirmed?: boolean;
   roles: (Role["_id"] | Role)[];
+  language?: string;
   contactId?: Contact;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -12353,6 +12466,7 @@ export type UserDocument = mongoose.Document<
     active?: boolean;
     confirmed?: boolean;
     roles: mongoose.Types.Array<RoleDocument["_id"] | RoleDocument>;
+    language?: string;
     contactId?: ContactDocument;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;

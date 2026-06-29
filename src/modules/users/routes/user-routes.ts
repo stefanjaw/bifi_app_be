@@ -1,7 +1,7 @@
 import { UserDocument } from "@mongodb-types";
 import { BaseRoutes, validateBodyMiddleware } from "../../../system";
 import { UserController } from "../controllers/user-controller";
-import { UpdateUserDTO, UserDTO } from "../models/user.dto";
+import { UpdateLanguageDTO, UpdateUserDTO, UserDTO } from "../models/user.dto";
 
 const userController = new UserController();
 
@@ -17,6 +17,7 @@ export class UserRouter extends BaseRoutes<UserDocument> {
 
   override initRoutes(): void {
     this.initMeRoute();
+    this.initMeLanguageRoute();
     this.initGetProfileRoute();
     this.initPutProfileRoute();
     super.initRoutes();
@@ -24,6 +25,14 @@ export class UserRouter extends BaseRoutes<UserDocument> {
 
   initMeRoute() {
     this.router.get(this.endpoint + "/me", userController.me);
+  }
+
+  initMeLanguageRoute() {
+    this.router.put(
+      this.endpoint + "/me/language",
+      validateBodyMiddleware(UpdateLanguageDTO),
+      userController.updateLanguage
+    );
   }
 
   // !!! wont have authorization, all users can update their profile
