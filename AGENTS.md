@@ -166,8 +166,9 @@ Each l10n module lives in `src/modules/l10n_<locale>/` and extends a core module
 Backend-driven translation system using MongoDB-backed `{ locale, scope, key, value }` storage, implemented:
 
 - **Module**: `src/modules/translations/` — model, DTO, service, controller, routes
-- **API**: `GET /api/translations/scope?locale=:locale&scope=:scope` — key-value record for the Transloco frontend loader
-- **Standard CRUD** on `/api/translations` for admin management
+- **API**: `GET /api/translations/scope?locale=:locale&scope=:scope` — key-value record for the custom frontend TranslationService
+- **Language entity**: `src/modules/translations/` also contains Language model/DTO/service/controller/routes — `/api/languages` CRUD, stores `{ locale, name, nativeName, active }`
+- **Standard CRUD** on `/api/translations` and `/api/languages` for admin management
 - **User model**: `language` field (string, default `"en"`) on `src/modules/users/models/user.model.ts`
 - **User DTO**: `language` field on `UserDTO`, plus `UpdateLanguageDTO` for the `/me/language` endpoint
 - **userStorage** (`src/system/libraries/auth/user-storage.ts`): `locale` property added, set from `user.language` in auth middleware
@@ -193,14 +194,15 @@ All number formatting uses `.toFixed(2)` or `.toFixed(5)` — no `Intl.NumberFor
 ### Translation Architecture (Implemented)
 
 Backend translation infrastructure is in place:
-- `src/modules/translations/` — MongoDB-backed translations module
-- `GET /api/translations/scope?locale=:locale&scope=:scope` — scope-based key-value read for Transloco loader
-- Standard CRUD on `/api/translations` for admin management
+- `src/modules/translations/` — MongoDB-backed translations module plus Language entity
+- `GET /api/translations/scope?locale=:locale&scope=:scope` — scope-based key-value read
+- Standard CRUD on `/api/translations` and `/api/languages` for admin management
 - `language` field on User model + DTO
 - `PUT /api/users/me/language` — user language preference endpoint
 - `locale` on userStorage, set from `user.language` in auth middleware
-- Frontend: `@jsverse/transloco` with `TranslocoHttpLoader` that fetches from the backend
-- Frontend: Language selector in `UserPanel` menu
+- Frontend: custom `TranslationService` (signal-based, scope-lazy-loaded) in `@avalantec/base-app/translation`
+- Frontend: `TranslatePipe` (`| translate`) and `provideTranslations(scope)` per feature lib
+- Frontend: Language selector `p-select` in `UserPanel` — reads `availableLanguages` signal, calls `PUT /api/users/me/language`
 
 Remaining work for full i18n:
 - PDF services accept `locale` parameter instead of hardcoded values (Phase 2)

@@ -12113,6 +12113,113 @@ export type TicketDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of LanguageDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `LanguageDocument.toObject()`. To avoid conflicts with model names, use the type alias `LanguageObject`.
+ * ```
+ * const languageObject = language.toObject();
+ * ```
+ */
+export type Language = {
+  locale: string;
+  name: string;
+  nativeName: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of LanguageDocument (type alias of `Language`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Language } from "../models"
+ * import { LanguageObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const languageObject: LanguageObject = language.toObject();
+ * ```
+ */
+export type LanguageObject = Language;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type LanguageQuery = mongoose.Query<
+  any,
+  LanguageDocument,
+  LanguageQueries
+> &
+  LanguageQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `LanguageSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type LanguageQueries = {
+  paginate: (this: LanguageQuery, ...args: any[]) => LanguageQuery;
+};
+
+export type LanguageMethods = {};
+
+export type LanguageStatics = {
+  paginate: (this: LanguageModel, ...args: any[]) => any;
+  paginateSubDocs: (this: LanguageModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Language = mongoose.model<LanguageDocument, LanguageModel>("Language", LanguageSchema);
+ * ```
+ */
+export type LanguageModel = mongoose.Model<LanguageDocument, LanguageQueries> &
+  LanguageStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Language schema instances:
+ * ```
+ * const LanguageSchema: LanguageSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type LanguageSchema = mongoose.Schema<
+  LanguageDocument,
+  LanguageModel,
+  LanguageMethods,
+  LanguageQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Language = mongoose.model<LanguageDocument, LanguageModel>("Language", LanguageSchema);
+ * ```
+ */
+export type LanguageDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  LanguageQueries
+> &
+  LanguageMethods & {
+    locale: string;
+    name: string;
+    nativeName: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of TranslationDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `TranslationDocument.toObject()`. To avoid conflicts with model names, use the type alias `TranslationObject`.

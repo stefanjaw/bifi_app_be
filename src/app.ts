@@ -86,6 +86,7 @@ import {
   AiSettingsRouter,
   DriveSettingsRouter,
   TranslationRouter,
+  LanguageRouter,
   PricingIndexRouter,
   PricingEstimateRouter,
   CustomsChapterRouter,
@@ -238,6 +239,7 @@ app.use("/api", new GemsRouter().getRouter);
 app.use("/api", new AiSettingsRouter().getRouter);
 app.use("/api", new DriveSettingsRouter().getRouter);
 app.use("/api", new TranslationRouter().getRouter);
+app.use("/api", new LanguageRouter().getRouter);
 app.use("/api", new PricingIndexRouter().getRouter);
 app.use("/api", new PricingEstimateRouter().getRouter);
 app.use("/api", new CustomsChapterRouter().getRouter);
