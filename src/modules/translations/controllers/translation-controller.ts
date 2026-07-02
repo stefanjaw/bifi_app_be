@@ -22,7 +22,9 @@ export class TranslationController extends BaseController<TranslationDocument> {
       const scope = req.query.scope as string;
 
       if (!locale || !scope) {
-        res.status(400).json({ error: "locale and scope query params are required" });
+        res
+          .status(400)
+          .json({ error: "locale and scope query params are required" });
         return;
       }
 

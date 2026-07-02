@@ -1,7 +1,10 @@
 import { BaseRoutes } from "../../../system/libraries/base-module/base-routes";
 import { TranslationController } from "../controllers/translation-controller";
 import { TranslationDocument } from "../models/translation.model";
-import { CreateTranslationDTO, UpdateTranslationDTO } from "../models/translation.dto";
+import {
+  CreateTranslationDTO,
+  UpdateTranslationDTO,
+} from "../models/translation.dto";
 
 const translationController = new TranslationController();
 

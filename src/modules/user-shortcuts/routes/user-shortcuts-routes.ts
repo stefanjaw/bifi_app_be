@@ -20,7 +20,7 @@ export class UserShortcutsRouter extends BaseRoutes<UserShortcutsDocument> {
     this.router.get(
       "/user-shortcuts/me",
       authorizeMiddleware(this.resource, "read"),
-      userShortcutsController.getMyShortcuts,
+      userShortcutsController.getMyShortcuts
     );
 
     this.router.put(
@@ -28,7 +28,7 @@ export class UserShortcutsRouter extends BaseRoutes<UserShortcutsDocument> {
       this.upload.any(),
       validateBodyMiddleware(UserShortcutsDTO),
       authorizeMiddleware(this.resource, "update"),
-      userShortcutsController.upsertMyShortcuts,
+      userShortcutsController.upsertMyShortcuts
     );
   }
 }

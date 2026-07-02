@@ -35,7 +35,7 @@ export class UserRouter extends BaseRoutes<UserDocument> {
     this.router.put(
       this.endpoint + "/me/language",
       validateBodyMiddleware(UpdateUserLanguageDTO),
-      userController.updateLanguage,
+      userController.updateLanguage
     );
   }
 
@@ -49,7 +49,7 @@ export class UserRouter extends BaseRoutes<UserDocument> {
       this.endpoint + "/profile",
       this.upload.any(),
       validateBodyMiddleware(this.dtoUpdateClass),
-      userController.updateProfile,
+      userController.updateProfile
     );
   }
 }

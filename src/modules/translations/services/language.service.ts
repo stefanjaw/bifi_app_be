@@ -1,8 +1,5 @@
 import { BaseService } from "../../../system";
-import {
-  languageModel,
-  LanguageDocument,
-} from "../models/language.model";
+import { languageModel, LanguageDocument } from "../models/language.model";
 
 /**
  * Service for managing Language records.
