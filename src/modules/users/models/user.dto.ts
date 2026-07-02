@@ -52,7 +52,7 @@ export class UserDTO {
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   @IsOptional()
   roles?: string[];
@@ -64,8 +64,8 @@ export class UserDTO {
   @Transform(({ value }) =>
     plainToInstance(
       UserContactInformationDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   @Type(() => UserContactInformationDTO)
   @ValidateNested()
@@ -93,7 +93,7 @@ export class UpdateUserDTO extends PartialType(UserDTO) {
   _id!: string;
 }
 
-export class UpdateLanguageDTO {
+export class UpdateUserLanguageDTO {
   @IsString()
   @IsNotEmpty()
   language!: string;

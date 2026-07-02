@@ -1,7 +1,11 @@
 import { UserDocument } from "@mongodb-types";
 import { BaseRoutes, validateBodyMiddleware } from "../../../system";
 import { UserController } from "../controllers/user-controller";
-import { UpdateLanguageDTO, UpdateUserDTO, UserDTO } from "../models/user.dto";
+import {
+  UpdateUserLanguageDTO,
+  UpdateUserDTO,
+  UserDTO,
+} from "../models/user.dto";
 
 const userController = new UserController();
 
@@ -30,8 +34,8 @@ export class UserRouter extends BaseRoutes<UserDocument> {
   initMeLanguageRoute() {
     this.router.put(
       this.endpoint + "/me/language",
-      validateBodyMiddleware(UpdateLanguageDTO),
-      userController.updateLanguage
+      validateBodyMiddleware(UpdateUserLanguageDTO),
+      userController.updateLanguage,
     );
   }
 
@@ -45,7 +49,7 @@ export class UserRouter extends BaseRoutes<UserDocument> {
       this.endpoint + "/profile",
       this.upload.any(),
       validateBodyMiddleware(this.dtoUpdateClass),
-      userController.updateProfile
+      userController.updateProfile,
     );
   }
 }
