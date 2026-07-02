@@ -40,7 +40,7 @@ export class AssetRosterRouter extends BaseRoutes<AssetRosterDocument> {
       ]),
       validateBodyMiddleware(this.dtoUpdateClass),
       authorizeMiddleware(this.resource, "update"),
-      this.controller.update
+      this.controller.update,
     );
   }
 
@@ -50,7 +50,7 @@ export class AssetRosterRouter extends BaseRoutes<AssetRosterDocument> {
       this.upload.any(),
       validateBodyMiddleware(SkipAssetRosterPMDTO),
       authorizeMiddleware(`${this.resource}/skip-pm`, "update"),
-      assetRosterController.updateSkipAssetPM
+      assetRosterController.updateSkipAssetPM,
     );
   }
 
@@ -58,7 +58,8 @@ export class AssetRosterRouter extends BaseRoutes<AssetRosterDocument> {
     this.router.post(
       `${this.endpoint}/read-documents`,
       this.upload.any(),
-      assetRosterController.readDocuments
+      authorizeMiddleware(`${this.resource}/read-documents`, "create"),
+      assetRosterController.readDocuments,
     );
   }
 }

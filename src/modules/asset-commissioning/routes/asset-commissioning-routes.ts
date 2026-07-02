@@ -1,4 +1,8 @@
-import { BaseRoutes, validateBodyMiddleware } from "../../../system";
+import {
+  authorizeMiddleware,
+  BaseRoutes,
+  validateBodyMiddleware,
+} from "../../../system";
 import { AssetCommissioningDocument } from "../../../types/mongoose.gen";
 import { AssetCommissioningController } from "../controllers/asset-commissioning-controller";
 import {
@@ -27,7 +31,8 @@ export class AssetCommissioningRouter extends BaseRoutes<AssetCommissioningDocum
       this.endpoint + "/decommission",
       this.upload.any(),
       validateBodyMiddleware(UpdateAssetCommissioningDTO),
-      (this.controller as AssetCommissioningController).updateDecommission
+      authorizeMiddleware(this.resource, "update"),
+      (this.controller as AssetCommissioningController).updateDecommission,
     );
   }
 }

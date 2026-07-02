@@ -1,5 +1,5 @@
 import { BaseRoutes } from "../../../system/libraries/base-module/base-routes";
-import { validateBodyMiddleware } from "../../../system";
+import { authorizeMiddleware, validateBodyMiddleware } from "../../../system";
 import { UserShortcutsController } from "../controllers/user-shortcuts-controller";
 import { UserShortcutsDTO } from "../models/user-shortcuts.dto";
 import { UserShortcutsDocument } from "../models/user-shortcuts.model";
@@ -19,13 +19,16 @@ export class UserShortcutsRouter extends BaseRoutes<UserShortcutsDocument> {
   protected override initRoutes() {
     this.router.get(
       "/user-shortcuts/me",
-      userShortcutsController.getMyShortcuts
+      authorizeMiddleware(this.resource, "read"),
+      userShortcutsController.getMyShortcuts,
     );
 
     this.router.put(
       "/user-shortcuts/me",
+      this.upload.any(),
       validateBodyMiddleware(UserShortcutsDTO),
-      userShortcutsController.upsertMyShortcuts
+      authorizeMiddleware(this.resource, "update"),
+      userShortcutsController.upsertMyShortcuts,
     );
   }
 }
