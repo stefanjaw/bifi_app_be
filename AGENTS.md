@@ -64,6 +64,7 @@ All under `src/modules/<name>/`. Check this before adding new features — impor
 | `files` | file upload/download via GridFS | `/files` |
 | `helpdesk-stages` | helpdesk/ticket pipeline stage definitions | `/helpdesk-stages` |
 | `inventory` | products, warehouses, locations, stock balances, stock movements, UOMs, UOM categories, product types | `/products`, `/warehouses`, `/locations`, `/stock-balances`, `/stock-movements`, `/uoms`, `/uom-categories`, `/product-types` |
+| `languages` | Language definitions (locale, name, nativeName, active) | `/languages` |
 | `l10n_cr_einvoice` | Costa Rica electronic invoice plugin (Hacienda FE) | `/cr-einvoice/...` (see Localization plugins below) |
 | `maintenance-windows` | scheduled maintenance time windows | `/maintenance-windows` |
 | `models` | Mongoose model registry introspection | `/models` |
@@ -91,7 +92,7 @@ All under `src/modules/<name>/`. Check this before adding new features — impor
 | `task-types` | task type definitions | `/task-types` |
 | `templates` | reusable document/email templates | `/templates` |
 | `tickets` | helpdesk tickets and ticket rules (auto-assignment/SLA) | `/tickets`, `/ticket-rules` |
-| `users` | user accounts, profile (`/me`), user management — **no language/locale field (gap)** | `/users` |
+| `users` | user accounts, profile (`/me`), user management — language/locale field + `/me/language` endpoint | `/users` |
 | `user-shortcuts` | per-user shortcut/favorites configuration | `/user-shortcuts` |
 
 ## System infrastructure (`src/system/`)
@@ -131,6 +132,96 @@ Everything re-exported through `src/system/index.ts` and importable via `"../../
 5. `validateBodyMiddleware(dtoClass)` — DTO validation
 6. Route handler → `catchExceptionMiddleware` (catches all errors)
 
+### Permission & Authorization System
+
+The backend enforces the same RBAC/PBAC model as the frontend: Policy → Role → User. Authorization is wired at the route level via `authorizeMiddleware`.
+
+#### How authorizeMiddleware Works
+
+All routes registered through `BaseRoutes<T>` automatically wrap each endpoint with `authorizeMiddleware(resource, action)`. The middleware:
+
+1. Checks `RBAC_ENABLE` env var (default: `true`; when `false`, all checks are skipped)
+2. Gets the current user from `userStorage` (populated by `authenticateMiddleware`)
+3. Flattens `user.roles[].policies[]` and filters where:
+   - `policy.policyId.resource === resource`
+   - `policy.actions.includes(action)`
+   - `policy.policyId.type === "model"` (only `"model"` type is enforced server-side)
+4. If no matching policies → throws `UnauthorizedException`
+5. For each matching policy, evaluates `conditions[]` against the resource document (fetched via the optional `getDocument` callback)
+6. If any policy passes all conditions → `next()`. Otherwise → `UnauthorizedException`
+
+Only `type: "model"` policies are enforced server-side. `"view"` and `"menu"` types are frontend-only — they are never evaluated by this middleware.
+
+#### Resource Naming — MUST Match Frontend
+
+The `resource` string passed to `authorizeMiddleware` must match the frontend's resource naming exactly. The `BaseRoutes` constructor receives the resource name and auto-wires it for all standard CRUD endpoints.
+
+| Backend Module | resource name | Example endpoints |
+|---|---|---|
+| `asset-roster` | `asset-rosters` | `GET /api/asset-rosters`, `POST /api/asset-rosters` |
+| `facilities` | `facilities` | `GET /api/facilities`, `PUT /api/facilities` |
+| `maintenance-windows` | `maintenance-windows` | `GET /api/maintenance-windows` |
+| `roles` | `roles` | `GET /api/roles`, `POST /api/roles` |
+| `policies` | `policies` | `GET /api/policies`, `POST /api/policies` |
+
+#### Auto-wired Permissions in BaseRoutes
+
+`BaseRoutes.initRoutes()` registers these standard `authorizeMiddleware` checks for every module:
+
+| Route | Middleware call |
+|---|---|
+| `GET /{endpoint}/export` | `authorizeMiddleware(\`${resource}/export\`, "read")` |
+| `GET /{endpoint}/:id` | `authorizeMiddleware(resource, "read")` |
+| `GET /{endpoint}` | `authorizeMiddleware(resource, "read")` |
+| `POST /{endpoint}` | `authorizeMiddleware(resource, "create")` |
+| `POST /{endpoint}/import` | `authorizeMiddleware(\`${resource}/import\`, "create")` |
+| `PUT /{endpoint}` | `authorizeMiddleware(resource, "update")` |
+| `DELETE /{endpoint}` | `authorizeMiddleware(resource, "delete")` |
+
+#### Row-Level Security (Conditions)
+
+For row-level access control, pass a `getDocument` callback as the third argument to `authorizeMiddleware`:
+
+```ts
+authorizeMiddleware('asset-rosters', 'read', async (req) => {
+  const asset = await AssetRosterModel.findById(req.params.id);
+  return asset?.toObject() ?? {};
+})
+```
+
+Then create a policy in the admin UI with conditions:
+- **Key**: `assignedTo`
+- **Operator**: `==`
+- **Value**: `{{user.id}}`
+
+This restricts the user to only records where `assignedTo` equals their own `_id`.
+
+**Supported operators**: `==`, `!=`, `>`, `<`, `in`
+
+**Template resolution**: `{{user.*}}`, `{{resource.*}}`, `{{context.*}}` are resolved at runtime against the document, user, and context respectively.
+
+#### Manual authorizeMiddleware Usage
+
+For custom action routes that bypass `BaseRoutes`:
+
+```ts
+router.get(
+  '/custom-action',
+  authenticateMiddleware(userService),
+  authorizeMiddleware('my-resource', 'read'),
+  handler
+);
+```
+
+#### Adding a New Module: Permission Checklist
+
+1. **Create the module** with `BaseController` + `BaseService` + `BaseRoutes`
+2. **In `BaseRoutes` constructor**, pass the resource string: `super('asset-rosters', ...)` — this must match the frontend's resource naming
+3. **Create policies** in the admin UI (Settings → Policies) with matching resource names
+4. **Assign policies to roles**, roles to users in the admin UI
+5. **For custom routes**, manually add `authorizeMiddleware(resource, action)` before the handler
+6. **For row-level access**, provide a `getDocument` callback to `authorizeMiddleware`
+
 ### Transactions
 Every `BaseService` method wraps in `runTransaction(session, callback)`. Custom service methods should also accept an optional `session` parameter and wrap work in `runTransaction`.
 
@@ -161,19 +252,6 @@ Each l10n module lives in `src/modules/l10n_<locale>/` and extends a core module
   - `POST /:id/submit-acceptance` — Submit MA/MAP/MR message
   - `POST /hacienda-callback` — Public webhook (no auth)
 
-### Translation / i18n — Current State
-
-Backend-driven translation system using MongoDB-backed `{ locale, scope, key, value }` storage, implemented:
-
-- **Module**: `src/modules/translations/` — model, DTO, service, controller, routes
-- **API**: `GET /api/translations/scope?locale=:locale&scope=:scope` — key-value record for the custom frontend TranslationService
-- **Language entity**: `src/modules/translations/` also contains Language model/DTO/service/controller/routes — `/api/languages` CRUD, stores `{ locale, name, nativeName, active }`
-- **Standard CRUD** on `/api/translations` and `/api/languages` for admin management
-- **User model**: `language` field (string, default `"en"`) on `src/modules/users/models/user.model.ts`
-- **User DTO**: `language` field on `UserDTO`, plus `UpdateLanguageDTO` for the `/me/language` endpoint
-- **userStorage** (`src/system/libraries/auth/user-storage.ts`): `locale` property added, set from `user.language` in auth middleware
-- **Endpoint**: `PUT /api/users/me/language` — updates user language preference and refreshes userStorage.locale
-
 ### PDF Services — Hardcoded Locales
 
 | Service | `<html lang>` | Date locale | Status labels |
@@ -191,23 +269,22 @@ Backend-driven translation system using MongoDB-backed `{ locale, scope, key, va
 
 All number formatting uses `.toFixed(2)` or `.toFixed(5)` — no `Intl.NumberFormat` usage.
 
-### Translation Architecture (Implemented)
+### Translation & Languages
 
-Backend translation infrastructure is in place:
-- `src/modules/translations/` — MongoDB-backed translations module plus Language entity
-- `GET /api/translations/scope?locale=:locale&scope=:scope` — scope-based key-value read
-- Standard CRUD on `/api/translations` and `/api/languages` for admin management
-- `language` field on User model + DTO
-- `PUT /api/users/me/language` — user language preference endpoint
-- `locale` on userStorage, set from `user.language` in auth middleware
-- Frontend: custom `TranslationService` (signal-based, scope-lazy-loaded) in `@avalantec/base-app/translation`
-- Frontend: `TranslatePipe` (`| translate`) and `provideTranslations(scope)` per feature lib
-- Frontend: Language selector `p-select` in `UserPanel` — reads `availableLanguages` signal, calls `PUT /api/users/me/language`
+**Phase 1 (implemented).** Backend-driven translation system using MongoDB-backed storage:
 
-Remaining work for full i18n:
-- PDF services accept `locale` parameter instead of hardcoded values (Phase 2)
-- `ValidationMessageService` for `CrEinvoiceValidatorService` (Phase 2)
-- Template string extraction from UI into translation keys (Phase 2)
+- **`src/modules/translations/`** — Translation model (`{ locale, scope, key, value, active }`) + Language entity (`{ locale, name, nativeName, active }`)
+- **Endpoints:**
+  - `GET /api/translations/scope?locale=:locale&scope=:scope` — scope-based key-value read (public, no auth required)
+  - Standard CRUD on `/api/translations` and `/api/languages` for admin management
+- **User language preference:**
+  - `language` field (string, default `"en"`) on User model + `UserDTO`
+  - `UpdateLanguageDTO` + `PUT /api/users/me/language` — updates user language and refreshes `userStorage.locale`
+  - `userStorage.locale` set from `user.language` in auth middleware (line 168 of `authenticate-middleware.ts`)
+**Remaining work (Phase 2):**
+- PDF services accept `locale` parameter instead of hardcoded values
+- `ValidationMessageService` for `CrEinvoiceValidatorService`
+- Template string extraction from UI into translation keys
 
 ## Code documentation
 - Every exported function, method, and class must have a full JSDoc comment describing its purpose, `@param` (with type and description), and `@returns` (with type and description) where applicable.
