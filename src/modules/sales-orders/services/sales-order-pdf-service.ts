@@ -89,7 +89,7 @@ export class SalesOrderPdfService {
         return `
         <tr>
           <td class="left">${esc(
-            item.description || (item.productId?.name ?? "")
+            item.description || (item.productId?.name ?? ""),
           )}</td>
           <td class="right">${esc(item.quantity ?? 0)}</td>
           <td class="right">${fmt(item.unitPrice)}</td>
@@ -105,7 +105,7 @@ export class SalesOrderPdfService {
       <div class="totals-row">
         <span>Tax</span>
         <span>${fmt(t.amount)}</span>
-      </div>`
+      </div>`,
       )
       .join("");
 
@@ -176,7 +176,7 @@ export class SalesOrderPdfService {
       ${
         currencyLabel
           ? `<div style="margin-top:6px;font-size:10px;color:#6b7280;">${esc(
-              currencyLabel
+              currencyLabel,
             )}</div>`
           : ""
       }
@@ -193,12 +193,12 @@ export class SalesOrderPdfService {
     <div class="meta-block">
       <h3>Details</h3>
       <p><span class="label">Close Date:</span> ${esc(
-        fmtDate(order.closeDate)
+        fmtDate(order.closeDate),
       )}</p>
       ${
         salespersonName !== "—"
           ? `<p><span class="label">Salesperson:</span> ${esc(
-              salespersonName
+              salespersonName,
             )}</p>`
           : ""
       }

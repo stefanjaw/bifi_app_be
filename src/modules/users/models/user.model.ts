@@ -67,7 +67,7 @@ const userSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 // Case-insensitive unique index on email so the same address can never spawn
@@ -78,7 +78,7 @@ userSchema.index(
     unique: true,
     collation: { locale: "en", strength: 2 },
     name: "email_unique_ci",
-  }
+  },
 );
 
 userSchema.plugin(paginate);
@@ -86,7 +86,7 @@ userSchema.plugin(autopopulate);
 
 const userModel = mongoose.model<UserDocument, PaginateModel<UserDocument>>(
   "User",
-  userSchema
+  userSchema,
 );
 
 export { userModel };

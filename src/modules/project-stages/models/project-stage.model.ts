@@ -22,7 +22,7 @@ const projectStageSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 projectStageSchema.plugin(paginate);

@@ -240,8 +240,8 @@ export class InvoiceDTO {
   @Transform(({ value }) =>
     plainToInstance(
       InvoicePDFDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   pdf!: InvoicePDFDTO;
 
@@ -249,8 +249,8 @@ export class InvoiceDTO {
   @Type(() => InvoiceCommentDTO)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
-      plainToInstance(InvoiceCommentDTO, item)
-    )
+      plainToInstance(InvoiceCommentDTO, item),
+    ),
   )
   @IsArray()
   @IsOptional()

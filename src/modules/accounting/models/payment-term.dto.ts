@@ -36,8 +36,8 @@ export class PaymentTermDTO {
   @Type(() => PaymentTermLineDTO)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
-      plainToInstance(PaymentTermLineDTO, item)
-    )
+      plainToInstance(PaymentTermLineDTO, item),
+    ),
   )
   @IsOptional()
   lines?: PaymentTermLineDTO[];

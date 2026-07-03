@@ -13,7 +13,7 @@ export function isMulterFile(data: unknown): data is Express.Multer.File {
  * @returns True if the value is an array of Express.Multer.File.
  */
 export function isMulterFileArray(
-  data: unknown
+  data: unknown,
 ): data is Express.Multer.File[] {
   return Array.isArray(data) && data.every(isMulterFile);
 }
@@ -25,7 +25,7 @@ export function isMulterFileArray(
  * @returns True if the value is a single or array of Express.Multer.File.
  */
 export function isValidFileUpload(
-  data: unknown
+  data: unknown,
 ): data is Express.Multer.File | Express.Multer.File[] {
   return (
     data !== undefined &&

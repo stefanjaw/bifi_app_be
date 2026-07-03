@@ -21,7 +21,7 @@ export class CrEinvoiceSettingsRouter {
     this.router.get(
       "/cr-einvoice/settings",
       authorizeMiddleware("cr-einvoice/settings", "read"),
-      crEinvoiceSettingsController.getSettings
+      crEinvoiceSettingsController.getSettings,
     );
 
     this.router.put(
@@ -29,7 +29,7 @@ export class CrEinvoiceSettingsRouter {
       upload.fields([{ name: "certificateFile", maxCount: 1 }]),
       authorizeMiddleware("cr-einvoice/settings", "update"),
       validateBodyMiddleware(CrEinvoiceSettingsDTO),
-      crEinvoiceSettingsController.upsertSettings
+      crEinvoiceSettingsController.upsertSettings,
     );
   }
 

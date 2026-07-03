@@ -18,7 +18,7 @@ export class GenAIRouter {
       this.upload.array("files"),
       validateBodyMiddleware(GenAIDTO),
       authorizeMiddleware("genai/generate", "create"),
-      this.controller.generate
+      this.controller.generate,
     );
 
     this.router.post(
@@ -26,7 +26,7 @@ export class GenAIRouter {
       this.upload.array("files"),
       validateBodyMiddleware(GenAIDTO),
       authorizeMiddleware("genai/generate-stream", "create"),
-      this.controller.generateStream
+      this.controller.generateStream,
     );
   }
 

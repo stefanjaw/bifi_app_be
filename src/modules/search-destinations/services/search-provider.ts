@@ -40,8 +40,8 @@ export interface SearchProvider {
 export class MongoTextSearchProvider implements SearchProvider {
   constructor(
     private readonly findActive: (
-      filter: Record<string, any>
-    ) => Promise<SearchDestinationDocument[]>
+      filter: Record<string, any>,
+    ) => Promise<SearchDestinationDocument[]>,
   ) {}
 
   async search(query: string, limit = 20): Promise<SearchResult[]> {
@@ -72,7 +72,7 @@ export class MongoTextSearchProvider implements SearchProvider {
       .sort((a, b) => {
         if (b.score !== a.score) return b.score - a.score;
         return (a.destination.label || "").localeCompare(
-          b.destination.label || ""
+          b.destination.label || "",
         );
       });
 
@@ -92,13 +92,13 @@ export class MongoTextSearchProvider implements SearchProvider {
    */
   private scoreDestination(
     destination: SearchDestinationDocument,
-    q: string
+    q: string,
   ): number {
     const label = (destination.label || "").toLowerCase();
     const group = (destination.group || "").toLowerCase();
     const description = (destination.description || "").toLowerCase();
     const keywords = (destination.keywords || []).map((k) =>
-      (k || "").toLowerCase()
+      (k || "").toLowerCase(),
     );
 
     let score = 0;

@@ -18,11 +18,11 @@ export class ActivityHistoryService extends BaseService<ActivityHistoryDocument>
    */
   override async create(
     data: Record<string, any>,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ActivityHistoryDocument> {
     return super.create(
       { ...data, userId: userStorage.getStore()?.user?._id },
-      session
+      session,
     );
   }
 

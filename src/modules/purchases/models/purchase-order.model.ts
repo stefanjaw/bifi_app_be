@@ -26,7 +26,7 @@ const lineItemSchema = new Schema(
       autopopulate: { select: "name discountType value", maxDepth: 1 },
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const appliedTaxSchema = new Schema(
@@ -34,7 +34,7 @@ const appliedTaxSchema = new Schema(
     taxId: { type: Schema.Types.ObjectId, ref: "Tax", required: true },
     amount: { type: Number, required: true, default: 0 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const purchaseOrderSchema = new Schema(
@@ -74,7 +74,7 @@ const purchaseOrderSchema = new Schema(
       autopopulate: { maxDepth: 1 },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 purchaseOrderSchema.plugin(autopopulate);

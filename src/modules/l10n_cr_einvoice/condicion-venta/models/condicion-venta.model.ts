@@ -14,7 +14,7 @@ const condicionVentaSchema = new Schema(
     description: { type: String, required: true },
     active: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 condicionVentaSchema.plugin(paginate);

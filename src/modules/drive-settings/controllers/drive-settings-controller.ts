@@ -18,7 +18,7 @@ export class DriveSettingsController extends BaseController<DriveSettingsDocumen
   protected async getSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const settings = await (
@@ -27,7 +27,7 @@ export class DriveSettingsController extends BaseController<DriveSettingsDocumen
       if (settings) {
         const sanitized = settings.toObject();
         sanitized.serviceAccountKey = this.maskServiceAccountKey(
-          sanitized.serviceAccountKey
+          sanitized.serviceAccountKey,
         );
         this.sendData(res, sanitized);
       } else {
@@ -41,7 +41,7 @@ export class DriveSettingsController extends BaseController<DriveSettingsDocumen
   protected async upsertSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const driveService = this.service as DriveSettingsService;
@@ -55,7 +55,7 @@ export class DriveSettingsController extends BaseController<DriveSettingsDocumen
 
       const sanitized = result.toObject();
       sanitized.serviceAccountKey = this.maskServiceAccountKey(
-        sanitized.serviceAccountKey
+        sanitized.serviceAccountKey,
       );
       this.sendData(res, sanitized);
     } catch (error) {

@@ -13,13 +13,13 @@ export class FileRouter {
     this.router.get(
       "/files/:id",
       authorizeMiddleware("files/:id", "read"),
-      controller.getById
+      controller.getById,
     );
     this.router.post(
       "/files",
       this.upload.any(),
       authorizeMiddleware("files", "create"),
-      controller.uploadFiles
+      controller.uploadFiles,
     );
   }
 

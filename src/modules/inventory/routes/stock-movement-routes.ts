@@ -30,7 +30,7 @@ export class StockMovementRouter extends BaseRoutes<StockMovementDocument> {
       this.upload.any(),
       validateBodyMiddleware(TransferDTO),
       authorizeMiddleware("inventory/movements", "create"),
-      stockMovementController.transfer
+      stockMovementController.transfer,
     );
   }
 }

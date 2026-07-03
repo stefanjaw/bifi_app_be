@@ -11,7 +11,7 @@ export class SupplierController extends BaseController<ContactDocument> {
   protected async getAllHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const searchParams = req.query.searchParams
@@ -23,7 +23,7 @@ export class SupplierController extends BaseController<ContactDocument> {
 
       const result = await (this.service as PurchaseSuppliersService).getAll(
         searchParams,
-        paginationOptions
+        paginationOptions,
       );
       this.sendData(res, result);
     } catch (error) {
@@ -34,7 +34,7 @@ export class SupplierController extends BaseController<ContactDocument> {
   protected async getSupplierByIdHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const result = await (

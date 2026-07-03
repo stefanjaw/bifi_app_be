@@ -30,7 +30,7 @@ const salesOrderStageSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 salesOrderStageSchema.plugin(paginate);

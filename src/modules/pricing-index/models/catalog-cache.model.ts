@@ -33,7 +33,7 @@ const catalogCacheSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 catalogCacheSchema.index({

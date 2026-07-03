@@ -21,7 +21,7 @@ export class TicketRouter extends BaseRoutes<TicketDocument> {
     this.router.get(
       "/tickets/report",
       authorizeMiddleware("tickets/report", "read"),
-      (req, res, next) => ticketController.reportHandler(req, res, next)
+      (req, res, next) => ticketController.reportHandler(req, res, next),
     );
 
     this.initGetByIdRoute();

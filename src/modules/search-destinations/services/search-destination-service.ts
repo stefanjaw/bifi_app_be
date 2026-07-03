@@ -21,7 +21,7 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
     // constraint (no Atlas $search). Swapping engines = new implementation.
     this.provider = new MongoTextSearchProvider(async (filter) => {
       const model = this.connectionManager.bindModelToDb(
-        searchDestinationModel
+        searchDestinationModel,
       );
       return (await model
         .find(filter)
@@ -64,7 +64,7 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
    */
   async syncDestinations(
     destinations: Array<Record<string, any>>,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<{ inserted: number; updated: number; deactivated: number }> {
     const model = this.connectionManager.bindModelToDb(searchDestinationModel);
 
@@ -97,7 +97,7 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
               isSystem: true,
             },
           ],
-          { session: session ?? undefined }
+          { session: session ?? undefined },
         );
         inserted++;
         continue;
@@ -140,7 +140,7 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
         key: { $nin: Array.from(incomingKeys) },
       },
       { active: false },
-      { session: session ?? undefined }
+      { session: session ?? undefined },
     );
 
     return {
@@ -169,10 +169,10 @@ export async function seedSearchDestinations(): Promise<void> {
       resource: d.resource ?? "",
       active: true,
       isSystem: true,
-    }))
+    })),
   );
 
   console.log(
-    `Seeded ${DEFAULT_SEARCH_DESTINATIONS.length} default search destinations.`
+    `Seeded ${DEFAULT_SEARCH_DESTINATIONS.length} default search destinations.`,
   );
 }

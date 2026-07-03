@@ -30,7 +30,7 @@ export class AssetCommissioningDTO {
 }
 
 export class UpdateAssetCommissioningDTO extends PartialType(
-  AssetCommissioningDTO
+  AssetCommissioningDTO,
 ) {
   @IsMongoId()
   _id!: string;

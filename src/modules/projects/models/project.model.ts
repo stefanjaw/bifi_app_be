@@ -78,7 +78,7 @@ const projectSchema = new Schema(
     timestamps: true,
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
-  }
+  },
 );
 
 // projectSchema.virtual("children", {

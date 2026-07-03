@@ -24,7 +24,7 @@ export const reportingSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 reportingSchema.plugin(paginate);

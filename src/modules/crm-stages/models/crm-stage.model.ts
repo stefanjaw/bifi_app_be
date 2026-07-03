@@ -45,7 +45,7 @@ const crmStageSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 crmStageSchema.plugin(paginate);

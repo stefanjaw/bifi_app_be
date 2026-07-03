@@ -34,7 +34,7 @@ const roomSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 roomSchema.plugin(paginate);
@@ -42,7 +42,7 @@ roomSchema.plugin(autopopulate);
 
 const roomModel = mongoose.model<RoomDocument, PaginateModel<RoomDocument>>(
   "Room",
-  roomSchema
+  roomSchema,
 );
 
 export { roomModel };

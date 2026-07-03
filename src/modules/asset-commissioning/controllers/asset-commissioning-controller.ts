@@ -27,7 +27,7 @@ export class AssetCommissioningController extends BaseController<AssetCommission
   protected override async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
@@ -36,7 +36,7 @@ export class AssetCommissioningController extends BaseController<AssetCommission
         for (const file of files) {
           this.fileValidator.validateFileType(
             file,
-            this.acceptedAttarchmentTypes
+            this.acceptedAttarchmentTypes,
           );
         }
       } catch (error: any) {
@@ -55,7 +55,7 @@ export class AssetCommissioningController extends BaseController<AssetCommission
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
@@ -64,7 +64,7 @@ export class AssetCommissioningController extends BaseController<AssetCommission
         for (const file of files) {
           this.fileValidator.validateFileType(
             file,
-            this.acceptedAttarchmentTypes
+            this.acceptedAttarchmentTypes,
           );
         }
       } catch (error: any) {
@@ -83,7 +83,7 @@ export class AssetCommissioningController extends BaseController<AssetCommission
   protected async updateDecommissionHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
       const body = { ...req.body };
@@ -100,7 +100,7 @@ export class AssetCommissioningController extends BaseController<AssetCommission
   updateDecommission = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.updateDecommissionHandler(req, res, next);
   };

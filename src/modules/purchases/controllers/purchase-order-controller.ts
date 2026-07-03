@@ -14,14 +14,14 @@ export class PurchaseOrderController extends BaseController<PurchaseOrderDocumen
   updateStatus = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const { id } = req.params;
       const { status } = req.body;
       const updated = await (this.service as PurchaseOrderService).updateStatus(
         id,
-        status
+        status,
       );
       this.sendData(res, updated);
     } catch (error) {
@@ -32,7 +32,7 @@ export class PurchaseOrderController extends BaseController<PurchaseOrderDocumen
   exportPdf = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> => {
     try {
       const { id } = req.params;

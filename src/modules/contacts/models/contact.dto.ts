@@ -19,9 +19,7 @@ import {
 import { PartialType } from "../../../system";
 
 @ValidatorConstraint({ name: "atLeastOneContact", async: false })
-export class AtLeastOneContactConstraint
-  implements ValidatorConstraintInterface
-{
+export class AtLeastOneContactConstraint implements ValidatorConstraintInterface {
   validate(_: any, args: ValidationArguments) {
     const obj = args.object as any;
 
@@ -118,8 +116,8 @@ export class ContactDTO {
   @IsOptional()
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
-      plainToInstance(CrEconomicActivityCodeDTO, item)
-    )
+      plainToInstance(CrEconomicActivityCodeDTO, item),
+    ),
   )
   crEconomicActivityCodes?: CrEconomicActivityCodeDTO[];
 
@@ -133,7 +131,7 @@ export class ContactDTO {
 
   @IsMongoId({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   @IsOptional()
   childIds?: string[];

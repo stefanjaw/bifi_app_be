@@ -29,7 +29,7 @@ const emailTemplateSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 emailTemplateSchema.plugin(paginate);

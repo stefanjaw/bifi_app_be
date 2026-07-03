@@ -41,44 +41,44 @@ export class CrEinvoiceActionRouter {
         { name: "pdf", maxCount: 1 },
       ]),
       authorizeMiddleware("accounting/invoices", "create"),
-      this.importReceived
+      this.importReceived,
     );
 
     this.router.post(
       "/cr-einvoice/:id/submit-einvoice",
       authorizeMiddleware("accounting/invoices", "update"),
-      this.submitEinvoice
+      this.submitEinvoice,
     );
 
     this.router.post(
       "/cr-einvoice/:id/poll-einvoice-status",
       authorizeMiddleware("accounting/invoices", "update"),
-      this.pollEinvoiceStatus
+      this.pollEinvoiceStatus,
     );
 
     this.router.post(
       "/cr-einvoice/:id/create-note",
       authorizeMiddleware("accounting/invoices", "create"),
-      this.createNote
+      this.createNote,
     );
 
     this.router.post(
       "/cr-einvoice/:id/submit-acceptance",
       authorizeMiddleware("accounting/invoices", "update"),
-      this.submitAcceptance
+      this.submitAcceptance,
     );
 
     this.router.get(
       "/cr-einvoice/:id/poll-acceptance-status",
       authorizeMiddleware("accounting/invoices", "update"),
-      this.pollAcceptanceStatus
+      this.pollAcceptanceStatus,
     );
   }
 
   private importReceived = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const files = req.files as
@@ -94,7 +94,7 @@ export class CrEinvoiceActionRouter {
       const result = await crEinvoiceReceptionService.importReceived(
         firmadoXmlFiles[0],
         files?.["haciendaXml"]?.[0],
-        files?.["pdf"]?.[0]
+        files?.["pdf"]?.[0],
       );
       sendData(res, result);
     } catch (error: any) {
@@ -105,11 +105,11 @@ export class CrEinvoiceActionRouter {
   private submitEinvoice = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const result = await crEinvoiceActionService.submitToHacienda(
-        req.params.id
+        req.params.id,
       );
       sendData(res, result);
     } catch (error: any) {
@@ -120,11 +120,11 @@ export class CrEinvoiceActionRouter {
   private pollEinvoiceStatus = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const result = await crEinvoiceActionService.pollEinvoiceStatus(
-        req.params.id
+        req.params.id,
       );
       sendData(res, result);
     } catch (error: any) {
@@ -135,7 +135,7 @@ export class CrEinvoiceActionRouter {
   private createNote = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const { noteType, codigo, codigoReferenciaOTRO, razon } = req.body;
@@ -144,7 +144,7 @@ export class CrEinvoiceActionRouter {
         noteType,
         codigo,
         razon,
-        codigoReferenciaOTRO
+        codigoReferenciaOTRO,
       );
       sendData(res, result);
     } catch (error: any) {
@@ -155,7 +155,7 @@ export class CrEinvoiceActionRouter {
   private submitAcceptance = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const { id } = req.params;
@@ -166,7 +166,7 @@ export class CrEinvoiceActionRouter {
       const einvoiceType: string = (invoice as any).crEinvoiceType ?? "";
       if (!["MA", "MAP", "MR"].includes(einvoiceType)) {
         throw new ValidationException(
-          "Only MA, MAP, or MR invoices can submit an acceptance message."
+          "Only MA, MAP, or MR invoices can submit an acceptance message.",
         );
       }
 
@@ -176,7 +176,7 @@ export class CrEinvoiceActionRouter {
       }
 
       const settingsModel = this.connectionManager.bindModelToDb(
-        (crEinvoiceSettingsService as any).model
+        (crEinvoiceSettingsService as any).model,
       );
       const settings: any = await settingsModel
         .findById((settingsRaw as any)._id)
@@ -197,7 +197,7 @@ export class CrEinvoiceActionRouter {
         codigoEstablecimiento,
         codigoPuntoVenta,
         "05",
-        counter
+        counter,
       );
 
       const emisorContact = settings.emisorCompanyId?.contactId as any;
@@ -214,18 +214,18 @@ export class CrEinvoiceActionRouter {
         updatedInvoice?.toObject() ?? {},
         settings,
         clave,
-        numeroConsecutivo
+        numeroConsecutivo,
       );
 
       try {
         const haciendaResponse = await haciendaSubmissionService.submitPayload(
           payload,
-          settings
+          settings,
         );
         const updated = await model.findByIdAndUpdate(
           id,
           { crAcceptanceHaciendaResponse: haciendaResponse },
-          { new: true }
+          { new: true },
         );
         sendData(res, updated);
       } catch (error: any) {
@@ -245,7 +245,7 @@ export class CrEinvoiceActionRouter {
   private pollAcceptanceStatus = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const { id } = req.params;
@@ -267,13 +267,13 @@ export class CrEinvoiceActionRouter {
           : invoiceClave || consecutivo;
       if (!clave) {
         throw new ValidationException(
-          "No acceptance clave — submit acceptance first."
+          "No acceptance clave — submit acceptance first.",
         );
       }
 
       const pollResponse = await haciendaSubmissionService.pollStatus(
         clave,
-        settings
+        settings,
       );
       const data = pollResponse?.result ?? pollResponse;
       const rawState = (
@@ -287,13 +287,13 @@ export class CrEinvoiceActionRouter {
         rawState === "aceptado"
           ? "accepted"
           : rawState === "rechazado"
-          ? "rejected"
-          : (invoice as any).crAcceptanceStatus ?? "sent";
+            ? "rejected"
+            : ((invoice as any).crAcceptanceStatus ?? "sent");
 
       const updated = await model.findByIdAndUpdate(
         id,
         { crAcceptanceHaciendaResponse: data, crAcceptanceStatus: newStatus },
-        { new: true }
+        { new: true },
       );
       sendData(res, updated);
     } catch (error: any) {

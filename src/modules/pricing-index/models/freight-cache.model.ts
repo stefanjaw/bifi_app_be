@@ -45,7 +45,7 @@ const freightCacheSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 freightCacheSchema.index({

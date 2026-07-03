@@ -15,7 +15,7 @@ import dayjs from "dayjs";
  */
 const computeValue = (
   value: string | number | null | undefined | dayjs.Dayjs,
-  fixation = 2
+  fixation = 2,
 ) => {
   switch (typeof value) {
     case "string":
@@ -53,15 +53,15 @@ const headerMapper = (data: BCDDocument) => ({
   voyageOrFlightNumber: computeValue(data.transport?.flightOrVoyage), // 15
   portOfArrival: computeValue(data.transport?.port?.code), // 16
   dateOfArrival: computeValue(
-    data.transport?.arrivalDate ? dayjs(data.transport.arrivalDate) : null
+    data.transport?.arrivalDate ? dayjs(data.transport.arrivalDate) : null,
   ), // 17
   manifest: computeValue(data.manifest), // 18
   masterBOLAWB: computeValue(data.masterBOLAWB), // 19
   countryDispatch: computeValue(
-    data.directShipmentCountry?.code.substring(0, 2)
+    data.directShipmentCountry?.code.substring(0, 2),
   ), // 20
   countryOrigin: computeValue(
-    data.originalShipmentCountry?.code.substring(0, 2)
+    data.originalShipmentCountry?.code.substring(0, 2),
   ), // 21
   warehouseId: computeValue(data.warehouseId), // 22
   OGDPaymentCode: computeValue(data.ogd?.paymentCode), // 23
@@ -77,7 +77,7 @@ const headerMapper = (data: BCDDocument) => ({
   declarantName: computeValue(data.declarant?.name), // 33
   declarantCompanyId: computeValue(data.declarant?.companyId), // 34
   declarantDate: computeValue(
-    data.declarant?.date ? dayjs(data.declarant?.date) : null
+    data.declarant?.date ? dayjs(data.declarant?.date) : null,
   ), // 35
   declarantCapacity: computeValue(data.declarant?.capacity), // 36
   declarantTraderReference: computeValue(data.declarant?.traderReference), // 37
@@ -115,7 +115,7 @@ const containerMapper = (data: string) => ({
  */
 const additionalInfoMapper = (
   data: BCDAdditionalInformationDocument,
-  type: "header" | "record"
+  type: "header" | "record",
 ) => ({
   recordType: type === "header" ? "R26" : "R60", // 1
   infoType: computeValue(data.type?.code), // 2

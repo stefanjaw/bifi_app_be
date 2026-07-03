@@ -58,7 +58,7 @@ const journalSchema = new Schema(
     },
     active: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 journalSchema.plugin(paginate);

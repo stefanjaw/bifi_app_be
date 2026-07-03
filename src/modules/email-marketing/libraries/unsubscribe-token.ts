@@ -15,7 +15,7 @@ function base64url(input: Buffer | string): string {
 
 function sign(payload: string): string {
   return base64url(
-    crypto.createHmac("sha256", SECRET).update(payload).digest()
+    crypto.createHmac("sha256", SECRET).update(payload).digest(),
   );
 }
 
@@ -42,7 +42,7 @@ export function createUnsubscribeToken(payload: UnsubscribePayload): string {
  * @returns The parsed UnsubscribePayload if valid, or null if tampered/expired.
  */
 export function verifyUnsubscribeToken(
-  token: string
+  token: string,
 ): UnsubscribePayload | null {
   if (!token || typeof token !== "string") return null;
   const parts = token.split(".");
@@ -55,7 +55,7 @@ export function verifyUnsubscribeToken(
   try {
     const json = Buffer.from(
       encoded.replace(/-/g, "+").replace(/_/g, "/"),
-      "base64"
+      "base64",
     ).toString("utf-8");
     return JSON.parse(json) as UnsubscribePayload;
   } catch {

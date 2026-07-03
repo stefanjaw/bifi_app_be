@@ -35,7 +35,7 @@ const exchangeRateSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 exchangeRateSchema.plugin(paginate);

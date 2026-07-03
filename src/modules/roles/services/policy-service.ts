@@ -14,7 +14,7 @@ export class PolicyService extends BaseService<PolicyDocument> {
 
   override async create(
     data: Record<string, any>,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<PolicyDocument> {
     return await runTransaction<PolicyDocument>(session, async (newSession) => {
       // check that no other policy exists with the same resource and action
@@ -27,7 +27,7 @@ export class PolicyService extends BaseService<PolicyDocument> {
 
       if (existingPolicy) {
         throw new ConflictException(
-          "A policy already exists for this resource and action."
+          "A policy already exists for this resource and action.",
         );
       }
 
@@ -37,7 +37,7 @@ export class PolicyService extends BaseService<PolicyDocument> {
 
   override async update(
     data: Record<string, any>,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<PolicyDocument> {
     return await runTransaction<PolicyDocument>(session, async (newSession) => {
       // check that no other policy exists with the same resource and action
@@ -52,7 +52,7 @@ export class PolicyService extends BaseService<PolicyDocument> {
 
       if (existingPolicy) {
         throw new ConflictException(
-          "A policy already exists for this resource and action."
+          "A policy already exists for this resource and action.",
         );
       }
 

@@ -8,7 +8,7 @@ export class NotificationController {
   getMyNotifications = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const user = userStorage.getStore()?.user;
@@ -19,7 +19,7 @@ export class NotificationController {
       const limit = parseInt(req.query["limit"] as string) || 20;
       const data = await notificationService.getMyNotifications(
         user._id,
-        limit
+        limit,
       );
       res.json(data);
     } catch (e) {

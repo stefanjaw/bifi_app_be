@@ -23,12 +23,12 @@ export class SupplierRouter extends BaseRoutes<ContactDocument> {
     this.router.get(
       "/purchases/suppliers",
       authorizeMiddleware("purchases/suppliers", "read"),
-      supplierController.getAll
+      supplierController.getAll,
     );
     this.router.get(
       "/purchases/suppliers/:id",
       authorizeMiddleware("purchases/suppliers", "read"),
-      supplierController.getSupplierById
+      supplierController.getSupplierById,
     );
   }
 }

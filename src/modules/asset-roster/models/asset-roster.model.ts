@@ -274,7 +274,7 @@ const assetRosterSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 assetRosterSchema.virtual("assetCommission", {

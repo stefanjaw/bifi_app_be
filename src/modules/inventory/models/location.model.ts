@@ -33,7 +33,7 @@ const locationSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 locationSchema.plugin(paginate);

@@ -15,7 +15,7 @@ export class TicketController extends BaseController<TicketDocument> {
   protected override async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
@@ -40,7 +40,7 @@ export class TicketController extends BaseController<TicketDocument> {
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
@@ -65,7 +65,7 @@ export class TicketController extends BaseController<TicketDocument> {
   async reportHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     try {
       const report = await ticketService.generateReport();

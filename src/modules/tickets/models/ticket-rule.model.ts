@@ -44,7 +44,7 @@ const ticketRuleSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 ticketRuleSchema.plugin(paginate);

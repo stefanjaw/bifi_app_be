@@ -77,7 +77,7 @@ const taxSchema = new Schema(
     },
     crTarifa: { type: Number, required: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 taxSchema.plugin(paginate);
@@ -85,5 +85,5 @@ taxSchema.plugin(autopopulate);
 
 export const taxModel = mongoose.model<TaxDocument, PaginateModel<TaxDocument>>(
   "Tax",
-  taxSchema
+  taxSchema,
 );

@@ -49,7 +49,7 @@ const subscriberSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 subscriberSchema.index({ email: 1, listId: 1 }, { unique: true });

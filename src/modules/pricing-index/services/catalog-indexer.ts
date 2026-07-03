@@ -24,7 +24,7 @@ export class CatalogIndexer {
   constructor(
     private readonly connectionManager: ConnectionManager,
     private readonly fileParserService: FileParserService,
-    private readonly driveFileService: DriveFileService
+    private readonly driveFileService: DriveFileService,
   ) {}
 
   private getModel(): PaginateModel<CatalogCacheDocument> {
@@ -44,7 +44,7 @@ export class CatalogIndexer {
     driveConnector: GoogleDriveConnectorService,
     pricingFolders: FolderRef[],
     configFolderId: string,
-    lastIndexed?: Date
+    lastIndexed?: Date,
   ): Promise<CatalogIndexResult> {
     const allFileParts: (FilePart & { folderId: string })[] = [];
     const errors: string[] = [];
@@ -55,7 +55,7 @@ export class CatalogIndexer {
         const downloaded = await this.driveFileService.downloadFolderFiles(
           folder.folderId,
           driveConnector,
-          lastIndexed
+          lastIndexed,
         );
         for (const entry of downloaded.files) {
           allFileParts.push({ ...entry, folderId: folder.folderId });
@@ -65,8 +65,8 @@ export class CatalogIndexer {
       } catch (err: unknown) {
         errors.push(
           `Pricing folder ${folder.label || folder.folderId}: ${toErrorMessage(
-            err
-          )}`
+            err,
+          )}`,
         );
       }
     }
@@ -76,11 +76,11 @@ export class CatalogIndexer {
     if (allFileParts.length > 0) {
       try {
         console.log(
-          `Extracting catalog records from ${allFileParts.length} file(s)...`
+          `Extracting catalog records from ${allFileParts.length} file(s)...`,
         );
         const extracted = await this.extractBatch(gemsService, allFileParts);
         const filePartMap = new Map(
-          allFileParts.map((fp) => [fp.file.name, fp.folderId])
+          allFileParts.map((fp) => [fp.file.name, fp.folderId]),
         );
         for (const record of extracted) {
           if (record.product_name || record.part_number) {
@@ -108,7 +108,7 @@ export class CatalogIndexer {
         await driveConnector.uploadFile(
           configFolderId,
           "master_catalog.csv",
-          csvBuffer
+          csvBuffer,
         );
       }
     } catch (err: unknown) {
@@ -120,7 +120,7 @@ export class CatalogIndexer {
 
   private async extractBatch(
     gemsService: GemsService,
-    files: (FilePart & { folderId: string })[]
+    files: (FilePart & { folderId: string })[],
   ): Promise<CatalogRecord[]> {
     const promptParts = this.driveFileService.buildLabeledParts(files);
 

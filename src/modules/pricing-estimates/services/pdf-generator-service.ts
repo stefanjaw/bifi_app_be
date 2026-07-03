@@ -71,7 +71,7 @@ export class PdfGeneratorService {
         <td>${(item.custPricePerUnit ?? 0).toFixed(2)}</td>
         <td>${(item.marginPct ?? 0).toFixed(1)}%</td>
         <td>${(item.totalCust ?? 0).toFixed(2)}</td>
-      </tr>`
+      </tr>`,
       )
       .join("");
 
@@ -107,17 +107,17 @@ export class PdfGeneratorService {
 
   <div class="meta">
     <span><span class="label">Estimate #:</span> ${esc(
-      estimate.number ?? "N/A"
+      estimate.number ?? "N/A",
     )}</span>
     <span><span class="label">Date:</span> ${esc(date)}</span>
     <span><span class="label">Prepared By:</span> ${esc(
-      estimate.preparedBy ?? "N/A"
+      estimate.preparedBy ?? "N/A",
     )}</span>
     <span><span class="label">Shipping:</span> ${esc(
-      estimate.shippingMethod ?? "N/A"
+      estimate.shippingMethod ?? "N/A",
     )}</span>
     <span><span class="label">Status:</span> ${esc(
-      estimate.status ?? "draft"
+      estimate.status ?? "draft",
     )}</span>
   </div>
 
@@ -125,13 +125,13 @@ export class PdfGeneratorService {
     pricingControls
       ? `<div class="controls">
     <span><strong>Method:</strong> ${esc(
-      pricingControls.method ?? "markup"
+      pricingControls.method ?? "markup",
     )}</span>
     <span><strong>Markup Factor:</strong> ${esc(
-      pricingControls.markupFactor ?? "N/A"
+      pricingControls.markupFactor ?? "N/A",
     )}</span>
     <span><strong>Margin:</strong> ${esc(
-      pricingControls.margin ?? "N/A"
+      pricingControls.margin ?? "N/A",
     )}%</span>
     <span><strong>Duty Free:</strong> ${
       pricingControls.dutyFree ? "Yes" : "No"
@@ -192,7 +192,7 @@ export class PdfGeneratorService {
     <div class="row"><span>Wharfage / Bank Fee (${
       estimate.wharfageBankFeePct ?? 0
     }%):</span><span>$${(estimate.wharfageBankFeeAmount ?? 0).toFixed(
-      2
+      2,
     )}</span></div>
   </div>
 
@@ -203,7 +203,7 @@ export class PdfGeneratorService {
     <span><strong>Output:</strong> ${estimate.outputTokens ?? 0}</span>
     <span><strong>Total Tokens:</strong> ${estimate.totalTokens ?? 0}</span>
     <span><strong>Est. Cost:</strong> $${(estimate.estimatedCost ?? 0).toFixed(
-      4
+      4,
     )}</span>
   </div>
 

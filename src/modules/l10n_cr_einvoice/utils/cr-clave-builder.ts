@@ -13,7 +13,7 @@ export const TIPO_COMPROBANTE_CODES: Record<string, string> = {
 /** Generates an 8-digit random security code for the Hacienda Clave. @returns An 8-digit numeric string. */
 export function generateSecurityCode(): string {
   return Array.from({ length: 8 }, () => Math.floor(Math.random() * 10)).join(
-    ""
+    "",
   );
 }
 
@@ -34,7 +34,7 @@ export function buildNumeroConsecutivo(
   codigoEstablecimiento: string,
   codigoPuntoVenta: string,
   tipoComprobante: string,
-  counter: string
+  counter: string,
 ): string {
   const estab = codigoEstablecimiento.padStart(3, "0").slice(0, 3);
   const pventa = codigoPuntoVenta.padStart(5, "0").slice(0, 5);
@@ -56,7 +56,7 @@ export function buildClave(
   numeroConsecutivo: string,
   fechaEmision: Date,
   emisorCedula: string,
-  situacion = "1"
+  situacion = "1",
 ): string {
   const countryCode = "506";
   // CR is UTC-6; use Costa Rica local date for the clave key
@@ -69,7 +69,7 @@ export function buildClave(
   const clave = `${countryCode}${dd}${mm}${yy}${cedula}${numeroConsecutivo}${situacion}${securityCode}`;
   if (clave.length !== 50) {
     throw new ValidationException(
-      `Clave length mismatch: expected 50, got ${clave.length}`
+      `Clave length mismatch: expected 50, got ${clave.length}`,
     );
   }
   return clave;

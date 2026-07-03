@@ -39,7 +39,7 @@ export class ContactService extends BaseService<ContactDocument> {
    */
   override async create(
     data: ContactDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ContactDocument> {
     return await runTransaction<ContactDocument>(session, async (session) => {
       const model = this.connectionManager.bindModelToDb(this.model);
@@ -47,7 +47,7 @@ export class ContactService extends BaseService<ContactDocument> {
 
       if (isValidFileUpload(data.photo)) {
         const fileId = await bucket.uploadFile(
-          Array.isArray(data.photo) ? data.photo[0] : data.photo
+          Array.isArray(data.photo) ? data.photo[0] : data.photo,
         );
         data.photo = fileId;
       } else {
@@ -60,7 +60,7 @@ export class ContactService extends BaseService<ContactDocument> {
         await model.updateMany(
           { _id: { $in: data.childIds } },
           { parentId: createdContact._id },
-          { session }
+          { session },
         );
       }
 
@@ -77,7 +77,7 @@ export class ContactService extends BaseService<ContactDocument> {
    */
   override async update(
     data: UpdateContactDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ContactDocument> {
     return await runTransaction<ContactDocument>(session, async (session) => {
       const model = this.connectionManager.bindModelToDb(this.model);
@@ -93,7 +93,7 @@ export class ContactService extends BaseService<ContactDocument> {
 
       if (isValidFileUpload(photo)) {
         const fileId = await bucket.uploadFile(
-          Array.isArray(photo) ? photo[0] : photo
+          Array.isArray(photo) ? photo[0] : photo,
         );
         photo = fileId;
       } else if (photo !== undefined) {
@@ -106,14 +106,14 @@ export class ContactService extends BaseService<ContactDocument> {
         const removedChildIds =
           existingContact.childIds?.filter(
             (child: ContactDocument) =>
-              !data.childIds?.includes(child._id.toString())
+              !data.childIds?.includes(child._id.toString()),
           ) || [];
 
         if (removedChildIds.length > 0) {
           await model.updateMany(
             { _id: { $in: removedChildIds } },
             { parentId: null },
-            { session }
+            { session },
           );
         }
 
@@ -121,15 +121,15 @@ export class ContactService extends BaseService<ContactDocument> {
           data.childIds?.filter(
             (id) =>
               !existingContact.childIds?.some(
-                (child) => child._id.toString() === id
-              )
+                (child) => child._id.toString() === id,
+              ),
           ) || [];
 
         if (newChildIds.length > 0) {
           await model.updateMany(
             { _id: { $in: newChildIds } },
             { parentId: data._id },
-            { session }
+            { session },
           );
         }
       }

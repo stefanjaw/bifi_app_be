@@ -27,7 +27,7 @@ const countrySchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 countrySchema.plugin(paginate);

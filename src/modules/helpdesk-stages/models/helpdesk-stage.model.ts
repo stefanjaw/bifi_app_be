@@ -22,7 +22,7 @@ const helpdeskStageSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 helpdeskStageSchema.plugin(paginate);

@@ -246,7 +246,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
    * Only includes optional fields when the DB has a value — never injects defaults.
    */
   private buildTariffPatch(
-    dbTariff: CustomsTariffDocument
+    dbTariff: CustomsTariffDocument,
   ): Omit<ShippingInvoicePdfExtractedDatumLineTariff, "_id"> {
     const patch: Omit<ShippingInvoicePdfExtractedDatumLineTariff, "_id"> = {
       code: dbTariff.code,
@@ -271,7 +271,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
    */
   private applyDbTariffToLine(
     line: ShippingInvoicePdfExtractedDatumLine,
-    dbTariff: CustomsTariffDocument
+    dbTariff: CustomsTariffDocument,
   ): void {
     // Correct authoritative HS code classification fields directly on the line
     line.customsChapter = dbTariff.chapter;
@@ -303,7 +303,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
   private async enrichLineDescriptions(
     line: ShippingInvoicePdfExtractedDatumLine,
     chapter: string,
-    heading: string
+    heading: string,
   ): Promise<void> {
     const [dbChapter, dbHeading] = await Promise.all([
       this.customsChapterService.lookupByNumber(chapter),
@@ -323,11 +323,11 @@ export class ShippingService extends BaseService<ShippingDocument> {
    */
   override async create(
     data: ShippingDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     return await super.create(
       { ...data, createdBy: userStorage.getStore()?.user?._id },
-      session
+      session,
     );
   }
 
@@ -341,11 +341,11 @@ export class ShippingService extends BaseService<ShippingDocument> {
    */
   override async update(
     data: UpdateShippingDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     return await super.update(
       { ...data, updatedBy: userStorage.getStore()?.user?._id },
-      session
+      session,
     );
   }
 
@@ -360,7 +360,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
    */
   async cloneShipping(
     _id: string,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     const userId = userStorage.getStore()?.user?._id;
 
@@ -374,9 +374,9 @@ export class ShippingService extends BaseService<ShippingDocument> {
             ...shipping?.toObject(),
             createdBy: userId,
           },
-          newSession
+          newSession,
         );
-      }
+      },
     );
   }
 
@@ -392,7 +392,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
   async generateShippingFromFiles(
     files: Express.Multer.File[],
     _id: string | undefined,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ShippingDocument> {
     const userId = userStorage.getStore()?.user?._id;
 
@@ -407,12 +407,12 @@ export class ShippingService extends BaseService<ShippingDocument> {
           undefined,
           undefined,
           undefined,
-          newSession
+          newSession,
         );
 
         // Generate
         const parts = files.map((file) =>
-          this.genAIService.fileToGenerativePart(file)
+          this.genAIService.fileToGenerativePart(file),
         );
 
         const response = await this.genAIService.generate({
@@ -429,7 +429,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
 
         // Save pdf files to gridFS
         const gridFSFiles = await Promise.all(
-          files.map(async (file) => await bucket.uploadFile(file))
+          files.map(async (file) => await bucket.uploadFile(file)),
         );
 
         // Attach file to shipping
@@ -440,7 +440,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
               name: files[i].originalname,
               mimeType: files[i].mimetype,
               size: files[i].size,
-            })
+            }),
         );
 
         if (_id) {
@@ -453,7 +453,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
               _id: _id,
               updatedBy: userId,
             },
-            newSession
+            newSession,
           );
         } else {
           return await super.create(
@@ -461,10 +461,10 @@ export class ShippingService extends BaseService<ShippingDocument> {
               ...shippingData,
               createdBy: userId,
             },
-            newSession
+            newSession,
           );
         }
-      }
+      },
     );
   }
 
@@ -476,7 +476,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
    * @throws InternalServerException If the GEN-AI service fails
    */
   async generateHSCodesForShipping(
-    data: HScodeDTO
+    data: HScodeDTO,
   ): Promise<ShippingInvoicePdfExtractedDatumLine[]> {
     try {
       const response = await this.genAIService.generate({
@@ -489,7 +489,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
 
       // Parse as lean plain-object types — no Mongoose document machinery needed here
       const linesData = JSON.parse(
-        response.text || ""
+        response.text || "",
       ) as ShippingInvoicePdfExtractedDatumLine[];
 
       // Enrich each line with authoritative DB data using the HS code
@@ -507,7 +507,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
             this.customsTariffService.lookupByParts(
               chapter,
               heading,
-              subheading
+              subheading,
             ),
             this.enrichLineDescriptions(line, chapter, heading),
           ]);
@@ -515,13 +515,13 @@ export class ShippingService extends BaseService<ShippingDocument> {
           if (dbTariff) {
             this.applyDbTariffToLine(line, dbTariff);
           }
-        })
+        }),
       );
 
       return linesData;
     } catch (error) {
       throw new InternalServerException(
-        "Error generating HS codes for shipping"
+        "Error generating HS codes for shipping",
       );
     }
   }
@@ -534,7 +534,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
    * @throws InternalServerException If the GEN-AI service fails
    */
   async generateTariffForShipping(
-    data: HScodeDTO
+    data: HScodeDTO,
   ): Promise<ShippingInvoicePdfExtractedDatumLine[]> {
     try {
       const response = await this.genAIService.generate({
@@ -547,7 +547,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
 
       // Parse as lean plain-object types — no Mongoose document machinery needed here
       const linesData = JSON.parse(
-        response.text || ""
+        response.text || "",
       ) as ShippingInvoicePdfExtractedDatumLine[];
 
       // Enrich each line with authoritative DB tariff data
@@ -561,7 +561,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
           // First try exact lookup by tariff.code
           if (tariff.code) {
             dbTariff = await this.customsTariffService.lookupByCode(
-              tariff.code
+              tariff.code,
             );
           }
 
@@ -575,7 +575,7 @@ export class ShippingService extends BaseService<ShippingDocument> {
             dbTariff = await this.customsTariffService.lookupByParts(
               tariff.chapter,
               tariff.heading,
-              tariff.subheading
+              tariff.subheading,
             );
           }
 
@@ -584,10 +584,10 @@ export class ShippingService extends BaseService<ShippingDocument> {
             await this.enrichLineDescriptions(
               line,
               dbTariff.chapter,
-              dbTariff.heading
+              dbTariff.heading,
             );
           }
-        })
+        }),
       );
 
       return linesData;

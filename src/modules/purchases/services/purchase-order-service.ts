@@ -39,7 +39,7 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
    */
   private async assertLineTaxesValid(
     lineItems: { taxIds?: string[] }[],
-    session: ClientSession | undefined
+    session: ClientSession | undefined,
   ): Promise<Map<string, TaxInput>> {
     const allIds = new Set<string>();
     for (const item of lineItems) {
@@ -78,7 +78,7 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
       }
       if (tax.taxType !== TaxType.PURCHASE) {
         const err: any = new Error(
-          `Tax "${tax.name}" is not a purchase tax (taxType: ${tax.taxType})`
+          `Tax "${tax.name}" is not a purchase tax (taxType: ${tax.taxType})`,
         );
         err.status = 400;
         throw err;
@@ -98,7 +98,7 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
    */
   private recomputeTotals(
     data: Record<string, any>,
-    taxDocsMap: Map<string, TaxInput>
+    taxDocsMap: Map<string, TaxInput>,
   ): void {
     const lineItems: NormalizedLineItem[] = Array.isArray(data.lineItems)
       ? data.lineItems.map((item: any) => {
@@ -121,7 +121,7 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
     const subtotal = calculateSubtotal(lineItems);
     const { taxTotal, appliedTaxes } = calculateTaxesPerLine(
       lineItems,
-      taxDocsMap
+      taxDocsMap,
     );
     const grandTotal = calculateGrandTotal(subtotal, taxTotal);
 
@@ -150,7 +150,7 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
 
   override async create(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<PurchaseOrderDocument> {
     const rawLineItems: { taxIds?: string[] }[] = Array.isArray(data.lineItems)
       ? data.lineItems
@@ -163,12 +163,12 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
 
   override async update(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<PurchaseOrderDocument> {
     if (Array.isArray(data.lineItems)) {
       const taxDocsMap = await this.assertLineTaxesValid(
         data.lineItems,
-        session
+        session,
       );
       this.recomputeTotals(data, taxDocsMap);
     }

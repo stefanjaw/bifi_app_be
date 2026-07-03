@@ -19,7 +19,7 @@ const productTypeSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 productTypeSchema.plugin(paginate);

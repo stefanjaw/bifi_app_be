@@ -16,7 +16,7 @@ export class SearchRouter {
     this.router.get(
       "/search",
       authorizeMiddleware("search-destinations", "read"),
-      this.controller.search
+      this.controller.search,
     );
   }
 

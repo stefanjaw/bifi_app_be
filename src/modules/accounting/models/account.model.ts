@@ -58,7 +58,7 @@ const accountSchema = new Schema(
     },
     active: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 accountSchema.plugin(paginate);

@@ -31,7 +31,7 @@ export class BaseRoutes<T> {
       | "dtoCreateClass"
       | "dtoUpdateClass"
       | "csvDtoClass"
-    >
+    >,
   ) {
     Object.assign(this, params);
 
@@ -74,7 +74,7 @@ export class BaseRoutes<T> {
     this.router.get(
       `${this.endpoint}/export`,
       authorizeMiddleware(`${this.resource}/export`, "read"),
-      this.controller.exportCSV
+      this.controller.exportCSV,
     );
   }
 
@@ -86,7 +86,7 @@ export class BaseRoutes<T> {
     this.router.get(
       `${this.endpoint}/:id`,
       authorizeMiddleware(this.resource, "read"),
-      this.controller.getById
+      this.controller.getById,
     );
   }
 
@@ -98,7 +98,7 @@ export class BaseRoutes<T> {
     this.router.get(
       this.endpoint,
       authorizeMiddleware(this.resource, "read"),
-      this.controller.get
+      this.controller.get,
     );
   }
 
@@ -113,7 +113,7 @@ export class BaseRoutes<T> {
       this.upload.any(),
       validateBodyMiddleware(this.dtoCreateClass),
       authorizeMiddleware(this.resource, "create"),
-      this.controller.create
+      this.controller.create,
     );
   }
 
@@ -128,10 +128,10 @@ export class BaseRoutes<T> {
       `${this.endpoint}/import`,
       this.upload.single("csv"),
       validateAndTransformCSVMiddleware(
-        this.csvDtoClass || this.dtoCreateClass
+        this.csvDtoClass || this.dtoCreateClass,
       ),
       authorizeMiddleware(`${this.resource}/import`, "create"),
-      this.controller.importCSV
+      this.controller.importCSV,
     );
   }
 
@@ -146,7 +146,7 @@ export class BaseRoutes<T> {
       this.upload.any(),
       validateBodyMiddleware(this.dtoUpdateClass),
       authorizeMiddleware(this.resource, "update"),
-      this.controller.update
+      this.controller.update,
     );
   }
 
@@ -158,7 +158,7 @@ export class BaseRoutes<T> {
     this.router.delete(
       this.endpoint,
       authorizeMiddleware(this.resource, "delete"),
-      this.controller.delete
+      this.controller.delete,
     );
   }
 }

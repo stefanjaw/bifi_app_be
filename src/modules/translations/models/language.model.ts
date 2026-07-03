@@ -32,7 +32,7 @@ const languageSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 languageSchema.index({ locale: 1 }, { unique: true });

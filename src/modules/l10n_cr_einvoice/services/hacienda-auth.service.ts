@@ -23,7 +23,7 @@ export class HaciendaAuthService {
     const response = await axios.post(
       "https://idp.comprobanteselectronicos.go.cr/auth/realms/rut/protocol/openid-connect/token",
       params.toString(),
-      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } },
     );
 
     const { access_token, expires_in } = response.data;

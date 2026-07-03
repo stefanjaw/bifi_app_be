@@ -34,7 +34,7 @@ export class MaintenanceWindowDTO {
 }
 
 export class UpdateMaintenanceWindowDTO extends PartialType(
-  MaintenanceWindowDTO
+  MaintenanceWindowDTO,
 ) {
   @IsMongoId()
   _id!: string;

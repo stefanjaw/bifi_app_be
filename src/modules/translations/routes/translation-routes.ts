@@ -23,7 +23,7 @@ export class TranslationRouter extends BaseRoutes<TranslationDocument> {
     // Express matches "/translations/scope" instead of "/translations/:id"
     this.router.get(
       "/translations/scope",
-      translationController.getTranslationsByScope
+      translationController.getTranslationsByScope,
     );
 
     // Standard CRUD routes for admin management (list, create, update, delete)

@@ -15,7 +15,7 @@ export class SearchDestinationController extends BaseController<SearchDestinatio
   protected async getAllHandler(
     _req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const destinations = await this.searchService.getAllActive();
@@ -28,7 +28,7 @@ export class SearchDestinationController extends BaseController<SearchDestinatio
   protected async searchHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const q = (req.query.q as string) || "";
@@ -48,7 +48,7 @@ export class SearchDestinationController extends BaseController<SearchDestinatio
       const destinations = req.body?.destinations ?? req.body;
       if (!Array.isArray(destinations)) {
         throw new ValidationException(
-          "sync expects an array of destinations (body or body.destinations)"
+          "sync expects an array of destinations (body or body.destinations)",
         );
       }
       const result = await this.searchService.syncDestinations(destinations);

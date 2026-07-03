@@ -20,14 +20,14 @@ export class PurchaseSettingsRouter extends BaseRoutes<PurchaseSettingsDocument>
     this.router.get(
       "/purchases/settings",
       authorizeMiddleware("purchases", "read"),
-      purchaseSettingsController.getSettings
+      purchaseSettingsController.getSettings,
     );
 
     this.router.put(
       "/purchases/settings",
       authorizeMiddleware("purchases", "update"),
       validateBodyMiddleware(PurchaseSettingsDTO),
-      purchaseSettingsController.upsertSettings
+      purchaseSettingsController.upsertSettings,
     );
   }
 }

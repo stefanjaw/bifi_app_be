@@ -13,13 +13,13 @@ export class EmailCampaignService extends BaseService<EmailCampaignDocument> {
 
   async setSchedule(
     campaignId: string,
-    scheduledAt: Date
+    scheduledAt: Date,
   ): Promise<EmailCampaignDocument | null> {
     const model = this.connectionManager.bindModelToDb(this.model);
     return model.findByIdAndUpdate(
       campaignId,
       { status: "scheduled", scheduledAt },
-      { new: true }
+      { new: true },
     );
   }
 
@@ -28,7 +28,7 @@ export class EmailCampaignService extends BaseService<EmailCampaignDocument> {
     return model.findByIdAndUpdate(
       campaignId,
       { status: "cancelled" },
-      { new: true }
+      { new: true },
     );
   }
 
@@ -71,7 +71,7 @@ export class EmailCampaignService extends BaseService<EmailCampaignDocument> {
       .sort(
         (a, b) =>
           new Date(b.updatedAt || 0).getTime() -
-          new Date(a.updatedAt || 0).getTime()
+          new Date(a.updatedAt || 0).getTime(),
       )
       .slice(0, 5)
       .map((c) => ({

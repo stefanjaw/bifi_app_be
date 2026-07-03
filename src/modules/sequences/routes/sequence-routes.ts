@@ -21,7 +21,7 @@ export class SequenceRouter extends BaseRoutes<SequenceDocument> {
       `${this.endpoint}/next`,
       this.upload.any(),
       authorizeMiddleware(`${this.resource}/next`, "read"),
-      sequenceController.getNextNumber
+      sequenceController.getNextNumber,
     );
 
     super.initRoutes();

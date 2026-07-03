@@ -61,7 +61,7 @@ const stockMovementSchema = new Schema(
       default: Date.now,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 stockMovementSchema.plugin(paginate);

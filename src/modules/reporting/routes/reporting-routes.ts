@@ -24,7 +24,7 @@ export class ReportingRouter extends BaseRoutes<ReportingDocument> {
     this.router.get(
       `${this.endpoint}/generate-report`,
       authorizeMiddleware("reporting/generate-report", "read"),
-      reportingController.getGenerateReport
+      reportingController.getGenerateReport,
     );
   }
 }

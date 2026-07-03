@@ -43,7 +43,7 @@ const salesTargetSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 salesTargetSchema.plugin(autopopulate);

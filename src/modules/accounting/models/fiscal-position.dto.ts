@@ -38,8 +38,8 @@ export class FiscalPositionDTO {
   @Type(() => TaxMappingDTO)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
-      plainToInstance(TaxMappingDTO, item)
-    )
+      plainToInstance(TaxMappingDTO, item),
+    ),
   )
   @IsOptional()
   taxMappings?: TaxMappingDTO[];
@@ -49,8 +49,8 @@ export class FiscalPositionDTO {
   @Type(() => AccountMappingDTO)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
-      plainToInstance(AccountMappingDTO, item)
-    )
+      plainToInstance(AccountMappingDTO, item),
+    ),
   )
   @IsOptional()
   accountMappings?: AccountMappingDTO[];

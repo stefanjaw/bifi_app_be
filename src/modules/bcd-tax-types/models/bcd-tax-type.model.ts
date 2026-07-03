@@ -33,7 +33,7 @@ const bcdTaxTypeSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 bcdTaxTypeSchema.plugin(paginate);

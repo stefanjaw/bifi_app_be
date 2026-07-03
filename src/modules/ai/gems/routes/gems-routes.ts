@@ -18,7 +18,7 @@ export class GemsRouter {
       this.upload.array("files"),
       validateBodyMiddleware(GemsDTO),
       authorizeMiddleware("gems/generate", "create"),
-      this.controller.generate
+      this.controller.generate,
     );
 
     this.router.post(
@@ -26,14 +26,14 @@ export class GemsRouter {
       this.upload.array("files"),
       validateBodyMiddleware(GemsDTO),
       authorizeMiddleware("gems/generate-stream", "create"),
-      this.controller.generateStream
+      this.controller.generateStream,
     );
 
     this.router.post(
       "/gems/embed",
       validateBodyMiddleware(GemsEmbedDTO),
       authorizeMiddleware("gems/embed", "create"),
-      this.controller.embed
+      this.controller.embed,
     );
   }
 

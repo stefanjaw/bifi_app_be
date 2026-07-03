@@ -14,7 +14,7 @@ export const catchExceptionMiddleware = (
   error: Error,
   req: Request,
   res: Response,
-  _next: NextFunction
+  _next: NextFunction,
 ) => {
   if (error instanceof ServiceException) {
     res.status(error.code).json({

@@ -28,7 +28,7 @@ export function PartialType<T>(
      * @default true
      */
     skipNullProperties?: boolean;
-  } = {}
+  } = {},
 ) {
   abstract class PartialClassType {
     constructor() {

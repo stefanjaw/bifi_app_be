@@ -21,7 +21,7 @@ const customsChapterSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 customsChapterSchema.plugin(paginate);

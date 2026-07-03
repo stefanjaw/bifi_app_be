@@ -11,7 +11,7 @@ export class SalesController extends BaseController<SalesOrderDocument> {
   protected async getDashboardHandler(
     _req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const dashboard = await (this.service as SalesService).getDashboard();

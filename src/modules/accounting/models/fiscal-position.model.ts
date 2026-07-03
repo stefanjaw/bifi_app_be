@@ -14,7 +14,7 @@ const taxMappingSchema = new Schema(
     fromTaxId: { type: Schema.Types.ObjectId, ref: "Tax", required: true },
     toTaxId: { type: Schema.Types.ObjectId, ref: "Tax", required: true },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const accountMappingSchema = new Schema(
@@ -30,7 +30,7 @@ const accountMappingSchema = new Schema(
       required: true,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const fiscalPositionSchema = new Schema(
@@ -40,7 +40,7 @@ const fiscalPositionSchema = new Schema(
     taxMappings: { type: [taxMappingSchema], default: [] },
     accountMappings: { type: [accountMappingSchema], default: [] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 fiscalPositionSchema.plugin(paginate);

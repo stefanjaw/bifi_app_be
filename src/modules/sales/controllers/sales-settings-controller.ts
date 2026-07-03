@@ -12,7 +12,7 @@ export class SalesSettingsController extends BaseController<SalesSettingsDocumen
   protected async getSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const settings = await (
@@ -27,7 +27,7 @@ export class SalesSettingsController extends BaseController<SalesSettingsDocumen
   protected async upsertSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const data = req.body as SalesSettingsDTO;

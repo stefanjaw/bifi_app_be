@@ -90,8 +90,8 @@ export class GemsService {
           this.genAI.models.embedContent({
             model: this.embeddingModel,
             contents: text,
-          })
-        )
+          }),
+        ),
       );
       return results;
     } catch (error: any) {

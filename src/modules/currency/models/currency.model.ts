@@ -34,7 +34,7 @@ const currencySchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 currencySchema.plugin(paginate);

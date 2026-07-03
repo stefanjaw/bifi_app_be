@@ -18,7 +18,7 @@ export class PurchaseSettingsService extends BaseService<PurchaseSettingsDocumen
   }
 
   async upsertSettings(
-    data: PurchaseSettingsDTO
+    data: PurchaseSettingsDTO,
   ): Promise<PurchaseSettingsDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const existing = await model.findOne();

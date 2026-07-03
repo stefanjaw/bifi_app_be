@@ -36,7 +36,7 @@ const notificationSchema = new Schema(
     seen: { type: Boolean, default: false, index: true },
     active: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 notificationSchema.plugin(paginate);

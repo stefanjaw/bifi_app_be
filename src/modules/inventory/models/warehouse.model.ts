@@ -25,7 +25,7 @@ const warehouseSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 warehouseSchema.plugin(paginate);

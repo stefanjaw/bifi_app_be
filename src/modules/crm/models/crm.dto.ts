@@ -68,7 +68,7 @@ export class CRMDTO {
   @IsArray()
   @IsString({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   @IsOptional()
   tags?: string[];

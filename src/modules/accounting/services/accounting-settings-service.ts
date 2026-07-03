@@ -18,7 +18,7 @@ export class AccountingSettingsService extends BaseService<AccountingSettingsDoc
   }
 
   async upsertSettings(
-    data: AccountingSettingsDTO
+    data: AccountingSettingsDTO,
   ): Promise<AccountingSettingsDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const existing = await model.findOne();

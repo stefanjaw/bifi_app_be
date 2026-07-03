@@ -31,7 +31,7 @@ const bcdTransportOptionSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 bcdTransportOptionSchema.plugin(paginate);

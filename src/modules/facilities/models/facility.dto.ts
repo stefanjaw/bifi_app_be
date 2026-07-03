@@ -32,8 +32,8 @@ export class FacilityDTO {
   @IsOptional()
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((room: any) =>
-      plainToInstance(FacilityRoomInformationDTO, room)
-    )
+      plainToInstance(FacilityRoomInformationDTO, room),
+    ),
   )
   @Type(() => FacilityRoomInformationDTO)
   @ValidateNested({ each: true })

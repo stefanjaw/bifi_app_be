@@ -31,7 +31,7 @@ const promptVersionSchema = new Schema(
       default: 1,
     },
   },
-  { _id: true }
+  { _id: true },
 );
 
 const aiSettingsSchema = new Schema(
@@ -71,7 +71,7 @@ const aiSettingsSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 aiSettingsSchema.plugin(paginate);

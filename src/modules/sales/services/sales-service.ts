@@ -27,7 +27,7 @@ export class SalesService extends BaseService<SalesOrderDocument> {
       0,
       23,
       59,
-      59
+      59,
     );
 
     const boundSalesOrderModel =

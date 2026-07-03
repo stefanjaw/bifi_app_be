@@ -32,7 +32,7 @@ export class ProjectService extends BaseService<ProjectDocument> {
           path: "stage",
           getModel: () =>
             this.connectionManager.getModel<ProjectStageDocument>(
-              "ProjectStage"
+              "ProjectStage",
             ),
           isArray: false,
         },
@@ -62,7 +62,7 @@ export class ProjectService extends BaseService<ProjectDocument> {
    */
   override async create(
     data: ProjectDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<ProjectDocument> {
     return await runTransaction<ProjectDocument>(
       session,
@@ -71,7 +71,7 @@ export class ProjectService extends BaseService<ProjectDocument> {
           "Projects",
           "PRJ-",
           5,
-          1
+          1,
         );
 
         if (dayjs(data.dateEnd).isBefore(dayjs(data.dateStart))) {
@@ -84,9 +84,9 @@ export class ProjectService extends BaseService<ProjectDocument> {
             createdBy: userStorage.getStore()?.user?._id,
             number,
           } as any,
-          newSession
+          newSession,
         );
-      }
+      },
     );
   }
 }

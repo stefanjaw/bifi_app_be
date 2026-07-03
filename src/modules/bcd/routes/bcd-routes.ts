@@ -23,7 +23,7 @@ export class BCDRouter extends BaseRoutes<BCDDocument> {
     this.router.post(
       `${this.endpoint}/upload-ftp/:id`,
       authorizeMiddleware(`${this.resource}/upload-ftp/:id`, "create"),
-      (this.controller as BCDController).postUploadBCDDataToFTP
+      (this.controller as BCDController).postUploadBCDDataToFTP,
     );
   }
 
@@ -31,7 +31,7 @@ export class BCDRouter extends BaseRoutes<BCDDocument> {
     this.router.put(
       `${this.endpoint}/update-ftp`,
       authorizeMiddleware(`${this.resource}/update-ftp`, "update"),
-      (this.controller as BCDController).putUpdateBCDsFromFTPP
+      (this.controller as BCDController).putUpdateBCDsFromFTPP,
     );
   }
 }

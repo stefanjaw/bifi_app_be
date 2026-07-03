@@ -36,7 +36,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
    */
   override async create(
     data: AssetCommissioningDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<AssetCommissioningDocument> {
     return runTransaction<AssetCommissioningDocument>(
       session,
@@ -47,11 +47,11 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
         if (
           await this.assetRosterStatusService.assetRosterHasActiveCommissioning(
             data.assetRosterId,
-            newSession
+            newSession,
           )
         ) {
           throw new ValidationException(
-            "A commissioning already exists for this asset roster and has passed."
+            "A commissioning already exists for this asset roster and has passed.",
           );
         }
 
@@ -66,7 +66,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
               name: file.originalname,
               mimeType: file.mimetype,
               size: file.size,
-            }))
+            })),
           );
         }
 
@@ -76,7 +76,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
           undefined,
           undefined,
           false,
-          newSession
+          newSession,
         );
 
         // SET ALL COMMISSIONS AS INACTIVE EXCEPT THE ONE BEING CREATED
@@ -84,7 +84,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
           commissions.map(async (commission) => {
             commission.active = false;
             await commission.save({ session: newSession });
-          })
+          }),
         );
 
         // SAVE COMMISSION
@@ -93,7 +93,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
         // HANDLE ASSET ROSTER STATUS
         await this.assetRosterStatusService.updateAssetRosterStatus(
           commission.assetRosterId._id,
-          newSession
+          newSession,
         );
 
         // ADD ACTIVITY HISTORY
@@ -115,11 +115,11 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
               assetRosterId: commission.assetRosterId._id.toString(),
             },
           },
-          newSession
+          newSession,
         );
 
         return commission;
-      }
+      },
     );
   }
 
@@ -132,7 +132,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
    */
   override async update(
     data: UpdateAssetCommissioningDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<AssetCommissioningDocument> {
     return runTransaction<AssetCommissioningDocument>(
       session,
@@ -150,7 +150,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
               name: file.originalname,
               mimeType: file.mimetype,
               size: file.size,
-            }))
+            })),
           );
         }
 
@@ -160,11 +160,11 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
         // HANDLE ASSET ROSTER STATUS
         await this.assetRosterStatusService.updateAssetRosterStatus(
           commission.assetRosterId._id,
-          newSession
+          newSession,
         );
 
         return commission;
-      }
+      },
     );
   }
 
@@ -178,19 +178,19 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
    */
   async updateDecommission(
     data: UpdateAssetCommissioningDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ) {
     return runTransaction<AssetCommissioningDocument>(
       session,
       async (newSession) => {
         const commission = await this.update(
           { ...data, active: false },
-          newSession
+          newSession,
         );
 
         await this.assetRosterService.update(
           { _id: commission.assetRosterId._id, status: "decommissioned" },
-          newSession
+          newSession,
         );
 
         // ADD ACTIVITY HISTORY
@@ -207,11 +207,11 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
               assetRosterId: commission.assetRosterId._id.toString(),
             },
           },
-          newSession
+          newSession,
         );
 
         return commission;
-      }
+      },
     );
   }
 
@@ -224,7 +224,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
    */
   override async delete(
     _id: string,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<boolean> {
     return runTransaction<boolean>(session, async (newSession) => {
       const commission = (
@@ -235,7 +235,7 @@ export class AssetCommissioningService extends BaseService<AssetCommissioningDoc
 
       await this.assetRosterStatusService.updateAssetRosterStatus(
         commission.assetRosterId._id,
-        newSession
+        newSession,
       );
 
       return deleted;

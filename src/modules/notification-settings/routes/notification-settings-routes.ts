@@ -21,20 +21,20 @@ export class NotificationSettingsRouter extends BaseRoutes<NotificationEventSett
     this.router.get(
       "/notification-settings/catalog",
       authorizeMiddleware("notification-settings", "read"),
-      notificationSettingsController.getCatalog
+      notificationSettingsController.getCatalog,
     );
 
     this.router.get(
       "/notification-settings",
       authorizeMiddleware("notification-settings", "read"),
-      notificationSettingsController.getSettings
+      notificationSettingsController.getSettings,
     );
 
     this.router.put(
       "/notification-settings",
       authorizeMiddleware("notification-settings", "update"),
       validateBodyMiddleware(UpdateNotificationSettingsDTO),
-      notificationSettingsController.upsertSettings
+      notificationSettingsController.upsertSettings,
     );
   }
 }

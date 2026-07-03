@@ -22,20 +22,20 @@ export class SalesRouter extends BaseRoutes<SalesOrderDocument> {
     this.router.get(
       "/sales/dashboard",
       authorizeMiddleware("sales", "read"),
-      salesController.getDashboard
+      salesController.getDashboard,
     );
 
     this.router.get(
       "/sales/settings",
       authorizeMiddleware("sales", "read"),
-      salesSettingsController.getSettings
+      salesSettingsController.getSettings,
     );
 
     this.router.put(
       "/sales/settings",
       authorizeMiddleware("sales", "update"),
       validateBodyMiddleware(SalesSettingsDTO),
-      salesSettingsController.upsertSettings
+      salesSettingsController.upsertSettings,
     );
   }
 }

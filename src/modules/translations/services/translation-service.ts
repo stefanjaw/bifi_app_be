@@ -20,7 +20,7 @@ export class TranslationService extends BaseService<TranslationDocument> {
    */
   async getTranslations(
     locale: string,
-    scope: string
+    scope: string,
   ): Promise<Record<string, string>> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const docs = await model.find({ locale, scope, active: true }).lean();
@@ -38,13 +38,13 @@ export class TranslationService extends BaseService<TranslationDocument> {
    * @returns The upserted translation document.
    */
   async upsertTranslation(
-    data: CreateTranslationDTO
+    data: CreateTranslationDTO,
   ): Promise<TranslationDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
     return model.findOneAndUpdate(
       { locale: data.locale, scope: data.scope, key: data.key },
       { $set: { value: data.value } },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
   }
 

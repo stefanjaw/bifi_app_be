@@ -56,7 +56,7 @@ const bcdChargeCodeSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 bcdChargeCodeSchema.pre("validate", function (next) {

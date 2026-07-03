@@ -18,7 +18,7 @@ const driveSettingsSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 driveSettingsSchema.plugin(paginate);

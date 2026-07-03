@@ -20,20 +20,20 @@ export class EmailSettingsRouter extends BaseRoutes<EmailSettingsDocument> {
     this.router.get(
       "/email-settings",
       authorizeMiddleware("email-settings", "read"),
-      emailSettingsController.getSettings
+      emailSettingsController.getSettings,
     );
 
     this.router.put(
       "/email-settings",
       authorizeMiddleware("email-settings", "update"),
       validateBodyMiddleware(EmailSettingsDTO),
-      emailSettingsController.upsertSettings
+      emailSettingsController.upsertSettings,
     );
 
     this.router.post(
       "/email-settings/test-connection",
       authorizeMiddleware("email-settings", "read"),
-      emailSettingsController.testConnection
+      emailSettingsController.testConnection,
     );
   }
 }

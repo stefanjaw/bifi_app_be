@@ -15,7 +15,7 @@ let _settingsCacheAt = 0;
 const CACHE_TTL_MS = 60_000;
 
 async function getEventConfig(
-  type: string
+  type: string,
 ): Promise<{ enabled: boolean; recipients: string[] } | null> {
   const now = Date.now();
   if (!_settingsCache || now - _settingsCacheAt > CACHE_TTL_MS) {
@@ -38,7 +38,7 @@ export class NotificationService extends BaseService<NotificationDocument> {
 
   async getMyNotifications(
     userId: mongoose.Types.ObjectId,
-    limit = 20
+    limit = 20,
   ): Promise<NotificationDocument[]> {
     const model = this.connectionManager.bindModelToDb(this.model);
     return model
@@ -49,7 +49,7 @@ export class NotificationService extends BaseService<NotificationDocument> {
   }
 
   async getUnreadCount(
-    userId: mongoose.Types.ObjectId
+    userId: mongoose.Types.ObjectId,
   ): Promise<{ total: number; byModule: Record<string, number> }> {
     const model = this.connectionManager.bindModelToDb(this.model);
 
@@ -148,8 +148,8 @@ export async function fireNotification(payload: {
           module: payload.module,
           read: false,
           active: true,
-        })
-      )
+        }),
+      ),
     );
   } catch (e) {
     console.error("[Notification] Failed to create:", e);

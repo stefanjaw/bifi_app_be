@@ -54,7 +54,7 @@ const sequenceSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 sequenceSchema.plugin(paginate);

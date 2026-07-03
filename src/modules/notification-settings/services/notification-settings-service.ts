@@ -23,7 +23,7 @@ export class NotificationEventSettingsService extends BaseService<NotificationEv
   }
 
   async upsertSettings(
-    data: UpdateNotificationSettingsDTO
+    data: UpdateNotificationSettingsDTO,
   ): Promise<NotificationEventSettingsDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const existing = await model.findOne();

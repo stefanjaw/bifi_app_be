@@ -8,7 +8,7 @@ export class CrEinvoiceJsonBuilderService {
 
   async buildFromJournalEntry(
     entry: any,
-    settings: CrEinvoiceSettingsDocument
+    settings: CrEinvoiceSettingsDocument,
   ): Promise<object> {
     const condicionVenta =
       (entry.crCondicionVentaId as any)?.code ?? entry.crCondicionVentaId ?? "";
@@ -21,7 +21,7 @@ export class CrEinvoiceJsonBuilderService {
       : new Date().toISOString().replace("Z", "-06:00");
 
     const productLines = (entry.lines ?? []).filter(
-      (l: any) => !l.lineType || l.lineType === "product"
+      (l: any) => !l.lineType || l.lineType === "product",
     );
 
     // ── Currency ──────────────────────────────────────────────────────────────
@@ -150,13 +150,13 @@ export class CrEinvoiceJsonBuilderService {
 
       // Only populated, valid tax objects (autopopulate delivers full objects)
       const taxes: any[] = (line.taxIds ?? []).filter(
-        (t: any) => t && typeof t === "object" && t._id && t.crCodigo
+        (t: any) => t && typeof t === "object" && t._id && t.crCodigo,
       );
 
       // Hacienda spec: one Impuesto object per line (use the first applicable tax)
       const firstTax = taxes[0] ?? null;
       const tarifa: number = firstTax
-        ? firstTax.crTarifa ?? firstTax.percentage ?? 0
+        ? (firstTax.crTarifa ?? firstTax.percentage ?? 0)
         : 0;
       const impuestoNeto = firstTax
         ? parseFloat(((subTotal * tarifa) / 100).toFixed(5))
@@ -177,11 +177,11 @@ export class CrEinvoiceJsonBuilderService {
       if (!isExentoOrNoSujeto) {
         if (isService) {
           totalServGravados = parseFloat(
-            (totalServGravados + subTotal).toFixed(5)
+            (totalServGravados + subTotal).toFixed(5),
           );
         } else {
           totalMercanciasGravadas = parseFloat(
-            (totalMercanciasGravadas + subTotal).toFixed(5)
+            (totalMercanciasGravadas + subTotal).toFixed(5),
           );
         }
         // Tax breakdown — only for truly gravado lines
@@ -189,7 +189,7 @@ export class CrEinvoiceJsonBuilderService {
         const existing = taxBreakdown.get(key);
         if (existing) {
           existing.total = parseFloat(
-            (existing.total + impuestoNeto).toFixed(5)
+            (existing.total + impuestoNeto).toFixed(5),
           );
         } else {
           taxBreakdown.set(key, {
@@ -201,17 +201,17 @@ export class CrEinvoiceJsonBuilderService {
       } else {
         if (isService) {
           totalServExentos = parseFloat(
-            (totalServExentos + subTotal).toFixed(5)
+            (totalServExentos + subTotal).toFixed(5),
           );
         } else {
           totalMercanciasExentas = parseFloat(
-            (totalMercanciasExentas + subTotal).toFixed(5)
+            (totalMercanciasExentas + subTotal).toFixed(5),
           );
         }
       }
 
       linesTotalImpuesto = parseFloat(
-        (linesTotalImpuesto + impuestoNeto).toFixed(5)
+        (linesTotalImpuesto + impuestoNeto).toFixed(5),
       );
 
       const montoTotalLinea = parseFloat((subTotal + impuestoNeto).toFixed(5));
@@ -250,18 +250,18 @@ export class CrEinvoiceJsonBuilderService {
 
     // ── ResumenFactura totals — calculated from line items ────────────────────
     const totalGravado = parseFloat(
-      (totalServGravados + totalMercanciasGravadas).toFixed(5)
+      (totalServGravados + totalMercanciasGravadas).toFixed(5),
     );
     const totalExento = parseFloat(
-      (totalServExentos + totalMercanciasExentas).toFixed(5)
+      (totalServExentos + totalMercanciasExentas).toFixed(5),
     );
     const totalVenta = parseFloat((totalGravado + totalExento).toFixed(5));
     const totalVentaNeta: number =
-      totalVenta > 0 ? totalVenta : entry.untaxedAmount ?? 0;
+      totalVenta > 0 ? totalVenta : (entry.untaxedAmount ?? 0);
     const totalImpuesto: number =
-      totalVenta > 0 ? linesTotalImpuesto : entry.taxAmount ?? 0;
+      totalVenta > 0 ? linesTotalImpuesto : (entry.taxAmount ?? 0);
     const totalComprobante = parseFloat(
-      (totalVentaNeta + totalImpuesto).toFixed(5)
+      (totalVentaNeta + totalImpuesto).toFixed(5),
     );
 
     // TotalDesgloseImpuesto — required when taxed lines exist
@@ -336,7 +336,7 @@ export class CrEinvoiceJsonBuilderService {
       crEinvoicePdfService.generateBase64(entry, settings).catch((err: any) => {
         console.error(
           "[CR E-Invoice] PDF generation failed:",
-          err?.message ?? err
+          err?.message ?? err,
         );
         return "";
       }),
@@ -370,7 +370,7 @@ export class CrEinvoiceJsonBuilderService {
     entry: any,
     settings: any,
     clave: string,
-    numeroConsecutivoReceptor: string
+    numeroConsecutivoReceptor: string,
   ): Promise<object> {
     const einvoiceType: string = entry.crEinvoiceType ?? "MA";
     const mensajeCode =
@@ -386,7 +386,7 @@ export class CrEinvoiceJsonBuilderService {
         ? (contactData?.vat ?? "").replace(/\D/g, "")
         : "";
     const tipoCedulaEmisor: string =
-      typeof contactData === "object" ? contactData?.crVatType ?? "02" : "02";
+      typeof contactData === "object" ? (contactData?.crVatType ?? "02") : "02";
 
     const rawDate = entry.crFechaEmision ?? entry.date;
     const fechaEmision = rawDate
@@ -411,7 +411,7 @@ export class CrEinvoiceJsonBuilderService {
     if (rawClave && (rawClave.includes("e") || rawClave.includes("E"))) {
       throw new ValidationException(
         "La Clave de este comprobante fue almacenada en notación científica y no puede enviarse a Hacienda. " +
-          "Por favor re-importe el XML del comprobante para corregir el valor."
+          "Por favor re-importe el XML del comprobante para corregir el valor.",
       );
     }
 
@@ -429,10 +429,12 @@ export class CrEinvoiceJsonBuilderService {
       MontoTotalImpuesto: parseFloat(montoTotalImpuesto.toFixed(5)),
       ActividadEconomica: codigoActividad,
       CondicionImpuesto: entry.crCondicionImpuesto ?? "01",
-      MontoTotalAcreditar: isMR ? 0 : entry.crMontoTotalImpuestoAcreditar ?? 0,
+      MontoTotalAcreditar: isMR
+        ? 0
+        : (entry.crMontoTotalImpuestoAcreditar ?? 0),
       MontoTotalGastoAplicable: isMR
         ? 0
-        : entry.crMontoTotalGastoAplicable ?? 0,
+        : (entry.crMontoTotalGastoAplicable ?? 0),
       TotalFactura: entry.totalAmount ?? 0,
       TipoCedulaEmisor: tipoCedulaEmisor,
       NumeroCedulaReceptor: receptorCedula,
@@ -458,12 +460,12 @@ export class CrEinvoiceJsonBuilderService {
   }
 
   private async resolveCertificateBase64(
-    settings: CrEinvoiceSettingsDocument
+    settings: CrEinvoiceSettingsDocument,
   ): Promise<string> {
     const fileId = (settings.certificateFile as any)?.fileId;
     if (!fileId) {
       console.warn(
-        "[CR E-Invoice] No certificate file found in settings — submission will lack a signed certificate."
+        "[CR E-Invoice] No certificate file found in settings — submission will lack a signed certificate.",
       );
       return "";
     }
@@ -477,7 +479,7 @@ export class CrEinvoiceJsonBuilderService {
     } catch (err) {
       console.error(
         "[CR E-Invoice] Failed to load P12 certificate from GridFS:",
-        err
+        err,
       );
       return "";
     }

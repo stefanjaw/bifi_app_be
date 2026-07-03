@@ -259,8 +259,8 @@ export class BcdDTO {
   @Transform(({ value }) =>
     plainToInstance(
       BCDSupplierDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   supplier!: BCDSupplierDTO;
 
@@ -270,8 +270,8 @@ export class BcdDTO {
   @Transform(({ value }) =>
     plainToInstance(
       BCDImporterDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   importer!: BCDImporterDTO;
 
@@ -281,8 +281,8 @@ export class BcdDTO {
   @Transform(({ value }) =>
     plainToInstance(
       BCDTransportDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   transport!: BCDTransportDTO;
 
@@ -312,15 +312,15 @@ export class BcdDTO {
   @ArrayMinSize(1)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((charge: any) =>
-      plainToInstance(BCDChargeDTO, charge)
-    )
+      plainToInstance(BCDChargeDTO, charge),
+    ),
   )
   charges!: BCDChargeDTO[];
 
   @IsString({ each: true })
   @MaxLength(20, { each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   @IsArray()
   @ArrayMinSize(1)
@@ -331,7 +331,7 @@ export class BcdDTO {
   @MaxLength(20, { each: true })
   @IsArray()
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   houseBOLAWBs?: string[];
 
@@ -365,8 +365,8 @@ export class BcdDTO {
   @IsOptional()
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((charge: any) =>
-      plainToInstance(AdditionalInformationDTO, charge)
-    )
+      plainToInstance(AdditionalInformationDTO, charge),
+    ),
   )
   additionalInformation?: AdditionalInformationDTO[];
 
@@ -376,8 +376,8 @@ export class BcdDTO {
   @Transform(({ value }) =>
     plainToInstance(
       BCDOgdDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   ogd!: BCDOgdDTO;
 
@@ -387,7 +387,7 @@ export class BcdDTO {
   @IsArray()
   @IsOptional()
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   paymentAccounts?: string[];
 
@@ -397,8 +397,8 @@ export class BcdDTO {
   @Transform(({ value }) =>
     plainToInstance(
       BCDDeclarantDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   declarant!: BCDDeclarantDTO;
 
@@ -408,8 +408,8 @@ export class BcdDTO {
   @ArrayMinSize(1)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((record: any) =>
-      plainToInstance(BCDRecordDTO, record)
-    )
+      plainToInstance(BCDRecordDTO, record),
+    ),
   )
   records!: BCDRecordDTO[];
 }

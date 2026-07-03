@@ -24,31 +24,31 @@ export class EmailCampaignRouter extends BaseRoutes<EmailCampaignDocument> {
     this.router.get(
       "/email-campaigns/dashboard",
       authorizeMiddleware("email-campaigns", "read"),
-      emailCampaignController.dashboard
+      emailCampaignController.dashboard,
     );
 
     this.router.post(
       "/email-campaigns/:id/send-test",
       authorizeMiddleware("email-campaigns", "update"),
-      emailCampaignController.sendTest
+      emailCampaignController.sendTest,
     );
 
     this.router.post(
       "/email-campaigns/:id/send-now",
       authorizeMiddleware("email-campaigns", "update"),
-      emailCampaignController.sendNow
+      emailCampaignController.sendNow,
     );
 
     this.router.post(
       "/email-campaigns/:id/schedule",
       authorizeMiddleware("email-campaigns", "update"),
-      emailCampaignController.schedule
+      emailCampaignController.schedule,
     );
 
     this.router.post(
       "/email-campaigns/:id/cancel",
       authorizeMiddleware("email-campaigns", "update"),
-      emailCampaignController.cancel
+      emailCampaignController.cancel,
     );
 
     super.initRoutes();

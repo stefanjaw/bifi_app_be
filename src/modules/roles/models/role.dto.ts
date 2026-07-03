@@ -32,8 +32,8 @@ export class RoleDTO {
   @ArrayMinSize(1)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((policy: any) =>
-      plainToInstance(RolePolicyDTO, policy)
-    )
+      plainToInstance(RolePolicyDTO, policy),
+    ),
   )
   @Type(() => RolePolicyDTO)
   @ValidateNested({ each: true })

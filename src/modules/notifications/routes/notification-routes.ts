@@ -20,31 +20,31 @@ export class NotificationRouter {
     this.router.get(
       "/notifications/unread-count",
       authorizeMiddleware("notifications", "read"),
-      notificationController.getUnreadCount
+      notificationController.getUnreadCount,
     );
 
     this.router.patch(
       "/notifications/mark-all-read",
       authorizeMiddleware("notifications", "update"),
-      notificationController.markAllRead
+      notificationController.markAllRead,
     );
 
     this.router.patch(
       "/notifications/mark-all-seen",
       authorizeMiddleware("notifications", "update"),
-      notificationController.markAllSeen
+      notificationController.markAllSeen,
     );
 
     this.router.get(
       "/notifications",
       authorizeMiddleware("notifications", "read"),
-      notificationController.getMyNotifications
+      notificationController.getMyNotifications,
     );
 
     this.router.patch(
       "/notifications/:id/read",
       authorizeMiddleware("notifications", "update"),
-      notificationController.markRead
+      notificationController.markRead,
     );
   }
 }

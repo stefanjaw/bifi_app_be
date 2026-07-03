@@ -143,8 +143,8 @@ export class AccountingInvoiceDTO {
   @Type(() => AccountingInvoiceLineDTO)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
-      plainToInstance(AccountingInvoiceLineDTO, item)
-    )
+      plainToInstance(AccountingInvoiceLineDTO, item),
+    ),
   )
   @IsOptional()
   lines?: AccountingInvoiceLineDTO[];
@@ -214,7 +214,7 @@ export class AccountingInvoiceDTO {
 }
 
 export class UpdateAccountingInvoiceDTO extends PartialType(
-  AccountingInvoiceDTO
+  AccountingInvoiceDTO,
 ) {
   @IsMongoId()
   _id!: string;

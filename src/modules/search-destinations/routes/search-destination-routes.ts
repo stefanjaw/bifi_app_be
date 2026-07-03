@@ -24,13 +24,13 @@ export class SearchDestinationRouter extends BaseRoutes<SearchDestinationDocumen
     this.router.get(
       "/search-destinations/all",
       authorizeMiddleware("search-destinations", "read"),
-      searchDestinationController.getAll
+      searchDestinationController.getAll,
     );
 
     this.router.post(
       "/search-destinations/sync",
       authorizeMiddleware("search-destinations", "update"),
-      searchDestinationController.sync
+      searchDestinationController.sync,
     );
 
     // Standard CRUD (getById, get, create, update, delete, csv).

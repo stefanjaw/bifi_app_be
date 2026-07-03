@@ -8,7 +8,7 @@ import { verifyUnsubscribeToken } from "../libraries/unsubscribe-token";
 
 const TRANSPARENT_GIF = Buffer.from(
   "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-  "base64"
+  "base64",
 );
 
 // type -> stats field map
@@ -90,8 +90,8 @@ export class EmailMarketingPublicController {
         .send(
           this.htmlPage(
             "Invalid link",
-            "This unsubscribe link is invalid or has expired."
-          )
+            "This unsubscribe link is invalid or has expired.",
+          ),
         );
       return;
     }
@@ -110,8 +110,8 @@ export class EmailMarketingPublicController {
       res.send(
         this.htmlPage(
           "You're unsubscribed",
-          "You have been removed from this mailing list and will no longer receive these emails."
-        )
+          "You have been removed from this mailing list and will no longer receive these emails.",
+        ),
       );
     } catch {
       res
@@ -181,7 +181,7 @@ export class EmailMarketingPublicController {
 
   private normalizeWebhook(
     provider: string,
-    body: any
+    body: any,
   ): { type: string; email?: string; messageId?: string }[] {
     const out: { type: string; email?: string; messageId?: string }[] = [];
     if (!body) return out;

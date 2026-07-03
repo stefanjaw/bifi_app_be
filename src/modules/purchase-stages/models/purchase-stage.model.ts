@@ -30,7 +30,7 @@ const purchaseStageSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 purchaseStageSchema.plugin(paginate);

@@ -16,14 +16,14 @@ export class AccountingSettingsRouter {
     this.router.get(
       "/accounting/settings",
       authorizeMiddleware("accounting", "read"),
-      accountingSettingsController.getSettings
+      accountingSettingsController.getSettings,
     );
 
     this.router.put(
       "/accounting/settings",
       authorizeMiddleware("accounting", "update"),
       validateBodyMiddleware(AccountingSettingsDTO),
-      accountingSettingsController.upsertSettings
+      accountingSettingsController.upsertSettings,
     );
   }
 

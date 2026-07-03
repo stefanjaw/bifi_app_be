@@ -20,7 +20,7 @@ export class PurchaseStageService extends BaseService<PurchaseStageDocument> {
 
   override async create(
     data: Record<string, any>,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<PurchaseStageDocument> {
     if (data.isDefault) {
       await this.clearOtherDefaults();
@@ -30,7 +30,7 @@ export class PurchaseStageService extends BaseService<PurchaseStageDocument> {
 
   override async update(
     data: Record<string, any>,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<PurchaseStageDocument> {
     if (data.isDefault) {
       await this.clearOtherDefaults(data._id);

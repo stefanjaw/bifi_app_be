@@ -14,7 +14,7 @@ export class PurchaseSuppliersService extends BaseService<ContactDocument> {
       page?: number;
       limit?: number;
       paginate?: boolean;
-    } = {}
+    } = {},
   ) {
     const { showAll, ...filters } = searchParams;
     const query =
@@ -42,7 +42,7 @@ export class PurchaseSuppliersService extends BaseService<ContactDocument> {
   }
 
   private async _contactsWithOrdersQuery(
-    extraFilters: Record<string, any> = {}
+    extraFilters: Record<string, any> = {},
   ) {
     const boundPurchaseOrderModel =
       this.connectionManager.bindModelToDb(purchaseOrderModel);

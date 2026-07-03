@@ -55,7 +55,7 @@ export class SearchDestinationDTO {
 }
 
 export class UpdateSearchDestinationDTO extends PartialType(
-  SearchDestinationDTO
+  SearchDestinationDTO,
 ) {
   @IsMongoId()
   _id!: string;

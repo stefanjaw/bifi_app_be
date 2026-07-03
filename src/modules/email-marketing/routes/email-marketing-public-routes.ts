@@ -23,11 +23,11 @@ export class EmailMarketingPublicRouter {
     this.router.get("/email-marketing/track/click", this.controller.trackClick);
     this.router.get(
       "/email-marketing/unsubscribe",
-      this.controller.unsubscribe
+      this.controller.unsubscribe,
     );
     this.router.post(
       "/email-marketing/webhooks/:provider",
-      this.controller.webhook
+      this.controller.webhook,
     );
   }
 }

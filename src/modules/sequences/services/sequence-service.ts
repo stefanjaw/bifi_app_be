@@ -14,12 +14,12 @@ export class SequenceService extends BaseService<SequenceDocument> {
     const seq = await model.findOneAndUpdate(
       { prefix, active: true },
       { $inc: { number: 1 } },
-      { new: false }
+      { new: false },
     );
 
     if (!seq) {
       throw new NotFoundException(
-        `No active sequence found for prefix "${prefix}"`
+        `No active sequence found for prefix "${prefix}"`,
       );
     }
 
@@ -31,7 +31,7 @@ export class SequenceService extends BaseService<SequenceDocument> {
     name: string,
     prefix: string,
     size = 5,
-    step = 1
+    step = 1,
   ): Promise<string> {
     const model = this.connectionManager.bindModelToDb(this.model);
 
@@ -39,7 +39,7 @@ export class SequenceService extends BaseService<SequenceDocument> {
     const existing = await model.findOneAndUpdate(
       { prefix, active: true },
       { $inc: { number: step } },
-      { new: false }
+      { new: false },
     );
 
     if (existing) {
@@ -63,7 +63,7 @@ export class SequenceService extends BaseService<SequenceDocument> {
       const seq = (await model.findOneAndUpdate(
         { prefix, active: true },
         { $inc: { number: step } },
-        { new: false }
+        { new: false },
       )) as unknown as SequenceDocument | null;
       if (seq) {
         const formatted = seq.number.toString().padStart(seq.size, "0");
@@ -80,7 +80,7 @@ export class SequenceService extends BaseService<SequenceDocument> {
     const seq = await model.findOneAndUpdate(
       { _id: id, active: true },
       { $inc: { number: 1 } },
-      { new: false }
+      { new: false },
     );
 
     if (!seq) {
@@ -96,12 +96,12 @@ export class SequenceService extends BaseService<SequenceDocument> {
     const seq = await model.findOneAndUpdate(
       { name, active: true },
       [{ $set: { number: { $add: ["$number", "$step"] } } }],
-      { new: false }
+      { new: false },
     );
 
     if (!seq) {
       throw new NotFoundException(
-        `No active sequence found for name "${name}". Please configure it in Accounting → Sequences before submitting.`
+        `No active sequence found for name "${name}". Please configure it in Accounting → Sequences before submitting.`,
       );
     }
 

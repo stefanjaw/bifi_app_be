@@ -26,7 +26,7 @@ const taskStageSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 taskStageSchema.plugin(paginate);

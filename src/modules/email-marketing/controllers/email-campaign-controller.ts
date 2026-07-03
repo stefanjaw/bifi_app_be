@@ -54,7 +54,7 @@ export class EmailCampaignController extends BaseController<EmailCampaignDocumen
         throw new ValidationException("scheduledAt is invalid.");
       const result = await (this.service as EmailCampaignService).setSchedule(
         id,
-        date
+        date,
       );
       this.sendData(res, result);
     } catch (error) {

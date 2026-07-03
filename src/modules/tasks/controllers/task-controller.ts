@@ -15,7 +15,7 @@ export class TaskController extends BaseController<TaskDocument> {
   protected override async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
@@ -40,7 +40,7 @@ export class TaskController extends BaseController<TaskDocument> {
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 

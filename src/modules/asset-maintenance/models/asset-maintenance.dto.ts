@@ -61,7 +61,7 @@ export class AssetMaintenanceDTO {
 }
 
 export class UpdateAssetMaintenanceDTO extends PartialType(
-  AssetMaintenanceDTO
+  AssetMaintenanceDTO,
 ) {
   @IsMongoId()
   _id!: string;

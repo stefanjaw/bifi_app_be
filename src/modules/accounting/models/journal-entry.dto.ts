@@ -93,8 +93,8 @@ export class JournalEntryDTO {
   @Type(() => JournalEntryLineDTO)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
-      plainToInstance(JournalEntryLineDTO, item)
-    )
+      plainToInstance(JournalEntryLineDTO, item),
+    ),
   )
   @IsNotEmpty()
   lines!: JournalEntryLineDTO[];

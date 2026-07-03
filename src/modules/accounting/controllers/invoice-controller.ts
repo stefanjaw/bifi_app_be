@@ -25,7 +25,7 @@ export class InvoiceController extends BaseController<JournalEntryDocument> {
     try {
       const result = await invoiceService.registerPayment(
         req.params.id,
-        req.body
+        req.body,
       );
       this.sendData(res, result);
     } catch (error: any) {

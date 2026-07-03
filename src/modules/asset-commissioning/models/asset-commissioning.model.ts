@@ -38,7 +38,7 @@ const assetCommissioningSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 assetCommissioningSchema.plugin(paginate);

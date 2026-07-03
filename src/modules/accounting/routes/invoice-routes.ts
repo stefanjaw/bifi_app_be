@@ -24,25 +24,25 @@ export class InvoiceRouter extends BaseRoutes<JournalEntryDocument> {
     this.router.get(
       "/accounting/invoices/:id/payments",
       authorizeMiddleware("accounting/invoices", "read"),
-      invoiceController.getPayments
+      invoiceController.getPayments,
     );
 
     this.router.post(
       "/accounting/invoices/:id/register-payment",
       authorizeMiddleware("accounting/invoices", "update"),
-      invoiceController.registerPayment
+      invoiceController.registerPayment,
     );
 
     this.router.put(
       "/accounting/invoices/:id/post",
       authorizeMiddleware("accounting/invoices", "update"),
-      invoiceController.postInvoice
+      invoiceController.postInvoice,
     );
 
     this.router.put(
       "/accounting/invoices/:id/cancel",
       authorizeMiddleware("accounting/invoices", "update"),
-      invoiceController.cancelInvoice
+      invoiceController.cancelInvoice,
     );
   }
 }

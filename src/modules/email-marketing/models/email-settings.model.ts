@@ -65,7 +65,7 @@ const emailSettingsSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 emailSettingsSchema.plugin(paginate);

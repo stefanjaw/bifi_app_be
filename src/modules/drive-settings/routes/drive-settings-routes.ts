@@ -20,14 +20,14 @@ export class DriveSettingsRouter extends BaseRoutes<DriveSettingsDocument> {
     this.router.get(
       "/drive-settings",
       authorizeMiddleware("drive-settings", "read"),
-      driveSettingsController.getSettings
+      driveSettingsController.getSettings,
     );
 
     this.router.put(
       "/drive-settings",
       authorizeMiddleware("drive-settings", "update"),
       validateBodyMiddleware(DriveSettingsDTO),
-      driveSettingsController.upsertSettings
+      driveSettingsController.upsertSettings,
     );
   }
 }

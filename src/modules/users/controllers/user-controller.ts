@@ -28,7 +28,7 @@ export class UserController extends BaseController<UserDocument> {
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const photo = (req.files as Express.Multer.File[] | undefined)?.[0];
 
@@ -56,7 +56,7 @@ export class UserController extends BaseController<UserDocument> {
   protected async updateProfileHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     const photo = (req.files as Express.Multer.File[] | undefined)?.[0];
 
@@ -98,7 +98,7 @@ export class UserController extends BaseController<UserDocument> {
   protected async getProfileHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     const userId = userStorage.getStore()?.user?._id.toString();
     this.sendData(res, await this.service.getById(userId || "", undefined));
@@ -142,7 +142,7 @@ export class UserController extends BaseController<UserDocument> {
   protected async updateLanguageHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const userId = userStorage.getStore()?.user?._id.toString();

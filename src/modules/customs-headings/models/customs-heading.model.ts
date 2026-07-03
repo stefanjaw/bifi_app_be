@@ -24,7 +24,7 @@ const customsHeadingSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 customsHeadingSchema.index({ heading: 1, chapter: 1 }, { unique: true });

@@ -38,7 +38,7 @@ const maintenanceWindowSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 maintenanceWindowSchema.plugin(paginate);

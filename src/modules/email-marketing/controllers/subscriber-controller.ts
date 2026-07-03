@@ -13,7 +13,7 @@ export class SubscriberController extends BaseController<SubscriberDocument> {
   importFromContacts = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const { listId, contactIds } = req.body as {

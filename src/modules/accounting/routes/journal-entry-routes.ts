@@ -23,7 +23,7 @@ export class JournalEntryRouter extends BaseRoutes<JournalEntryDocument> {
     this.router.put(
       `/accounting/journal-entries/:id/post`,
       authorizeMiddleware("accounting/journal-entries", "update"),
-      (req, res, next) => journalEntryController.postEntry(req, res, next)
+      (req, res, next) => journalEntryController.postEntry(req, res, next),
     );
   }
 }

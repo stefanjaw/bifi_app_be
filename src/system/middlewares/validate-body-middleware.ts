@@ -10,7 +10,7 @@ import { performValidation } from "../libraries";
  * @returns An Express middleware function.
  */
 export function validateBodyMiddleware<T extends object>(
-  dtoClass: new () => T
+  dtoClass: new () => T,
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {

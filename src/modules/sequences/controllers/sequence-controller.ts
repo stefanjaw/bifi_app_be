@@ -17,12 +17,12 @@ export class SequenceController extends BaseController<SequenceDocument> {
 
       if (!prefix || typeof prefix !== "string") {
         throw new ValidationException(
-          "Field 'prefix' is required and must be a string"
+          "Field 'prefix' is required and must be a string",
         );
       }
 
       const number = await (sequenceService as SequenceService).getNextNumber(
-        prefix
+        prefix,
       );
       this.sendData(res, { number });
     } catch (error) {

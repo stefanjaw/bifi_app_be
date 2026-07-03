@@ -27,7 +27,7 @@ export class AssetMaintenanceController extends BaseController<AssetMaintenanceD
   protected override async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
@@ -36,7 +36,7 @@ export class AssetMaintenanceController extends BaseController<AssetMaintenanceD
         for (const file of files) {
           this.fileValidator.validateFileType(
             file,
-            this.acceptedAttarchmentTypes
+            this.acceptedAttarchmentTypes,
           );
         }
       } catch (error: any) {
@@ -55,7 +55,7 @@ export class AssetMaintenanceController extends BaseController<AssetMaintenanceD
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as Express.Multer.File[];
 
@@ -64,7 +64,7 @@ export class AssetMaintenanceController extends BaseController<AssetMaintenanceD
         for (const file of files) {
           this.fileValidator.validateFileType(
             file,
-            this.acceptedAttarchmentTypes
+            this.acceptedAttarchmentTypes,
           );
         }
       } catch (error: any) {

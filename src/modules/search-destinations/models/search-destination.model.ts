@@ -50,7 +50,7 @@ const searchDestinationSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 // Portable standard MongoDB text index (works identically on Atlas and

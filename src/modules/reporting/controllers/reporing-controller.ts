@@ -13,7 +13,7 @@ export class ReportingController extends BaseController<ReportingDocument> {
   protected async getGenerateReportHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const searchParams = req.query.searchParams
@@ -33,7 +33,7 @@ export class ReportingController extends BaseController<ReportingDocument> {
         model,
         reportId,
         searchParams,
-        orderBy
+        orderBy,
       );
 
       res.setHeader("Content-Type", "application/pdf");
@@ -50,7 +50,7 @@ export class ReportingController extends BaseController<ReportingDocument> {
   getGenerateReport = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.getGenerateReportHandler(req, res, next);
   };

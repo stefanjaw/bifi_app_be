@@ -11,7 +11,7 @@ const invoiceSequenceSchema = new Schema(
     year: { type: Number, required: true, unique: true },
     counter: { type: Number, default: 0 },
   },
-  { timestamps: false }
+  { timestamps: false },
 );
 
 invoiceSequenceSchema.plugin(paginate);

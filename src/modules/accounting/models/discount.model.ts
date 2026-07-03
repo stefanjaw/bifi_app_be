@@ -27,7 +27,7 @@ const discountSchema = new Schema(
     active: { type: Boolean, default: true },
     crNaturalezaDescuento: { type: String, required: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 discountSchema.plugin(paginate);

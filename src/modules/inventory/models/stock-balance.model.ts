@@ -37,7 +37,7 @@ const stockBalanceSchema = new Schema(
       min: 0,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 stockBalanceSchema.index({ productId: 1, locationId: 1 }, { unique: true });

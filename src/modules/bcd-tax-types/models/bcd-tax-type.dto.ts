@@ -33,8 +33,8 @@ export class BCDTaxTypeDTO {
   @Transform(({ value }) =>
     plainToInstance(
       BCDTaxTypeImpactDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   impact?: BCDTaxTypeImpactDTO;
 

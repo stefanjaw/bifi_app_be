@@ -13,7 +13,7 @@ export class CrmStageService extends BaseService<CrmStageDocument> {
 
   override async create(
     data: CrmStageDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<CrmStageDocument> {
     return await runTransaction<CrmStageDocument>(
       session,
@@ -24,18 +24,18 @@ export class CrmStageService extends BaseService<CrmStageDocument> {
           await model.updateMany(
             { isDefault: true },
             { isDefault: false },
-            { session: newSession }
+            { session: newSession },
           );
         }
 
         return await super.create(data, newSession);
-      }
+      },
     );
   }
 
   override async update(
     data: UpdateCrmStageDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<CrmStageDocument> {
     return await runTransaction<CrmStageDocument>(
       session,
@@ -46,12 +46,12 @@ export class CrmStageService extends BaseService<CrmStageDocument> {
           await model.updateMany(
             { isDefault: true },
             { isDefault: false },
-            { session: newSession }
+            { session: newSession },
           );
         }
 
         return await super.update(data, newSession);
-      }
+      },
     );
   }
 }

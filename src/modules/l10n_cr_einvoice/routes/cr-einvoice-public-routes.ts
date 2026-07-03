@@ -47,7 +47,7 @@ export class CrEinvoicePublicRouter {
         await model.findOneAndUpdate(
           { crClave: clave },
           { crEinvoiceStatus, crHaciendaResponse: req.body },
-          { new: true }
+          { new: true },
         );
 
         res.status(200).json({ ok: true });

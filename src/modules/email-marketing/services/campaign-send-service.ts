@@ -55,13 +55,13 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
       subscriber: SubscriberDocument;
       trackOpens: boolean;
       trackClicks: boolean;
-    }
+    },
   ): string {
     const { baseUrl, campaignId, subscriber, trackOpens, trackClicks } = opts;
     const sid = String(subscriber._id);
     const token = createUnsubscribeToken({ subscriberId: sid, campaignId });
     const unsubscribeUrl = `${baseUrl}/api/email-marketing/unsubscribe?token=${encodeURIComponent(
-      token
+      token,
     )}`;
 
     let out = html || "";
@@ -78,10 +78,10 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
         (match, pre, url) => {
           if (url.includes("/api/email-marketing/")) return match;
           const tracked = `${baseUrl}/api/email-marketing/track/click?c=${campaignId}&s=${sid}&u=${encodeURIComponent(
-            url
+            url,
           )}`;
           return `<a ${pre}href="${tracked}"`;
-        }
+        },
       );
     }
 
@@ -105,7 +105,7 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
 
   async sendTest(
     campaignId: string,
-    toEmail: string
+    toEmail: string,
   ): Promise<{ success: boolean; error?: string }> {
     const campaignModelBound = this.connectionManager.bindModelToDb(this.model);
     const campaign = await campaignModelBound.findById(campaignId);
@@ -269,7 +269,7 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
       } catch (err) {
         console.error(
           `[email-marketing] failed to send scheduled campaign ${campaign._id}:`,
-          err
+          err,
         );
       }
     }

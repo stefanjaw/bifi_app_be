@@ -37,7 +37,7 @@ const translationSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 translationSchema.index({ locale: 1, scope: 1, key: 1 }, { unique: true });

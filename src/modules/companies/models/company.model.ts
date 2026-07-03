@@ -69,7 +69,7 @@ const companySchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 companySchema.plugin(paginate);

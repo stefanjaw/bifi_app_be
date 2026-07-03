@@ -18,7 +18,7 @@ const taskTypeSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 taskTypeSchema.plugin(paginate);

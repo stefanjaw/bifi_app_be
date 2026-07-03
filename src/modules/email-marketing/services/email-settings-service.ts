@@ -20,7 +20,7 @@ export class EmailSettingsService extends BaseService<EmailSettingsDocument> {
   }
 
   async upsertSettings(
-    data: Partial<EmailSettingsDTO>
+    data: Partial<EmailSettingsDTO>,
   ): Promise<EmailSettingsDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
     const existing = await model.findOne();

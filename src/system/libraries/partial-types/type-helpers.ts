@@ -3,7 +3,7 @@ import { Type } from "./type.type";
 /** Applies the @IsOptional() decorator from class-validator on a target class property. */
 export function applyIsOptionalDecorator(
   targetClass: Function,
-  propertyKey: string
+  propertyKey: string,
 ) {
   if (!isClassValidatorAvailable()) {
     return;
@@ -16,14 +16,14 @@ export function applyIsOptionalDecorator(
 /** Applies the @ValidateIf((_, value) => value !== undefined) decorator on a target class property. */
 export function applyValidateIfDefinedDecorator(
   targetClass: Function,
-  propertyKey: string
+  propertyKey: string,
 ) {
   if (!isClassValidatorAvailable()) {
     return;
   }
   const classValidator: typeof import("class-validator") = require("class-validator");
   const decoratorFactory = classValidator.ValidateIf(
-    (_, value) => value !== undefined
+    (_, value) => value !== undefined,
   );
   decoratorFactory(targetClass.prototype, propertyKey);
 }
@@ -32,7 +32,7 @@ export function applyValidateIfDefinedDecorator(
 export function inheritValidationMetadata(
   parentClass: Type<any>,
   targetClass: Function,
-  isPropertyInherited?: (key: string) => boolean
+  isPropertyInherited?: (key: string) => boolean,
 ) {
   if (!isClassValidatorAvailable()) {
     return;
@@ -49,25 +49,25 @@ export function inheritValidationMetadata(
     const targetMetadata: ReturnType<
       typeof metadataStorage.getTargetValidationMetadatas
     > = (metadataStorage.getTargetValidationMetadatas as Function)(
-      ...getTargetValidationMetadatasArgs
+      ...getTargetValidationMetadatasArgs,
     );
     return targetMetadata
       .filter(
         ({ propertyName }) =>
-          !isPropertyInherited || isPropertyInherited(propertyName)
+          !isPropertyInherited || isPropertyInherited(propertyName),
       )
       .map((value) => {
         const originalType = Reflect.getMetadata(
           "design:type",
           parentClass.prototype,
-          value.propertyName
+          value.propertyName,
         );
         if (originalType) {
           Reflect.defineMetadata(
             "design:type",
             originalType,
             targetClass.prototype,
-            value.propertyName
+            value.propertyName,
           );
         }
 
@@ -93,7 +93,7 @@ export function inheritTransformationMetadata(
   parentClass: Type<any>,
   targetClass: Function,
   isPropertyInherited?: (key: string) => boolean,
-  stackDecorators = true
+  stackDecorators = true,
 ) {
   if (!isClassTransformerAvailable()) {
     return;
@@ -111,8 +111,8 @@ export function inheritTransformationMetadata(
         parentClass,
         targetClass,
         isPropertyInherited,
-        stackDecorators
-      )
+        stackDecorators,
+      ),
     );
   } catch (err) {
     console.log(err);
@@ -124,7 +124,7 @@ function inheritTransformerMetadata(
   parentClass: Type<any>,
   targetClass: Function,
   isPropertyInherited?: (key: string) => boolean,
-  stackDecorators = true
+  stackDecorators = true,
 ) {
   let classTransformer: any;
   try {
@@ -146,7 +146,7 @@ function inheritTransformerMetadata(
       const parentMetadata = metadataMap.get(parentClass);
 
       const targetMetadataEntries: Iterable<[string, any]> = Array.from(
-        parentMetadata!.entries()
+        parentMetadata!.entries(),
       )
         .filter(([key]) => !isPropertyInherited || isPropertyInherited(key))
         .map(([key, metadata]) => {
@@ -217,7 +217,7 @@ export function inheritPropertyInitializers(
   target: Record<string, any>,
   sourceClass: Type<any>,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  isPropertyInherited = (key: string) => true
+  isPropertyInherited = (key: string) => true,
 ) {
   try {
     const tempInstance = new sourceClass();
@@ -227,7 +227,7 @@ export function inheritPropertyInitializers(
       .filter(
         (propertyName) =>
           typeof tempInstance[propertyName] !== "undefined" &&
-          typeof target[propertyName] === "undefined"
+          typeof target[propertyName] === "undefined",
       )
       .filter((propertyName) => isPropertyInherited(propertyName))
       .forEach((propertyName) => {

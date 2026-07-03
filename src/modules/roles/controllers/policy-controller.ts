@@ -13,7 +13,7 @@ export class PolicyController extends BaseController<PolicyDocument> {
   protected override updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     if (!req.body.conditions) req.body.conditions = [];
 

@@ -28,7 +28,7 @@ export class RoleService extends BaseService<RoleDocument> {
    */
   override async create(
     data: RoleDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<RoleDocument> {
     const roleWithSameName = await this.connectionManager
       .bindModelToDb(this.model)

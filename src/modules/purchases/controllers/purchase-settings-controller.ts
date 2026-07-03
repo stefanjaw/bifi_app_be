@@ -12,7 +12,7 @@ export class PurchaseSettingsController extends BaseController<PurchaseSettingsD
   protected async getSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const settings = await (
@@ -27,7 +27,7 @@ export class PurchaseSettingsController extends BaseController<PurchaseSettingsD
   protected async upsertSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const data = req.body as PurchaseSettingsDTO;

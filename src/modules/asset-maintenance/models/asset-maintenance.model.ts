@@ -67,7 +67,7 @@ const assetMaintenanceSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 assetMaintenanceSchema.plugin(paginate);

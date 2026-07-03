@@ -20,7 +20,7 @@ export class ReportBugRouter extends BaseRoutes<TicketDocument> {
       this.endpoint,
       this.upload.any(),
       validateBodyMiddleware(this.dtoCreateClass),
-      this.controller.create
+      this.controller.create,
     );
   }
 }

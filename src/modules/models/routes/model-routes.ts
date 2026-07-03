@@ -11,7 +11,7 @@ export class ModelRouter {
     this.router.get(
       "/models",
       authorizeMiddleware("models", "read"),
-      controller.getModelsList
+      controller.getModelsList,
     );
   }
 

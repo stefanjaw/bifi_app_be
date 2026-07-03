@@ -15,7 +15,7 @@ export class HScodeDTO {
   @Transform(({ value }) => {
     const parsed = typeof value === "string" ? JSON.parse(value) : value;
     return parsed.map((invoice: any) =>
-      plainToInstance(ExtractedLineDTO, invoice)
+      plainToInstance(ExtractedLineDTO, invoice),
     );
   })
   lines!: ExtractedLineDTO[];

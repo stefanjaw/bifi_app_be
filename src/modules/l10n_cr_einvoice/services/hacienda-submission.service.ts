@@ -13,7 +13,7 @@ export class HaciendaSubmissionService {
   async submitPayload(
     payload: object,
     settings: CrEinvoiceSettingsDocument,
-    callbackUrl?: string
+    callbackUrl?: string,
   ): Promise<any> {
     const customServerUrl = process.env.CR_EINVOICE_SERVER_URL;
 
@@ -82,7 +82,7 @@ export class HaciendaSubmissionService {
 
   async pollStatus(
     clave: string,
-    settings: CrEinvoiceSettingsDocument
+    settings: CrEinvoiceSettingsDocument,
   ): Promise<any> {
     const customServerUrl = process.env.CR_EINVOICE_SERVER_URL;
 
@@ -95,7 +95,7 @@ export class HaciendaSubmissionService {
       });
       console.log(
         "[Hacienda] Poll raw response:",
-        JSON.stringify(response.data)
+        JSON.stringify(response.data),
       );
       return response.data;
     }

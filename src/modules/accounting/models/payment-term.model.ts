@@ -13,7 +13,7 @@ const paymentTermLineSchema = new Schema(
     percentage: { type: Number, required: true, min: 0 },
     dueDays: { type: Number, required: true, min: 0 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const paymentTermSchema = new Schema(
@@ -22,7 +22,7 @@ const paymentTermSchema = new Schema(
     active: { type: Boolean, default: true },
     lines: { type: [paymentTermLineSchema], default: [] },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 paymentTermSchema.plugin(paginate);

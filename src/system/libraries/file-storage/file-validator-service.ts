@@ -42,8 +42,8 @@ export class FileValidatorService {
     if (!allowedTypes.includes(file.mimetype)) {
       throw new ValidationException(
         `Uploaded file type is not allowed. Allowed types are: ${allowedTypes.join(
-          ", "
-        )}`
+          ", ",
+        )}`,
       );
     }
 
@@ -59,7 +59,7 @@ export class FileValidatorService {
   validateMaxSize(file: Express.Multer.File) {
     if (file.size > this.FILE_LIMIT) {
       throw new ValidationException(
-        `File size exceeds the limit of ${this.FILE_LIMIT / (1024 * 1024)}MB`
+        `File size exceeds the limit of ${this.FILE_LIMIT / (1024 * 1024)}MB`,
       );
     }
   }

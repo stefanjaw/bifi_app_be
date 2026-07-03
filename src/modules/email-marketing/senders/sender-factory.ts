@@ -29,18 +29,18 @@ export function createSender(settings: EmailSettingsDocument): EmailSender {
       return new MailgunSender(
         settings.mailgunApiKey,
         settings.mailgunDomain,
-        settings.mailgunRegion || "us"
+        settings.mailgunRegion || "us",
       );
     }
     case "ses": {
       if (!settings.sesAccessKeyId || !settings.sesSecretAccessKey)
         throw new EmailSenderError(
-          "Amazon SES access key and secret are required."
+          "Amazon SES access key and secret are required.",
         );
       return new SesSender(
         settings.sesAccessKeyId,
         settings.sesSecretAccessKey,
-        settings.sesRegion || "us-east-1"
+        settings.sesRegion || "us-east-1",
       );
     }
     case "sendgrid": {

@@ -83,7 +83,7 @@ export class TaskService extends BaseService<TaskDocument> {
    */
   override async create(
     data: TaskDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<TaskDocument> {
     return await runTransaction<TaskDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
@@ -99,7 +99,7 @@ export class TaskService extends BaseService<TaskDocument> {
             name: file.originalname,
             mimeType: file.mimetype,
             size: file.size,
-          }))
+          })),
         );
       }
 
@@ -110,12 +110,12 @@ export class TaskService extends BaseService<TaskDocument> {
           undefined,
           undefined,
           undefined,
-          newSession
+          newSession,
         );
 
         if (!stages || stages.length === 0)
           throw new ValidationException(
-            "No default stage found, please create one"
+            "No default stage found, please create one",
           );
 
         data.stage = stages[0]._id.toString();
@@ -139,7 +139,7 @@ export class TaskService extends BaseService<TaskDocument> {
           ...data,
           createdBy: actorId,
         },
-        newSession
+        newSession,
       );
 
       // Alert 8: task assigned on creation
@@ -167,7 +167,7 @@ export class TaskService extends BaseService<TaskDocument> {
    */
   override async update(
     data: UpdateTaskDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<TaskDocument> {
     return await runTransaction<TaskDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
@@ -183,7 +183,7 @@ export class TaskService extends BaseService<TaskDocument> {
             name: file.originalname,
             mimeType: file.mimetype,
             size: file.size,
-          }))
+          })),
         );
       }
 
@@ -193,7 +193,7 @@ export class TaskService extends BaseService<TaskDocument> {
           ...data,
           updatedBy: actorId,
         },
-        newSession
+        newSession,
       );
 
       // Alert 8: task assigned on update (fires whenever assigned is explicitly submitted)
@@ -224,7 +224,7 @@ export class TaskService extends BaseService<TaskDocument> {
    */
   override async delete(
     _id: string,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<boolean> {
     return await runTransaction<boolean>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(this.model);
@@ -233,7 +233,7 @@ export class TaskService extends BaseService<TaskDocument> {
       await model.updateMany(
         { parentId: _id },
         { parentId: null },
-        { session: newSession }
+        { session: newSession },
       );
 
       return await super.delete(_id, newSession);

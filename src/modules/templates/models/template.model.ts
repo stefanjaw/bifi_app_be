@@ -43,7 +43,7 @@ const templateSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 templateSchema.plugin(paginate);

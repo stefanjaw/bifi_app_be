@@ -15,7 +15,7 @@ export class TranslationController extends BaseController<TranslationDocument> {
   getTranslationsByScope = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const locale = req.query.locale as string;

@@ -32,7 +32,7 @@ export class AssetCommissioningRouter extends BaseRoutes<AssetCommissioningDocum
       this.upload.any(),
       validateBodyMiddleware(UpdateAssetCommissioningDTO),
       authorizeMiddleware(this.resource, "update"),
-      (this.controller as AssetCommissioningController).updateDecommission
+      (this.controller as AssetCommissioningController).updateDecommission,
     );
   }
 }

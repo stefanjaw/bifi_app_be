@@ -18,7 +18,7 @@ export class AiSettingsController extends BaseController<AiSettingsDocument> {
   protected async getSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const settings = await (this.service as AiSettingsService).getSettings();
@@ -37,7 +37,7 @@ export class AiSettingsController extends BaseController<AiSettingsDocument> {
   protected async upsertSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const data = req.body as AiSettingsDTO;
@@ -45,7 +45,7 @@ export class AiSettingsController extends BaseController<AiSettingsDocument> {
         delete data.apiKey;
       }
       const result = await (this.service as AiSettingsService).upsertSettings(
-        data
+        data,
       );
       const sanitized = result.toObject();
       sanitized.apiKey = this.maskApiKey(sanitized.apiKey);

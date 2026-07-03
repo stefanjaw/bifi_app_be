@@ -34,7 +34,7 @@ const pricingFolderSchema = new Schema(
       required: false,
     },
   },
-  { _id: true }
+  { _id: true },
 );
 
 const pricingSettingsSchema = new Schema(
@@ -92,7 +92,7 @@ const pricingSettingsSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 pricingSettingsSchema.plugin(paginate);

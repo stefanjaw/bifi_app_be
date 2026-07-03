@@ -41,7 +41,7 @@ export class UserService extends BaseService<UserDocument> {
    * being pulled in when User is loaded as a nested ref inside tasks/tickets.
    */
   private async _populateRoles(
-    users: UserDocument | UserDocument[]
+    users: UserDocument | UserDocument[],
   ): Promise<void> {
     const arr = Array.isArray(users) ? users : [users];
     if (arr.length === 0) return;
@@ -56,7 +56,7 @@ export class UserService extends BaseService<UserDocument> {
    */
   override async getById(
     id: string,
-    session: ClientSession | undefined
+    session: ClientSession | undefined,
   ): Promise<UserDocument | undefined> {
     const user = await super.getById(id, session);
     if (user) await this._populateRoles(user);
@@ -74,7 +74,7 @@ export class UserService extends BaseService<UserDocument> {
    */
   override async create(
     data: UserDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<UserDocument> {
     return await runTransaction<UserDocument>(session, async (newSession) => {
       let contactId: string | undefined = data.contactId;
@@ -83,7 +83,7 @@ export class UserService extends BaseService<UserDocument> {
       if (data.contactInformation && !data.contactInformation._id) {
         const newContact = await this.contactService.create(
           data.contactInformation,
-          newSession
+          newSession,
         );
 
         contactId = newContact._id.toString();
@@ -95,7 +95,7 @@ export class UserService extends BaseService<UserDocument> {
             type: "individual",
             _id: data.contactInformation._id,
           },
-          newSession
+          newSession,
         );
         contactId = updatedContact._id.toString();
       }
@@ -133,7 +133,7 @@ export class UserService extends BaseService<UserDocument> {
    */
   override async update(
     data: UpdateUserDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<UserDocument> {
     return await runTransaction<UserDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
@@ -147,7 +147,7 @@ export class UserService extends BaseService<UserDocument> {
       if (data.contactInformation && !data.contactInformation._id) {
         const newContact = await this.contactService.create(
           data.contactInformation,
-          newSession
+          newSession,
         );
 
         contactId = newContact._id.toString();
@@ -159,14 +159,14 @@ export class UserService extends BaseService<UserDocument> {
             type: "individual",
             _id: data.contactInformation._id,
           },
-          newSession
+          newSession,
         );
         contactId = updatedContact._id.toString();
       }
 
       if (isValidFileUpload(data.uploadedPictureId)) {
         const fileId = await bucket.uploadFile(
-          data.uploadedPictureId as Express.Multer.File
+          data.uploadedPictureId as Express.Multer.File,
         );
 
         data.uploadedPictureId = fileId;
@@ -200,14 +200,14 @@ export class UserService extends BaseService<UserDocument> {
   async updateLanguage(
     userId: string,
     language: string,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<UserDocument> {
     return runTransaction<UserDocument>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(this.model);
       const updated = await model.findByIdAndUpdate(
         userId,
         { $set: { language } },
-        { new: true, session: newSession }
+        { new: true, session: newSession },
       );
       if (!updated) throw new ValidationException("User not found");
       return updated;
@@ -216,12 +216,12 @@ export class UserService extends BaseService<UserDocument> {
 
   async updateProfile(
     data: UpdateUserDTO,
-    session?: mongoose.ClientSession | undefined
+    session?: mongoose.ClientSession | undefined,
   ): Promise<UserDocument> {
     return await runTransaction<UserDocument>(session, async (newSession) => {
       if (data._id !== userStorage.getStore()?.user?._id.toString())
         throw new ValidationException(
-          "The logged user can update only the own profile"
+          "The logged user can update only the own profile",
         );
 
       return this.update(data, newSession);

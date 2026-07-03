@@ -10,7 +10,7 @@ const fileSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 export { fileSchema };

@@ -15,7 +15,7 @@ import {
  */
 export function calculateBCD(
   bcd: BcdDTO | UpdateBcdDTO,
-  customCharges: Record<string, BCDChargeCodeDocument>
+  customCharges: Record<string, BCDChargeCodeDocument>,
 ) {
   const records = bcd.records || [];
   const charges = bcd.charges || [];
@@ -27,7 +27,7 @@ export function calculateBCD(
 
   // 2️ Invoice amount - sum of all records
   bcd.invoiceAmount = round2(
-    records.reduce((acc, r) => acc + (r.bdaValue ?? 0), 0)
+    records.reduce((acc, r) => acc + (r.bdaValue ?? 0), 0),
   );
 
   // 3️ Header charges
@@ -40,7 +40,7 @@ export function calculateBCD(
     .filter(
       (c) =>
         customCharges[c.code || ""]?.impact?.payable &&
-        customCharges[c.code || ""]?.type !== "S"
+        customCharges[c.code || ""]?.type !== "S",
     )
     .reduce((acc, c) => {
       const type = customCharges[c.code || ""]?.type;
@@ -48,7 +48,7 @@ export function calculateBCD(
     }, 0);
 
   const recordsDue = round2(
-    records.reduce((acc, r) => acc + (r.totalDue ?? 0), 0)
+    records.reduce((acc, r) => acc + (r.totalDue ?? 0), 0),
   );
 
   bcd.payableAmount = Math.max(0, round2(recordsDue + headerChargeAmount));
@@ -62,7 +62,7 @@ export function calculateBCD(
  */
 export function calculateRecord(
   record: BCDRecordDTO,
-  customCharges: Record<string, BCDChargeCodeDocument>
+  customCharges: Record<string, BCDChargeCodeDocument>,
 ) {
   // 1️ Base value
   const base = round2(record.linesSubtotal * record.exchangeRate);
@@ -83,7 +83,7 @@ export function calculateRecord(
   });
 
   const taxAmount = round2(
-    taxes.reduce((acc, t) => acc + (t.amount ?? 0), 0) ?? 0
+    taxes.reduce((acc, t) => acc + (t.amount ?? 0), 0) ?? 0,
   );
 
   // 5️ Charges that effect payable
@@ -91,7 +91,7 @@ export function calculateRecord(
     .filter(
       (c) =>
         customCharges[c.code || ""]?.impact?.payable &&
-        customCharges[c.code || ""]?.type !== "S"
+        customCharges[c.code || ""]?.type !== "S",
     )
     .reduce((acc, c) => {
       const type = customCharges[c.code || ""]?.type;

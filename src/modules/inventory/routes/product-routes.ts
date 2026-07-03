@@ -28,7 +28,7 @@ export class ProductRouter extends BaseRoutes<ProductDocument> {
       ]),
       validateBodyMiddleware(this.dtoCreateClass),
       authorizeMiddleware(this.resource, "create"),
-      this.controller.create
+      this.controller.create,
     );
   }
 
@@ -41,7 +41,7 @@ export class ProductRouter extends BaseRoutes<ProductDocument> {
       ]),
       validateBodyMiddleware(this.dtoUpdateClass),
       authorizeMiddleware(this.resource, "update"),
-      this.controller.update
+      this.controller.update,
     );
   }
 }

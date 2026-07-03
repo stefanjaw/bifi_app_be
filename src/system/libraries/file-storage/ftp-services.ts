@@ -55,7 +55,7 @@ export class FTPService {
   static getInstance() {
     if (!FTPService.instace)
       throw new InternalServerException(
-        "FTPService is not initialized. Call initiate first."
+        "FTPService is not initialized. Call initiate first.",
       );
 
     return FTPService.instace;
@@ -84,7 +84,7 @@ export class FTPService {
       return client;
     } catch (error: any) {
       throw new InternalServerException(
-        "Error connecting to FTP server: " + error.message
+        "Error connecting to FTP server: " + error.message,
       );
     }
   }
@@ -210,7 +210,7 @@ export class FTPService {
 
         await client.downloadTo(
           writable,
-          `${this.createPath(path)}/${file.name}`
+          `${this.createPath(path)}/${file.name}`,
         );
         response.push({
           buffer: Buffer.concat(chunks),
@@ -239,7 +239,7 @@ export class FTPService {
    */
   async moveFiles(
     files: { path: string; filename: string }[],
-    newPath: string
+    newPath: string,
   ) {
     let client: ftp.Client | undefined = undefined;
 

@@ -17,7 +17,7 @@ import csvParser from "csv-parser";
  * validated objects.
  */
 export function validateAndTransformCSVMiddleware<T extends object>(
-  dtoClass: new () => T
+  dtoClass: new () => T,
 ) {
   return async (req: Request, res: Response, next: NextFunction) => {
     // check if a CSV file is provided
@@ -64,7 +64,7 @@ export function validateAndTransformCSVMiddleware<T extends object>(
               });
 
               return await performValidation(dtoClass, result, false);
-            })
+            }),
           );
 
           // set the validated data on the request body

@@ -5,12 +5,12 @@ export class CrEinvoiceValidatorService {
     // ── Settings ─────────────────────────────────────────────────────────────
     if (!settings.proveedorSistemas?.trim()) {
       errors.push(
-        "Configuración: falta el proveedor de sistemas (proveedorSistemas)."
+        "Configuración: falta el proveedor de sistemas (proveedorSistemas).",
       );
     }
     if (!settings.haciendaUsername?.trim()) {
       errors.push(
-        "Configuración: falta el nombre de usuario de Hacienda (haciendaUsername)."
+        "Configuración: falta el nombre de usuario de Hacienda (haciendaUsername).",
       );
     }
     if (
@@ -18,29 +18,29 @@ export class CrEinvoiceValidatorService {
       !settings.certificateFile?.fileId
     ) {
       errors.push(
-        "Configuración: falta la contraseña de Hacienda o el archivo del certificado digital."
+        "Configuración: falta la contraseña de Hacienda o el archivo del certificado digital.",
       );
     }
 
     if (!settings.emisorCompanyId) {
       errors.push(
-        "Configuración: no se ha configurado la compañía emisora (emisorCompanyId)."
+        "Configuración: no se ha configurado la compañía emisora (emisorCompanyId).",
       );
     } else {
       const emisorContact = (settings.emisorCompanyId as any)?.contactId as any;
       if (!emisorContact?.vat) {
         errors.push(
-          "Emisor: la compañía no tiene número de identificación (vat)."
+          "Emisor: la compañía no tiene número de identificación (vat).",
         );
       }
       if (!emisorContact?.crVatType) {
         errors.push(
-          "Emisor: la compañía no tiene tipo de identificación configurado (crVatType)."
+          "Emisor: la compañía no tiene tipo de identificación configurado (crVatType).",
         );
       }
       if (!emisorContact?.state) {
         errors.push(
-          "Emisor: la compañía no tiene Provincia configurada. La Ubicación del Emisor es obligatoria para Hacienda."
+          "Emisor: la compañía no tiene Provincia configurada. La Ubicación del Emisor es obligatoria para Hacienda.",
         );
       }
       // Actividad económica del emisor
@@ -49,13 +49,13 @@ export class CrEinvoiceValidatorService {
         (emisorContact?.crEconomicActivityCodes ?? []).length > 0;
       if (!hasEmisorActivity) {
         errors.push(
-          "Emisor: la compañía no tiene actividades económicas configuradas. Configure al menos una en el contacto de la empresa, y selecciónela en la factura."
+          "Emisor: la compañía no tiene actividades económicas configuradas. Configure al menos una en el contacto de la empresa, y selecciónela en la factura.",
         );
       }
       // Nombre comercial del emisor
       if (!emisorContact?.commercialName?.trim()) {
         errors.push(
-          "Emisor: falta el nombre comercial (NombreComercial) en el contacto de la empresa."
+          "Emisor: falta el nombre comercial (NombreComercial) en el contacto de la empresa.",
         );
       }
     }
@@ -63,7 +63,7 @@ export class CrEinvoiceValidatorService {
     // ── Invoice-level fields ──────────────────────────────────────────────────
     if (!invoice.crEinvoiceType) {
       errors.push(
-        "Factura: falta el tipo de comprobante electrónico (Tipo de Factura)."
+        "Factura: falta el tipo de comprobante electrónico (Tipo de Factura).",
       );
     }
     if (!invoice.crCondicionVentaId) {
@@ -87,12 +87,12 @@ export class CrEinvoiceValidatorService {
       }
       if (!contact.vat) {
         errors.push(
-          "Receptor: el contacto no tiene número de identificación (vat)."
+          "Receptor: el contacto no tiene número de identificación (vat).",
         );
       }
       if (!contact.crVatType) {
         errors.push(
-          "Receptor: el contacto no tiene tipo de identificación configurado (crVatType)."
+          "Receptor: el contacto no tiene tipo de identificación configurado (crVatType).",
         );
       }
       const hasReceptorActivity =
@@ -100,12 +100,12 @@ export class CrEinvoiceValidatorService {
         (contact?.crEconomicActivityCodes ?? []).length > 0;
       if (!hasReceptorActivity) {
         errors.push(
-          "Receptor: el contacto no tiene actividades económicas configuradas. Configure al menos una en el contacto, y selecciónela en la factura."
+          "Receptor: el contacto no tiene actividades económicas configuradas. Configure al menos una en el contacto, y selecciónela en la factura.",
         );
       }
       if (!contact.commercialName?.trim()) {
         errors.push(
-          "Receptor: el contacto no tiene nombre comercial (NombreComercial)."
+          "Receptor: el contacto no tiene nombre comercial (NombreComercial).",
         );
       }
     };
@@ -120,17 +120,17 @@ export class CrEinvoiceValidatorService {
     const validateFecReceptor = (contact: any) => {
       if (!contact.name) {
         errors.push(
-          "Receptor (FEC): el contacto del vendedor no tiene nombre."
+          "Receptor (FEC): el contacto del vendedor no tiene nombre.",
         );
       }
       if (!contact.vat) {
         errors.push(
-          "Receptor (FEC): el contacto del vendedor no tiene número de identificación (vat)."
+          "Receptor (FEC): el contacto del vendedor no tiene número de identificación (vat).",
         );
       }
       if (!contact.crVatType) {
         errors.push(
-          "Receptor (FEC): el contacto del vendedor no tiene tipo de identificación configurado (crVatType)."
+          "Receptor (FEC): el contacto del vendedor no tiene tipo de identificación configurado (crVatType).",
         );
       }
       const hasReceptorActivity =
@@ -138,7 +138,7 @@ export class CrEinvoiceValidatorService {
         (contact?.crEconomicActivityCodes ?? []).length > 0;
       if (!hasReceptorActivity) {
         errors.push(
-          "Receptor (FEC): el contacto del vendedor debe tener actividades económicas configuradas. El servidor de Hacienda requiere CodigoActividadReceptor para Facturas Electrónicas de Compra."
+          "Receptor (FEC): el contacto del vendedor debe tener actividades económicas configuradas. El servidor de Hacienda requiere CodigoActividadReceptor para Facturas Electrónicas de Compra.",
         );
       }
       // Ubicacion is required by the Odoo XML builder for domestic sellers (crVatType 01-04).
@@ -147,7 +147,7 @@ export class CrEinvoiceValidatorService {
       if (vatType !== "05" && vatType !== "06") {
         if (!contact.state?.trim()) {
           errors.push(
-            "Receptor (FEC): el contacto del vendedor debe tener Provincia (state) configurada. Es requerida por el servidor de Hacienda para Facturas Electrónicas de Compra."
+            "Receptor (FEC): el contacto del vendedor debe tener Provincia (state) configurada. Es requerida por el servidor de Hacienda para Facturas Electrónicas de Compra.",
           );
         }
       }
@@ -180,7 +180,7 @@ export class CrEinvoiceValidatorService {
       // FEC: receptor (small-business seller) is required; uses relaxed rules
       if (!invoice.contactId) {
         errors.push(
-          "Factura (FEC): falta el contacto del vendedor. Debe asignar el establecimiento que emitió el comprobante físico."
+          "Factura (FEC): falta el contacto del vendedor. Debe asignar el establecimiento que emitió el comprobante físico.",
         );
       } else {
         validateFecReceptor(invoice.contactId as any);
@@ -189,14 +189,14 @@ export class CrEinvoiceValidatorService {
       // Without it Hacienda rejects with cvc-complex-type.2.4.a (Signature before InformacionReferencia).
       if (!invoice.crInformacionReferencia?.tipoDocIR?.trim()) {
         errors.push(
-          "Factura (FEC): debe completar la Información de Referencia (Tipo de Documento). Es obligatoria para toda Factura Electrónica de Compra según el esquema XSD v4.4."
+          "Factura (FEC): debe completar la Información de Referencia (Tipo de Documento). Es obligatoria para toda Factura Electrónica de Compra según el esquema XSD v4.4.",
         );
       }
     } else if (einvoiceType === "FEE") {
       // FEE: receptor required, but only Nombre validated (foreign buyer)
       if (!invoice.contactId) {
         errors.push(
-          "Factura (FEE): falta el receptor. Debe asignar un contacto al comprobante de exportación."
+          "Factura (FEE): falta el receptor. Debe asignar un contacto al comprobante de exportación.",
         );
       } else {
         validateFeeReceptor(invoice.contactId as any);
@@ -205,7 +205,7 @@ export class CrEinvoiceValidatorService {
       // FE, FEE, REP: receptor is required with full validation
       if (!invoice.contactId) {
         errors.push(
-          "Factura: falta el receptor. Debe asignar un contacto a la factura."
+          "Factura: falta el receptor. Debe asignar un contacto a la factura.",
         );
       } else {
         validateFullReceptor(invoice.contactId as any);
@@ -214,7 +214,7 @@ export class CrEinvoiceValidatorService {
 
     // ── Line items ────────────────────────────────────────────────────────────
     const productLines = (invoice.lines ?? []).filter(
-      (l: any) => !l.lineType || l.lineType === "product"
+      (l: any) => !l.lineType || l.lineType === "product",
     );
 
     if (productLines.length === 0) {
@@ -234,18 +234,18 @@ export class CrEinvoiceValidatorService {
 
       if (!line.quantity || Number(line.quantity) <= 0) {
         errors.push(
-          `Línea ${lineNum} (${productName}): la cantidad debe ser mayor a 0.`
+          `Línea ${lineNum} (${productName}): la cantidad debe ser mayor a 0.`,
         );
       }
 
       if (!product.codigoComercial) {
         errors.push(
-          `Línea ${lineNum} (${productName}): falta el código CABYS (codigoComercial). Configúrelo en el producto.`
+          `Línea ${lineNum} (${productName}): falta el código CABYS (codigoComercial). Configúrelo en el producto.`,
         );
       }
 
       const taxes = (line.taxIds ?? []).filter(
-        (t: any) => t && typeof t === "object" && t._id
+        (t: any) => t && typeof t === "object" && t._id,
       );
 
       taxes.forEach((tax: any, taxIndex: number) => {
@@ -254,17 +254,17 @@ export class CrEinvoiceValidatorService {
         } (${tax.name ?? ""})`;
         if (!tax.crCodigo) {
           errors.push(
-            `${taxLabel}: falta el código de impuesto CR (crCodigo).`
+            `${taxLabel}: falta el código de impuesto CR (crCodigo).`,
           );
         }
         if (!tax.crCodigoTarifa) {
           errors.push(
-            `${taxLabel}: falta el código de tarifa CR (crCodigoTarifa).`
+            `${taxLabel}: falta el código de tarifa CR (crCodigoTarifa).`,
           );
         }
         if (tax.crTarifa == null) {
           errors.push(
-            `${taxLabel}: falta el valor de la tarifa CR (crTarifa).`
+            `${taxLabel}: falta el valor de la tarifa CR (crTarifa).`,
           );
         }
       });

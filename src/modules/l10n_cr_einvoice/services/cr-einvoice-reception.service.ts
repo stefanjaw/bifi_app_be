@@ -18,7 +18,7 @@ export class CrEinvoiceReceptionService {
   async importReceived(
     firmadoXmlFile: Express.Multer.File,
     haciendaXmlFile: Express.Multer.File | undefined,
-    pdfFile: Express.Multer.File | undefined
+    pdfFile: Express.Multer.File | undefined,
   ): Promise<{ _id: string }> {
     const bucket = this.connectionManager.bindBucketToDb();
 
@@ -75,7 +75,7 @@ export class CrEinvoiceReceptionService {
     }
     if (!doc) {
       throw new ValidationException(
-        "Could not parse XML: no recognized root element found."
+        "Could not parse XML: no recognized root element found.",
       );
     }
 
@@ -91,7 +91,7 @@ export class CrEinvoiceReceptionService {
     const detalle = doc.DetalleServicio ?? {};
 
     const emisorVat: string = String(
-      emisor.Identificacion?.Numero ?? ""
+      emisor.Identificacion?.Numero ?? "",
     ).replace(/\D/g, "");
     // Zero-pad to match Contact.crVatType enum ["01"–"06"]
     const rawTipo: string = String(emisor.Identificacion?.Tipo ?? "1");
@@ -104,16 +104,16 @@ export class CrEinvoiceReceptionService {
     const emisorNombre: string = String(emisor.Nombre ?? "");
 
     const totalComprobante: number = parseFloat(
-      String(resumen.TotalComprobante ?? 0)
+      String(resumen.TotalComprobante ?? 0),
     );
     const totalImpuesto: number = parseFloat(
-      String(resumen.TotalImpuesto ?? 0)
+      String(resumen.TotalImpuesto ?? 0),
     );
     const totalVentaNeta: number = parseFloat(
-      String(resumen.TotalVentaNeta ?? 0)
+      String(resumen.TotalVentaNeta ?? 0),
     );
     const codigoMoneda: string = String(
-      resumen.CodigoTipoMoneda?.CodigoMoneda ?? "CRC"
+      resumen.CodigoTipoMoneda?.CodigoMoneda ?? "CRC",
     );
 
     const contactModel = this.connectionManager.getModel<any>("Contact");
@@ -143,7 +143,7 @@ export class CrEinvoiceReceptionService {
 
     if (!currency) {
       throw new ValidationException(
-        "No currency found in the system — create at least one currency first."
+        "No currency found in the system — create at least one currency first.",
       );
     }
 
@@ -151,7 +151,7 @@ export class CrEinvoiceReceptionService {
     const journal = await journalDbModel.findOne({}).lean();
     if (!journal) {
       throw new ValidationException(
-        "No journal found in the system — configure a journal first."
+        "No journal found in the system — configure a journal first.",
       );
     }
 
@@ -159,7 +159,7 @@ export class CrEinvoiceReceptionService {
     const defaultAccount = await accountModel.findOne({}).lean();
     if (!defaultAccount) {
       throw new ValidationException(
-        "No account found in the system — configure a chart of accounts first."
+        "No account found in the system — configure a chart of accounts first.",
       );
     }
 
@@ -168,8 +168,8 @@ export class CrEinvoiceReceptionService {
     const rawLines = Array.isArray(detalle.LineaDetalle)
       ? detalle.LineaDetalle
       : detalle.LineaDetalle
-      ? [detalle.LineaDetalle]
-      : [];
+        ? [detalle.LineaDetalle]
+        : [];
 
     const lines: any[] = [];
     for (const line of rawLines) {

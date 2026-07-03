@@ -18,7 +18,7 @@ export class UserShortcutsController extends BaseController<UserShortcutsDocumen
         return;
       }
       const doc = await (this.service as UserShortcutsService).getMyShortcuts(
-        user._id
+        user._id,
       );
       this.sendData(res, doc ?? { shortcuts: [] });
     } catch (error) {
@@ -29,7 +29,7 @@ export class UserShortcutsController extends BaseController<UserShortcutsDocumen
   upsertMyShortcuts = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const user = userStorage.getStore()?.user;

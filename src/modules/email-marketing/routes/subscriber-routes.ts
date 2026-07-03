@@ -20,7 +20,7 @@ export class SubscriberRouter extends BaseRoutes<SubscriberDocument> {
     this.router.post(
       "/subscribers/import-from-contacts",
       authorizeMiddleware("subscribers", "create"),
-      subscriberController.importFromContacts
+      subscriberController.importFromContacts,
     );
     super.initRoutes();
   }

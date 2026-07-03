@@ -21,7 +21,7 @@ export class CountryRouter extends BaseRoutes<CountryDocument> {
     this.router.post(
       this.endpoint + "/populate",
       authorizeMiddleware("countries/populate", "create"),
-      (this.controller as CountryController).createPopulateCountries
+      (this.controller as CountryController).createPopulateCountries,
     );
   }
 }

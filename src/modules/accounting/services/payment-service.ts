@@ -45,7 +45,7 @@ export class PaymentService extends BaseService<PaymentDocument> {
           path: "journalEntryId",
           getModel: () =>
             this.connectionManager.getModel<JournalEntryDocument>(
-              "JournalEntry"
+              "JournalEntry",
             ),
           isArray: false,
         },
@@ -55,7 +55,7 @@ export class PaymentService extends BaseService<PaymentDocument> {
 
   override async create(
     data: PaymentDTO,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<PaymentDocument> {
     return await runTransaction(session, async (s) => {
       const boundJournalModel =
@@ -89,7 +89,7 @@ export class PaymentService extends BaseService<PaymentDocument> {
               ],
             },
           ],
-          { session: s }
+          { session: s },
         );
         paymentData.journalEntryId = entry[0]._id;
       }

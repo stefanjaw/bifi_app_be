@@ -37,7 +37,7 @@ export class CompanyService extends BaseService<CompanyDocument> {
 
   override async create(
     data: CompanyDTO,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<CompanyDocument> {
     return await runTransaction<CompanyDocument>(
       session,
@@ -48,19 +48,19 @@ export class CompanyService extends BaseService<CompanyDocument> {
           await model.updateMany(
             { parentCompany: data.parentCompany, isDefault: true },
             { $set: { isDefault: false } },
-            { session: newSession }
+            { session: newSession },
           );
         }
 
         const record = (await model.create([data], { session: newSession }))[0];
         return record as CompanyDocument;
-      }
+      },
     );
   }
 
   override async update(
     data: UpdateCompanyDTO,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<CompanyDocument> {
     return await runTransaction<CompanyDocument>(
       session,
@@ -79,7 +79,7 @@ export class CompanyService extends BaseService<CompanyDocument> {
               await model.updateMany(
                 { parentCompany, isDefault: true },
                 { $set: { isDefault: false } },
-                { session: newSession }
+                { session: newSession },
               );
             }
           }
@@ -91,7 +91,7 @@ export class CompanyService extends BaseService<CompanyDocument> {
         });
 
         return record as CompanyDocument;
-      }
+      },
     );
   }
 }

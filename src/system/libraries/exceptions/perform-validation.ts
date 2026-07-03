@@ -19,7 +19,7 @@ interface ValidationErrorDetail {
 export async function performValidation<T extends object>(
   dto: new () => T,
   data: any,
-  forbidNonWhitelisted: boolean = true
+  forbidNonWhitelisted: boolean = true,
 ) {
   const object = plainToInstance(dto, data);
   const errors = await validate(object, {

@@ -16,7 +16,7 @@ export class CsvBuilderService {
     // Header Charges
     data.charges.forEach((charge) => {
       lines.push(
-        Object.values(mapper.chargesMapper(charge, "header")).join(",")
+        Object.values(mapper.chargesMapper(charge, "header")).join(","),
       );
     });
 
@@ -28,7 +28,7 @@ export class CsvBuilderService {
     // Header Additional Info
     (data.additionalInformation || []).forEach((info) => {
       lines.push(
-        Object.values(mapper.additionalInfoMapper(info, "header")).join(",")
+        Object.values(mapper.additionalInfoMapper(info, "header")).join(","),
       );
     });
 
@@ -43,7 +43,7 @@ export class CsvBuilderService {
 
       record.charges.forEach((charge) => {
         lines.push(
-          Object.values(mapper.chargesMapper(charge, "record")).join(",")
+          Object.values(mapper.chargesMapper(charge, "record")).join(","),
         );
       });
 
@@ -53,7 +53,7 @@ export class CsvBuilderService {
 
       (record.additionalInformation || []).forEach((info) => {
         lines.push(
-          Object.values(mapper.additionalInfoMapper(info, "record")).join(",")
+          Object.values(mapper.additionalInfoMapper(info, "record")).join(","),
         );
       });
     });

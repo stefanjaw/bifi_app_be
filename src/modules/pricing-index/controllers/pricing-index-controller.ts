@@ -23,7 +23,7 @@ export class PricingIndexController extends BaseController<CatalogCacheDocument>
   protected async triggerIndexingHandler(
     req: Request,
     res: Response,
-    _next: NextFunction
+    _next: NextFunction,
   ) {
     const type = req.body?.type;
     const force = req.body?.force === true;
@@ -38,7 +38,7 @@ export class PricingIndexController extends BaseController<CatalogCacheDocument>
   protected async getStatusHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const status = await this.indexingService.getIndexingStatus();
@@ -51,7 +51,7 @@ export class PricingIndexController extends BaseController<CatalogCacheDocument>
   protected async textSearchHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const query = req.query.q as string;

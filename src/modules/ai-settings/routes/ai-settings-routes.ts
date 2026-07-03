@@ -20,14 +20,14 @@ export class AiSettingsRouter extends BaseRoutes<AiSettingsDocument> {
     this.router.get(
       "/ai-settings",
       authorizeMiddleware("ai-settings", "read"),
-      aiSettingsController.getSettings
+      aiSettingsController.getSettings,
     );
 
     this.router.put(
       "/ai-settings",
       authorizeMiddleware("ai-settings", "update"),
       validateBodyMiddleware(AiSettingsDTO),
-      aiSettingsController.upsertSettings
+      aiSettingsController.upsertSettings,
     );
   }
 }

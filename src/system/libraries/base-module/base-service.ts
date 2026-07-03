@@ -27,7 +27,7 @@ export class BaseService<T> {
    */
   async getById(
     id: string,
-    session: ClientSession | undefined
+    session: ClientSession | undefined,
   ): Promise<T | undefined> {
     return await runTransaction<T | undefined>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(this.model);
@@ -43,7 +43,7 @@ export class BaseService<T> {
     paginationOptions: undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
     count: boolean | undefined,
-    session: ClientSession | undefined
+    session: ClientSession | undefined,
   ): Promise<T[]>;
 
   async get(
@@ -51,7 +51,7 @@ export class BaseService<T> {
     paginationOptions: paginationOptions & { paginate: true },
     orderBy: orderByQuery["orderBy"] | undefined,
     count: boolean | undefined,
-    session: ClientSession | undefined
+    session: ClientSession | undefined,
   ): Promise<PaginateResult<T>>;
 
   /**
@@ -74,7 +74,7 @@ export class BaseService<T> {
     paginationOptions: paginationOptions | undefined,
     orderBy: orderByQuery["orderBy"] | undefined,
     count: boolean | undefined,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<PaginateResult<T> | T[]> {
     return await runTransaction<PaginateResult<T> | T[]>(
       session,
@@ -84,7 +84,7 @@ export class BaseService<T> {
         if (this.refFields && this.refFields.length > 0) {
           searchParams = await this.transformReferenceFilters(
             searchParams,
-            newSession
+            newSession,
           );
         }
 
@@ -123,7 +123,7 @@ export class BaseService<T> {
         }
 
         return records as PaginateResult<T> | T[];
-      }
+      },
     );
   }
 
@@ -141,7 +141,7 @@ export class BaseService<T> {
    */
   protected async transformReferenceFilters(
     searchParams: Record<string, any>,
-    session: ClientSession
+    session: ClientSession,
   ) {
     // Make a deep copy to avoid mutating the original object
     const newFilters = Array.isArray(searchParams)
@@ -160,7 +160,7 @@ export class BaseService<T> {
         for (const key of Object.keys(obj)) {
           // Check if the key corresponds to a configured reference
           const refField = (this.refFields || []).find((rf) =>
-            key.startsWith(rf.path + ".")
+            key.startsWith(rf.path + "."),
           );
 
           if (refField) {
@@ -211,7 +211,7 @@ export class BaseService<T> {
    */
   async create(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<T> {
     return await runTransaction<T>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(this.model);
@@ -233,7 +233,7 @@ export class BaseService<T> {
    */
   async update(
     data: Record<string, any>,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<T> {
     return await runTransaction<T>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(this.model);
@@ -260,7 +260,7 @@ export class BaseService<T> {
    */
   async delete(
     _id: string,
-    session: ClientSession | undefined = undefined
+    session: ClientSession | undefined = undefined,
   ): Promise<boolean> {
     return await runTransaction<boolean>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(this.model);
@@ -274,7 +274,7 @@ export class BaseService<T> {
         {
           session: newSession,
           new: true,
-        }
+        },
       );
 
       if (!session) await newSession.commitTransaction();
@@ -297,7 +297,7 @@ export class BaseService<T> {
 
       if (data.length === 0) {
         data = (await model.find().lean()).map((item) =>
-          JSON.parse(JSON.stringify(item))
+          JSON.parse(JSON.stringify(item)),
         );
       }
 
@@ -320,7 +320,7 @@ export class BaseService<T> {
    */
   async importCSV(
     data: Record<string, any>[], // previously sent as a csv file
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<T[]> {
     return await runTransaction<T[]>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(this.model);

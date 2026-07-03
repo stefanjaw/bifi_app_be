@@ -25,7 +25,7 @@ const bcdTaxIdSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 bcdTaxIdSchema.plugin(paginate);

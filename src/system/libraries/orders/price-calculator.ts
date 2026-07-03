@@ -30,7 +30,7 @@ export interface TaxCalculationResult {
  */
 export function calculateLineItemTotal(
   quantity: number,
-  unitPrice: number
+  unitPrice: number,
 ): number {
   return Number((quantity * unitPrice).toFixed(2));
 }
@@ -46,7 +46,7 @@ export function calculateSubtotal(lineItems: LineItemInput[]): number {
       sum +
       calculateLineItemTotal(
         Number(item.quantity ?? 0),
-        Number(item.unitPrice ?? 0)
+        Number(item.unitPrice ?? 0),
       )
     );
   }, 0);
@@ -62,14 +62,14 @@ export function calculateSubtotal(lineItems: LineItemInput[]): number {
  */
 export function calculateTaxes(
   subtotal: number,
-  taxDocs: TaxInput[]
+  taxDocs: TaxInput[],
 ): TaxCalculationResult {
   let taxTotal = 0;
   const appliedTaxes: AppliedTax[] = [];
 
   for (const tax of taxDocs) {
     const amount = Number(
-      (subtotal * ((tax.percentage ?? 0) / 100)).toFixed(2)
+      (subtotal * ((tax.percentage ?? 0) / 100)).toFixed(2),
     );
     taxTotal += amount;
     appliedTaxes.push({ taxId: tax._id.toString(), amount });
@@ -90,24 +90,24 @@ export function calculateTaxes(
  */
 export function calculateTaxesPerLine(
   lineItems: LineItemWithTaxIds[],
-  taxDocsMap: Map<string, TaxInput>
+  taxDocsMap: Map<string, TaxInput>,
 ): TaxCalculationResult {
   const aggregated = new Map<string, number>();
 
   for (const item of lineItems) {
     const lineBase = calculateLineItemTotal(
       Number(item.quantity ?? 0),
-      Number(item.unitPrice ?? 0)
+      Number(item.unitPrice ?? 0),
     );
     for (const taxId of item.taxIds ?? []) {
       const tax = taxDocsMap.get(taxId);
       if (!tax) continue;
       const amount = Number(
-        (lineBase * ((tax.percentage ?? 0) / 100)).toFixed(2)
+        (lineBase * ((tax.percentage ?? 0) / 100)).toFixed(2),
       );
       aggregated.set(
         taxId,
-        Number(((aggregated.get(taxId) ?? 0) + amount).toFixed(2))
+        Number(((aggregated.get(taxId) ?? 0) + amount).toFixed(2)),
       );
     }
   }
@@ -130,7 +130,7 @@ export function calculateTaxesPerLine(
  */
 export function calculateGrandTotal(
   subtotal: number,
-  taxTotal: number
+  taxTotal: number,
 ): number {
   return Number((subtotal + taxTotal).toFixed(2));
 }

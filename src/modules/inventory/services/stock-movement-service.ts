@@ -19,7 +19,7 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
 
   override async create(
     data: StockMovementDTO,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<StockMovementDocument> {
     return await runTransaction(session, async (s) => {
       const { productId, warehouseId, locationId, quantity, type } = data;
@@ -28,7 +28,7 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
 
       if (type === MovementType.TRANSFER) {
         throw new ValidationException(
-          "Use the transfer endpoint for TRANSFER movements."
+          "Use the transfer endpoint for TRANSFER movements.",
         );
       }
 
@@ -36,7 +36,7 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
         await balanceModel.findOneAndUpdate(
           { productId, locationId, warehouseId },
           { $inc: { quantity } },
-          { upsert: true, new: true, session: s, setDefaultsOnInsert: true }
+          { upsert: true, new: true, session: s, setDefaultsOnInsert: true },
         );
       } else if (type === MovementType.OUT) {
         const balance = await balanceModel
@@ -47,14 +47,14 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
           throw new ValidationException(
             `Insufficient stock at this location. Available: ${
               balance?.quantity ?? 0
-            }, requested: ${quantity}`
+            }, requested: ${quantity}`,
           );
         }
 
         await balanceModel.findOneAndUpdate(
           { productId, locationId, warehouseId },
           { $inc: { quantity: -quantity } },
-          { new: true, session: s }
+          { new: true, session: s },
         );
       }
 
@@ -79,7 +79,7 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
 
       if (fromLocationId === toLocationId) {
         throw new ValidationException(
-          "Source and destination locations must be different."
+          "Source and destination locations must be different.",
         );
       }
 
@@ -95,20 +95,20 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
         throw new ValidationException(
           `Insufficient stock at source location. Available: ${
             sourceBalance?.quantity ?? 0
-          }, requested: ${quantity}`
+          }, requested: ${quantity}`,
         );
       }
 
       await balanceModel.findOneAndUpdate(
         { productId, locationId: fromLocationId, warehouseId: fromWarehouseId },
         { $inc: { quantity: -quantity } },
-        { new: true, session: s }
+        { new: true, session: s },
       );
 
       await balanceModel.findOneAndUpdate(
         { productId, locationId: toLocationId, warehouseId: toWarehouseId },
         { $inc: { quantity } },
-        { upsert: true, new: true, session: s, setDefaultsOnInsert: true }
+        { upsert: true, new: true, session: s, setDefaultsOnInsert: true },
       );
 
       const now = new Date();
@@ -124,7 +124,7 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
           notes: notes ?? "",
           date: now,
         } as any,
-        s
+        s,
       );
 
       const inMovement = await super.create(
@@ -138,7 +138,7 @@ export class StockMovementService extends BaseService<StockMovementDocument> {
           notes: notes ?? "",
           date: now,
         } as any,
-        s
+        s,
       );
 
       return { outMovement, inMovement };

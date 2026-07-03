@@ -23,7 +23,7 @@ const purchaseSettingsSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 purchaseSettingsSchema.plugin(paginate);

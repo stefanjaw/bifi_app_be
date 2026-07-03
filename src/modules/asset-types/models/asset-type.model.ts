@@ -20,7 +20,7 @@ const assetTypeSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 assetTypeSchema.plugin(paginate);

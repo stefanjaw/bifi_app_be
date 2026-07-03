@@ -114,7 +114,7 @@ const journalEntryLineSchema = new Schema(
     },
     amount: { type: Number, required: false },
   },
-  { _id: true }
+  { _id: true },
 );
 
 journalEntryLineSchema.plugin(autopopulate);
@@ -264,7 +264,7 @@ const journalEntrySchema = new Schema(
     },
     crAcceptanceHaciendaResponse: { type: Schema.Types.Mixed, required: false },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 journalEntrySchema.plugin(paginate);

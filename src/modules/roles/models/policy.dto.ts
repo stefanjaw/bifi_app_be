@@ -44,8 +44,8 @@ export class PolicyDTO {
   @IsOptional()
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((room: any) =>
-      plainToInstance(ConditionDTO, room)
-    )
+      plainToInstance(ConditionDTO, room),
+    ),
   )
   @Type(() => ConditionDTO)
   @ValidateNested({ each: true })

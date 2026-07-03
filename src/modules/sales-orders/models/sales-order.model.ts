@@ -27,7 +27,7 @@ const lineItemSchema = new Schema(
       autopopulate: { select: "name discountType value", maxDepth: 1 },
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const salesOrderSchema = new Schema(
@@ -146,7 +146,7 @@ const salesOrderSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 salesOrderSchema.plugin(autopopulate);

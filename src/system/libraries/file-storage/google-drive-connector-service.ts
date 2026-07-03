@@ -73,7 +73,7 @@ export class GoogleDriveConnectorService {
   async downloadFile(fileId: string): Promise<Buffer> {
     const response = await this.drive.files.get(
       { fileId, alt: "media", supportsAllDrives: true },
-      { responseType: "arraybuffer" }
+      { responseType: "arraybuffer" },
     );
     return Buffer.from(response.data as ArrayBuffer);
   }
@@ -113,7 +113,7 @@ export class GoogleDriveConnectorService {
         mimeType:
           "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       },
-      { responseType: "arraybuffer" }
+      { responseType: "arraybuffer" },
     );
     return Buffer.from(response.data as ArrayBuffer);
   }
@@ -132,7 +132,7 @@ export class GoogleDriveConnectorService {
     folderId: string,
     fileName: string,
     buffer: Buffer,
-    mimeType: string = "text/csv"
+    mimeType: string = "text/csv",
   ): Promise<string> {
     const existing = await this.drive.files.list({
       q: `'${folderId}' in parents and name = '${fileName}' and trashed = false`,
@@ -166,7 +166,7 @@ export class GoogleDriveConnectorService {
     if (!driveId) {
       throw new ValidationException(
         "Config folder must be inside a Shared Drive. Service accounts do not have personal storage quota. " +
-          "Please configure a folder that lives within a Shared Drive in Pricing Settings."
+          "Please configure a folder that lives within a Shared Drive in Pricing Settings.",
       );
     }
 

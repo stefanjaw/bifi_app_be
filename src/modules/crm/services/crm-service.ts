@@ -40,14 +40,14 @@ export class CRMService extends BaseService<CRMDocument> {
 
   override async update(
     data: Record<string, any>,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<CRMDocument> {
     const updated = await super.update(data, session);
 
     if (data.stage) {
       try {
         const stageModel = this.connectionManager.bindModelToDb(
-          mongoose.model("CrmStage") as any
+          mongoose.model("CrmStage") as any,
         );
         const stage = await stageModel.findById(data.stage).lean();
         const stageName: string = (stage as any)?.name ?? "";

@@ -117,8 +117,8 @@ export class SalesOrderDTO {
   @Type(() => LineItemDTO)
   @Transform(({ value }) =>
     (typeof value === "string" ? JSON.parse(value) : value).map((item: any) =>
-      plainToInstance(LineItemDTO, item)
-    )
+      plainToInstance(LineItemDTO, item),
+    ),
   )
   @IsOptional()
   lineItems?: LineItemDTO[];

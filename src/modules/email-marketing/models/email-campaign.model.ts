@@ -45,7 +45,7 @@ const statsSchema = new Schema(
     unsubscribed: { type: Number, default: 0 },
     failed: { type: Number, default: 0 },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const emailCampaignSchema = new Schema(
@@ -87,7 +87,7 @@ const emailCampaignSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 emailCampaignSchema.plugin(paginate);

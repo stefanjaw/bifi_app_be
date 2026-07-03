@@ -12,7 +12,7 @@ export class CrEinvoiceSettingsController extends BaseController<CrEinvoiceSetti
   protected async getSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const settings = await (
@@ -27,7 +27,7 @@ export class CrEinvoiceSettingsController extends BaseController<CrEinvoiceSetti
   protected async upsertSettingsHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const files = req.files as

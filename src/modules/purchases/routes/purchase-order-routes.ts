@@ -30,7 +30,7 @@ export class PurchaseOrderRouter extends BaseRoutes<PurchaseOrderDocument> {
     this.router.get(
       `${this.endpoint}/:id/pdf`,
       authorizeMiddleware("purchases/orders", "read"),
-      purchaseOrderController.exportPdf
+      purchaseOrderController.exportPdf,
     );
   }
 
@@ -39,7 +39,7 @@ export class PurchaseOrderRouter extends BaseRoutes<PurchaseOrderDocument> {
       `${this.endpoint}/:id/status`,
       validateBodyMiddleware(UpdatePurchaseOrderStatusDTO),
       authorizeMiddleware("purchases/orders", "update"),
-      purchaseOrderController.updateStatus
+      purchaseOrderController.updateStatus,
     );
   }
 }

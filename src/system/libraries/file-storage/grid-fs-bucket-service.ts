@@ -53,7 +53,7 @@ export class GridFSBucketService {
       stream.end(
         file instanceof File
           ? Buffer.from(await file.arrayBuffer())
-          : file.buffer
+          : file.buffer,
       );
 
       // Handle errors during the upload process
@@ -103,7 +103,7 @@ export class GridFSBucketService {
 
         downloadStream.on("error", (err) => {
           reject(
-            new InternalServerException(`File download failed: ${err.message}`)
+            new InternalServerException(`File download failed: ${err.message}`),
           );
         });
 
@@ -141,7 +141,7 @@ export class GridFSBucketService {
    * This function is a convenience wrapper for the uploadFile and uploadFiles methods.
    */
   async upload(
-    files: (Express.Multer.File | File)[] | Express.Multer.File | File
+    files: (Express.Multer.File | File)[] | Express.Multer.File | File,
   ) {
     if (Array.isArray(files)) {
       return this.uploadFiles(files);

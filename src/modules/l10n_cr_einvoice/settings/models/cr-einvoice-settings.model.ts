@@ -33,7 +33,7 @@ const crEinvoiceSettingsSchema = new Schema(
     timestamps: true,
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
-  }
+  },
 );
 
 crEinvoiceSettingsSchema.plugin(paginate);

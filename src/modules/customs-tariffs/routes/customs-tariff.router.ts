@@ -27,7 +27,7 @@ export class CustomsTariffRouter extends BaseRoutes<CustomsTariffDocument> {
       "/customs-tariffs/lookup",
       authorizeMiddleware("customs-tariffs", "read"),
       (req, res, next) =>
-        (this.controller as CustomsTariffController).lookup(req, res, next)
+        (this.controller as CustomsTariffController).lookup(req, res, next),
     );
   }
 }

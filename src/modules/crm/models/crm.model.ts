@@ -65,7 +65,7 @@ const crmSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 crmSchema.plugin(autopopulate);
@@ -73,7 +73,7 @@ crmSchema.plugin(paginate);
 
 const crmModel = mongoose.model<CRMDocument, PaginateModel<CRMDocument>>(
   "CRM",
-  crmSchema
+  crmSchema,
 );
 
 export { crmModel };

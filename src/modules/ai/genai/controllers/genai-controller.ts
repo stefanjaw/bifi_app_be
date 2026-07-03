@@ -10,7 +10,7 @@ export class GenAIController {
   protected async generateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const body = { ...req.body };

@@ -12,7 +12,7 @@ export class GemsController {
     const settings = await this.aiSettingsService.getSettings();
     if (!settings?.apiKey) {
       throw new ValidationException(
-        "AI settings are not configured. Please set up the API key in Pricing AI Settings."
+        "AI settings are not configured. Please set up the API key in Pricing AI Settings.",
       );
     }
     return new GemsService({
@@ -25,7 +25,7 @@ export class GemsController {
   protected async generateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const gemsService = await this.resolveGemsService();
@@ -101,7 +101,7 @@ export class GemsController {
   protected async embedHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const gemsService = await this.resolveGemsService();

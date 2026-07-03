@@ -30,7 +30,7 @@ const bcdPortSchema = new Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 bcdPortSchema.plugin(paginate);

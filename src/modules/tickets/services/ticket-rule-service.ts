@@ -16,7 +16,7 @@ function matchesRule(
   document: Record<string, unknown>,
   field: MatchField,
   operator: Operator,
-  ruleValue: string
+  ruleValue: string,
 ): boolean {
   const raw = document[field];
   const fieldStr = Array.isArray(raw)

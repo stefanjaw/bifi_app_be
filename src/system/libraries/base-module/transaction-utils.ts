@@ -15,7 +15,7 @@ import { MongoException } from "../exceptions/service-exception";
  */
 export const runTransaction = async <T>(
   session: ClientSession | undefined,
-  callback: (newSession: ClientSession) => Promise<T>
+  callback: (newSession: ClientSession) => Promise<T>,
 ): Promise<T> => {
   const newSession = session ? session : await mongoose.startSession();
 

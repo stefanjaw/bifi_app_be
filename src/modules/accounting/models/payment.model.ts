@@ -82,7 +82,7 @@ const paymentSchema = new Schema(
     },
     active: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 paymentSchema.plugin(paginate);

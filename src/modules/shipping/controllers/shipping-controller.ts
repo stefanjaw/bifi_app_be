@@ -19,7 +19,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   protected async cloneShippingHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const id = req.params.id;
@@ -33,7 +33,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   protected async generateShippingFromFileHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const files = req.files as Express.Multer.File[];
@@ -55,7 +55,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   protected async generateHSCodesForShippingHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const record = await (
@@ -71,7 +71,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   protected async generateTariffForShippingHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) {
     try {
       const record = await (
@@ -91,7 +91,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   generateShippingFromFile = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.generateShippingFromFileHandler(req, res, next);
   };
@@ -99,7 +99,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   generateHSCodesForShipping = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.generateHSCodesForShippingHandler(req, res, next);
   };
@@ -107,7 +107,7 @@ export class ShippingController extends BaseController<ShippingDocument> {
   generateTariffForShipping = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     await this.generateTariffForShippingHandler(req, res, next);
   };

@@ -14,7 +14,7 @@ const uomCategorySchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 uomCategorySchema.plugin(paginate);

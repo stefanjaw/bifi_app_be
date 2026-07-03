@@ -12,14 +12,14 @@ export class ProductService extends BaseService<ProductDocument> {
 
   override async create(
     data: ProductDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ProductDocument> {
     return runTransaction<ProductDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
 
       if (isValidFileUpload(data.photo)) {
         const fileId = await bucket.uploadFile(
-          Array.isArray(data.photo) ? data.photo[0] : data.photo
+          Array.isArray(data.photo) ? data.photo[0] : data.photo,
         );
         data.photo = fileId;
       } else {
@@ -37,8 +37,8 @@ export class ProductService extends BaseService<ProductDocument> {
               name: file.originalname,
               mimeType: file.mimetype,
               size: file.size,
-            })
-          )
+            }),
+          ),
         );
       } else {
         delete (data as any).attachments;
@@ -50,7 +50,7 @@ export class ProductService extends BaseService<ProductDocument> {
 
   override async update(
     data: UpdateProductDTO,
-    session?: ClientSession | undefined
+    session?: ClientSession | undefined,
   ): Promise<ProductDocument> {
     return runTransaction<ProductDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
@@ -58,7 +58,7 @@ export class ProductService extends BaseService<ProductDocument> {
       let photo = data.photo;
       if (isValidFileUpload(photo)) {
         const fileId = await bucket.uploadFile(
-          Array.isArray(photo) ? photo[0] : photo
+          Array.isArray(photo) ? photo[0] : photo,
         );
         photo = fileId;
       } else if (photo !== undefined) {
@@ -75,8 +75,8 @@ export class ProductService extends BaseService<ProductDocument> {
               name: file.originalname,
               mimeType: file.mimetype,
               size: file.size,
-            })
-          )
+            }),
+          ),
         );
         data.attachments = attachments;
       } else {

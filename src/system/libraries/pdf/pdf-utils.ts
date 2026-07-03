@@ -41,7 +41,7 @@ export async function resolveChromiumPath(): Promise<string> {
   } catch {}
 
   throw new InternalServerException(
-    "Chromium not found. Install via Nix or set CHROMIUM_PATH."
+    "Chromium not found. Install via Nix or set CHROMIUM_PATH.",
   );
 }
 

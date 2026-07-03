@@ -20,7 +20,7 @@ const shortcutItemSchema = new Schema(
     routerLink: { type: [String], required: false, default: [] },
     resource: { type: String, required: false },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const userShortcutsSchema = new Schema(
@@ -42,7 +42,7 @@ const userShortcutsSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 userShortcutsSchema.plugin(paginate);

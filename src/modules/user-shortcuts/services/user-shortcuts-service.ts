@@ -12,7 +12,7 @@ export class UserShortcutsService extends BaseService<UserShortcutsDocument> {
   }
 
   async getMyShortcuts(
-    userId: mongoose.Types.ObjectId
+    userId: mongoose.Types.ObjectId,
   ): Promise<UserShortcutsDocument | null> {
     const model = this.connectionManager.bindModelToDb(this.model);
     return model.findOne({ userId });
@@ -20,13 +20,13 @@ export class UserShortcutsService extends BaseService<UserShortcutsDocument> {
 
   async upsertMyShortcuts(
     userId: mongoose.Types.ObjectId,
-    shortcuts: ShortcutItemDTO[]
+    shortcuts: ShortcutItemDTO[],
   ): Promise<UserShortcutsDocument> {
     const model = this.connectionManager.bindModelToDb(this.model);
     return model.findOneAndUpdate(
       { userId },
       { $set: { userId, shortcuts } },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     ) as Promise<UserShortcutsDocument>;
   }
 }

@@ -92,7 +92,7 @@ export class AssetRosterDTO {
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   @IsOptional()
   assetTypeIds?: string[];
@@ -100,8 +100,8 @@ export class AssetRosterDTO {
   @Transform(({ value }) =>
     plainToInstance(
       assetTypeInformationDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   @Type(() => assetTypeInformationDTO)
   @ValidateNested()
@@ -112,7 +112,7 @@ export class AssetRosterDTO {
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   @IsOptional()
   vendorIds?: string[];
@@ -121,7 +121,7 @@ export class AssetRosterDTO {
   @ArrayMinSize(1)
   @IsMongoId({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   @IsOptional()
   makeIds?: string[];
@@ -129,8 +129,8 @@ export class AssetRosterDTO {
   @Transform(({ value }) =>
     plainToInstance(
       makeInformationDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   @Type(() => makeInformationDTO)
   @ValidateNested()
@@ -150,7 +150,7 @@ export class AssetRosterDTO {
   @IsString()
   @IsNotEmpty()
   @ValidateIf(
-    (o) => o.deviceType === "non-serialized" || o.deviceType === "software"
+    (o) => o.deviceType === "non-serialized" || o.deviceType === "software",
   )
   description?: string;
 
@@ -176,8 +176,8 @@ export class AssetRosterDTO {
   @Transform(({ value }) =>
     plainToInstance(
       SoftwareConfigurationDTO,
-      typeof value === "string" ? JSON.parse(value) : value
-    )
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   softwareConfiguration?: SoftwareConfigurationDTO;
 
@@ -190,7 +190,7 @@ export class AssetRosterDTO {
   @IsMongoId({ each: true })
   @IsOptional()
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   maintenanceWindowIds?: string[];
 
@@ -314,7 +314,7 @@ export class UpdateAssetRosterDTO extends PartialType(AssetRosterDTO) {
   @IsArray()
   @IsObject({ each: true })
   @Transform(({ value }) =>
-    typeof value === "string" ? JSON.parse(value) : value
+    typeof value === "string" ? JSON.parse(value) : value,
   )
   attachmentsMetadata?: object[];
 }

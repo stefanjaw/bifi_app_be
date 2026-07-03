@@ -21,7 +21,7 @@ export class SubscriberService extends BaseService<SubscriberDocument> {
   async importFromContacts(
     listId: string,
     contactIds: string[] | undefined,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<{ imported: number; skipped: number }> {
     return await runTransaction(session, async (newSession) => {
       const subModel = this.connectionManager.bindModelToDb(this.model);
@@ -64,7 +64,7 @@ export class SubscriberService extends BaseService<SubscriberDocument> {
               status: "subscribed",
             },
           ],
-          { session: newSession }
+          { session: newSession },
         );
         imported++;
       }

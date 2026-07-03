@@ -21,7 +21,7 @@ export class PricingEstimateController extends BaseController<PricingEstimateDoc
   generateEstimate = async (
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ) => {
     try {
       const {
@@ -49,7 +49,7 @@ export class PricingEstimateController extends BaseController<PricingEstimateDoc
           status: "generated",
           ...estimateResult,
         },
-        undefined
+        undefined,
       );
 
       this.sendData(res, record);
@@ -73,7 +73,7 @@ export class PricingEstimateController extends BaseController<PricingEstimateDoc
       const id = req.params.id;
       const record = (await pricingEstimateService.getById(
         id,
-        undefined
+        undefined,
       )) as PricingEstimateDocument;
 
       if (!record) {
@@ -86,7 +86,7 @@ export class PricingEstimateController extends BaseController<PricingEstimateDoc
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
         "Content-Disposition",
-        `inline; filename=estimate-${record.number ?? id}.pdf`
+        `inline; filename=estimate-${record.number ?? id}.pdf`,
       );
       res.send(pdfBuffer);
     } catch (error) {
@@ -99,7 +99,7 @@ export class PricingEstimateController extends BaseController<PricingEstimateDoc
       const id = req.params.id;
       const record = (await pricingEstimateService.getById(
         id,
-        undefined
+        undefined,
       )) as PricingEstimateDocument;
 
       if (!record) {
@@ -112,7 +112,7 @@ export class PricingEstimateController extends BaseController<PricingEstimateDoc
       res.setHeader("Content-Type", "text/csv");
       res.setHeader(
         "Content-Disposition",
-        `inline; filename=estimate-${record.number ?? id}.csv`
+        `inline; filename=estimate-${record.number ?? id}.csv`,
       );
       res.send(csvBuffer);
     } catch (error) {

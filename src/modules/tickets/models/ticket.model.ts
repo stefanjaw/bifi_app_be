@@ -19,7 +19,7 @@ const activityEntrySchema = new Schema(
       required: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const notificationSchema = new Schema(
@@ -67,7 +67,7 @@ const notificationSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const ticketSchema = new Schema(
@@ -223,7 +223,7 @@ const ticketSchema = new Schema(
     timestamps: true,
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
-  }
+  },
 );
 
 ticketSchema.plugin(paginate);

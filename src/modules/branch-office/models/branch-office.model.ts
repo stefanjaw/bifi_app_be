@@ -54,7 +54,7 @@ const branchOfficeSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 branchOfficeSchema.plugin(paginate);

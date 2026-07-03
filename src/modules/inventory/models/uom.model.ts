@@ -33,7 +33,7 @@ const uomSchema = new Schema(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 uomSchema.plugin(paginate);
@@ -45,7 +45,7 @@ export { UomDocument };
 
 const uomModel = mongoose.model<UomDocument, PaginateModel<UomDocument>>(
   "InventoryUom",
-  uomSchema
+  uomSchema,
 );
 
 export { uomModel };

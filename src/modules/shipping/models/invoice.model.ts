@@ -195,7 +195,7 @@ const invoiceExtractedDataSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const invoiceSchema = new Schema({
@@ -236,7 +236,7 @@ export const invoiceSchema = new Schema({
     },
     {
       _id: false, // Deshabilidar _id para este objeto
-    }
+    },
   ),
   status: {
     type: String,

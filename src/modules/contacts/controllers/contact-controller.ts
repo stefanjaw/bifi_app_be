@@ -15,7 +15,7 @@ export class ContactController extends BaseController<ContactDocument> {
   protected override async createHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as { photo?: Express.Multer.File[] } | undefined;
 
@@ -38,7 +38,7 @@ export class ContactController extends BaseController<ContactDocument> {
   protected override async updateHandler(
     req: Request,
     res: Response,
-    next: NextFunction
+    next: NextFunction,
   ): Promise<void> {
     const files = req.files as { photo?: Express.Multer.File[] } | undefined;
 

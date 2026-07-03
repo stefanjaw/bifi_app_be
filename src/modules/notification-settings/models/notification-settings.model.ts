@@ -12,7 +12,7 @@ const eventSchema = new Schema(
     enabled: { type: Boolean, required: true, default: true },
     recipients: { type: [String], required: false, default: [] },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const notificationSettingsSchema = new Schema(
@@ -24,7 +24,7 @@ const notificationSettingsSchema = new Schema(
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
     timestamps: true,
-  }
+  },
 );
 
 notificationSettingsSchema.plugin(paginate);
