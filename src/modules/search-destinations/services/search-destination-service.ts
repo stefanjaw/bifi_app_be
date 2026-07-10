@@ -93,6 +93,7 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
               keywords: Array.isArray(dest.keywords) ? dest.keywords : [],
               description: dest.description ?? "",
               resource: dest.resource ?? "",
+              scope: dest.scope ?? "",
               active: true,
               isSystem: true,
             },
@@ -116,6 +117,7 @@ export class SearchDestinationService extends BaseService<SearchDestinationDocum
       existing.group = dest.group ?? existing.group;
       existing.description = dest.description ?? existing.description;
       existing.resource = dest.resource ?? existing.resource;
+      existing.scope = dest.scope ?? existing.scope;
       existing.active = true;
 
       // Only seed keywords if the row has none yet — never clobber user edits.
@@ -167,6 +169,7 @@ export async function seedSearchDestinations(): Promise<void> {
       keywords: d.keywords ?? [],
       description: d.description ?? "",
       resource: d.resource ?? "",
+      scope: d.scope ?? "",
       active: true,
       isSystem: true,
     })),

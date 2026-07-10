@@ -19,6 +19,7 @@ export interface DefaultDestination {
   keywords?: string[];
   description?: string;
   resource?: string;
+  scope?: string;
 }
 
 export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
@@ -31,6 +32,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "General",
     keywords: ["home", "start", "dashboard", "main"],
     description: "Application home page",
+    scope: "base-app/routing",
   },
   {
     key: "contacts",
@@ -40,6 +42,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "General",
     keywords: ["contacts", "people", "customers", "clients", "address book"],
     resource: "contacts/menu",
+    scope: "base-app/routing",
   },
 
   // ----- Sales -----
@@ -51,6 +54,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Sales",
     keywords: ["sales", "dashboard", "kpi", "revenue", "overview"],
     resource: "sales/dashboard/menu",
+    scope: "sales",
   },
   {
     key: "sales.opportunities",
@@ -60,6 +64,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Sales",
     keywords: ["crm", "deals", "opportunities", "pipeline", "leads", "sales"],
     resource: "sales/opportunities/menu",
+    scope: "sales",
   },
   {
     key: "sales.orders",
@@ -69,6 +74,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Sales",
     keywords: ["orders", "sales orders", "so", "closed orders", "sales"],
     resource: "sales/orders/menu",
+    scope: "sales",
   },
   {
     key: "sales.targets",
@@ -78,6 +84,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Sales",
     keywords: ["targets", "goals", "quota", "sales targets"],
     resource: "sales/targets/menu",
+    scope: "sales",
   },
   {
     key: "pricing.estimates.new",
@@ -87,6 +94,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Sales",
     keywords: ["pricing", "estimate", "quote", "estimated pricing", "ai"],
     resource: "pricing-estimates/menu",
+    scope: "pricing-estimates",
   },
   {
     key: "pricing.estimates.history",
@@ -96,6 +104,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Sales",
     keywords: ["pricing history", "estimates", "quotes", "past estimates"],
     resource: "pricing-estimates/menu",
+    scope: "pricing-estimates",
   },
 
   // ----- Purchases -----
@@ -107,6 +116,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Purchases",
     keywords: ["suppliers", "vendors", "purchases", "procurement"],
     resource: "purchases/menu",
+    scope: "purchases",
   },
   {
     key: "purchases.orders",
@@ -116,6 +126,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Purchases",
     keywords: ["purchase orders", "po", "orders", "purchases", "procurement"],
     resource: "purchases/menu",
+    scope: "purchases",
   },
   {
     key: "purchases.pipeline",
@@ -125,6 +136,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Purchases",
     keywords: ["pipeline", "kanban", "purchases", "stages"],
     resource: "purchases/menu",
+    scope: "purchases",
   },
 
   // ----- Inventory -----
@@ -136,6 +148,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Inventory",
     keywords: ["warehouses", "inventory", "stock", "locations"],
     resource: "inventory/menu",
+    scope: "inventory",
   },
   {
     key: "inventory.products",
@@ -145,6 +158,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Inventory",
     keywords: ["products", "items", "sku", "inventory", "catalog"],
     resource: "inventory/menu",
+    scope: "inventory",
   },
   {
     key: "inventory.movements",
@@ -154,6 +168,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Inventory",
     keywords: ["movements", "stock movements", "in", "out", "adjustment"],
     resource: "inventory/menu",
+    scope: "inventory",
   },
   {
     key: "inventory.transfer",
@@ -163,6 +178,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Inventory",
     keywords: ["transfer", "stock transfer", "move stock", "inventory"],
     resource: "inventory/menu",
+    scope: "inventory",
   },
   {
     key: "inventory.uom-categories",
@@ -172,6 +188,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Inventory",
     keywords: ["uom", "unit of measure", "categories", "inventory"],
     resource: "inventory/menu",
+    scope: "inventory",
   },
   {
     key: "inventory.uoms",
@@ -181,6 +198,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Inventory",
     keywords: ["uom", "units of measure", "unit", "inventory"],
     resource: "inventory/menu",
+    scope: "inventory",
   },
 
   // ----- Accounting -----
@@ -192,6 +210,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Accounting",
     keywords: ["invoices", "billing", "accounting", "ar"],
     resource: "accounting/menu",
+    scope: "accounting",
   },
   {
     key: "accounting.accounts",
@@ -201,6 +220,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Accounting",
     keywords: ["accounts", "chart of accounts", "coa", "accounting"],
     resource: "accounting/menu",
+    scope: "accounting",
   },
   {
     key: "accounting.journals",
@@ -210,6 +230,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Accounting",
     keywords: ["journals", "accounting"],
     resource: "accounting/menu",
+    scope: "accounting",
   },
   {
     key: "accounting.journal-entries",
@@ -219,6 +240,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Accounting",
     keywords: ["journal entries", "entries", "ledger", "accounting"],
     resource: "accounting/menu",
+    scope: "accounting",
   },
   {
     key: "accounting.payments",
@@ -228,6 +250,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Accounting",
     keywords: ["payments", "accounting", "receipts"],
     resource: "accounting/menu",
+    scope: "accounting",
   },
   {
     key: "accounting.taxes",
@@ -237,6 +260,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Accounting",
     keywords: ["taxes", "tax", "vat", "accounting"],
     resource: "accounting/menu",
+    scope: "accounting",
   },
   {
     key: "accounting.discounts",
@@ -246,6 +270,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Accounting",
     keywords: ["discounts", "accounting"],
     resource: "accounting/menu",
+    scope: "accounting",
   },
   {
     key: "accounting.fiscal-positions",
@@ -255,6 +280,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Accounting",
     keywords: ["fiscal positions", "tax mapping", "accounting"],
     resource: "accounting/menu",
+    scope: "accounting",
   },
   {
     key: "accounting.payment-terms",
@@ -264,6 +290,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Accounting",
     keywords: ["payment terms", "terms", "due dates", "accounting"],
     resource: "accounting/menu",
+    scope: "accounting",
   },
 
   // ----- Tasks & Projects -----
@@ -275,6 +302,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Tasks",
     keywords: ["tasks", "todo", "to do", "work items"],
     resource: "tasks/menu",
+    scope: "tasks",
   },
   {
     key: "projects",
@@ -284,6 +312,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Projects",
     keywords: ["projects", "project management"],
     resource: "projects/menu",
+    scope: "projects",
   },
 
   // ----- Asset Roster -----
@@ -295,6 +324,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Assets",
     keywords: ["assets", "asset roster", "equipment", "inventory of assets"],
     resource: "asset-roster/menu",
+    scope: "asset-roster",
   },
 
   // ----- Helpdesk -----
@@ -306,6 +336,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Helpdesk",
     keywords: ["helpdesk", "tickets", "support", "service desk"],
     resource: "helpdesk/menu",
+    scope: "helpdesk",
   },
 
   // ----- Email Marketing -----
@@ -317,6 +348,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Email Marketing",
     keywords: ["email marketing", "dashboard", "campaigns overview"],
     resource: "email-marketing/menu",
+    scope: "email-marketing",
   },
   {
     key: "email-marketing.campaigns",
@@ -326,6 +358,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Email Marketing",
     keywords: ["campaigns", "email campaigns", "email marketing", "newsletter"],
     resource: "email-marketing/menu",
+    scope: "email-marketing",
   },
   {
     key: "email-marketing.templates",
@@ -335,6 +368,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Email Marketing",
     keywords: ["templates", "email templates", "email marketing", "designs"],
     resource: "email-marketing/menu",
+    scope: "email-marketing",
   },
   {
     key: "email-marketing.lists",
@@ -344,6 +378,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Email Marketing",
     keywords: ["mailing lists", "lists", "audience", "email marketing"],
     resource: "email-marketing/menu",
+    scope: "email-marketing",
   },
   {
     key: "email-marketing.subscribers",
@@ -353,6 +388,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Email Marketing",
     keywords: ["subscribers", "contacts", "audience", "email marketing"],
     resource: "email-marketing/menu",
+    scope: "email-marketing",
   },
 
   // ----- Settings -----
@@ -364,6 +400,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["companies", "company", "settings", "organizations"],
     resource: "companies/menu",
+    scope: "base-app/companies",
   },
   {
     key: "settings.users",
@@ -373,6 +410,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["users", "accounts", "settings", "people"],
     resource: "users/menu",
+    scope: "base-app/users",
   },
   {
     key: "settings.roles",
@@ -382,6 +420,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["roles", "permissions", "settings", "rbac"],
     resource: "roles/menu",
+    scope: "base-app/roles",
   },
   {
     key: "settings.policies",
@@ -391,6 +430,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["policies", "permissions", "settings", "rbac"],
     resource: "policies/menu",
+    scope: "base-app/policies",
   },
   {
     key: "settings.countries",
@@ -400,6 +440,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["countries", "settings", "geography"],
     resource: "countries/menu",
+    scope: "base-app/countries",
   },
   {
     key: "settings.currencies",
@@ -409,6 +450,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["currencies", "currency", "settings", "exchange"],
     resource: "currencies/menu",
+    scope: "base-app/currency",
   },
   {
     key: "settings.reporting",
@@ -418,6 +460,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["reporting", "reports", "settings"],
     resource: "reporting/menu",
+    scope: "base-app/reporting",
   },
   {
     key: "settings.templates",
@@ -427,6 +470,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["templates", "settings", "documents"],
     resource: "templates/menu",
+    scope: "base-app/templates",
   },
   {
     key: "settings.sequences",
@@ -436,6 +480,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["sequences", "numbering", "document numbers", "settings"],
     resource: "sequences/menu",
+    scope: "base-app/sequences",
   },
   {
     key: "settings.ai-settings",
@@ -445,6 +490,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["ai", "ai configuration", "gemini", "settings"],
     resource: "ai-settings/menu",
+    scope: "base-app/ai-settings",
   },
   {
     key: "settings.drive-settings",
@@ -454,6 +500,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["google drive", "drive", "configuration", "settings"],
     resource: "drive-settings/menu",
+    scope: "base-app/drive-settings",
   },
   {
     key: "settings.sales.crm-stages",
@@ -463,6 +510,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["crm stages", "deal stages", "pipeline stages", "settings"],
     resource: "crm-stages/menu",
+    scope: "sales",
   },
   {
     key: "settings.sales.order-stages",
@@ -472,6 +520,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["order stages", "sales order stages", "settings"],
     resource: "sales-order-stages/menu",
+    scope: "sales",
   },
   {
     key: "settings.sales.configuration",
@@ -481,6 +530,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["sales configuration", "sales settings", "settings"],
     resource: "sales/configuration/menu",
+    scope: "sales",
   },
   {
     key: "settings.pricing.configuration",
@@ -490,6 +540,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["pricing configuration", "pricing settings", "settings"],
     resource: "pricing-settings/menu",
+    scope: "base-app/pricing-estimates",
   },
   {
     key: "settings.purchases.purchase-stages",
@@ -499,6 +550,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["purchase stages", "pipeline stages", "settings"],
     resource: "purchase-stages/menu",
+    scope: "purchases",
   },
   {
     key: "settings.purchases.configuration",
@@ -508,6 +560,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["purchases configuration", "purchase settings", "settings"],
     resource: "purchases/settings/menu",
+    scope: "purchases",
   },
   {
     key: "settings.inventory.product-types",
@@ -517,6 +570,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["product types", "inventory", "settings"],
     resource: "inventory/menu",
+    scope: "inventory",
   },
   {
     key: "settings.accounting.configuration",
@@ -526,6 +580,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["accounting configuration", "accounting settings", "settings"],
     resource: "accounting/menu",
+    scope: "base-app/accounting",
   },
   {
     key: "settings.tasks.task-stages",
@@ -535,6 +590,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["task stages", "tasks", "settings"],
     resource: "task-stages/menu",
+    scope: "tasks",
   },
   {
     key: "settings.tasks.task-types",
@@ -544,6 +600,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["task types", "tasks", "settings"],
     resource: "task-types/menu",
+    scope: "tasks",
   },
   {
     key: "settings.projects.project-stages",
@@ -553,6 +610,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["project stages", "projects", "settings"],
     resource: "project-stages/menu",
+    scope: "projects",
   },
   {
     key: "settings.helpdesk.helpdesk-stages",
@@ -562,6 +620,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["ticket stages", "helpdesk stages", "settings"],
     resource: "helpdesk-stages/menu",
+    scope: "helpdesk",
   },
   {
     key: "settings.asset-roster.maintenance-windows",
@@ -571,6 +630,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["maintenance windows", "assets", "settings"],
     resource: "maintenance-windows/menu",
+    scope: "asset-roster",
   },
   {
     key: "settings.asset-roster.rooms",
@@ -580,6 +640,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["rooms", "assets", "facilities", "settings"],
     resource: "rooms/menu",
+    scope: "asset-roster",
   },
   {
     key: "settings.asset-roster.facilities",
@@ -589,6 +650,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["facilities", "assets", "settings"],
     resource: "facilities/menu",
+    scope: "asset-roster",
   },
   {
     key: "settings.asset-roster.asset-types",
@@ -598,6 +660,7 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
     group: "Settings",
     keywords: ["asset types", "assets", "settings"],
     resource: "asset-types/menu",
+    scope: "asset-roster",
   },
   {
     key: "settings.email-marketing.config",
@@ -612,5 +675,6 @@ export const DEFAULT_SEARCH_DESTINATIONS: DefaultDestination[] = [
       "settings",
     ],
     resource: "email-marketing/menu",
+    scope: "email-marketing",
   },
 ];

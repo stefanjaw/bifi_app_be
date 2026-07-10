@@ -41,6 +41,10 @@ const searchDestinationSchema = new Schema(
       type: String,
       default: "",
     },
+    scope: {
+      type: String,
+      default: "",
+    },
     active: {
       type: Boolean,
       default: true,

@@ -43,6 +43,10 @@ export class SearchDestinationDTO {
   @IsOptional()
   resource?: string;
 
+  @IsString()
+  @IsOptional()
+  scope?: string;
+
   @IsBoolean()
   @Transform(toBoolean)
   @IsOptional()
