@@ -6633,6 +6633,115 @@ export type HelpdeskStageDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of InventorySettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `InventorySettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `InventorySettingsObject`.
+ * ```
+ * const inventorysettingsObject = inventorysettings.toObject();
+ * ```
+ */
+export type InventorySettings = {
+  defaultWarehouseId?: Warehouse | null;
+  defaultLocationId?: InventoryLocation | null;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of InventorySettingsDocument (type alias of `InventorySettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { InventorySettings } from "../models"
+ * import { InventorySettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const inventorysettingsObject: InventorySettingsObject = inventorysettings.toObject();
+ * ```
+ */
+export type InventorySettingsObject = InventorySettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventorySettingsQuery = mongoose.Query<
+  any,
+  InventorySettingsDocument,
+  InventorySettingsQueries
+> &
+  InventorySettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `InventorySettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type InventorySettingsQueries = {
+  paginate: (
+    this: InventorySettingsQuery,
+    ...args: any[]
+  ) => InventorySettingsQuery;
+};
+
+export type InventorySettingsMethods = {};
+
+export type InventorySettingsStatics = {
+  paginate: (this: InventorySettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: InventorySettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventorySettings = mongoose.model<InventorySettingsDocument, InventorySettingsModel>("InventorySettings", InventorySettingsSchema);
+ * ```
+ */
+export type InventorySettingsModel = mongoose.Model<
+  InventorySettingsDocument,
+  InventorySettingsQueries
+> &
+  InventorySettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new InventorySettings schema instances:
+ * ```
+ * const InventorySettingsSchema: InventorySettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type InventorySettingsSchema = mongoose.Schema<
+  InventorySettingsDocument,
+  InventorySettingsModel,
+  InventorySettingsMethods,
+  InventorySettingsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const InventorySettings = mongoose.model<InventorySettingsDocument, InventorySettingsModel>("InventorySettings", InventorySettingsSchema);
+ * ```
+ */
+export type InventorySettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  InventorySettingsQueries
+> &
+  InventorySettingsMethods & {
+    defaultWarehouseId?: WarehouseDocument | null;
+    defaultLocationId?: InventoryLocationDocument | null;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of InventoryLocationDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `InventoryLocationDocument.toObject()`. To avoid conflicts with model names, use the type alias `InventoryLocationObject`.
@@ -9358,6 +9467,7 @@ export type PurchaseOrderLineItem = {
   productId?: InventoryProduct;
   description: string;
   quantity: number;
+  receivedQuantity?: number;
   unitPrice: number;
   total: number;
   taxIds: (Tax["_id"] | Tax)[];
@@ -9397,6 +9507,8 @@ export type PurchaseOrder = {
     | "cancelled";
   issueDate?: Date;
   expectedDeliveryDate?: Date;
+  warehouseId?: Warehouse | null;
+  locationId?: InventoryLocation | null;
   lineItems: PurchaseOrderLineItem[];
   subtotal?: number;
   taxes: PurchaseOrderTax[];
@@ -9489,6 +9601,7 @@ export type PurchaseOrderLineItemDocument = mongoose.Types.Subdocument<any> & {
   productId?: InventoryProductDocument;
   description: string;
   quantity: number;
+  receivedQuantity?: number;
   unitPrice: number;
   total: number;
   taxIds: mongoose.Types.Array<TaxDocument["_id"] | TaxDocument>;
@@ -9529,6 +9642,8 @@ export type PurchaseOrderDocument = mongoose.Document<
       | "cancelled";
     issueDate?: Date;
     expectedDeliveryDate?: Date;
+    warehouseId?: WarehouseDocument | null;
+    locationId?: InventoryLocationDocument | null;
     lineItems: mongoose.Types.DocumentArray<PurchaseOrderLineItemDocument>;
     subtotal?: number;
     taxes: mongoose.Types.DocumentArray<PurchaseOrderTaxDocument>;
