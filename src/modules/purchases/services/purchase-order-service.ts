@@ -1,6 +1,15 @@
 import { ClientSession, Types } from "mongoose";
-import { BaseService } from "../../../system";
+import {
+  BaseService,
+  runTransaction,
+  ValidationException,
+} from "../../../system";
 import { fireNotification } from "../../notifications/services/notification-service";
+import { stockBalanceModel } from "../../inventory/models/stock-balance.model";
+import {
+  stockMovementModel,
+  MovementType,
+} from "../../inventory/models/stock-movement.model";
 import {
   purchaseOrderModel,
   PurchaseOrderDocument,
@@ -165,6 +174,11 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
     data: Record<string, any>,
     session: ClientSession | undefined = undefined,
   ): Promise<PurchaseOrderDocument> {
+    if (data.status === "received" || data.status === "partially_received") {
+      throw new ValidationException(
+        "Use the Receive action to record received goods; this status cannot be set manually.",
+      );
+    }
     if (Array.isArray(data.lineItems)) {
       const taxDocsMap = await this.assertLineTaxesValid(
         data.lineItems,
@@ -176,6 +190,11 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
   }
 
   async updateStatus(id: string, status: string) {
+    if (status === "received" || status === "partially_received") {
+      throw new ValidationException(
+        "Use the Receive action to record received goods; this status cannot be set manually.",
+      );
+    }
     const boundModel = this.connectionManager.bindModelToDb(this.model);
     const update: Record<string, any> = { status };
 
@@ -226,5 +245,144 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
     }
 
     return result;
+  }
+
+  /**
+   * Receives quantities against a purchase order's line items, moving the
+   * received goods into inventory at the PO's destination warehouse/location.
+   * For each received line it upserts the StockBalance (+qty) and records an
+   * IN StockMovement, then updates each line's receivedQuantity and recomputes
+   * the PO status (partially_received / received). Runs atomically.
+   */
+  async receive(id: string, lines: { index: number; quantity: number }[]) {
+    const boundModel = this.connectionManager.bindModelToDb(this.model);
+    const po = await boundModel.findById(id);
+    if (!po) {
+      throw new ValidationException("Purchase order not found");
+    }
+    const receivableStatuses = ["confirmed", "sent", "partially_received"];
+    if (!receivableStatuses.includes(po.status as string)) {
+      throw new ValidationException(
+        `Cannot receive a purchase order that is ${po.status}. The order must be confirmed or sent first.`,
+      );
+    }
+
+    const warehouseId = (po.warehouseId as any)?._id ?? po.warehouseId;
+    const locationId = (po.locationId as any)?._id ?? po.locationId;
+    if (!warehouseId || !locationId) {
+      throw new ValidationException(
+        "Set a destination warehouse and location on the order before receiving.",
+      );
+    }
+
+    const lineItems = (po.lineItems ?? []) as any[];
+
+    const aggregated = new Map<number, number>();
+    for (const l of lines ?? []) {
+      const index = Number(l.index);
+      const quantity = Number(l.quantity);
+      if (
+        !Number.isFinite(index) ||
+        !Number.isFinite(quantity) ||
+        quantity <= 0
+      ) {
+        continue;
+      }
+      aggregated.set(index, (aggregated.get(index) ?? 0) + quantity);
+    }
+
+    const toReceive = Array.from(aggregated.entries()).map(
+      ([index, quantity]) => ({ index, quantity }),
+    );
+
+    if (toReceive.length === 0) {
+      throw new ValidationException("No quantities provided to receive.");
+    }
+
+    for (const line of toReceive) {
+      const li = lineItems[line.index];
+      if (!li) {
+        throw new ValidationException(`Invalid line item index: ${line.index}`);
+      }
+      const productId = (li.productId as any)?._id ?? li.productId;
+      if (!productId) {
+        throw new ValidationException(
+          `Line "${li.description}" has no product and cannot be received into inventory.`,
+        );
+      }
+      const ordered = Number(li.quantity ?? 0);
+      const alreadyReceived = Number(li.receivedQuantity ?? 0);
+      if (alreadyReceived + line.quantity > ordered) {
+        throw new ValidationException(
+          `Cannot receive ${line.quantity} of "${li.description}" — only ${
+            ordered - alreadyReceived
+          } remaining.`,
+        );
+      }
+    }
+
+    return runTransaction<PurchaseOrderDocument>(undefined, async (session) => {
+      const boundBalanceModel =
+        this.connectionManager.bindModelToDb(stockBalanceModel);
+      const boundMovementModel =
+        this.connectionManager.bindModelToDb(stockMovementModel);
+
+      for (const line of toReceive) {
+        const li = lineItems[line.index];
+        const productId = (li.productId as any)?._id ?? li.productId;
+
+        await boundBalanceModel.findOneAndUpdate(
+          { productId, locationId, warehouseId },
+          { $inc: { quantity: line.quantity } },
+          { upsert: true, new: true, setDefaultsOnInsert: true, session },
+        );
+
+        await boundMovementModel.create(
+          [
+            {
+              productId,
+              warehouseId,
+              locationId,
+              quantity: line.quantity,
+              type: MovementType.IN,
+              reference: po.poNumber,
+              notes: `Received from PO ${po.poNumber}`,
+              date: new Date(),
+            },
+          ],
+          { session },
+        );
+
+        li.receivedQuantity = Number(li.receivedQuantity ?? 0) + line.quantity;
+      }
+
+      const allReceived = lineItems.every(
+        (li) => Number(li.receivedQuantity ?? 0) >= Number(li.quantity ?? 0),
+      );
+      const anyReceived = lineItems.some(
+        (li) => Number(li.receivedQuantity ?? 0) > 0,
+      );
+      po.status = allReceived
+        ? "received"
+        : anyReceived
+          ? "partially_received"
+          : po.status;
+
+      await po.save({ session });
+
+      if ((po as any).createdBy) {
+        const label = allReceived ? "fully received" : "partially received";
+        await fireNotification({
+          context: { creator: (po as any).createdBy },
+          type: "po_received",
+          title: `Purchase Order ${label}`,
+          body: `PO ${po.poNumber ?? id} has been ${label}.`,
+          link: `/purchases/orders/${id}`,
+          module: "purchases",
+        });
+      }
+
+      return po;
+    });
   }
 }

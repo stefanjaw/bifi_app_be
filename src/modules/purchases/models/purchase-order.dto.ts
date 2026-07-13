@@ -30,6 +30,12 @@ class LineItemDTO {
   @IsNumber()
   @Min(0)
   @Type(() => Number)
+  @IsOptional()
+  receivedQuantity?: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
   unitPrice!: number;
 
   @IsNumber()
@@ -75,6 +81,16 @@ export class PurchaseOrderDTO {
   @IsOptional()
   expectedDeliveryDate?: Date;
 
+  @IsMongoId()
+  @IsOptional()
+  @Transform(({ value }) => value ?? undefined)
+  warehouseId?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  @Transform(({ value }) => value ?? undefined)
+  locationId?: string;
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => LineItemDTO)
@@ -111,4 +127,23 @@ export class UpdatePurchaseOrderStatusDTO {
     "cancelled",
   ])
   status!: string;
+}
+
+class ReceiveLineDTO {
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  index!: number;
+
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  quantity!: number;
+}
+
+export class ReceivePurchaseOrderDTO {
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ReceiveLineDTO)
+  lines!: ReceiveLineDTO[];
 }

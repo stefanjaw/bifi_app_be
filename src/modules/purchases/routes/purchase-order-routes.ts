@@ -3,6 +3,7 @@ import { authorizeMiddleware, validateBodyMiddleware } from "../../../system";
 import { PurchaseOrderController } from "../controllers/purchase-order-controller";
 import {
   PurchaseOrderDTO,
+  ReceivePurchaseOrderDTO,
   UpdatePurchaseOrderDTO,
   UpdatePurchaseOrderStatusDTO,
 } from "../models/purchase-order.dto";
@@ -24,6 +25,7 @@ export class PurchaseOrderRouter extends BaseRoutes<PurchaseOrderDocument> {
     super.initRoutes();
     this.initExportPdfRoute();
     this.initUpdateStatusRoute();
+    this.initReceiveRoute();
   }
 
   private initExportPdfRoute() {
@@ -40,6 +42,15 @@ export class PurchaseOrderRouter extends BaseRoutes<PurchaseOrderDocument> {
       validateBodyMiddleware(UpdatePurchaseOrderStatusDTO),
       authorizeMiddleware("purchases/orders", "update"),
       purchaseOrderController.updateStatus,
+    );
+  }
+
+  private initReceiveRoute() {
+    this.router.post(
+      `${this.endpoint}/:id/receive`,
+      validateBodyMiddleware(ReceivePurchaseOrderDTO),
+      authorizeMiddleware("purchases/orders", "update"),
+      purchaseOrderController.receive,
     );
   }
 }

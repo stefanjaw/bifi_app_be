@@ -29,6 +29,24 @@ export class PurchaseOrderController extends BaseController<PurchaseOrderDocumen
     }
   };
 
+  receive = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const { lines } = req.body;
+      const updated = await (this.service as PurchaseOrderService).receive(
+        id,
+        lines,
+      );
+      this.sendData(res, updated);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   exportPdf = async (
     req: Request,
     res: Response,

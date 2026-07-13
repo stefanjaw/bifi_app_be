@@ -30,6 +30,7 @@ export * from "./projects";
 export * from "./reporting";
 export * from "./roles";
 export * from "./inventory";
+export * from "./inventory-settings";
 export * from "./sales-order-stages";
 export * from "./sales";
 export * from "./sales-orders";

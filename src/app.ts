@@ -57,6 +57,7 @@ import {
   PurchaseOrderRouter,
   PurchaseStageRouter,
   PurchaseSettingsRouter,
+  PurchasesDashboardRouter,
   BCDTaxTypeRouter,
   BCDPortRouter,
   BCDChargeCodeRouter,
@@ -64,6 +65,8 @@ import {
   WarehouseRouter,
   LocationRouter,
   ProductRouter,
+  InventoryDashboardRouter,
+  InventorySettingsRouter,
   StockBalanceRouter,
   StockMovementRouter,
   UomCategoryRouter,
@@ -214,6 +217,7 @@ app.use("/api", new SupplierRouter().getRouter);
 app.use("/api", new PurchaseOrderRouter().getRouter);
 app.use("/api", new PurchaseStageRouter().getRouter);
 app.use("/api", new PurchaseSettingsRouter().getRouter);
+app.use("/api", new PurchasesDashboardRouter().getRouter);
 app.use("/api", new WarehouseRouter().getRouter);
 app.use("/api", new LocationRouter().getRouter);
 app.use("/api", new ProductRouter().getRouter);
@@ -222,6 +226,8 @@ app.use("/api", new StockMovementRouter().getRouter);
 app.use("/api", new UomCategoryRouter().getRouter);
 app.use("/api", new UomRouter().getRouter);
 app.use("/api", new ProductTypeRouter().getRouter);
+app.use("/api", new InventoryDashboardRouter().getRouter);
+app.use("/api", new InventorySettingsRouter().getRouter);
 app.use("/api", new CurrencyRouter().getRouter);
 app.use("/api", new ExchangeRateRouter().getRouter);
 app.use("/api", new AccountRouter().getRouter);
