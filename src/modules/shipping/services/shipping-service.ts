@@ -14,14 +14,14 @@ import {
 import { shippingModel } from "../models/shipping.model";
 import mongoose, { ClientSession } from "mongoose";
 import { ShippingDTO, UpdateShippingDTO } from "../models/shipping.dto";
-import { GenAIService } from "../../ai/genai/services/genai-service";
+import { GenAIService } from "../../ai/services/genai-service";
 import { CountryService } from "../../countries/services/country-service";
 import { shippingGenAISchema } from "../models/shipping.schema";
 import { HScodeDTO } from "../models/hs-code.dto";
 import { linesGenAISchema } from "../models/invoice.schema";
-import { CustomsTariffService } from "../../customs-tariffs";
-import { CustomsHeadingService } from "../../customs-headings";
-import { CustomsChapterService } from "../../customs-chapters";
+import { CustomsTariffService } from "../../customs/services/customs-tariff.services";
+import { CustomsHeadingService } from "../../customs/services/customs-heading.services";
+import { CustomsChapterService } from "../../customs/services/customs-chapter.services";
 
 export class ShippingService extends BaseService<ShippingDocument> {
   // constants

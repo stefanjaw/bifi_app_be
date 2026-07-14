@@ -1,6 +1,6 @@
 import { TicketDocument } from "@mongodb-types";
 import { BaseController, FileValidatorService } from "../../../system";
-import { TicketService } from "../../tickets/services/ticket-service";
+import { TicketService } from "../../helpdesk/services/ticket-service";
 import { NextFunction, Request, Response } from "express";
 
 const ticketService = new TicketService();

@@ -1,6 +1,6 @@
 import { BaseService } from "../../../system";
 import { SalesOrderDocument } from "@mongodb-types";
-import { salesOrderModel } from "../../sales-orders/models/sales-order.model";
+import { salesOrderModel } from "../models/sales-order.model";
 import { crmModel } from "../../crm/models/crm.model";
 
 export interface SalesDashboard {

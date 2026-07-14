@@ -17,7 +17,7 @@ import { fireNotification } from "../../notifications/services/notification-serv
 import { taskModel } from "../models/task.model";
 import mongoose from "mongoose";
 import { TaskDTO, UpdateTaskDTO } from "../models/task.dto";
-import { TaskStageService } from "../../task-stages/services/task-stage-service";
+import { TaskStageService } from "./task-stage-service";
 import dayjs from "dayjs";
 
 export class TaskService extends BaseService<TaskDocument> {

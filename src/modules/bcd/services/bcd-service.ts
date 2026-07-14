@@ -13,7 +13,7 @@ import { BcdDTO, UpdateBcdDTO } from "../models/bcd.dto";
 import mime from "mime-types";
 import dayjs from "dayjs";
 import { BCDStatusTypeEnum, EBCDTypeEnum } from "../models/bcd-enums";
-import { BCDChargeCodeService } from "../../bcd-charge-codes";
+import { BCDChargeCodeService } from "./bcd-charge-code.services";
 import { calculateBCD } from "./bcd-calculator";
 
 export class BCDService extends BaseService<BCDDocument> {

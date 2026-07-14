@@ -18,82 +18,71 @@
 
 ## Architecture
 - **Entrypoint**: `src/index.ts` calls `start()` from `src/app.ts`
-- **Each domain module** lives in `src/modules/<name>/` with `controllers/`, `models/`, `routes/`, `services/`, and a barrel `index.ts`
+- **All modules** use a consistent flat structure under `src/modules/<name>/` with `controllers/`, `models/`, `routes/`, `services/`, and a barrel `index.ts`
 - **All modules** re-exported through `src/modules/index.ts` (barrel)
 - **Routes** extend `BaseRoutes<T>` and auto-register standard CRUD + CSV export/import + multer upload
 - All routes are mounted at `/api` in `app.ts`; auth middleware runs before them (except public email-marketing & CR e-invoice routes)
 - **Multi-tenancy**: `ConnectionManager` + `AsyncLocalStorage` (`userStorage`) switches DB per-request (`dbName` on store)
 
+### Module Structure
+
+Every module follows this exact layout (except `l10n_cr_einvoice` which is a localization plugin with additional `utils/` and nested submodules):
+
+```
+src/modules/<module-name>/
+  controllers/       -- Express handlers extending BaseController<T>
+  models/            -- Mongoose schemas (*.model.ts) and DTOs (*.dto.ts)
+  routes/            -- Route definitions extending BaseRoutes<T>
+  services/          -- Business logic extending BaseService<T>
+  index.ts           -- Barrel re-exporting all public symbols
+```
+
+Cross-module imports use `../../<other-module>/services/<name>` from any file within a module's `controllers/`, `models/`, `routes/`, or `services/`. System infrastructure imports use `../../../system`.
+
+Related sub-entities live in the same parent module (flat, not nested). For example, `asset-roster` contains commissioning, maintenance, and asset-types as flat files in its `controllers/`, `models/`, `routes/`, `services/` directories — not as nested subdirectories.
+
 ## Module catalog
 
-All under `src/modules/<name>/`. Check this before adding new features — import existing logic instead of reimplementing.
+All under `src/modules/<name>/`. Check this before adding new features — import existing logic instead of reimplementing. Each module may contain multiple related entities; all share the same flat `controllers/`, `models/`, `routes/`, `services/` structure.
 
 | Module | What it manages | API endpoint(s) |
 |---|---|---|
 | `accounting` | chart of accounts, taxes, discounts, payment terms, fiscal positions, journals, journal entries (invoices), payments, settings | `/accounts`, `/taxes`, `/discounts`, `/payment-terms`, `/fiscal-positions`, `/journals`, `/journal-entries`, `/payments`, `/invoices`, `/accounting-settings` |
 | `activity-history` | audit log / activity history for records | `/activity-histories` |
-| `ai` | genai (prompt-based generation/streaming), gems (embedding-based generation/streaming/embedding) | `/genai/generate`, `/gems/generate`, `/gems/embed` |
-| `ai-settings` | AI provider/model configuration | `/ai-settings` |
-| `asset-commissioning` | asset commissioning records | `/asset-commissioning` |
-| `asset-maintenance` | asset maintenance work orders | `/asset-maintenances` |
-| `asset-roster` | asset register / equipment roster with CSV import/export and status management | `/asset-rosters` |
-| `asset-types` | asset type classifications | `/asset-types` |
-| `bcd` | Bill of Customs Declaration documents with FTP data exchange | `/bcds` |
-| `bcd-additional-information-types` | lookup: BCD additional information types | `/bcd-additional-information-types` |
-| `bcd-charge-codes` | lookup: BCD charge codes | `/bcd-charge-codes` |
-| `bcd-cpcs` | lookup: BCD Customs Procedure Codes | `/bcd-cpcs` |
-| `bcd-ports` | lookup: BCD ports | `/bcd-ports` |
-| `bcd-tax-ids` | lookup: BCD tax ID types | `/bcd-tax-ids` |
-| `bcd-tax-types` | lookup: BCD tax types | `/bcd-tax-types` |
-| `bcd-transport-options` | lookup: BCD transport options | `/bcd-transport-options` |
-| `bcd-types` | lookup: BCD document types | `/bcd-types` |
+| `ai` | genai (prompt-based generation/streaming), gems (embedding-based generation/streaming/embedding), AI provider/model configuration | `/genai/generate`, `/gems/generate`, `/gems/embed`, `/ai-settings` |
+| `asset-roster` | asset register / equipment roster with CSV import/export, asset commissioning, asset maintenance work orders, asset type classifications, status management | `/asset-rosters`, `/asset-commissioning`, `/asset-maintenances`, `/asset-types` |
+| `bcd` | Bill of Customs Declaration documents with FTP data exchange + 8 lookup tables (additional information types, charge codes, CPCs, ports, tax IDs, tax types, transport options, document types) | `/bcds`, `/bcd-additional-information-types`, `/bcd-charge-codes`, `/bcd-cpcs`, `/bcd-ports`, `/bcd-tax-ids`, `/bcd-tax-types`, `/bcd-transport-options`, `/bcd-types` |
 | `branch-office` | branch/office locations for multi-entity orgs | `/branch-offices` |
 | `companies` | company/organization profiles | `/companies` |
 | `contacts` | contact/person records (shared by CRM, suppliers, etc.) | `/contacts` |
 | `countries` | reference country list | `/countries` |
-| `crm` | CRM deals/opportunities pipeline | `/crm` |
-| `crm-stages` | CRM pipeline stage definitions | `/crm-stages` |
-| `currency` | reference currency list | `/currencies` |
-| `currency-exchange-rate` | currency exchange rates | `/exchange-rates` |
-| `customs-chapters` | customs tariff chapter reference data | `/customs-chapters` |
-| `customs-headings` | customs tariff heading reference data | `/customs-headings` |
-| `customs-tariffs` | customs tariff line-item reference data | `/customs-tariffs` |
+| `crm` | CRM deals/opportunities pipeline + pipeline stage definitions | `/crm`, `/crm-stages` |
+| `currency` | reference currency list + currency exchange rates | `/currencies`, `/exchange-rates` |
+| `customs` | customs tariff reference data (chapters, headings, line-item tariffs) | `/customs-chapters`, `/customs-headings`, `/customs-tariffs` |
 | `drive-settings` | Google Drive service account configuration | `/drive-settings` |
 | `email-marketing` | email templates, mailing lists, subscribers, campaigns, events (opens/clicks/bounces), settings + public unsubscribe/tracking/ESP webhooks | `/email-templates`, `/mailing-lists`, `/subscribers`, `/email-campaigns`, `/email-events`, `/email-settings` |
 | `facilities` | facilities and rooms | `/facilities`, `/rooms` |
 | `files` | file upload/download via GridFS | `/files` |
-| `helpdesk-stages` | helpdesk/ticket pipeline stage definitions | `/helpdesk-stages` |
-| `inventory` | products, warehouses, locations, stock balances, stock movements, UOMs, UOM categories, product types | `/products`, `/warehouses`, `/locations`, `/stock-balances`, `/stock-movements`, `/uoms`, `/uom-categories`, `/product-types` |
-| `languages` | Language definitions (locale, name, nativeName, active) | `/languages` |
-| `l10n_cr_einvoice` | Costa Rica electronic invoice plugin (Hacienda FE) | `/cr-einvoice/...` (see Localization plugins below) |
+| `helpdesk` | helpdesk tickets, ticket rules (auto-assignment/SLA), ticket pipeline stage definitions | `/tickets`, `/ticket-rules`, `/helpdesk-stages` |
+| `inventory` | products, warehouses, locations, stock balances, stock movements, UOMs, UOM categories, product types, inventory settings | `/products`, `/warehouses`, `/locations`, `/stock-balances`, `/stock-movements`, `/uoms`, `/uom-categories`, `/product-types`, `/inventory-settings` |
+| `l10n_cr_einvoice` | Costa Rica electronic invoice plugin (Hacienda FE) — **only module with nested subdirectory structure** | `/cr-einvoice/...` (see Localization plugins below) |
 | `maintenance-windows` | scheduled maintenance time windows | `/maintenance-windows` |
 | `models` | Mongoose model registry introspection | `/models` |
-| `notification-settings` | per-user per-event notification preferences | `/notification-settings` |
-| `notifications` | in-app notification records with read/unread | `/notifications` |
-| `pricing-estimates` | pricing estimates with PDF/CSV generation and pricing engine | `/pricing-estimates` |
-| `pricing-index` | pricing index search over catalog + freight caches, file parsing, Google Drive ingestion | `/pricing-index` |
-| `projects` | project records | `/projects` |
-| `project-stages` | project pipeline stage definitions | `/project-stages` |
-| `purchases` | suppliers, purchase orders, purchase settings | `/suppliers`, `/purchase-orders`, `/purchase-settings` |
-| `purchase-stages` | purchase order pipeline stage definitions | `/purchase-stages` |
+| `notifications` | in-app notification records with read/unread + per-user per-event notification preferences | `/notifications`, `/notification-settings` |
+| `pricing` | pricing estimates with PDF/CSV generation and pricing engine + pricing index search over catalog & freight caches, file parsing, Google Drive ingestion | `/pricing-estimates`, `/pricing-index` |
+| `projects` | project records + project pipeline stage definitions | `/projects`, `/project-stages` |
+| `purchases` | suppliers, purchase orders, purchase settings + purchase pipeline stage definitions | `/suppliers`, `/purchase-orders`, `/purchase-settings`, `/purchase-stages` |
 | `report-bug` | bug report submission (creates a ticket) | `/report-bug` |
 | `reporting` | generated report records | `/reporting` |
 | `roles` | RBAC roles and policies (permission definitions) | `/roles`, `/policies` |
-| `sales` | sales dashboard + sales settings | `/sales/dashboard`, `/sales/settings` |
-| `sales-orders` | sales orders with PDF export | `/sales-orders` |
-| `sales-order-stages` | sales order pipeline stage definitions | `/sales-order-stages` |
-| `sales-targets` | sales target/goal records | `/sales-targets` |
+| `sales` | sales dashboard + sales settings, sales orders with PDF export, sales order pipeline stages, sales target/goal records | `/sales/dashboard`, `/sales/settings`, `/sales-orders`, `/sales-order-stages`, `/sales-targets` |
 | `search-destinations` | search destinations (indexed models) + unified app-wide search | `/search-destinations`, `/search` |
-| `translations` | UI translation key-value storage (locale, scope, key, value) | `/translations` |
 | `sequences` | auto-incrementing document numbering sequences | `/sequences` |
 | `shipping` | shipping records with HS code lookup, tariff generation, import from file | `/shippings` |
-| `tasks` | task records | `/tasks` |
-| `task-stages` | task pipeline stage definitions | `/task-stages` |
-| `task-types` | task type definitions | `/task-types` |
+| `tasks` | task records + task pipeline stage definitions + task type definitions | `/tasks`, `/task-stages`, `/task-types` |
 | `templates` | reusable document/email templates | `/templates` |
-| `tickets` | helpdesk tickets and ticket rules (auto-assignment/SLA) | `/tickets`, `/ticket-rules` |
-| `users` | user accounts, profile (`/me`), user management — language/locale field + `/me/language` endpoint | `/users` |
-| `user-shortcuts` | per-user shortcut/favorites configuration | `/user-shortcuts` |
+| `translations` | UI translation key-value storage (locale, scope, key, value) + language definitions | `/translations`, `/languages` |
+| `users` | user accounts, profile (`/me`), user management, per-user shortcut/favorites — language/locale field + `/me/language` endpoint | `/users`, `/user-shortcuts` |
 
 ## System infrastructure (`src/system/`)
 
@@ -257,8 +246,8 @@ Each l10n module lives in `src/modules/l10n_<locale>/` and extends a core module
 | Service | `<html lang>` | Date locale | Status labels |
 |---|---|---|---|
 | `purchases/services/purchase-order-pdf-service.ts` | `"en"` | `"en-US"` | English: "Draft", "Confirmed", etc. |
-| `sales-orders/services/sales-order-pdf-service.ts` | `"en"` | `"en-US"` | English: "Draft", "Quote", etc. |
-| `pricing-estimates/services/pdf-generator-service.ts` | `"en"` | Default (no locale) | English |
+| `sales/services/sales-order-pdf-service.ts` | `"en"` | `"en-US"` | English: "Draft", "Quote", etc. |
+| `pricing/services/pdf-generator-service.ts` | `"en"` | Default (no locale) | English |
 | `l10n_cr_einvoice/services/cr-einvoice-pdf.service.ts` | `"es"` | `"es-CR"` | Spanish: "FACTURA ELECTRÓNICA", "Emisor", etc. |
 
 ### CR Validator — Hardcoded Spanish

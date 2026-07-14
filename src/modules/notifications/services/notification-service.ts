@@ -4,7 +4,7 @@ import {
   NotificationDocument,
 } from "../models/notification.model";
 import mongoose from "mongoose";
-import { NotificationEventSettingsService } from "../../notification-settings/services/notification-settings-service";
+import { NotificationEventSettingsService } from "./notification-settings-service";
 
 interface CachedSettings {
   events: Array<{ type: string; enabled: boolean; recipients: string[] }>;

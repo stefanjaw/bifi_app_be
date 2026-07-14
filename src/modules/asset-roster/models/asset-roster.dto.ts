@@ -20,7 +20,7 @@ import { PartialType } from "../../../system";
 import { Types } from "mongoose";
 import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
 import { ContactDTO } from "../../contacts/models/contact.dto";
-import { AssetTypeDTO } from "../../asset-types/models/asset-type.dto";
+import { AssetTypeDTO } from "./asset-type.dto";
 
 export class makeInformationDTO extends ContactDTO {
   @IsMongoId()

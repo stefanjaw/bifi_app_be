@@ -41,3 +41,8 @@ export * from "./services/stock-balance-service";
 export * from "./services/stock-movement-service";
 export * from "./services/uom-category-service";
 export * from "./services/uom-service";
+export * from "./controllers/inventory-settings-controller";
+export * from "./models/inventory-settings.dto";
+export * from "./models/inventory-settings.model";
+export * from "./routes/inventory-settings-routes";
+export * from "./services/inventory-settings-service";

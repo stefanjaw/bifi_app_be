@@ -115,7 +115,7 @@ import {
   NotificationSettingsRouter,
 } from "./modules";
 import { startCampaignScheduler } from "./modules/email-marketing/services/campaign-send-service";
-import { seedPurchaseStages } from "./modules/purchase-stages";
+import { seedPurchaseStages } from "./modules/purchases";
 import { seedSearchDestinations } from "./modules/search-destinations";
 
 import admin from "firebase-admin";
