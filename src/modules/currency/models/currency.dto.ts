@@ -33,11 +33,6 @@ export class CurrencyDTO {
   @Transform(toBoolean)
   @IsOptional()
   active?: boolean;
-
-  @IsBoolean()
-  @Transform(toBoolean)
-  @IsOptional()
-  isDefault?: boolean;
 }
 
 export class UpdateCurrencyDTO extends PartialType(CurrencyDTO) {

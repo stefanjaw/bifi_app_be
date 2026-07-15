@@ -4964,7 +4964,6 @@ export type Currency = {
   symbol: string;
   decimalPrecision?: number;
   active?: boolean;
-  isDefault?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -5055,7 +5054,6 @@ export type CurrencyDocument = mongoose.Document<
     symbol: string;
     decimalPrecision?: number;
     active?: boolean;
-    isDefault?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

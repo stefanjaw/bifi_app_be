@@ -5,6 +5,8 @@ import { CurrencyDTO, UpdateCurrencyDTO } from "../models/currency.dto";
 
 const currencyController = new CurrencyController();
 
+import { authorizeMiddleware } from "../../../system";
+
 export class CurrencyRouter extends BaseRoutes<CurrencyDocument> {
   constructor() {
     super({
@@ -13,5 +15,15 @@ export class CurrencyRouter extends BaseRoutes<CurrencyDocument> {
       dtoCreateClass: CurrencyDTO,
       dtoUpdateClass: UpdateCurrencyDTO,
     });
+  }
+
+  override initRoutes() {
+    super.initRoutes();
+
+    this.router.post(
+      this.endpoint + "/populate",
+      authorizeMiddleware("currencies/populate", "create"),
+      currencyController.populateCurrencies.bind(currencyController)
+    );
   }
 }
