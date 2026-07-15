@@ -41,6 +41,62 @@ Cross-module imports use `../../<other-module>/services/<name>` from any file wi
 
 Related sub-entities live in the same parent module (flat, not nested). For example, `asset-roster` contains commissioning, maintenance, and asset-types as flat files in its `controllers/`, `models/`, `routes/`, `services/` directories — not as nested subdirectories.
 
+### One Class Per File Rule
+
+Every file in `controllers/`, `services/`, and `routes/` must contain **exactly one class** corresponding to one entity. This applies to ALL entities within a module, including lookups, sub-entities, and related models.
+
+**Allowed:**
+```
+controllers/
+  gender-controller.ts       -- class GenderController (extends BaseController<Gender>)
+  marital-status-controller.ts -- class MaritalStatusController (extends BaseController<MaritalStatus>)
+  patient-controller.ts      -- class PatientController (extends BaseController<Patient>)
+services/
+  gender-service.ts          -- class GenderService (extends BaseService<Gender>)
+  marital-status-service.ts  -- class MaritalStatusService (extends BaseService<MaritalStatus>)
+  patient-service.ts         -- class PatientService (extends BaseService<Patient>)
+routes/
+  gender-routes.ts           -- class GenderRoutes (extends BaseRoutes<Gender>)
+  marital-status-routes.ts   -- class MaritalStatusRoutes (extends BaseRoutes<MaritalStatus>)
+  patient-routes.ts          -- class PatientRoutes (extends BaseRoutes<Patient>)
+```
+
+**NOT allowed** — multiple controllers/services/routes in a single file:
+```
+controllers/lookup-controllers.ts   -- GenderController + MaritalStatusController + ... ❌
+services/lookup-services.ts          -- GenderService + MaritalStatusService + ... ❌
+routes/lookup-routes.ts              -- GenderRoutes + MaritalStatusRoutes + ... ❌
+models/lookups.dto.ts                -- GenderDTO + MaritalStatusDTO + ... ❌
+models/lookups.model.ts              -- GenderSchema + MaritalStatusSchema + ... ❌
+```
+
+**Exception:** The `models/` directory may accept co-located DTOs (`<entity>.dto.ts`) and model schemas (`<entity>.model.ts`) — though one-per-file is preferred. DTOs with trivial `PartialType(UpdateDTO)` can share a file with the main DTO.
+
+### Entity Relationships — Inherit, Don't Duplicate
+
+When creating a new entity that extends or relates to an existing entity in the same module, **inherit from or reference the existing entity** rather than duplicating its fields, DTOs, and service logic.
+
+- **Use reference IDs** (`ref` + `ObjectId`) to link related entities instead of copying the same fields across multiple schemas.
+- **Use schema composition** (spread operator or `Schema.add()`) when a child entity genuinely shares a common subset of fields.
+- **Extend DTOs** via `PartialType` or intersection types rather than re-declaring the same validation decorators.
+- **Reuse service methods** from the parent entity's service instead of reimplementing identical CRUD logic.
+
+**Anti-pattern** (avoid — duplicates fields, DTOs, and service logic unnecessarily):
+```
+Task:          name, description, assignees, tags, stage, priority, ...
+RecurrentTask: title, description, assignees, tags, stage, priority, ...  // same fields re-declared
+```
+
+**Preferred pattern** (reference or inherit):
+```
+Task:          name, description, assignees, tags, stage, priority, ..., recurrentTaskId → RecurrentTask
+RecurrentTask: repetitionSequence, repetitionLapse, repetitionDays, ...  // only unique fields
+```
+
+**Exception — same-shaped fields, different domain**: Stage/pipeline entities for different modules (e.g. `TaskStage`, `HelpdeskStage`, `SalesOrderStage`, `ProjectStage`) may have structurally identical fields (`name`, `sequence`, `color`, `isDefault`) yet remain **separate models** because each belongs to a distinct business domain. Their field shapes happen to coincide — they are not duplicates of each other. Do not merge them into a single generic "stage" model.
+
+**Exception — standalone entities**: Entities that share no meaningful relationship with existing entities may be created independently. When in doubt, prefer composition over duplication.
+
 ## Module catalog
 
 All under `src/modules/<name>/`. Check this before adding new features — import existing logic instead of reimplementing. Each module may contain multiple related entities; all share the same flat `controllers/`, `models/`, `routes/`, `services/` structure.
@@ -83,6 +139,17 @@ All under `src/modules/<name>/`. Check this before adding new features — impor
 | `templates` | reusable document/email templates | `/templates` |
 | `translations` | UI translation key-value storage (locale, scope, key, value) + language definitions | `/translations`, `/languages` |
 | `users` | user accounts, profile (`/me`), user management, per-user shortcut/favorites — language/locale field + `/me/language` endpoint | `/users`, `/user-shortcuts` |
+| `care-continuum` | care continuum records + problems + lookups (admission types, levels, races, medical allergies, medical precautions) | `/care-continuums`, `/care-continuum-problems`, `/admission-types`, `/care-continuum-levels`, `/races`, `/medical-allergies`, `/medical-precautions` |
+| `care-plan` | clinical care plan (admission goals, interventions, outcomes) | `/admission-goals`, `/interventions`, `/outcomes` |
+| `clinical-orders` | clinical orders, order sets, order maintenances | `/orders`, `/order-sets`, `/order-maintenances` |
+| `progress-notes` | progress notes, notes, progress note tags | `/progress-notes`, `/notes`, `/progress-note-tags` |
+| `vital-signs` | vital signs measurements + vital sign type definitions | `/vital-signs`, `/vital-sign-types` |
+| `fluid-tracks` | fluid intake/output tracking + fluid track items | `/fluid-tracks`, `/fluid-track-items` |
+| `staff` | staff records, staff groups, shifts | `/staff`, `/staff-groups`, `/shifts` |
+| `vendors` | vendor records | `/vendors` |
+| `contacts` (extended) | contacts, patients, genders, marital statuses, contact labels | `/contacts`, `/patients`, `/genders`, `/marital-statuses`, `/contact-labels` |
+| `facilities` (extended) | facilities, rooms, beds, bed history | `/facilities`, `/rooms`, `/beds`, `/bed-histories` |
+| `inventory` (extended) | products, product types, UOMs, UOM categories, warehouses, locations, stock balances, stock movements, clinical products, product frequencies, product routes, product lots | `/inventory/products`, `/product-types`, `/uoms`, `/uom-categories`, `/warehouses`, `/locations`, `/stock-balances`, `/stock-movements`, `/clinical-products`, `/product-frequencies`, `/product-routes`, `/product-lots` |
 
 ## System infrastructure (`src/system/`)
 
