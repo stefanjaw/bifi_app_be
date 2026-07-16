@@ -11,6 +11,7 @@ import {
 import { PartialType } from "../../../system";
 import { MovementType } from "./stock-movement.model";
 
+/** DTO for creating a new stock movement */
 export class StockMovementDTO {
   @IsMongoId()
   productId!: string;
@@ -42,11 +43,13 @@ export class StockMovementDTO {
   date?: Date;
 }
 
+/** DTO for updating an existing stock movement */
 export class UpdateStockMovementDTO extends PartialType(StockMovementDTO) {
   @IsMongoId()
   _id!: string;
 }
 
+/** DTO for transferring stock between locations */
 export class TransferDTO {
   @IsMongoId()
   productId!: string;

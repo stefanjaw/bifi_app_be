@@ -8,6 +8,7 @@ import {
 
 const stockBalanceController = new StockBalanceController();
 
+/** Route definitions for stock balance endpoints */
 export class StockBalanceRouter extends BaseRoutes<StockBalanceDocument> {
   constructor() {
     super({

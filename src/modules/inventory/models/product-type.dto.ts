@@ -8,6 +8,7 @@ import {
 } from "class-validator";
 import { PartialType, toBoolean } from "../../../system";
 
+/** DTO for creating a new product type */
 export class ProductTypeDTO {
   @IsString()
   @IsNotEmpty()
@@ -23,6 +24,7 @@ export class ProductTypeDTO {
   active?: boolean;
 }
 
+/** DTO for updating an existing product type */
 export class UpdateProductTypeDTO extends PartialType(ProductTypeDTO) {
   @IsMongoId()
   _id!: string;

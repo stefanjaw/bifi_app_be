@@ -4,6 +4,7 @@ import { InventorySettingsService } from "../services/inventory-settings-service
 import { InventorySettingsDTO } from "../models/inventory-settings.dto";
 import { InventorySettingsDocument } from "../models/inventory-settings.model";
 
+/** Express controller for inventory settings (singleton get/upsert) */
 export class InventorySettingsController extends BaseController<InventorySettingsDocument> {
   constructor() {
     super({ service: new InventorySettingsService() });

@@ -4197,6 +4197,2396 @@ export type BranchOfficeDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of CareContinuumAdmissionTypeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumAdmissionTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `CareContinuumAdmissionTypeObject`.
+ * ```
+ * const carecontinuumadmissiontypeObject = carecontinuumadmissiontype.toObject();
+ * ```
+ */
+export type CareContinuumAdmissionType = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumAdmissionTypeDocument (type alias of `CareContinuumAdmissionType`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CareContinuumAdmissionType } from "../models"
+ * import { CareContinuumAdmissionTypeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const carecontinuumadmissiontypeObject: CareContinuumAdmissionTypeObject = carecontinuumadmissiontype.toObject();
+ * ```
+ */
+export type CareContinuumAdmissionTypeObject = CareContinuumAdmissionType;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumAdmissionTypeQuery = mongoose.Query<
+  any,
+  CareContinuumAdmissionTypeDocument,
+  CareContinuumAdmissionTypeQueries
+> &
+  CareContinuumAdmissionTypeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CareContinuumAdmissionTypeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumAdmissionTypeQueries = {
+  paginate: (
+    this: CareContinuumAdmissionTypeQuery,
+    ...args: any[]
+  ) => CareContinuumAdmissionTypeQuery;
+};
+
+export type CareContinuumAdmissionTypeMethods = {};
+
+export type CareContinuumAdmissionTypeStatics = {
+  paginate: (this: CareContinuumAdmissionTypeModel, ...args: any[]) => any;
+  paginateSubDocs: (
+    this: CareContinuumAdmissionTypeModel,
+    ...args: any[]
+  ) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuumAdmissionType = mongoose.model<CareContinuumAdmissionTypeDocument, CareContinuumAdmissionTypeModel>("CareContinuumAdmissionType", CareContinuumAdmissionTypeSchema);
+ * ```
+ */
+export type CareContinuumAdmissionTypeModel = mongoose.Model<
+  CareContinuumAdmissionTypeDocument,
+  CareContinuumAdmissionTypeQueries
+> &
+  CareContinuumAdmissionTypeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CareContinuumAdmissionType schema instances:
+ * ```
+ * const CareContinuumAdmissionTypeSchema: CareContinuumAdmissionTypeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CareContinuumAdmissionTypeSchema = mongoose.Schema<
+  CareContinuumAdmissionTypeDocument,
+  CareContinuumAdmissionTypeModel,
+  CareContinuumAdmissionTypeMethods,
+  CareContinuumAdmissionTypeQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuumAdmissionType = mongoose.model<CareContinuumAdmissionTypeDocument, CareContinuumAdmissionTypeModel>("CareContinuumAdmissionType", CareContinuumAdmissionTypeSchema);
+ * ```
+ */
+export type CareContinuumAdmissionTypeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CareContinuumAdmissionTypeQueries
+> &
+  CareContinuumAdmissionTypeMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of CareContinuumAdvanceDirectiveFileIdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumAdvanceDirectiveDocument.toObject()`.
+ * ```
+ * const carecontinuumadvancedirectiveObject = carecontinuumadvancedirective.toObject();
+ * ```
+ */
+export type CareContinuumAdvanceDirectiveFileId = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumAdvanceDirectiveDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumAdvanceDirective = {
+  fileId?: CareContinuumAdvanceDirectiveFileId;
+  types: string[];
+  outdated?: boolean;
+  information?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumSocialHistoryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumSocialHistory = {
+  description?: string;
+};
+
+/**
+ * Lean version of CareContinuumFamilyHistoryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumFamilyHistory = {
+  description?: string;
+};
+
+/**
+ * Lean version of CareContinuumMedicalHistoryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumMedicalHistory = {
+  description?: string;
+};
+
+/**
+ * Lean version of CareContinuumSurgicalHistoryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumSurgicalHistory = {
+  description?: string;
+};
+
+/**
+ * Lean version of CareContinuumMedicationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumMedication = {
+  productId?: InventoryProduct;
+  uomId?: ProductUOM;
+  strength?: string;
+  routeId?: ProductRoute;
+  frequencyId?: ProductFrequency;
+  duration?: number;
+  durationUnit?: string;
+  startDate?: Date;
+  quantity?: number;
+  note?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumAllergyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumAllergy = {
+  medicalAllergyId?: MedicalAllergy;
+  note?: string;
+  severity?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumImmunizationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumImmunization = {
+  productId?: InventoryProduct;
+  dateGiven?: Date;
+  lotCode?: string;
+  contactId?: Contact;
+  totalDoses?: number;
+  dosesGiven?: number;
+  note?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumPrecautionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumPrecaution = {
+  medicalPrecautionId?: MedicalPrecaution;
+  note?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumHealthCareProxyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumHealthCareProxy = {
+  contactId?: Contact;
+  relationShip?: string;
+};
+
+/**
+ * Lean version of CareContinuumExternalProviderDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumExternalProvider = {
+  contactId?: Contact;
+  providerType?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumDocument.toObject()`. To avoid conflicts with model names, use the type alias `CareContinuumObject`.
+ * ```
+ * const carecontinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuum = {
+  patientId: Patient;
+  typeOfEvent: "Transfer" | "Care Update" | "Discharge" | "Admission";
+  careContinuumLevelId?: CareContinuumLevel;
+  state?: "Draft" | "Active" | "Discharge";
+  transferPoint?: Contact;
+  assignedCaregiver?: Contact;
+  assignedNurse?: Contact;
+  unitId?: Facility;
+  bedId?: Bed;
+  roomId?: Room;
+  insuranceCarrier: string;
+  planNumber?: string;
+  groupNumber?: string;
+  policyNumber: string;
+  memberId?: string;
+  effectiveDate?: Date;
+  endDate: Date;
+  genderAtBirth?: Gender;
+  genderAtPresent?: Gender;
+  race?: CareContinuumRace;
+  height?: number;
+  weight?: number;
+  advanceDirectives: CareContinuumAdvanceDirective[];
+  socialHistory: CareContinuumSurgicalHistory[];
+  familyHistory: CareContinuumSurgicalHistory[];
+  medicalHistory: CareContinuumSurgicalHistory[];
+  surgicalHistory: CareContinuumSurgicalHistory[];
+  medications: CareContinuumMedication[];
+  allergies: CareContinuumAllergy[];
+  immunizations: CareContinuumImmunization[];
+  precautions: CareContinuumPrecaution[];
+  healthCareProxy?: CareContinuumHealthCareProxy;
+  externalProviders: CareContinuumExternalProvider[];
+  extraFields: Map<
+    string,
+    {
+      type?: Map<string, any>;
+      of?: any;
+      default?: any;
+    }
+  >;
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumDocument (type alias of `CareContinuum`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CareContinuum } from "../models"
+ * import { CareContinuumObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const carecontinuumObject: CareContinuumObject = carecontinuum.toObject();
+ * ```
+ */
+export type CareContinuumObject = CareContinuum;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumQuery = mongoose.Query<
+  any,
+  CareContinuumDocument,
+  CareContinuumQueries
+> &
+  CareContinuumQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CareContinuumSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumQueries = {
+  paginate: (this: CareContinuumQuery, ...args: any[]) => CareContinuumQuery;
+};
+
+export type CareContinuumMethods = {};
+
+export type CareContinuumStatics = {
+  paginate: (this: CareContinuumModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CareContinuumModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuum = mongoose.model<CareContinuumDocument, CareContinuumModel>("CareContinuum", CareContinuumSchema);
+ * ```
+ */
+export type CareContinuumModel = mongoose.Model<
+  CareContinuumDocument,
+  CareContinuumQueries
+> &
+  CareContinuumStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CareContinuum schema instances:
+ * ```
+ * const CareContinuumSchema: CareContinuumSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CareContinuumSchema = mongoose.Schema<
+  CareContinuumDocument,
+  CareContinuumModel,
+  CareContinuumMethods,
+  CareContinuumQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuumAdvanceDirective = mongoose.model<CareContinuumAdvanceDirectiveDocument, CareContinuumAdvanceDirectiveModel>("CareContinuumAdvanceDirective", CareContinuumAdvanceDirectiveSchema);
+ * ```
+ */
+export type CareContinuumAdvanceDirectiveFileIdDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["advanceDirectives"]` element.
+ */
+export type CareContinuumAdvanceDirectiveDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId?: CareContinuumAdvanceDirectiveFileIdDocument;
+    types: mongoose.Types.Array<string>;
+    outdated?: boolean;
+    information?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["socialHistory"]` element.
+ */
+export type CareContinuumSocialHistoryDocument =
+  mongoose.Types.Subdocument<any> & {
+    description?: string;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["familyHistory"]` element.
+ */
+export type CareContinuumFamilyHistoryDocument =
+  mongoose.Types.Subdocument<any> & {
+    description?: string;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["medicalHistory"]` element.
+ */
+export type CareContinuumMedicalHistoryDocument =
+  mongoose.Types.Subdocument<any> & {
+    description?: string;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["surgicalHistory"]` element.
+ */
+export type CareContinuumSurgicalHistoryDocument =
+  mongoose.Types.Subdocument<any> & {
+    description?: string;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["medications"]` element.
+ */
+export type CareContinuumMedicationDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    productId?: InventoryProductDocument;
+    uomId?: ProductUOMDocument;
+    strength?: string;
+    routeId?: ProductRouteDocument;
+    frequencyId?: ProductFrequencyDocument;
+    duration?: number;
+    durationUnit?: string;
+    startDate?: Date;
+    quantity?: number;
+    note?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["allergies"]` element.
+ */
+export type CareContinuumAllergyDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    medicalAllergyId?: MedicalAllergyDocument;
+    note?: string;
+    severity?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["immunizations"]` element.
+ */
+export type CareContinuumImmunizationDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    productId?: InventoryProductDocument;
+    dateGiven?: Date;
+    lotCode?: string;
+    contactId?: ContactDocument;
+    totalDoses?: number;
+    dosesGiven?: number;
+    note?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["precautions"]` element.
+ */
+export type CareContinuumPrecautionDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    medicalPrecautionId?: MedicalPrecautionDocument;
+    note?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuum = mongoose.model<CareContinuumDocument, CareContinuumModel>("CareContinuum", CareContinuumSchema);
+ * ```
+ */
+export type CareContinuumHealthCareProxyDocument = mongoose.Document<any> & {
+  contactId?: ContactDocument;
+  relationShip?: string;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `CareContinuumDocument["externalProviders"]` element.
+ */
+export type CareContinuumExternalProviderDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    contactId?: ContactDocument;
+    providerType?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuum = mongoose.model<CareContinuumDocument, CareContinuumModel>("CareContinuum", CareContinuumSchema);
+ * ```
+ */
+export type CareContinuumDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CareContinuumQueries
+> &
+  CareContinuumMethods & {
+    patientId: PatientDocument;
+    typeOfEvent: "Transfer" | "Care Update" | "Discharge" | "Admission";
+    careContinuumLevelId?: CareContinuumLevelDocument;
+    state?: "Draft" | "Active" | "Discharge";
+    transferPoint?: ContactDocument;
+    assignedCaregiver?: ContactDocument;
+    assignedNurse?: ContactDocument;
+    unitId?: FacilityDocument;
+    bedId?: BedDocument;
+    roomId?: RoomDocument;
+    insuranceCarrier: string;
+    planNumber?: string;
+    groupNumber?: string;
+    policyNumber: string;
+    memberId?: string;
+    effectiveDate?: Date;
+    endDate: Date;
+    genderAtBirth?: GenderDocument;
+    genderAtPresent?: GenderDocument;
+    race?: CareContinuumRaceDocument;
+    height?: number;
+    weight?: number;
+    advanceDirectives: mongoose.Types.DocumentArray<CareContinuumAdvanceDirectiveDocument>;
+    socialHistory: mongoose.Types.DocumentArray<CareContinuumSurgicalHistoryDocument>;
+    familyHistory: mongoose.Types.DocumentArray<CareContinuumSurgicalHistoryDocument>;
+    medicalHistory: mongoose.Types.DocumentArray<CareContinuumSurgicalHistoryDocument>;
+    surgicalHistory: mongoose.Types.DocumentArray<CareContinuumSurgicalHistoryDocument>;
+    medications: mongoose.Types.DocumentArray<CareContinuumMedicationDocument>;
+    allergies: mongoose.Types.DocumentArray<CareContinuumAllergyDocument>;
+    immunizations: mongoose.Types.DocumentArray<CareContinuumImmunizationDocument>;
+    precautions: mongoose.Types.DocumentArray<CareContinuumPrecautionDocument>;
+    healthCareProxy?: CareContinuumHealthCareProxyDocument;
+    externalProviders: mongoose.Types.DocumentArray<CareContinuumExternalProviderDocument>;
+    extraFields: mongoose.Types.Map<{
+      type?: mongoose.Types.Map<any>;
+      of?: any;
+      default?: any;
+    }>;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of CareContinuumLevelDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumLevelDocument.toObject()`. To avoid conflicts with model names, use the type alias `CareContinuumLevelObject`.
+ * ```
+ * const carecontinuumlevelObject = carecontinuumlevel.toObject();
+ * ```
+ */
+export type CareContinuumLevel = {
+  name: string;
+  value: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumLevelDocument (type alias of `CareContinuumLevel`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CareContinuumLevel } from "../models"
+ * import { CareContinuumLevelObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const carecontinuumlevelObject: CareContinuumLevelObject = carecontinuumlevel.toObject();
+ * ```
+ */
+export type CareContinuumLevelObject = CareContinuumLevel;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumLevelQuery = mongoose.Query<
+  any,
+  CareContinuumLevelDocument,
+  CareContinuumLevelQueries
+> &
+  CareContinuumLevelQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CareContinuumLevelSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumLevelQueries = {
+  paginate: (
+    this: CareContinuumLevelQuery,
+    ...args: any[]
+  ) => CareContinuumLevelQuery;
+};
+
+export type CareContinuumLevelMethods = {};
+
+export type CareContinuumLevelStatics = {
+  paginate: (this: CareContinuumLevelModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CareContinuumLevelModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuumLevel = mongoose.model<CareContinuumLevelDocument, CareContinuumLevelModel>("CareContinuumLevel", CareContinuumLevelSchema);
+ * ```
+ */
+export type CareContinuumLevelModel = mongoose.Model<
+  CareContinuumLevelDocument,
+  CareContinuumLevelQueries
+> &
+  CareContinuumLevelStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CareContinuumLevel schema instances:
+ * ```
+ * const CareContinuumLevelSchema: CareContinuumLevelSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CareContinuumLevelSchema = mongoose.Schema<
+  CareContinuumLevelDocument,
+  CareContinuumLevelModel,
+  CareContinuumLevelMethods,
+  CareContinuumLevelQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuumLevel = mongoose.model<CareContinuumLevelDocument, CareContinuumLevelModel>("CareContinuumLevel", CareContinuumLevelSchema);
+ * ```
+ */
+export type CareContinuumLevelDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CareContinuumLevelQueries
+> &
+  CareContinuumLevelMethods & {
+    name: string;
+    value: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of MedicalAllergyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `MedicalAllergyDocument.toObject()`. To avoid conflicts with model names, use the type alias `MedicalAllergyObject`.
+ * ```
+ * const medicalallergyObject = medicalallergy.toObject();
+ * ```
+ */
+export type MedicalAllergy = {
+  name: string;
+  acronym: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of MedicalAllergyDocument (type alias of `MedicalAllergy`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { MedicalAllergy } from "../models"
+ * import { MedicalAllergyObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const medicalallergyObject: MedicalAllergyObject = medicalallergy.toObject();
+ * ```
+ */
+export type MedicalAllergyObject = MedicalAllergy;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type MedicalAllergyQuery = mongoose.Query<
+  any,
+  MedicalAllergyDocument,
+  MedicalAllergyQueries
+> &
+  MedicalAllergyQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `MedicalAllergySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type MedicalAllergyQueries = {
+  paginate: (this: MedicalAllergyQuery, ...args: any[]) => MedicalAllergyQuery;
+};
+
+export type MedicalAllergyMethods = {};
+
+export type MedicalAllergyStatics = {
+  paginate: (this: MedicalAllergyModel, ...args: any[]) => any;
+  paginateSubDocs: (this: MedicalAllergyModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const MedicalAllergy = mongoose.model<MedicalAllergyDocument, MedicalAllergyModel>("MedicalAllergy", MedicalAllergySchema);
+ * ```
+ */
+export type MedicalAllergyModel = mongoose.Model<
+  MedicalAllergyDocument,
+  MedicalAllergyQueries
+> &
+  MedicalAllergyStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new MedicalAllergy schema instances:
+ * ```
+ * const MedicalAllergySchema: MedicalAllergySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type MedicalAllergySchema = mongoose.Schema<
+  MedicalAllergyDocument,
+  MedicalAllergyModel,
+  MedicalAllergyMethods,
+  MedicalAllergyQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const MedicalAllergy = mongoose.model<MedicalAllergyDocument, MedicalAllergyModel>("MedicalAllergy", MedicalAllergySchema);
+ * ```
+ */
+export type MedicalAllergyDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  MedicalAllergyQueries
+> &
+  MedicalAllergyMethods & {
+    name: string;
+    acronym: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of MedicalPrecautionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `MedicalPrecautionDocument.toObject()`. To avoid conflicts with model names, use the type alias `MedicalPrecautionObject`.
+ * ```
+ * const medicalprecautionObject = medicalprecaution.toObject();
+ * ```
+ */
+export type MedicalPrecaution = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of MedicalPrecautionDocument (type alias of `MedicalPrecaution`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { MedicalPrecaution } from "../models"
+ * import { MedicalPrecautionObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const medicalprecautionObject: MedicalPrecautionObject = medicalprecaution.toObject();
+ * ```
+ */
+export type MedicalPrecautionObject = MedicalPrecaution;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type MedicalPrecautionQuery = mongoose.Query<
+  any,
+  MedicalPrecautionDocument,
+  MedicalPrecautionQueries
+> &
+  MedicalPrecautionQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `MedicalPrecautionSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type MedicalPrecautionQueries = {
+  paginate: (
+    this: MedicalPrecautionQuery,
+    ...args: any[]
+  ) => MedicalPrecautionQuery;
+};
+
+export type MedicalPrecautionMethods = {};
+
+export type MedicalPrecautionStatics = {
+  paginate: (this: MedicalPrecautionModel, ...args: any[]) => any;
+  paginateSubDocs: (this: MedicalPrecautionModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const MedicalPrecaution = mongoose.model<MedicalPrecautionDocument, MedicalPrecautionModel>("MedicalPrecaution", MedicalPrecautionSchema);
+ * ```
+ */
+export type MedicalPrecautionModel = mongoose.Model<
+  MedicalPrecautionDocument,
+  MedicalPrecautionQueries
+> &
+  MedicalPrecautionStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new MedicalPrecaution schema instances:
+ * ```
+ * const MedicalPrecautionSchema: MedicalPrecautionSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type MedicalPrecautionSchema = mongoose.Schema<
+  MedicalPrecautionDocument,
+  MedicalPrecautionModel,
+  MedicalPrecautionMethods,
+  MedicalPrecautionQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const MedicalPrecaution = mongoose.model<MedicalPrecautionDocument, MedicalPrecautionModel>("MedicalPrecaution", MedicalPrecautionSchema);
+ * ```
+ */
+export type MedicalPrecautionDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  MedicalPrecautionQueries
+> &
+  MedicalPrecautionMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of CareContinuumProblemDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumProblemDocument.toObject()`. To avoid conflicts with model names, use the type alias `CareContinuumProblemObject`.
+ * ```
+ * const carecontinuumproblemObject = carecontinuumproblem.toObject();
+ * ```
+ */
+export type CareContinuumProblem = {
+  careContinuumId: CareContinuum;
+  patientId: Patient;
+  contentBody: string;
+  byName: string;
+  state: "active" | "resolved" | "voided";
+  comment?: string;
+  diagnosedDate?: Date;
+  resolvedDate?: Date;
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumProblemDocument (type alias of `CareContinuumProblem`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CareContinuumProblem } from "../models"
+ * import { CareContinuumProblemObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const carecontinuumproblemObject: CareContinuumProblemObject = carecontinuumproblem.toObject();
+ * ```
+ */
+export type CareContinuumProblemObject = CareContinuumProblem;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumProblemQuery = mongoose.Query<
+  any,
+  CareContinuumProblemDocument,
+  CareContinuumProblemQueries
+> &
+  CareContinuumProblemQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CareContinuumProblemSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumProblemQueries = {
+  paginate: (
+    this: CareContinuumProblemQuery,
+    ...args: any[]
+  ) => CareContinuumProblemQuery;
+};
+
+export type CareContinuumProblemMethods = {};
+
+export type CareContinuumProblemStatics = {
+  paginate: (this: CareContinuumProblemModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CareContinuumProblemModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuumProblem = mongoose.model<CareContinuumProblemDocument, CareContinuumProblemModel>("CareContinuumProblem", CareContinuumProblemSchema);
+ * ```
+ */
+export type CareContinuumProblemModel = mongoose.Model<
+  CareContinuumProblemDocument,
+  CareContinuumProblemQueries
+> &
+  CareContinuumProblemStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CareContinuumProblem schema instances:
+ * ```
+ * const CareContinuumProblemSchema: CareContinuumProblemSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CareContinuumProblemSchema = mongoose.Schema<
+  CareContinuumProblemDocument,
+  CareContinuumProblemModel,
+  CareContinuumProblemMethods,
+  CareContinuumProblemQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuumProblem = mongoose.model<CareContinuumProblemDocument, CareContinuumProblemModel>("CareContinuumProblem", CareContinuumProblemSchema);
+ * ```
+ */
+export type CareContinuumProblemDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CareContinuumProblemQueries
+> &
+  CareContinuumProblemMethods & {
+    careContinuumId: CareContinuumDocument;
+    patientId: PatientDocument;
+    contentBody: string;
+    byName: string;
+    state: "active" | "resolved" | "voided";
+    comment?: string;
+    diagnosedDate?: Date;
+    resolvedDate?: Date;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of CareContinuumRaceDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CareContinuumRaceDocument.toObject()`. To avoid conflicts with model names, use the type alias `CareContinuumRaceObject`.
+ * ```
+ * const carecontinuumraceObject = carecontinuumrace.toObject();
+ * ```
+ */
+export type CareContinuumRace = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CareContinuumRaceDocument (type alias of `CareContinuumRace`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CareContinuumRace } from "../models"
+ * import { CareContinuumRaceObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const carecontinuumraceObject: CareContinuumRaceObject = carecontinuumrace.toObject();
+ * ```
+ */
+export type CareContinuumRaceObject = CareContinuumRace;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumRaceQuery = mongoose.Query<
+  any,
+  CareContinuumRaceDocument,
+  CareContinuumRaceQueries
+> &
+  CareContinuumRaceQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CareContinuumRaceSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CareContinuumRaceQueries = {
+  paginate: (
+    this: CareContinuumRaceQuery,
+    ...args: any[]
+  ) => CareContinuumRaceQuery;
+};
+
+export type CareContinuumRaceMethods = {};
+
+export type CareContinuumRaceStatics = {
+  paginate: (this: CareContinuumRaceModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CareContinuumRaceModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuumRace = mongoose.model<CareContinuumRaceDocument, CareContinuumRaceModel>("CareContinuumRace", CareContinuumRaceSchema);
+ * ```
+ */
+export type CareContinuumRaceModel = mongoose.Model<
+  CareContinuumRaceDocument,
+  CareContinuumRaceQueries
+> &
+  CareContinuumRaceStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CareContinuumRace schema instances:
+ * ```
+ * const CareContinuumRaceSchema: CareContinuumRaceSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CareContinuumRaceSchema = mongoose.Schema<
+  CareContinuumRaceDocument,
+  CareContinuumRaceModel,
+  CareContinuumRaceMethods,
+  CareContinuumRaceQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CareContinuumRace = mongoose.model<CareContinuumRaceDocument, CareContinuumRaceModel>("CareContinuumRace", CareContinuumRaceSchema);
+ * ```
+ */
+export type CareContinuumRaceDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CareContinuumRaceQueries
+> &
+  CareContinuumRaceMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of AdmissionGoalDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AdmissionGoalDocument.toObject()`. To avoid conflicts with model names, use the type alias `AdmissionGoalObject`.
+ * ```
+ * const admissiongoalObject = admissiongoal.toObject();
+ * ```
+ */
+export type AdmissionGoal = {
+  careContinuumId?: CareContinuum;
+  state?: string;
+  tracking?: string;
+  patientId?: Patient;
+  interventions: Intervention[];
+  archived?: boolean;
+  contentTitle: string;
+  contentBody: string;
+  priority?: number;
+  createdBy?: User["_id"] | User;
+  updatedBy?: User["_id"] | User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+  summary: string;
+};
+
+/**
+ * Lean version of AdmissionGoalDocument (type alias of `AdmissionGoal`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { AdmissionGoal } from "../models"
+ * import { AdmissionGoalObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const admissiongoalObject: AdmissionGoalObject = admissiongoal.toObject();
+ * ```
+ */
+export type AdmissionGoalObject = AdmissionGoal;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type AdmissionGoalQuery = mongoose.Query<
+  any,
+  AdmissionGoalDocument,
+  AdmissionGoalQueries
+> &
+  AdmissionGoalQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `AdmissionGoalSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type AdmissionGoalQueries = {
+  paginate: (this: AdmissionGoalQuery, ...args: any[]) => AdmissionGoalQuery;
+};
+
+export type AdmissionGoalMethods = {};
+
+export type AdmissionGoalStatics = {
+  paginate: (this: AdmissionGoalModel, ...args: any[]) => any;
+  paginateSubDocs: (this: AdmissionGoalModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AdmissionGoal = mongoose.model<AdmissionGoalDocument, AdmissionGoalModel>("AdmissionGoal", AdmissionGoalSchema);
+ * ```
+ */
+export type AdmissionGoalModel = mongoose.Model<
+  AdmissionGoalDocument,
+  AdmissionGoalQueries
+> &
+  AdmissionGoalStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new AdmissionGoal schema instances:
+ * ```
+ * const AdmissionGoalSchema: AdmissionGoalSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type AdmissionGoalSchema = mongoose.Schema<
+  AdmissionGoalDocument,
+  AdmissionGoalModel,
+  AdmissionGoalMethods,
+  AdmissionGoalQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AdmissionGoal = mongoose.model<AdmissionGoalDocument, AdmissionGoalModel>("AdmissionGoal", AdmissionGoalSchema);
+ * ```
+ */
+export type AdmissionGoalDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  AdmissionGoalQueries
+> &
+  AdmissionGoalMethods & {
+    careContinuumId?: CareContinuumDocument;
+    state?: string;
+    tracking?: string;
+    patientId?: PatientDocument;
+    interventions: mongoose.Types.Array<InterventionDocument>;
+    archived?: boolean;
+    contentTitle: string;
+    contentBody: string;
+    priority?: number;
+    createdBy?: UserDocument["_id"] | UserDocument;
+    updatedBy?: UserDocument["_id"] | UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+    summary: string;
+  };
+
+/**
+ * Lean version of InterventionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `InterventionDocument.toObject()`. To avoid conflicts with model names, use the type alias `InterventionObject`.
+ * ```
+ * const interventionObject = intervention.toObject();
+ * ```
+ */
+export type Intervention = {
+  admissionGoalId: AdmissionGoal["_id"] | AdmissionGoal;
+  state?: string;
+  patientId: Patient["_id"] | Patient;
+  archived?: boolean;
+  contentTitle: string;
+  contentBody: string;
+  outcomes: Outcome[];
+  orderSetIds: OrderSet[];
+  orderIds: Order[];
+  createdBy?: User["_id"] | User;
+  updatedBy?: User["_id"] | User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of InterventionDocument (type alias of `Intervention`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Intervention } from "../models"
+ * import { InterventionObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const interventionObject: InterventionObject = intervention.toObject();
+ * ```
+ */
+export type InterventionObject = Intervention;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type InterventionQuery = mongoose.Query<
+  any,
+  InterventionDocument,
+  InterventionQueries
+> &
+  InterventionQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `InterventionSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type InterventionQueries = {
+  paginate: (this: InterventionQuery, ...args: any[]) => InterventionQuery;
+};
+
+export type InterventionMethods = {};
+
+export type InterventionStatics = {
+  paginate: (this: InterventionModel, ...args: any[]) => any;
+  paginateSubDocs: (this: InterventionModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Intervention = mongoose.model<InterventionDocument, InterventionModel>("Intervention", InterventionSchema);
+ * ```
+ */
+export type InterventionModel = mongoose.Model<
+  InterventionDocument,
+  InterventionQueries
+> &
+  InterventionStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Intervention schema instances:
+ * ```
+ * const InterventionSchema: InterventionSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type InterventionSchema = mongoose.Schema<
+  InterventionDocument,
+  InterventionModel,
+  InterventionMethods,
+  InterventionQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Intervention = mongoose.model<InterventionDocument, InterventionModel>("Intervention", InterventionSchema);
+ * ```
+ */
+export type InterventionDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  InterventionQueries
+> &
+  InterventionMethods & {
+    admissionGoalId: AdmissionGoalDocument["_id"] | AdmissionGoalDocument;
+    state?: string;
+    patientId: PatientDocument["_id"] | PatientDocument;
+    archived?: boolean;
+    contentTitle: string;
+    contentBody: string;
+    outcomes: mongoose.Types.Array<OutcomeDocument>;
+    orderSetIds: mongoose.Types.Array<OrderSetDocument>;
+    orderIds: mongoose.Types.Array<OrderDocument>;
+    createdBy?: UserDocument["_id"] | UserDocument;
+    updatedBy?: UserDocument["_id"] | UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of OutcomeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `OutcomeDocument.toObject()`. To avoid conflicts with model names, use the type alias `OutcomeObject`.
+ * ```
+ * const outcomeObject = outcome.toObject();
+ * ```
+ */
+export type Outcome = {
+  interventionId: Intervention["_id"] | Intervention;
+  patientId: Patient["_id"] | Patient;
+  archived?: boolean;
+  contentTitle: string;
+  contentBody: string;
+  createdBy?: User["_id"] | User;
+  updatedBy?: User["_id"] | User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of OutcomeDocument (type alias of `Outcome`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Outcome } from "../models"
+ * import { OutcomeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const outcomeObject: OutcomeObject = outcome.toObject();
+ * ```
+ */
+export type OutcomeObject = Outcome;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type OutcomeQuery = mongoose.Query<
+  any,
+  OutcomeDocument,
+  OutcomeQueries
+> &
+  OutcomeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `OutcomeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type OutcomeQueries = {
+  paginate: (this: OutcomeQuery, ...args: any[]) => OutcomeQuery;
+};
+
+export type OutcomeMethods = {};
+
+export type OutcomeStatics = {
+  paginate: (this: OutcomeModel, ...args: any[]) => any;
+  paginateSubDocs: (this: OutcomeModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Outcome = mongoose.model<OutcomeDocument, OutcomeModel>("Outcome", OutcomeSchema);
+ * ```
+ */
+export type OutcomeModel = mongoose.Model<OutcomeDocument, OutcomeQueries> &
+  OutcomeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Outcome schema instances:
+ * ```
+ * const OutcomeSchema: OutcomeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type OutcomeSchema = mongoose.Schema<
+  OutcomeDocument,
+  OutcomeModel,
+  OutcomeMethods,
+  OutcomeQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Outcome = mongoose.model<OutcomeDocument, OutcomeModel>("Outcome", OutcomeSchema);
+ * ```
+ */
+export type OutcomeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  OutcomeQueries
+> &
+  OutcomeMethods & {
+    interventionId: InterventionDocument["_id"] | InterventionDocument;
+    patientId: PatientDocument["_id"] | PatientDocument;
+    archived?: boolean;
+    contentTitle: string;
+    contentBody: string;
+    createdBy?: UserDocument["_id"] | UserDocument;
+    updatedBy?: UserDocument["_id"] | UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of ProductFrequencyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProductFrequencyDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductFrequencyObject`.
+ * ```
+ * const productfrequencyObject = productfrequency.toObject();
+ * ```
+ */
+export type ProductFrequency = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ProductFrequencyDocument (type alias of `ProductFrequency`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ProductFrequency } from "../models"
+ * import { ProductFrequencyObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const productfrequencyObject: ProductFrequencyObject = productfrequency.toObject();
+ * ```
+ */
+export type ProductFrequencyObject = ProductFrequency;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProductFrequencyQuery = mongoose.Query<
+  any,
+  ProductFrequencyDocument,
+  ProductFrequencyQueries
+> &
+  ProductFrequencyQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ProductFrequencySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProductFrequencyQueries = {
+  paginate: (
+    this: ProductFrequencyQuery,
+    ...args: any[]
+  ) => ProductFrequencyQuery;
+};
+
+export type ProductFrequencyMethods = {};
+
+export type ProductFrequencyStatics = {
+  paginate: (this: ProductFrequencyModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ProductFrequencyModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProductFrequency = mongoose.model<ProductFrequencyDocument, ProductFrequencyModel>("ProductFrequency", ProductFrequencySchema);
+ * ```
+ */
+export type ProductFrequencyModel = mongoose.Model<
+  ProductFrequencyDocument,
+  ProductFrequencyQueries
+> &
+  ProductFrequencyStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ProductFrequency schema instances:
+ * ```
+ * const ProductFrequencySchema: ProductFrequencySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ProductFrequencySchema = mongoose.Schema<
+  ProductFrequencyDocument,
+  ProductFrequencyModel,
+  ProductFrequencyMethods,
+  ProductFrequencyQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProductFrequency = mongoose.model<ProductFrequencyDocument, ProductFrequencyModel>("ProductFrequency", ProductFrequencySchema);
+ * ```
+ */
+export type ProductFrequencyDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ProductFrequencyQueries
+> &
+  ProductFrequencyMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of ProductLotDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProductLotDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductLotObject`.
+ * ```
+ * const productlotObject = productlot.toObject();
+ * ```
+ */
+export type ProductLot = {
+  name: string;
+  description?: string;
+  code: string;
+  barCode?: string;
+  internationalCode?: string;
+  products: InventoryProduct[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ProductLotDocument (type alias of `ProductLot`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ProductLot } from "../models"
+ * import { ProductLotObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const productlotObject: ProductLotObject = productlot.toObject();
+ * ```
+ */
+export type ProductLotObject = ProductLot;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProductLotQuery = mongoose.Query<
+  any,
+  ProductLotDocument,
+  ProductLotQueries
+> &
+  ProductLotQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ProductLotSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProductLotQueries = {
+  paginate: (this: ProductLotQuery, ...args: any[]) => ProductLotQuery;
+};
+
+export type ProductLotMethods = {};
+
+export type ProductLotStatics = {
+  paginate: (this: ProductLotModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ProductLotModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProductLot = mongoose.model<ProductLotDocument, ProductLotModel>("ProductLot", ProductLotSchema);
+ * ```
+ */
+export type ProductLotModel = mongoose.Model<
+  ProductLotDocument,
+  ProductLotQueries
+> &
+  ProductLotStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ProductLot schema instances:
+ * ```
+ * const ProductLotSchema: ProductLotSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ProductLotSchema = mongoose.Schema<
+  ProductLotDocument,
+  ProductLotModel,
+  ProductLotMethods,
+  ProductLotQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProductLot = mongoose.model<ProductLotDocument, ProductLotModel>("ProductLot", ProductLotSchema);
+ * ```
+ */
+export type ProductLotDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ProductLotQueries
+> &
+  ProductLotMethods & {
+    name: string;
+    description?: string;
+    code: string;
+    barCode?: string;
+    internationalCode?: string;
+    products: mongoose.Types.Array<InventoryProductDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of ProductRouteDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProductRouteDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProductRouteObject`.
+ * ```
+ * const productrouteObject = productroute.toObject();
+ * ```
+ */
+export type ProductRoute = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ProductRouteDocument (type alias of `ProductRoute`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ProductRoute } from "../models"
+ * import { ProductRouteObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const productrouteObject: ProductRouteObject = productroute.toObject();
+ * ```
+ */
+export type ProductRouteObject = ProductRoute;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProductRouteQuery = mongoose.Query<
+  any,
+  ProductRouteDocument,
+  ProductRouteQueries
+> &
+  ProductRouteQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ProductRouteSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProductRouteQueries = {
+  paginate: (this: ProductRouteQuery, ...args: any[]) => ProductRouteQuery;
+};
+
+export type ProductRouteMethods = {};
+
+export type ProductRouteStatics = {
+  paginate: (this: ProductRouteModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ProductRouteModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProductRoute = mongoose.model<ProductRouteDocument, ProductRouteModel>("ProductRoute", ProductRouteSchema);
+ * ```
+ */
+export type ProductRouteModel = mongoose.Model<
+  ProductRouteDocument,
+  ProductRouteQueries
+> &
+  ProductRouteStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ProductRoute schema instances:
+ * ```
+ * const ProductRouteSchema: ProductRouteSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ProductRouteSchema = mongoose.Schema<
+  ProductRouteDocument,
+  ProductRouteModel,
+  ProductRouteMethods,
+  ProductRouteQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProductRoute = mongoose.model<ProductRouteDocument, ProductRouteModel>("ProductRoute", ProductRouteSchema);
+ * ```
+ */
+export type ProductRouteDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ProductRouteQueries
+> &
+  ProductRouteMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of OrderMaintenanceDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `OrderMaintenanceDocument.toObject()`. To avoid conflicts with model names, use the type alias `OrderMaintenanceObject`.
+ * ```
+ * const ordermaintenanceObject = ordermaintenance.toObject();
+ * ```
+ */
+export type OrderMaintenance = {
+  name: string;
+  color: string;
+  createdBy?: User;
+  updatedBy?: User;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of OrderMaintenanceDocument (type alias of `OrderMaintenance`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { OrderMaintenance } from "../models"
+ * import { OrderMaintenanceObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const ordermaintenanceObject: OrderMaintenanceObject = ordermaintenance.toObject();
+ * ```
+ */
+export type OrderMaintenanceObject = OrderMaintenance;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type OrderMaintenanceQuery = mongoose.Query<
+  any,
+  OrderMaintenanceDocument,
+  OrderMaintenanceQueries
+> &
+  OrderMaintenanceQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `OrderMaintenanceSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type OrderMaintenanceQueries = {
+  paginate: (
+    this: OrderMaintenanceQuery,
+    ...args: any[]
+  ) => OrderMaintenanceQuery;
+};
+
+export type OrderMaintenanceMethods = {};
+
+export type OrderMaintenanceStatics = {
+  paginate: (this: OrderMaintenanceModel, ...args: any[]) => any;
+  paginateSubDocs: (this: OrderMaintenanceModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const OrderMaintenance = mongoose.model<OrderMaintenanceDocument, OrderMaintenanceModel>("OrderMaintenance", OrderMaintenanceSchema);
+ * ```
+ */
+export type OrderMaintenanceModel = mongoose.Model<
+  OrderMaintenanceDocument,
+  OrderMaintenanceQueries
+> &
+  OrderMaintenanceStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new OrderMaintenance schema instances:
+ * ```
+ * const OrderMaintenanceSchema: OrderMaintenanceSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type OrderMaintenanceSchema = mongoose.Schema<
+  OrderMaintenanceDocument,
+  OrderMaintenanceModel,
+  OrderMaintenanceMethods,
+  OrderMaintenanceQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const OrderMaintenance = mongoose.model<OrderMaintenanceDocument, OrderMaintenanceModel>("OrderMaintenance", OrderMaintenanceSchema);
+ * ```
+ */
+export type OrderMaintenanceDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  OrderMaintenanceQueries
+> &
+  OrderMaintenanceMethods & {
+    name: string;
+    color: string;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of OrderSetOrderDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `OrderSetDocument.toObject()`.
+ * ```
+ * const ordersetObject = orderset.toObject();
+ * ```
+ */
+export type OrderSetOrder = {
+  orderId?: Order;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of OrderSetDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `OrderSetDocument.toObject()`. To avoid conflicts with model names, use the type alias `OrderSetObject`.
+ * ```
+ * const ordersetObject = orderset.toObject();
+ * ```
+ */
+export type OrderSet = {
+  careContinuumId: CareContinuum;
+  patientId: Patient;
+  byName: string;
+  type?: string;
+  priority?: string;
+  state: string;
+  orders: OrderSetOrder[];
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of OrderSetDocument (type alias of `OrderSet`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { OrderSet } from "../models"
+ * import { OrderSetObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const ordersetObject: OrderSetObject = orderset.toObject();
+ * ```
+ */
+export type OrderSetObject = OrderSet;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type OrderSetQuery = mongoose.Query<
+  any,
+  OrderSetDocument,
+  OrderSetQueries
+> &
+  OrderSetQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `OrderSetSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type OrderSetQueries = {
+  paginate: (this: OrderSetQuery, ...args: any[]) => OrderSetQuery;
+};
+
+export type OrderSetMethods = {};
+
+export type OrderSetStatics = {
+  paginate: (this: OrderSetModel, ...args: any[]) => any;
+  paginateSubDocs: (this: OrderSetModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const OrderSet = mongoose.model<OrderSetDocument, OrderSetModel>("OrderSet", OrderSetSchema);
+ * ```
+ */
+export type OrderSetModel = mongoose.Model<OrderSetDocument, OrderSetQueries> &
+  OrderSetStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new OrderSet schema instances:
+ * ```
+ * const OrderSetSchema: OrderSetSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type OrderSetSchema = mongoose.Schema<
+  OrderSetDocument,
+  OrderSetModel,
+  OrderSetMethods,
+  OrderSetQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `OrderSetDocument["orders"]` element.
+ */
+export type OrderSetOrderDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    orderId?: OrderDocument;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const OrderSet = mongoose.model<OrderSetDocument, OrderSetModel>("OrderSet", OrderSetSchema);
+ * ```
+ */
+export type OrderSetDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  OrderSetQueries
+> &
+  OrderSetMethods & {
+    careContinuumId: CareContinuumDocument;
+    patientId: PatientDocument;
+    byName: string;
+    type?: string;
+    priority?: string;
+    state: string;
+    orders: mongoose.Types.DocumentArray<OrderSetOrderDocument>;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of OrderResultFileIdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `OrderResultDocument.toObject()`.
+ * ```
+ * const orderresultObject = orderresult.toObject();
+ * ```
+ */
+export type OrderResultFileId = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of OrderResultDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `OrderDocument.toObject()`.
+ * ```
+ * const orderObject = order.toObject();
+ * ```
+ */
+export type OrderResult = {
+  fileId?: OrderResultFileId;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of OrderDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `OrderDocument.toObject()`. To avoid conflicts with model names, use the type alias `OrderObject`.
+ * ```
+ * const orderObject = order.toObject();
+ * ```
+ */
+export type Order = {
+  orderSetId: OrderSet;
+  patientId: Patient;
+  subType?: string;
+  type?: string;
+  status: string;
+  title: string;
+  interventionId?: Intervention;
+  priority?: string;
+  results: OrderResult[];
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of OrderDocument (type alias of `Order`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Order } from "../models"
+ * import { OrderObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const orderObject: OrderObject = order.toObject();
+ * ```
+ */
+export type OrderObject = Order;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type OrderQuery = mongoose.Query<any, OrderDocument, OrderQueries> &
+  OrderQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `OrderSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type OrderQueries = {
+  paginate: (this: OrderQuery, ...args: any[]) => OrderQuery;
+};
+
+export type OrderMethods = {};
+
+export type OrderStatics = {
+  paginate: (this: OrderModel, ...args: any[]) => any;
+  paginateSubDocs: (this: OrderModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Order = mongoose.model<OrderDocument, OrderModel>("Order", OrderSchema);
+ * ```
+ */
+export type OrderModel = mongoose.Model<OrderDocument, OrderQueries> &
+  OrderStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Order schema instances:
+ * ```
+ * const OrderSchema: OrderSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type OrderSchema = mongoose.Schema<
+  OrderDocument,
+  OrderModel,
+  OrderMethods,
+  OrderQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const OrderResult = mongoose.model<OrderResultDocument, OrderResultModel>("OrderResult", OrderResultSchema);
+ * ```
+ */
+export type OrderResultFileIdDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `OrderDocument["results"]` element.
+ */
+export type OrderResultDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId?: OrderResultFileIdDocument;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Order = mongoose.model<OrderDocument, OrderModel>("Order", OrderSchema);
+ * ```
+ */
+export type OrderDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  OrderQueries
+> &
+  OrderMethods & {
+    orderSetId: OrderSetDocument;
+    patientId: PatientDocument;
+    subType?: string;
+    type?: string;
+    status: string;
+    title: string;
+    interventionId?: InterventionDocument;
+    priority?: string;
+    results: mongoose.Types.DocumentArray<OrderResultDocument>;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of CompanyDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `CompanyDocument.toObject()`. To avoid conflicts with model names, use the type alias `CompanyObject`.
@@ -4316,6 +6706,116 @@ export type CompanyDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ContactLabelDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContactLabelDocument.toObject()`. To avoid conflicts with model names, use the type alias `ContactLabelObject`.
+ * ```
+ * const contactlabelObject = contactlabel.toObject();
+ * ```
+ */
+export type ContactLabel = {
+  name: string;
+  value: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ContactLabelDocument (type alias of `ContactLabel`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ContactLabel } from "../models"
+ * import { ContactLabelObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const contactlabelObject: ContactLabelObject = contactlabel.toObject();
+ * ```
+ */
+export type ContactLabelObject = ContactLabel;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ContactLabelQuery = mongoose.Query<
+  any,
+  ContactLabelDocument,
+  ContactLabelQueries
+> &
+  ContactLabelQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ContactLabelSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ContactLabelQueries = {
+  paginate: (this: ContactLabelQuery, ...args: any[]) => ContactLabelQuery;
+};
+
+export type ContactLabelMethods = {};
+
+export type ContactLabelStatics = {
+  paginate: (this: ContactLabelModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ContactLabelModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ContactLabel = mongoose.model<ContactLabelDocument, ContactLabelModel>("ContactLabel", ContactLabelSchema);
+ * ```
+ */
+export type ContactLabelModel = mongoose.Model<
+  ContactLabelDocument,
+  ContactLabelQueries
+> &
+  ContactLabelStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ContactLabel schema instances:
+ * ```
+ * const ContactLabelSchema: ContactLabelSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ContactLabelSchema = mongoose.Schema<
+  ContactLabelDocument,
+  ContactLabelModel,
+  ContactLabelMethods,
+  ContactLabelQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ContactLabel = mongoose.model<ContactLabelDocument, ContactLabelModel>("ContactLabel", ContactLabelSchema);
+ * ```
+ */
+export type ContactLabelDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ContactLabelQueries
+> &
+  ContactLabelMethods & {
+    name: string;
+    value: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of ContactCrEconomicActivityCodeDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContactDocument.toObject()`.
@@ -4357,6 +6857,18 @@ export type Contact = {
   commercialName?: string;
   crDistrito?: string;
   photo?: mongoose.Types.ObjectId;
+  middleName?: string;
+  organizationName?: string;
+  dob?: Date;
+  genderId?: Gender;
+  emergencyContact: {
+    name?: string;
+    relationShip?: string;
+    phoneNumber?: string;
+  };
+  isResident?: boolean;
+  isStaff?: boolean;
+  isVendor?: boolean;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -4478,6 +6990,18 @@ export type ContactDocument = mongoose.Document<
     commercialName?: string;
     crDistrito?: string;
     photo?: mongoose.Types.ObjectId;
+    middleName?: string;
+    organizationName?: string;
+    dob?: Date;
+    genderId?: GenderDocument;
+    emergencyContact: {
+      name?: string;
+      relationShip?: string;
+      phoneNumber?: string;
+    };
+    isResident?: boolean;
+    isStaff?: boolean;
+    isVendor?: boolean;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -4486,6 +7010,330 @@ export type ContactDocument = mongoose.Document<
     fullName: string;
     displayName: string;
     fullAddress: string;
+  };
+
+/**
+ * Lean version of GenderDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `GenderDocument.toObject()`. To avoid conflicts with model names, use the type alias `GenderObject`.
+ * ```
+ * const genderObject = gender.toObject();
+ * ```
+ */
+export type Gender = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of GenderDocument (type alias of `Gender`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Gender } from "../models"
+ * import { GenderObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const genderObject: GenderObject = gender.toObject();
+ * ```
+ */
+export type GenderObject = Gender;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type GenderQuery = mongoose.Query<any, GenderDocument, GenderQueries> &
+  GenderQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `GenderSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type GenderQueries = {
+  paginate: (this: GenderQuery, ...args: any[]) => GenderQuery;
+};
+
+export type GenderMethods = {};
+
+export type GenderStatics = {
+  paginate: (this: GenderModel, ...args: any[]) => any;
+  paginateSubDocs: (this: GenderModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Gender = mongoose.model<GenderDocument, GenderModel>("Gender", GenderSchema);
+ * ```
+ */
+export type GenderModel = mongoose.Model<GenderDocument, GenderQueries> &
+  GenderStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Gender schema instances:
+ * ```
+ * const GenderSchema: GenderSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type GenderSchema = mongoose.Schema<
+  GenderDocument,
+  GenderModel,
+  GenderMethods,
+  GenderQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Gender = mongoose.model<GenderDocument, GenderModel>("Gender", GenderSchema);
+ * ```
+ */
+export type GenderDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  GenderQueries
+> &
+  GenderMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of MaritalStatusDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `MaritalStatusDocument.toObject()`. To avoid conflicts with model names, use the type alias `MaritalStatusObject`.
+ * ```
+ * const maritalstatusObject = maritalstatus.toObject();
+ * ```
+ */
+export type MaritalStatus = {
+  name: string;
+  value: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of MaritalStatusDocument (type alias of `MaritalStatus`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { MaritalStatus } from "../models"
+ * import { MaritalStatusObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const maritalstatusObject: MaritalStatusObject = maritalstatus.toObject();
+ * ```
+ */
+export type MaritalStatusObject = MaritalStatus;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type MaritalStatusQuery = mongoose.Query<
+  any,
+  MaritalStatusDocument,
+  MaritalStatusQueries
+> &
+  MaritalStatusQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `MaritalStatusSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type MaritalStatusQueries = {
+  paginate: (this: MaritalStatusQuery, ...args: any[]) => MaritalStatusQuery;
+};
+
+export type MaritalStatusMethods = {};
+
+export type MaritalStatusStatics = {
+  paginate: (this: MaritalStatusModel, ...args: any[]) => any;
+  paginateSubDocs: (this: MaritalStatusModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const MaritalStatus = mongoose.model<MaritalStatusDocument, MaritalStatusModel>("MaritalStatus", MaritalStatusSchema);
+ * ```
+ */
+export type MaritalStatusModel = mongoose.Model<
+  MaritalStatusDocument,
+  MaritalStatusQueries
+> &
+  MaritalStatusStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new MaritalStatus schema instances:
+ * ```
+ * const MaritalStatusSchema: MaritalStatusSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type MaritalStatusSchema = mongoose.Schema<
+  MaritalStatusDocument,
+  MaritalStatusModel,
+  MaritalStatusMethods,
+  MaritalStatusQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const MaritalStatus = mongoose.model<MaritalStatusDocument, MaritalStatusModel>("MaritalStatus", MaritalStatusSchema);
+ * ```
+ */
+export type MaritalStatusDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  MaritalStatusQueries
+> &
+  MaritalStatusMethods & {
+    name: string;
+    value: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of PatientDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PatientDocument.toObject()`. To avoid conflicts with model names, use the type alias `PatientObject`.
+ * ```
+ * const patientObject = patient.toObject();
+ * ```
+ */
+export type Patient = {
+  dob: Date;
+  contactId: Contact;
+  maritalStatus?: MaritalStatus;
+  language?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+  activeCareContinuum: CareContinuum | null;
+  age: number;
+};
+
+/**
+ * Lean version of PatientDocument (type alias of `Patient`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Patient } from "../models"
+ * import { PatientObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const patientObject: PatientObject = patient.toObject();
+ * ```
+ */
+export type PatientObject = Patient;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PatientQuery = mongoose.Query<
+  any,
+  PatientDocument,
+  PatientQueries
+> &
+  PatientQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PatientSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PatientQueries = {
+  paginate: (this: PatientQuery, ...args: any[]) => PatientQuery;
+};
+
+export type PatientMethods = {};
+
+export type PatientStatics = {
+  paginate: (this: PatientModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PatientModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Patient = mongoose.model<PatientDocument, PatientModel>("Patient", PatientSchema);
+ * ```
+ */
+export type PatientModel = mongoose.Model<PatientDocument, PatientQueries> &
+  PatientStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Patient schema instances:
+ * ```
+ * const PatientSchema: PatientSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PatientSchema = mongoose.Schema<
+  PatientDocument,
+  PatientModel,
+  PatientMethods,
+  PatientQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Patient = mongoose.model<PatientDocument, PatientModel>("Patient", PatientSchema);
+ * ```
+ */
+export type PatientDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PatientQueries
+> &
+  PatientMethods & {
+    dob: Date;
+    contactId: ContactDocument;
+    maritalStatus?: MaritalStatusDocument;
+    language?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+    activeCareContinuum: CareContinuumDocument | null;
+    age: number;
   };
 
 /**
@@ -4839,6 +7687,117 @@ export type CRMDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of CurrencyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CurrencyDocument.toObject()`. To avoid conflicts with model names, use the type alias `CurrencyObject`.
+ * ```
+ * const currencyObject = currency.toObject();
+ * ```
+ */
+export type Currency = {
+  name: string;
+  code: string;
+  symbol: string;
+  decimalPrecision?: number;
+  active?: boolean;
+  isDefault?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CurrencyDocument (type alias of `Currency`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Currency } from "../models"
+ * import { CurrencyObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const currencyObject: CurrencyObject = currency.toObject();
+ * ```
+ */
+export type CurrencyObject = Currency;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CurrencyQuery = mongoose.Query<
+  any,
+  CurrencyDocument,
+  CurrencyQueries
+> &
+  CurrencyQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CurrencySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CurrencyQueries = {
+  paginate: (this: CurrencyQuery, ...args: any[]) => CurrencyQuery;
+};
+
+export type CurrencyMethods = {};
+
+export type CurrencyStatics = {
+  paginate: (this: CurrencyModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CurrencyModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Currency = mongoose.model<CurrencyDocument, CurrencyModel>("Currency", CurrencySchema);
+ * ```
+ */
+export type CurrencyModel = mongoose.Model<CurrencyDocument, CurrencyQueries> &
+  CurrencyStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Currency schema instances:
+ * ```
+ * const CurrencySchema: CurrencySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CurrencySchema = mongoose.Schema<
+  CurrencyDocument,
+  CurrencyModel,
+  CurrencyMethods,
+  CurrencyQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Currency = mongoose.model<CurrencyDocument, CurrencyModel>("Currency", CurrencySchema);
+ * ```
+ */
+export type CurrencyDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CurrencyQueries
+> &
+  CurrencyMethods & {
+    name: string;
+    code: string;
+    symbol: string;
+    decimalPrecision?: number;
+    active?: boolean;
+    isDefault?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of ExchangeRateDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ExchangeRateDocument.toObject()`. To avoid conflicts with model names, use the type alias `ExchangeRateObject`.
@@ -4945,117 +7904,6 @@ export type ExchangeRateDocument = mongoose.Document<
     rate: number;
     effectiveDate: Date;
     active?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Lean version of CurrencyDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `CurrencyDocument.toObject()`. To avoid conflicts with model names, use the type alias `CurrencyObject`.
- * ```
- * const currencyObject = currency.toObject();
- * ```
- */
-export type Currency = {
-  name: string;
-  code: string;
-  symbol: string;
-  decimalPrecision?: number;
-  active?: boolean;
-  isDefault?: boolean;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of CurrencyDocument (type alias of `Currency`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { Currency } from "../models"
- * import { CurrencyObject } from "../interfaces/mongoose.gen.ts"
- *
- * const currencyObject: CurrencyObject = currency.toObject();
- * ```
- */
-export type CurrencyObject = Currency;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type CurrencyQuery = mongoose.Query<
-  any,
-  CurrencyDocument,
-  CurrencyQueries
-> &
-  CurrencyQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `CurrencySchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type CurrencyQueries = {
-  paginate: (this: CurrencyQuery, ...args: any[]) => CurrencyQuery;
-};
-
-export type CurrencyMethods = {};
-
-export type CurrencyStatics = {
-  paginate: (this: CurrencyModel, ...args: any[]) => any;
-  paginateSubDocs: (this: CurrencyModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const Currency = mongoose.model<CurrencyDocument, CurrencyModel>("Currency", CurrencySchema);
- * ```
- */
-export type CurrencyModel = mongoose.Model<CurrencyDocument, CurrencyQueries> &
-  CurrencyStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new Currency schema instances:
- * ```
- * const CurrencySchema: CurrencySchema = new mongoose.Schema({ ... })
- * ```
- */
-export type CurrencySchema = mongoose.Schema<
-  CurrencyDocument,
-  CurrencyModel,
-  CurrencyMethods,
-  CurrencyQueries
->;
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const Currency = mongoose.model<CurrencyDocument, CurrencyModel>("Currency", CurrencySchema);
- * ```
- */
-export type CurrencyDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  CurrencyQueries
-> &
-  CurrencyMethods & {
-    name: string;
-    code: string;
-    symbol: string;
-    decimalPrecision?: number;
-    active?: boolean;
-    isDefault?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -6312,6 +9160,238 @@ export type SubscriberDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of BedHistoryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BedHistoryDocument.toObject()`. To avoid conflicts with model names, use the type alias `BedHistoryObject`.
+ * ```
+ * const bedhistoryObject = bedhistory.toObject();
+ * ```
+ */
+export type BedHistory = {
+  action: string;
+  description?: string;
+  bedId: Bed;
+  effective: boolean;
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BedHistoryDocument (type alias of `BedHistory`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BedHistory } from "../models"
+ * import { BedHistoryObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bedhistoryObject: BedHistoryObject = bedhistory.toObject();
+ * ```
+ */
+export type BedHistoryObject = BedHistory;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BedHistoryQuery = mongoose.Query<
+  any,
+  BedHistoryDocument,
+  BedHistoryQueries
+> &
+  BedHistoryQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BedHistorySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BedHistoryQueries = {
+  paginate: (this: BedHistoryQuery, ...args: any[]) => BedHistoryQuery;
+};
+
+export type BedHistoryMethods = {};
+
+export type BedHistoryStatics = {
+  paginate: (this: BedHistoryModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BedHistoryModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BedHistory = mongoose.model<BedHistoryDocument, BedHistoryModel>("BedHistory", BedHistorySchema);
+ * ```
+ */
+export type BedHistoryModel = mongoose.Model<
+  BedHistoryDocument,
+  BedHistoryQueries
+> &
+  BedHistoryStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BedHistory schema instances:
+ * ```
+ * const BedHistorySchema: BedHistorySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BedHistorySchema = mongoose.Schema<
+  BedHistoryDocument,
+  BedHistoryModel,
+  BedHistoryMethods,
+  BedHistoryQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BedHistory = mongoose.model<BedHistoryDocument, BedHistoryModel>("BedHistory", BedHistorySchema);
+ * ```
+ */
+export type BedHistoryDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BedHistoryQueries
+> &
+  BedHistoryMethods & {
+    action: string;
+    description?: string;
+    bedId: BedDocument;
+    effective: boolean;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of BedDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BedDocument.toObject()`. To avoid conflicts with model names, use the type alias `BedObject`.
+ * ```
+ * const bedObject = bed.toObject();
+ * ```
+ */
+export type Bed = {
+  name: string;
+  description?: string;
+  type: string;
+  roomId: Room;
+  patientId?: Patient;
+  reservationId?: Contact;
+  stateCode?: "taken" | "reserved" | "empty";
+  state?: "Taken" | "Reserved" | "Empty";
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of BedDocument (type alias of `Bed`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Bed } from "../models"
+ * import { BedObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bedObject: BedObject = bed.toObject();
+ * ```
+ */
+export type BedObject = Bed;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BedQuery = mongoose.Query<any, BedDocument, BedQueries> &
+  BedQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BedSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BedQueries = {
+  paginate: (this: BedQuery, ...args: any[]) => BedQuery;
+};
+
+export type BedMethods = {};
+
+export type BedStatics = {
+  paginate: (this: BedModel, ...args: any[]) => any;
+  paginateSubDocs: (this: BedModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Bed = mongoose.model<BedDocument, BedModel>("Bed", BedSchema);
+ * ```
+ */
+export type BedModel = mongoose.Model<BedDocument, BedQueries> & BedStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Bed schema instances:
+ * ```
+ * const BedSchema: BedSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BedSchema = mongoose.Schema<
+  BedDocument,
+  BedModel,
+  BedMethods,
+  BedQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Bed = mongoose.model<BedDocument, BedModel>("Bed", BedSchema);
+ * ```
+ */
+export type BedDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BedQueries
+> &
+  BedMethods & {
+    name: string;
+    description?: string;
+    type: string;
+    roomId: RoomDocument;
+    patientId?: PatientDocument;
+    reservationId?: ContactDocument;
+    stateCode?: "taken" | "reserved" | "empty";
+    state?: "Taken" | "Reserved" | "Empty";
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of FacilityDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `FacilityDocument.toObject()`. To avoid conflicts with model names, use the type alias `FacilityObject`.
@@ -6321,6 +9401,7 @@ export type SubscriberDocument = mongoose.Document<
  */
 export type Facility = {
   name: string;
+  category?: string;
   contactId?: Contact;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
@@ -6410,6 +9491,7 @@ export type FacilityDocument = mongoose.Document<
 > &
   FacilityMethods & {
     name: string;
+    category?: string;
     contactId?: ContactDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
@@ -6431,6 +9513,7 @@ export type Room = {
   code: string;
   address: string;
   facilityId: Facility;
+  genderId?: Gender;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -6516,6 +9599,261 @@ export type RoomDocument = mongoose.Document<
     code: string;
     address: string;
     facilityId: FacilityDocument;
+    genderId?: GenderDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of FluidTrackItemTrackDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `FluidTrackItemDocument.toObject()`.
+ * ```
+ * const fluidtrackitemObject = fluidtrackitem.toObject();
+ * ```
+ */
+export type FluidTrackItemTrack = {
+  name?: string;
+  value?: number;
+  description?: string;
+  dateFluidTrack?: Date;
+  active?: boolean;
+  patientProgressNoteId?: ProgressNote;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of FluidTrackItemDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `FluidTrackItemDocument.toObject()`. To avoid conflicts with model names, use the type alias `FluidTrackItemObject`.
+ * ```
+ * const fluidtrackitemObject = fluidtrackitem.toObject();
+ * ```
+ */
+export type FluidTrackItem = {
+  tracks: FluidTrackItemTrack[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of FluidTrackItemDocument (type alias of `FluidTrackItem`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { FluidTrackItem } from "../models"
+ * import { FluidTrackItemObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const fluidtrackitemObject: FluidTrackItemObject = fluidtrackitem.toObject();
+ * ```
+ */
+export type FluidTrackItemObject = FluidTrackItem;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type FluidTrackItemQuery = mongoose.Query<
+  any,
+  FluidTrackItemDocument,
+  FluidTrackItemQueries
+> &
+  FluidTrackItemQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `FluidTrackItemSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type FluidTrackItemQueries = {
+  paginate: (this: FluidTrackItemQuery, ...args: any[]) => FluidTrackItemQuery;
+};
+
+export type FluidTrackItemMethods = {};
+
+export type FluidTrackItemStatics = {
+  paginate: (this: FluidTrackItemModel, ...args: any[]) => any;
+  paginateSubDocs: (this: FluidTrackItemModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const FluidTrackItem = mongoose.model<FluidTrackItemDocument, FluidTrackItemModel>("FluidTrackItem", FluidTrackItemSchema);
+ * ```
+ */
+export type FluidTrackItemModel = mongoose.Model<
+  FluidTrackItemDocument,
+  FluidTrackItemQueries
+> &
+  FluidTrackItemStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new FluidTrackItem schema instances:
+ * ```
+ * const FluidTrackItemSchema: FluidTrackItemSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type FluidTrackItemSchema = mongoose.Schema<
+  FluidTrackItemDocument,
+  FluidTrackItemModel,
+  FluidTrackItemMethods,
+  FluidTrackItemQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `FluidTrackItemDocument["tracks"]` element.
+ */
+export type FluidTrackItemTrackDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    name?: string;
+    value?: number;
+    description?: string;
+    dateFluidTrack?: Date;
+    active?: boolean;
+    patientProgressNoteId?: ProgressNoteDocument;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const FluidTrackItem = mongoose.model<FluidTrackItemDocument, FluidTrackItemModel>("FluidTrackItem", FluidTrackItemSchema);
+ * ```
+ */
+export type FluidTrackItemDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  FluidTrackItemQueries
+> &
+  FluidTrackItemMethods & {
+    tracks: mongoose.Types.DocumentArray<FluidTrackItemTrackDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of FluidTrackDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `FluidTrackDocument.toObject()`. To avoid conflicts with model names, use the type alias `FluidTrackObject`.
+ * ```
+ * const fluidtrackObject = fluidtrack.toObject();
+ * ```
+ */
+export type FluidTrack = {
+  dayFluidTrack: Date;
+  fluidTracks: FluidTrackItem[];
+  patientId: Patient;
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of FluidTrackDocument (type alias of `FluidTrack`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { FluidTrack } from "../models"
+ * import { FluidTrackObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const fluidtrackObject: FluidTrackObject = fluidtrack.toObject();
+ * ```
+ */
+export type FluidTrackObject = FluidTrack;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type FluidTrackQuery = mongoose.Query<
+  any,
+  FluidTrackDocument,
+  FluidTrackQueries
+> &
+  FluidTrackQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `FluidTrackSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type FluidTrackQueries = {
+  paginate: (this: FluidTrackQuery, ...args: any[]) => FluidTrackQuery;
+};
+
+export type FluidTrackMethods = {};
+
+export type FluidTrackStatics = {
+  paginate: (this: FluidTrackModel, ...args: any[]) => any;
+  paginateSubDocs: (this: FluidTrackModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const FluidTrack = mongoose.model<FluidTrackDocument, FluidTrackModel>("FluidTrack", FluidTrackSchema);
+ * ```
+ */
+export type FluidTrackModel = mongoose.Model<
+  FluidTrackDocument,
+  FluidTrackQueries
+> &
+  FluidTrackStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new FluidTrack schema instances:
+ * ```
+ * const FluidTrackSchema: FluidTrackSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type FluidTrackSchema = mongoose.Schema<
+  FluidTrackDocument,
+  FluidTrackModel,
+  FluidTrackMethods,
+  FluidTrackQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const FluidTrack = mongoose.model<FluidTrackDocument, FluidTrackModel>("FluidTrack", FluidTrackSchema);
+ * ```
+ */
+export type FluidTrackDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  FluidTrackQueries
+> &
+  FluidTrackMethods & {
+    dayFluidTrack: Date;
+    fluidTracks: mongoose.Types.Array<FluidTrackItemDocument>;
+    patientId: PatientDocument;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -6627,6 +9965,403 @@ export type HelpdeskStageDocument = mongoose.Document<
     description?: string;
     isDefault?: boolean;
     active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of TicketRuleDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TicketRuleDocument.toObject()`. To avoid conflicts with model names, use the type alias `TicketRuleObject`.
+ * ```
+ * const ticketruleObject = ticketrule.toObject();
+ * ```
+ */
+export type TicketRule = {
+  name: string;
+  description?: string;
+  field: "name" | "description" | "category" | "appModule" | "type" | "tags";
+  operator: "contains" | "equals" | "startsWith" | "endsWith";
+  value: string;
+  action: "setAssigned" | "setPriority";
+  actionValue: string;
+  order?: number;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TicketRuleDocument (type alias of `TicketRule`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { TicketRule } from "../models"
+ * import { TicketRuleObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const ticketruleObject: TicketRuleObject = ticketrule.toObject();
+ * ```
+ */
+export type TicketRuleObject = TicketRule;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type TicketRuleQuery = mongoose.Query<
+  any,
+  TicketRuleDocument,
+  TicketRuleQueries
+> &
+  TicketRuleQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `TicketRuleSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type TicketRuleQueries = {
+  paginate: (this: TicketRuleQuery, ...args: any[]) => TicketRuleQuery;
+};
+
+export type TicketRuleMethods = {};
+
+export type TicketRuleStatics = {
+  paginate: (this: TicketRuleModel, ...args: any[]) => any;
+  paginateSubDocs: (this: TicketRuleModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const TicketRule = mongoose.model<TicketRuleDocument, TicketRuleModel>("TicketRule", TicketRuleSchema);
+ * ```
+ */
+export type TicketRuleModel = mongoose.Model<
+  TicketRuleDocument,
+  TicketRuleQueries
+> &
+  TicketRuleStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new TicketRule schema instances:
+ * ```
+ * const TicketRuleSchema: TicketRuleSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type TicketRuleSchema = mongoose.Schema<
+  TicketRuleDocument,
+  TicketRuleModel,
+  TicketRuleMethods,
+  TicketRuleQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const TicketRule = mongoose.model<TicketRuleDocument, TicketRuleModel>("TicketRule", TicketRuleSchema);
+ * ```
+ */
+export type TicketRuleDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  TicketRuleQueries
+> &
+  TicketRuleMethods & {
+    name: string;
+    description?: string;
+    field: "name" | "description" | "category" | "appModule" | "type" | "tags";
+    operator: "contains" | "equals" | "startsWith" | "endsWith";
+    value: string;
+    action: "setAssigned" | "setPriority";
+    actionValue: string;
+    order?: number;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of TicketAttachmentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TicketDocument.toObject()`.
+ * ```
+ * const ticketObject = ticket.toObject();
+ * ```
+ */
+export type TicketAttachment = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TicketActivityHistoryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TicketDocument.toObject()`.
+ * ```
+ * const ticketObject = ticket.toObject();
+ * ```
+ */
+export type TicketActivityHistory = {
+  field: string;
+  oldValue?: any;
+  newValue?: any;
+  changedBy?: User;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TicketNotificationDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TicketDocument.toObject()`.
+ * ```
+ * const ticketObject = ticket.toObject();
+ * ```
+ */
+export type TicketNotification = {
+  recipientId: User;
+  eventType:
+    | "ticket_created"
+    | "stage_changed"
+    | "priority_changed"
+    | "assigned_changed"
+    | "comment_added"
+    | "resolved"
+    | "closed"
+    | "reopened"
+    | "follower_added"
+    | "follower_removed";
+  message?: string;
+  readBy: User[];
+  isRead?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TicketDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TicketDocument.toObject()`. To avoid conflicts with model names, use the type alias `TicketObject`.
+ * ```
+ * const ticketObject = ticket.toObject();
+ * ```
+ */
+export type Ticket = {
+  name: string;
+  description?: string;
+  internalNotes?: string;
+  priority?: "low" | "medium" | "high" | "urgent";
+  type?: "task" | "helpdesk";
+  stage?: HelpdeskStage;
+  assigned?: User;
+  senderUser?: User;
+  followers: User[];
+  tags: string[];
+  category?: string;
+  appModule?: string;
+  attachments: TicketAttachment[];
+  slaResponseDeadline?: Date;
+  slaResolutionDeadline?: Date;
+  resolvedAt?: Date;
+  closedAt?: Date;
+  taskIds: Task[];
+  activityHistory: TicketActivityHistory[];
+  notifications: TicketNotification[];
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  dateStart?: Date;
+  dateEnd?: Date;
+  dateScheduled?: Date;
+  duration?: string;
+  number?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of TicketDocument (type alias of `Ticket`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Ticket } from "../models"
+ * import { TicketObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const ticketObject: TicketObject = ticket.toObject();
+ * ```
+ */
+export type TicketObject = Ticket;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type TicketQuery = mongoose.Query<any, TicketDocument, TicketQueries> &
+  TicketQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `TicketSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type TicketQueries = {
+  paginate: (this: TicketQuery, ...args: any[]) => TicketQuery;
+};
+
+export type TicketMethods = {};
+
+export type TicketStatics = {
+  paginate: (this: TicketModel, ...args: any[]) => any;
+  paginateSubDocs: (this: TicketModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Ticket = mongoose.model<TicketDocument, TicketModel>("Ticket", TicketSchema);
+ * ```
+ */
+export type TicketModel = mongoose.Model<TicketDocument, TicketQueries> &
+  TicketStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Ticket schema instances:
+ * ```
+ * const TicketSchema: TicketSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type TicketSchema = mongoose.Schema<
+  TicketDocument,
+  TicketModel,
+  TicketMethods,
+  TicketQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `TicketDocument["attachments"]` element.
+ */
+export type TicketAttachmentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `TicketDocument["activityHistory"]` element.
+ */
+export type TicketActivityHistoryDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    field: string;
+    oldValue?: any;
+    newValue?: any;
+    changedBy?: UserDocument;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `TicketDocument["notifications"]` element.
+ */
+export type TicketNotificationDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    recipientId: UserDocument;
+    eventType:
+      | "ticket_created"
+      | "stage_changed"
+      | "priority_changed"
+      | "assigned_changed"
+      | "comment_added"
+      | "resolved"
+      | "closed"
+      | "reopened"
+      | "follower_added"
+      | "follower_removed";
+    message?: string;
+    readBy: mongoose.Types.Array<UserDocument>;
+    isRead?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Ticket = mongoose.model<TicketDocument, TicketModel>("Ticket", TicketSchema);
+ * ```
+ */
+export type TicketDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  TicketQueries
+> &
+  TicketMethods & {
+    name: string;
+    description?: string;
+    internalNotes?: string;
+    priority?: "low" | "medium" | "high" | "urgent";
+    type?: "task" | "helpdesk";
+    stage?: HelpdeskStageDocument;
+    assigned?: UserDocument;
+    senderUser?: UserDocument;
+    followers: mongoose.Types.Array<UserDocument>;
+    tags: mongoose.Types.Array<string>;
+    category?: string;
+    appModule?: string;
+    attachments: mongoose.Types.DocumentArray<TicketAttachmentDocument>;
+    slaResponseDeadline?: Date;
+    slaResolutionDeadline?: Date;
+    resolvedAt?: Date;
+    closedAt?: Date;
+    taskIds: mongoose.Types.Array<TaskDocument>;
+    activityHistory: mongoose.Types.DocumentArray<TicketActivityHistoryDocument>;
+    notifications: mongoose.Types.DocumentArray<TicketNotificationDocument>;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
+    dateStart?: Date;
+    dateEnd?: Date;
+    dateScheduled?: Date;
+    duration?: string;
+    number?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -7009,6 +10744,10 @@ export type InventoryProduct = {
   productKind: "consumable" | "service" | "storable";
   crPartidaArancelaria?: string;
   barcode?: string;
+  clStrengths: string[];
+  clRouteIds: ProductRoute[];
+  clFrequencyIds: ProductFrequency[];
+  clContactIds: Contact[];
   active?: boolean;
   photo?: mongoose.Types.ObjectId | null;
   attachments: InventoryProductAttachment[];
@@ -7136,6 +10875,10 @@ export type InventoryProductDocument = mongoose.Document<
     productKind: "consumable" | "service" | "storable";
     crPartidaArancelaria?: string;
     barcode?: string;
+    clStrengths: mongoose.Types.Array<string>;
+    clRouteIds: mongoose.Types.Array<ProductRouteDocument>;
+    clFrequencyIds: mongoose.Types.Array<ProductFrequencyDocument>;
+    clContactIds: mongoose.Types.Array<ContactDocument>;
     active?: boolean;
     photo?: mongoose.Types.ObjectId | null;
     attachments: mongoose.Types.DocumentArray<InventoryProductAttachmentDocument>;
@@ -8475,6 +12218,266 @@ export type NotificationDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of CatalogCacheDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `CatalogCacheDocument.toObject()`. To avoid conflicts with model names, use the type alias `CatalogCacheObject`.
+ * ```
+ * const catalogcacheObject = catalogcache.toObject();
+ * ```
+ */
+export type CatalogCache = {
+  product_name?: string | null;
+  part_number?: string | null;
+  supplier?: string | null;
+  unit_price?: number | null;
+  currency?: string;
+  price_break_qty?: number | null;
+  source_file?: string | null;
+  file_date?: Date | null;
+  last_indexed?: Date | null;
+  folderId?: string | null;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of CatalogCacheDocument (type alias of `CatalogCache`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { CatalogCache } from "../models"
+ * import { CatalogCacheObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const catalogcacheObject: CatalogCacheObject = catalogcache.toObject();
+ * ```
+ */
+export type CatalogCacheObject = CatalogCache;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type CatalogCacheQuery = mongoose.Query<
+  any,
+  CatalogCacheDocument,
+  CatalogCacheQueries
+> &
+  CatalogCacheQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `CatalogCacheSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type CatalogCacheQueries = {
+  paginate: (this: CatalogCacheQuery, ...args: any[]) => CatalogCacheQuery;
+};
+
+export type CatalogCacheMethods = {};
+
+export type CatalogCacheStatics = {
+  paginate: (this: CatalogCacheModel, ...args: any[]) => any;
+  paginateSubDocs: (this: CatalogCacheModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CatalogCache = mongoose.model<CatalogCacheDocument, CatalogCacheModel>("CatalogCache", CatalogCacheSchema);
+ * ```
+ */
+export type CatalogCacheModel = mongoose.Model<
+  CatalogCacheDocument,
+  CatalogCacheQueries
+> &
+  CatalogCacheStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new CatalogCache schema instances:
+ * ```
+ * const CatalogCacheSchema: CatalogCacheSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type CatalogCacheSchema = mongoose.Schema<
+  CatalogCacheDocument,
+  CatalogCacheModel,
+  CatalogCacheMethods,
+  CatalogCacheQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const CatalogCache = mongoose.model<CatalogCacheDocument, CatalogCacheModel>("CatalogCache", CatalogCacheSchema);
+ * ```
+ */
+export type CatalogCacheDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  CatalogCacheQueries
+> &
+  CatalogCacheMethods & {
+    product_name?: string | null;
+    part_number?: string | null;
+    supplier?: string | null;
+    unit_price?: number | null;
+    currency?: string;
+    price_break_qty?: number | null;
+    source_file?: string | null;
+    file_date?: Date | null;
+    last_indexed?: Date | null;
+    folderId?: string | null;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of FreightCacheDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `FreightCacheDocument.toObject()`. To avoid conflicts with model names, use the type alias `FreightCacheObject`.
+ * ```
+ * const freightcacheObject = freightcache.toObject();
+ * ```
+ */
+export type FreightCache = {
+  rate_type?: string | null;
+  carrier?: string | null;
+  service?: string | null;
+  zone?: string | null;
+  weight_min_lb?: number | null;
+  weight_max_lb?: number | null;
+  rate_usd?: number | null;
+  unit?: string | null;
+  origin?: string | null;
+  destination?: string | null;
+  effective_date?: Date | null;
+  hs_code?: string | null;
+  duty_rate_pct?: number | null;
+  product_description?: string | null;
+  source_file?: string | null;
+  folderId?: string | null;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of FreightCacheDocument (type alias of `FreightCache`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { FreightCache } from "../models"
+ * import { FreightCacheObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const freightcacheObject: FreightCacheObject = freightcache.toObject();
+ * ```
+ */
+export type FreightCacheObject = FreightCache;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type FreightCacheQuery = mongoose.Query<
+  any,
+  FreightCacheDocument,
+  FreightCacheQueries
+> &
+  FreightCacheQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `FreightCacheSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type FreightCacheQueries = {
+  paginate: (this: FreightCacheQuery, ...args: any[]) => FreightCacheQuery;
+};
+
+export type FreightCacheMethods = {};
+
+export type FreightCacheStatics = {
+  paginate: (this: FreightCacheModel, ...args: any[]) => any;
+  paginateSubDocs: (this: FreightCacheModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const FreightCache = mongoose.model<FreightCacheDocument, FreightCacheModel>("FreightCache", FreightCacheSchema);
+ * ```
+ */
+export type FreightCacheModel = mongoose.Model<
+  FreightCacheDocument,
+  FreightCacheQueries
+> &
+  FreightCacheStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new FreightCache schema instances:
+ * ```
+ * const FreightCacheSchema: FreightCacheSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type FreightCacheSchema = mongoose.Schema<
+  FreightCacheDocument,
+  FreightCacheModel,
+  FreightCacheMethods,
+  FreightCacheQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const FreightCache = mongoose.model<FreightCacheDocument, FreightCacheModel>("FreightCache", FreightCacheSchema);
+ * ```
+ */
+export type FreightCacheDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  FreightCacheQueries
+> &
+  FreightCacheMethods & {
+    rate_type?: string | null;
+    carrier?: string | null;
+    service?: string | null;
+    zone?: string | null;
+    weight_min_lb?: number | null;
+    weight_max_lb?: number | null;
+    rate_usd?: number | null;
+    unit?: string | null;
+    origin?: string | null;
+    destination?: string | null;
+    effective_date?: Date | null;
+    hs_code?: string | null;
+    duty_rate_pct?: number | null;
+    product_description?: string | null;
+    source_file?: string | null;
+    folderId?: string | null;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of PricingEstimatePricingControlDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `PricingEstimateDocument.toObject()`.
@@ -8849,24 +12852,25 @@ export type PricingSettingsDocument = mongoose.Document<
   };
 
 /**
- * Lean version of CatalogCacheDocument
+ * Lean version of NoteDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `CatalogCacheDocument.toObject()`. To avoid conflicts with model names, use the type alias `CatalogCacheObject`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `NoteDocument.toObject()`. To avoid conflicts with model names, use the type alias `NoteObject`.
  * ```
- * const catalogcacheObject = catalogcache.toObject();
+ * const noteObject = note.toObject();
  * ```
  */
-export type CatalogCache = {
-  product_name?: string | null;
-  part_number?: string | null;
-  supplier?: string | null;
-  unit_price?: number | null;
-  currency?: string;
-  price_break_qty?: number | null;
-  source_file?: string | null;
-  file_date?: Date | null;
-  last_indexed?: Date | null;
-  folderId?: string | null;
+export type Note = {
+  careContinuumId: CareContinuum;
+  progressNoteId: ProgressNote;
+  patientId: Patient;
+  date?: Date;
+  contentBody: string;
+  byName: string;
+  state: "Read" | "Unread";
+  type?: string;
+  progressNoteTagIds: PatientProgressNoteTag[];
+  createdBy?: User;
+  updatedBy?: User;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -8874,44 +12878,40 @@ export type CatalogCache = {
 };
 
 /**
- * Lean version of CatalogCacheDocument (type alias of `CatalogCache`)
+ * Lean version of NoteDocument (type alias of `Note`)
  *
  * Use this type alias to avoid conflicts with model names:
  * ```
- * import { CatalogCache } from "../models"
- * import { CatalogCacheObject } from "../interfaces/mongoose.gen.ts"
+ * import { Note } from "../models"
+ * import { NoteObject } from "../interfaces/mongoose.gen.ts"
  *
- * const catalogcacheObject: CatalogCacheObject = catalogcache.toObject();
+ * const noteObject: NoteObject = note.toObject();
  * ```
  */
-export type CatalogCacheObject = CatalogCache;
+export type NoteObject = Note;
 
 /**
  * Mongoose Query type
  *
  * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
  */
-export type CatalogCacheQuery = mongoose.Query<
-  any,
-  CatalogCacheDocument,
-  CatalogCacheQueries
-> &
-  CatalogCacheQueries;
+export type NoteQuery = mongoose.Query<any, NoteDocument, NoteQueries> &
+  NoteQueries;
 
 /**
  * Mongoose Query helper types
  *
- * This type represents `CatalogCacheSchema.query`. For most use cases, you should not need to use this type explicitly.
+ * This type represents `NoteSchema.query`. For most use cases, you should not need to use this type explicitly.
  */
-export type CatalogCacheQueries = {
-  paginate: (this: CatalogCacheQuery, ...args: any[]) => CatalogCacheQuery;
+export type NoteQueries = {
+  paginate: (this: NoteQuery, ...args: any[]) => NoteQuery;
 };
 
-export type CatalogCacheMethods = {};
+export type NoteMethods = {};
 
-export type CatalogCacheStatics = {
-  paginate: (this: CatalogCacheModel, ...args: any[]) => any;
-  paginateSubDocs: (this: CatalogCacheModel, ...args: any[]) => any;
+export type NoteStatics = {
+  paginate: (this: NoteModel, ...args: any[]) => any;
+  paginateSubDocs: (this: NoteModel, ...args: any[]) => any;
 };
 
 /**
@@ -8919,28 +12919,24 @@ export type CatalogCacheStatics = {
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const CatalogCache = mongoose.model<CatalogCacheDocument, CatalogCacheModel>("CatalogCache", CatalogCacheSchema);
+ * const Note = mongoose.model<NoteDocument, NoteModel>("Note", NoteSchema);
  * ```
  */
-export type CatalogCacheModel = mongoose.Model<
-  CatalogCacheDocument,
-  CatalogCacheQueries
-> &
-  CatalogCacheStatics;
+export type NoteModel = mongoose.Model<NoteDocument, NoteQueries> & NoteStatics;
 
 /**
  * Mongoose Schema type
  *
- * Assign this type to new CatalogCache schema instances:
+ * Assign this type to new Note schema instances:
  * ```
- * const CatalogCacheSchema: CatalogCacheSchema = new mongoose.Schema({ ... })
+ * const NoteSchema: NoteSchema = new mongoose.Schema({ ... })
  * ```
  */
-export type CatalogCacheSchema = mongoose.Schema<
-  CatalogCacheDocument,
-  CatalogCacheModel,
-  CatalogCacheMethods,
-  CatalogCacheQueries
+export type NoteSchema = mongoose.Schema<
+  NoteDocument,
+  NoteModel,
+  NoteMethods,
+  NoteQueries
 >;
 
 /**
@@ -8948,24 +12944,25 @@ export type CatalogCacheSchema = mongoose.Schema<
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const CatalogCache = mongoose.model<CatalogCacheDocument, CatalogCacheModel>("CatalogCache", CatalogCacheSchema);
+ * const Note = mongoose.model<NoteDocument, NoteModel>("Note", NoteSchema);
  * ```
  */
-export type CatalogCacheDocument = mongoose.Document<
+export type NoteDocument = mongoose.Document<
   mongoose.Types.ObjectId,
-  CatalogCacheQueries
+  NoteQueries
 > &
-  CatalogCacheMethods & {
-    product_name?: string | null;
-    part_number?: string | null;
-    supplier?: string | null;
-    unit_price?: number | null;
-    currency?: string;
-    price_break_qty?: number | null;
-    source_file?: string | null;
-    file_date?: Date | null;
-    last_indexed?: Date | null;
-    folderId?: string | null;
+  NoteMethods & {
+    careContinuumId: CareContinuumDocument;
+    progressNoteId: ProgressNoteDocument;
+    patientId: PatientDocument;
+    date?: Date;
+    contentBody: string;
+    byName: string;
+    state: "Read" | "Unread";
+    type?: string;
+    progressNoteTagIds: mongoose.Types.Array<PatientProgressNoteTagDocument>;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -8973,30 +12970,17 @@ export type CatalogCacheDocument = mongoose.Document<
   };
 
 /**
- * Lean version of FreightCacheDocument
+ * Lean version of PatientProgressNoteTagDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `FreightCacheDocument.toObject()`. To avoid conflicts with model names, use the type alias `FreightCacheObject`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `PatientProgressNoteTagDocument.toObject()`. To avoid conflicts with model names, use the type alias `PatientProgressNoteTagObject`.
  * ```
- * const freightcacheObject = freightcache.toObject();
+ * const patientprogressnotetagObject = patientprogressnotetag.toObject();
  * ```
  */
-export type FreightCache = {
-  rate_type?: string | null;
-  carrier?: string | null;
-  service?: string | null;
-  zone?: string | null;
-  weight_min_lb?: number | null;
-  weight_max_lb?: number | null;
-  rate_usd?: number | null;
-  unit?: string | null;
-  origin?: string | null;
-  destination?: string | null;
-  effective_date?: Date | null;
-  hs_code?: string | null;
-  duty_rate_pct?: number | null;
-  product_description?: string | null;
-  source_file?: string | null;
-  folderId?: string | null;
+export type PatientProgressNoteTag = {
+  name: string;
+  description?: string;
+  type: "adverse" | "incident";
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -9004,44 +12988,47 @@ export type FreightCache = {
 };
 
 /**
- * Lean version of FreightCacheDocument (type alias of `FreightCache`)
+ * Lean version of PatientProgressNoteTagDocument (type alias of `PatientProgressNoteTag`)
  *
  * Use this type alias to avoid conflicts with model names:
  * ```
- * import { FreightCache } from "../models"
- * import { FreightCacheObject } from "../interfaces/mongoose.gen.ts"
+ * import { PatientProgressNoteTag } from "../models"
+ * import { PatientProgressNoteTagObject } from "../interfaces/mongoose.gen.ts"
  *
- * const freightcacheObject: FreightCacheObject = freightcache.toObject();
+ * const patientprogressnotetagObject: PatientProgressNoteTagObject = patientprogressnotetag.toObject();
  * ```
  */
-export type FreightCacheObject = FreightCache;
+export type PatientProgressNoteTagObject = PatientProgressNoteTag;
 
 /**
  * Mongoose Query type
  *
  * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
  */
-export type FreightCacheQuery = mongoose.Query<
+export type PatientProgressNoteTagQuery = mongoose.Query<
   any,
-  FreightCacheDocument,
-  FreightCacheQueries
+  PatientProgressNoteTagDocument,
+  PatientProgressNoteTagQueries
 > &
-  FreightCacheQueries;
+  PatientProgressNoteTagQueries;
 
 /**
  * Mongoose Query helper types
  *
- * This type represents `FreightCacheSchema.query`. For most use cases, you should not need to use this type explicitly.
+ * This type represents `PatientProgressNoteTagSchema.query`. For most use cases, you should not need to use this type explicitly.
  */
-export type FreightCacheQueries = {
-  paginate: (this: FreightCacheQuery, ...args: any[]) => FreightCacheQuery;
+export type PatientProgressNoteTagQueries = {
+  paginate: (
+    this: PatientProgressNoteTagQuery,
+    ...args: any[]
+  ) => PatientProgressNoteTagQuery;
 };
 
-export type FreightCacheMethods = {};
+export type PatientProgressNoteTagMethods = {};
 
-export type FreightCacheStatics = {
-  paginate: (this: FreightCacheModel, ...args: any[]) => any;
-  paginateSubDocs: (this: FreightCacheModel, ...args: any[]) => any;
+export type PatientProgressNoteTagStatics = {
+  paginate: (this: PatientProgressNoteTagModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PatientProgressNoteTagModel, ...args: any[]) => any;
 };
 
 /**
@@ -9049,28 +13036,28 @@ export type FreightCacheStatics = {
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const FreightCache = mongoose.model<FreightCacheDocument, FreightCacheModel>("FreightCache", FreightCacheSchema);
+ * const PatientProgressNoteTag = mongoose.model<PatientProgressNoteTagDocument, PatientProgressNoteTagModel>("PatientProgressNoteTag", PatientProgressNoteTagSchema);
  * ```
  */
-export type FreightCacheModel = mongoose.Model<
-  FreightCacheDocument,
-  FreightCacheQueries
+export type PatientProgressNoteTagModel = mongoose.Model<
+  PatientProgressNoteTagDocument,
+  PatientProgressNoteTagQueries
 > &
-  FreightCacheStatics;
+  PatientProgressNoteTagStatics;
 
 /**
  * Mongoose Schema type
  *
- * Assign this type to new FreightCache schema instances:
+ * Assign this type to new PatientProgressNoteTag schema instances:
  * ```
- * const FreightCacheSchema: FreightCacheSchema = new mongoose.Schema({ ... })
+ * const PatientProgressNoteTagSchema: PatientProgressNoteTagSchema = new mongoose.Schema({ ... })
  * ```
  */
-export type FreightCacheSchema = mongoose.Schema<
-  FreightCacheDocument,
-  FreightCacheModel,
-  FreightCacheMethods,
-  FreightCacheQueries
+export type PatientProgressNoteTagSchema = mongoose.Schema<
+  PatientProgressNoteTagDocument,
+  PatientProgressNoteTagModel,
+  PatientProgressNoteTagMethods,
+  PatientProgressNoteTagQueries
 >;
 
 /**
@@ -9078,30 +13065,169 @@ export type FreightCacheSchema = mongoose.Schema<
  *
  * Pass this type to the Mongoose Model constructor:
  * ```
- * const FreightCache = mongoose.model<FreightCacheDocument, FreightCacheModel>("FreightCache", FreightCacheSchema);
+ * const PatientProgressNoteTag = mongoose.model<PatientProgressNoteTagDocument, PatientProgressNoteTagModel>("PatientProgressNoteTag", PatientProgressNoteTagSchema);
  * ```
  */
-export type FreightCacheDocument = mongoose.Document<
+export type PatientProgressNoteTagDocument = mongoose.Document<
   mongoose.Types.ObjectId,
-  FreightCacheQueries
+  PatientProgressNoteTagQueries
 > &
-  FreightCacheMethods & {
-    rate_type?: string | null;
-    carrier?: string | null;
-    service?: string | null;
-    zone?: string | null;
-    weight_min_lb?: number | null;
-    weight_max_lb?: number | null;
-    rate_usd?: number | null;
-    unit?: string | null;
-    origin?: string | null;
-    destination?: string | null;
-    effective_date?: Date | null;
-    hs_code?: string | null;
-    duty_rate_pct?: number | null;
-    product_description?: string | null;
-    source_file?: string | null;
-    folderId?: string | null;
+  PatientProgressNoteTagMethods & {
+    name: string;
+    description?: string;
+    type: "adverse" | "incident";
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of ProgressNoteReadByDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProgressNoteDocument.toObject()`.
+ * ```
+ * const progressnoteObject = progressnote.toObject();
+ * ```
+ */
+export type ProgressNoteReadBy = {
+  userId?: User;
+  status?: "read" | "unread" | "updated";
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ProgressNoteDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ProgressNoteDocument.toObject()`. To avoid conflicts with model names, use the type alias `ProgressNoteObject`.
+ * ```
+ * const progressnoteObject = progressnote.toObject();
+ * ```
+ */
+export type ProgressNote = {
+  careContinuumId: CareContinuum;
+  patientId: Patient;
+  contentTitle: string;
+  date?: Date;
+  notes: Note[];
+  readBy: ProgressNoteReadBy[];
+  byName: string;
+  type?: string;
+  progressNoteType?: string;
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ProgressNoteDocument (type alias of `ProgressNote`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ProgressNote } from "../models"
+ * import { ProgressNoteObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const progressnoteObject: ProgressNoteObject = progressnote.toObject();
+ * ```
+ */
+export type ProgressNoteObject = ProgressNote;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProgressNoteQuery = mongoose.Query<
+  any,
+  ProgressNoteDocument,
+  ProgressNoteQueries
+> &
+  ProgressNoteQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ProgressNoteSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ProgressNoteQueries = {
+  paginate: (this: ProgressNoteQuery, ...args: any[]) => ProgressNoteQuery;
+};
+
+export type ProgressNoteMethods = {};
+
+export type ProgressNoteStatics = {
+  paginate: (this: ProgressNoteModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ProgressNoteModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProgressNote = mongoose.model<ProgressNoteDocument, ProgressNoteModel>("ProgressNote", ProgressNoteSchema);
+ * ```
+ */
+export type ProgressNoteModel = mongoose.Model<
+  ProgressNoteDocument,
+  ProgressNoteQueries
+> &
+  ProgressNoteStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ProgressNote schema instances:
+ * ```
+ * const ProgressNoteSchema: ProgressNoteSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ProgressNoteSchema = mongoose.Schema<
+  ProgressNoteDocument,
+  ProgressNoteModel,
+  ProgressNoteMethods,
+  ProgressNoteQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ProgressNoteDocument["readBy"]` element.
+ */
+export type ProgressNoteReadByDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    userId?: UserDocument;
+    status?: "read" | "unread" | "updated";
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ProgressNote = mongoose.model<ProgressNoteDocument, ProgressNoteModel>("ProgressNote", ProgressNoteSchema);
+ * ```
+ */
+export type ProgressNoteDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ProgressNoteQueries
+> &
+  ProgressNoteMethods & {
+    careContinuumId: CareContinuumDocument;
+    patientId: PatientDocument;
+    contentTitle: string;
+    date?: Date;
+    notes: mongoose.Types.Array<NoteDocument>;
+    readBy: mongoose.Types.DocumentArray<ProgressNoteReadByDocument>;
+    byName: string;
+    type?: string;
+    progressNoteType?: string;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -9336,120 +13462,6 @@ export type ProjectDocument = mongoose.Document<
     sequence?: number;
     active?: boolean;
     number?: string;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Lean version of PurchaseStageDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `PurchaseStageDocument.toObject()`. To avoid conflicts with model names, use the type alias `PurchaseStageObject`.
- * ```
- * const purchasestageObject = purchasestage.toObject();
- * ```
- */
-export type PurchaseStage = {
-  name: string;
-  description?: string;
-  color?: string;
-  order?: number;
-  active?: boolean;
-  isDefault?: boolean;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of PurchaseStageDocument (type alias of `PurchaseStage`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { PurchaseStage } from "../models"
- * import { PurchaseStageObject } from "../interfaces/mongoose.gen.ts"
- *
- * const purchasestageObject: PurchaseStageObject = purchasestage.toObject();
- * ```
- */
-export type PurchaseStageObject = PurchaseStage;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type PurchaseStageQuery = mongoose.Query<
-  any,
-  PurchaseStageDocument,
-  PurchaseStageQueries
-> &
-  PurchaseStageQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `PurchaseStageSchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type PurchaseStageQueries = {
-  paginate: (this: PurchaseStageQuery, ...args: any[]) => PurchaseStageQuery;
-};
-
-export type PurchaseStageMethods = {};
-
-export type PurchaseStageStatics = {
-  paginate: (this: PurchaseStageModel, ...args: any[]) => any;
-  paginateSubDocs: (this: PurchaseStageModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const PurchaseStage = mongoose.model<PurchaseStageDocument, PurchaseStageModel>("PurchaseStage", PurchaseStageSchema);
- * ```
- */
-export type PurchaseStageModel = mongoose.Model<
-  PurchaseStageDocument,
-  PurchaseStageQueries
-> &
-  PurchaseStageStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new PurchaseStage schema instances:
- * ```
- * const PurchaseStageSchema: PurchaseStageSchema = new mongoose.Schema({ ... })
- * ```
- */
-export type PurchaseStageSchema = mongoose.Schema<
-  PurchaseStageDocument,
-  PurchaseStageModel,
-  PurchaseStageMethods,
-  PurchaseStageQueries
->;
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const PurchaseStage = mongoose.model<PurchaseStageDocument, PurchaseStageModel>("PurchaseStage", PurchaseStageSchema);
- * ```
- */
-export type PurchaseStageDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  PurchaseStageQueries
-> &
-  PurchaseStageMethods & {
-    name: string;
-    description?: string;
-    color?: string;
-    order?: number;
-    active?: boolean;
-    isDefault?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -9761,6 +13773,120 @@ export type PurchaseSettingsDocument = mongoose.Document<
   PurchaseSettingsMethods & {
     purchaseSequence?: SequenceDocument | null;
     description?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of PurchaseStageDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PurchaseStageDocument.toObject()`. To avoid conflicts with model names, use the type alias `PurchaseStageObject`.
+ * ```
+ * const purchasestageObject = purchasestage.toObject();
+ * ```
+ */
+export type PurchaseStage = {
+  name: string;
+  description?: string;
+  color?: string;
+  order?: number;
+  active?: boolean;
+  isDefault?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of PurchaseStageDocument (type alias of `PurchaseStage`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { PurchaseStage } from "../models"
+ * import { PurchaseStageObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const purchasestageObject: PurchaseStageObject = purchasestage.toObject();
+ * ```
+ */
+export type PurchaseStageObject = PurchaseStage;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PurchaseStageQuery = mongoose.Query<
+  any,
+  PurchaseStageDocument,
+  PurchaseStageQueries
+> &
+  PurchaseStageQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PurchaseStageSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PurchaseStageQueries = {
+  paginate: (this: PurchaseStageQuery, ...args: any[]) => PurchaseStageQuery;
+};
+
+export type PurchaseStageMethods = {};
+
+export type PurchaseStageStatics = {
+  paginate: (this: PurchaseStageModel, ...args: any[]) => any;
+  paginateSubDocs: (this: PurchaseStageModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PurchaseStage = mongoose.model<PurchaseStageDocument, PurchaseStageModel>("PurchaseStage", PurchaseStageSchema);
+ * ```
+ */
+export type PurchaseStageModel = mongoose.Model<
+  PurchaseStageDocument,
+  PurchaseStageQueries
+> &
+  PurchaseStageStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new PurchaseStage schema instances:
+ * ```
+ * const PurchaseStageSchema: PurchaseStageSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PurchaseStageSchema = mongoose.Schema<
+  PurchaseStageDocument,
+  PurchaseStageModel,
+  PurchaseStageMethods,
+  PurchaseStageQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PurchaseStage = mongoose.model<PurchaseStageDocument, PurchaseStageModel>("PurchaseStage", PurchaseStageSchema);
+ * ```
+ */
+export type PurchaseStageDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PurchaseStageQueries
+> &
+  PurchaseStageMethods & {
+    name: string;
+    description?: string;
+    color?: string;
+    order?: number;
+    active?: boolean;
+    isDefault?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -10457,6 +14583,112 @@ export type SalesOrderDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of SalesSettingsDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `SalesSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `SalesSettingsObject`.
+ * ```
+ * const salessettingsObject = salessettings.toObject();
+ * ```
+ */
+export type SalesSettings = {
+  orderSequence?: Sequence | null;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of SalesSettingsDocument (type alias of `SalesSettings`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { SalesSettings } from "../models"
+ * import { SalesSettingsObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const salessettingsObject: SalesSettingsObject = salessettings.toObject();
+ * ```
+ */
+export type SalesSettingsObject = SalesSettings;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type SalesSettingsQuery = mongoose.Query<
+  any,
+  SalesSettingsDocument,
+  SalesSettingsQueries
+> &
+  SalesSettingsQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `SalesSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type SalesSettingsQueries = {
+  paginate: (this: SalesSettingsQuery, ...args: any[]) => SalesSettingsQuery;
+};
+
+export type SalesSettingsMethods = {};
+
+export type SalesSettingsStatics = {
+  paginate: (this: SalesSettingsModel, ...args: any[]) => any;
+  paginateSubDocs: (this: SalesSettingsModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesSettings = mongoose.model<SalesSettingsDocument, SalesSettingsModel>("SalesSettings", SalesSettingsSchema);
+ * ```
+ */
+export type SalesSettingsModel = mongoose.Model<
+  SalesSettingsDocument,
+  SalesSettingsQueries
+> &
+  SalesSettingsStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new SalesSettings schema instances:
+ * ```
+ * const SalesSettingsSchema: SalesSettingsSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type SalesSettingsSchema = mongoose.Schema<
+  SalesSettingsDocument,
+  SalesSettingsModel,
+  SalesSettingsMethods,
+  SalesSettingsQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const SalesSettings = mongoose.model<SalesSettingsDocument, SalesSettingsModel>("SalesSettings", SalesSettingsSchema);
+ * ```
+ */
+export type SalesSettingsDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  SalesSettingsQueries
+> &
+  SalesSettingsMethods & {
+    orderSequence?: SequenceDocument | null;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of SalesTargetDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `SalesTargetDocument.toObject()`. To avoid conflicts with model names, use the type alias `SalesTargetObject`.
@@ -10567,112 +14799,6 @@ export type SalesTargetDocument = mongoose.Document<
     currency?: string;
     salesperson?: UserDocument;
     active?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Lean version of SalesSettingsDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `SalesSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `SalesSettingsObject`.
- * ```
- * const salessettingsObject = salessettings.toObject();
- * ```
- */
-export type SalesSettings = {
-  orderSequence?: Sequence | null;
-  description?: string;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of SalesSettingsDocument (type alias of `SalesSettings`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { SalesSettings } from "../models"
- * import { SalesSettingsObject } from "../interfaces/mongoose.gen.ts"
- *
- * const salessettingsObject: SalesSettingsObject = salessettings.toObject();
- * ```
- */
-export type SalesSettingsObject = SalesSettings;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type SalesSettingsQuery = mongoose.Query<
-  any,
-  SalesSettingsDocument,
-  SalesSettingsQueries
-> &
-  SalesSettingsQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `SalesSettingsSchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type SalesSettingsQueries = {
-  paginate: (this: SalesSettingsQuery, ...args: any[]) => SalesSettingsQuery;
-};
-
-export type SalesSettingsMethods = {};
-
-export type SalesSettingsStatics = {
-  paginate: (this: SalesSettingsModel, ...args: any[]) => any;
-  paginateSubDocs: (this: SalesSettingsModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const SalesSettings = mongoose.model<SalesSettingsDocument, SalesSettingsModel>("SalesSettings", SalesSettingsSchema);
- * ```
- */
-export type SalesSettingsModel = mongoose.Model<
-  SalesSettingsDocument,
-  SalesSettingsQueries
-> &
-  SalesSettingsStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new SalesSettings schema instances:
- * ```
- * const SalesSettingsSchema: SalesSettingsSchema = new mongoose.Schema({ ... })
- * ```
- */
-export type SalesSettingsSchema = mongoose.Schema<
-  SalesSettingsDocument,
-  SalesSettingsModel,
-  SalesSettingsMethods,
-  SalesSettingsQueries
->;
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const SalesSettings = mongoose.model<SalesSettingsDocument, SalesSettingsModel>("SalesSettings", SalesSettingsSchema);
- * ```
- */
-export type SalesSettingsDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  SalesSettingsQueries
-> &
-  SalesSettingsMethods & {
-    orderSequence?: SequenceDocument | null;
-    description?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -11321,6 +15447,772 @@ export type ShippingDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of GroupStaff_idDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `GroupDocument.toObject()`.
+ * ```
+ * const groupObject = group.toObject();
+ * ```
+ */
+export type GroupStaff_id = {
+  staff_id: Staff;
+  role: "Supervisor" | "Nurse" | "Caregiver" | "Charge Nurse";
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of GroupDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `GroupDocument.toObject()`. To avoid conflicts with model names, use the type alias `GroupObject`.
+ * ```
+ * const groupObject = group.toObject();
+ * ```
+ */
+export type Group = {
+  name: string;
+  description?: string;
+  staff_ids: GroupStaff_id[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of GroupDocument (type alias of `Group`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Group } from "../models"
+ * import { GroupObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const groupObject: GroupObject = group.toObject();
+ * ```
+ */
+export type GroupObject = Group;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type GroupQuery = mongoose.Query<any, GroupDocument, GroupQueries> &
+  GroupQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `GroupSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type GroupQueries = {
+  paginate: (this: GroupQuery, ...args: any[]) => GroupQuery;
+};
+
+export type GroupMethods = {};
+
+export type GroupStatics = {
+  paginate: (this: GroupModel, ...args: any[]) => any;
+  paginateSubDocs: (this: GroupModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Group = mongoose.model<GroupDocument, GroupModel>("Group", GroupSchema);
+ * ```
+ */
+export type GroupModel = mongoose.Model<GroupDocument, GroupQueries> &
+  GroupStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Group schema instances:
+ * ```
+ * const GroupSchema: GroupSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type GroupSchema = mongoose.Schema<
+  GroupDocument,
+  GroupModel,
+  GroupMethods,
+  GroupQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `GroupDocument["staff_ids"]` element.
+ */
+export type GroupStaff_idDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    staff_id: StaffDocument;
+    role: "Supervisor" | "Nurse" | "Caregiver" | "Charge Nurse";
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Group = mongoose.model<GroupDocument, GroupModel>("Group", GroupSchema);
+ * ```
+ */
+export type GroupDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  GroupQueries
+> &
+  GroupMethods & {
+    name: string;
+    description?: string;
+    staff_ids: mongoose.Types.DocumentArray<GroupStaff_idDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of ShiftWeekdayDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShiftDocument.toObject()`.
+ * ```
+ * const shiftObject = shift.toObject();
+ * ```
+ */
+export type ShiftWeekday = {
+  weekday?:
+    | "Monday"
+    | "Tuesday"
+    | "Wednesday"
+    | "Thursday"
+    | "Friday"
+    | "Saturday"
+    | "Sunday";
+  group_ids: Group[];
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ShiftDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ShiftDocument.toObject()`. To avoid conflicts with model names, use the type alias `ShiftObject`.
+ * ```
+ * const shiftObject = shift.toObject();
+ * ```
+ */
+export type Shift = {
+  name: string;
+  manager?: Staff;
+  time_start: string;
+  time_end: string;
+  date_start: Date;
+  date_end?: Date;
+  type: "Morning" | "Evening" | "Afternoon";
+  weekdays: ShiftWeekday[];
+  staffId?: Staff;
+  patientId?: Patient;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ShiftDocument (type alias of `Shift`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Shift } from "../models"
+ * import { ShiftObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const shiftObject: ShiftObject = shift.toObject();
+ * ```
+ */
+export type ShiftObject = Shift;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ShiftQuery = mongoose.Query<any, ShiftDocument, ShiftQueries> &
+  ShiftQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ShiftSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ShiftQueries = {
+  paginate: (this: ShiftQuery, ...args: any[]) => ShiftQuery;
+};
+
+export type ShiftMethods = {};
+
+export type ShiftStatics = {
+  paginate: (this: ShiftModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ShiftModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Shift = mongoose.model<ShiftDocument, ShiftModel>("Shift", ShiftSchema);
+ * ```
+ */
+export type ShiftModel = mongoose.Model<ShiftDocument, ShiftQueries> &
+  ShiftStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Shift schema instances:
+ * ```
+ * const ShiftSchema: ShiftSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ShiftSchema = mongoose.Schema<
+  ShiftDocument,
+  ShiftModel,
+  ShiftMethods,
+  ShiftQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ShiftDocument["weekdays"]` element.
+ */
+export type ShiftWeekdayDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    weekday?:
+      | "Monday"
+      | "Tuesday"
+      | "Wednesday"
+      | "Thursday"
+      | "Friday"
+      | "Saturday"
+      | "Sunday";
+    group_ids: mongoose.Types.Array<GroupDocument>;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Shift = mongoose.model<ShiftDocument, ShiftModel>("Shift", ShiftSchema);
+ * ```
+ */
+export type ShiftDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ShiftQueries
+> &
+  ShiftMethods & {
+    name: string;
+    manager?: StaffDocument;
+    time_start: string;
+    time_end: string;
+    date_start: Date;
+    date_end?: Date;
+    type: "Morning" | "Evening" | "Afternoon";
+    weekdays: mongoose.Types.DocumentArray<ShiftWeekdayDocument>;
+    staffId?: StaffDocument;
+    patientId?: PatientDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of StaffWorkPermitDocumentFileIdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `StaffWorkPermitDocumentDocument.toObject()`.
+ * ```
+ * const staffworkpermitdocumentObject = staffworkpermitdocument.toObject();
+ * ```
+ */
+export type StaffWorkPermitDocumentFileId = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of StaffWorkPermitDocumentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `StaffDocument.toObject()`.
+ * ```
+ * const staffObject = staff.toObject();
+ * ```
+ */
+export type StaffWorkPermitDocument = {
+  fileId?: StaffWorkPermitDocumentFileId;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of StaffEngagementAgreementFileIdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `StaffEngagementAgreementDocument.toObject()`.
+ * ```
+ * const staffengagementagreementObject = staffengagementagreement.toObject();
+ * ```
+ */
+export type StaffEngagementAgreementFileId = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of StaffEngagementAgreementDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `StaffDocument.toObject()`.
+ * ```
+ * const staffObject = staff.toObject();
+ * ```
+ */
+export type StaffEngagementAgreement = {
+  fileId?: StaffEngagementAgreementFileId;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of StaffCredentialDocumentFileIdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `StaffCredentialDocumentDocument.toObject()`.
+ * ```
+ * const staffcredentialdocumentObject = staffcredentialdocument.toObject();
+ * ```
+ */
+export type StaffCredentialDocumentFileId = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of StaffCredentialDocumentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `StaffDocument.toObject()`.
+ * ```
+ * const staffObject = staff.toObject();
+ * ```
+ */
+export type StaffCredentialDocument = {
+  fileId?: StaffCredentialDocumentFileId;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of StaffDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `StaffDocument.toObject()`. To avoid conflicts with model names, use the type alias `StaffObject`.
+ * ```
+ * const staffObject = staff.toObject();
+ * ```
+ */
+export type Staff = {
+  contactId: Contact;
+  engagementType: "Employee" | "Contractor";
+  position: "Nurse" | "Caregiver" | "Manager" | "Other";
+  startDate: Date;
+  endDate?: Date;
+  workPermitRequired?: boolean;
+  workPermitDocuments: StaffWorkPermitDocument[];
+  engagementAgreement: StaffEngagementAgreement[];
+  personnelId: string;
+  department: string;
+  licenseCertificationType?: "Registered Nurse" | "MD" | "LPN" | "Other";
+  licenseNumber?: string;
+  licenseExpirationDate?: Date;
+  credentials: string[];
+  credentialDocuments: StaffCredentialDocument[];
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+  groups: Group[];
+};
+
+/**
+ * Lean version of StaffDocument (type alias of `Staff`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Staff } from "../models"
+ * import { StaffObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const staffObject: StaffObject = staff.toObject();
+ * ```
+ */
+export type StaffObject = Staff;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type StaffQuery = mongoose.Query<any, StaffDocument, StaffQueries> &
+  StaffQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `StaffSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type StaffQueries = {
+  paginate: (this: StaffQuery, ...args: any[]) => StaffQuery;
+};
+
+export type StaffMethods = {};
+
+export type StaffStatics = {
+  paginate: (this: StaffModel, ...args: any[]) => any;
+  paginateSubDocs: (this: StaffModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Staff = mongoose.model<StaffDocument, StaffModel>("Staff", StaffSchema);
+ * ```
+ */
+export type StaffModel = mongoose.Model<StaffDocument, StaffQueries> &
+  StaffStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Staff schema instances:
+ * ```
+ * const StaffSchema: StaffSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type StaffSchema = mongoose.Schema<
+  StaffDocument,
+  StaffModel,
+  StaffMethods,
+  StaffQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const StaffWorkPermitDocument = mongoose.model<StaffWorkPermitDocumentDocument, StaffWorkPermitDocumentModel>("StaffWorkPermitDocument", StaffWorkPermitDocumentSchema);
+ * ```
+ */
+export type StaffWorkPermitDocumentFileIdDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `StaffDocument["workPermitDocuments"]` element.
+ */
+export type StaffWorkPermitDocumentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId?: StaffWorkPermitDocumentFileIdDocument;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const StaffEngagementAgreement = mongoose.model<StaffEngagementAgreementDocument, StaffEngagementAgreementModel>("StaffEngagementAgreement", StaffEngagementAgreementSchema);
+ * ```
+ */
+export type StaffEngagementAgreementFileIdDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `StaffDocument["engagementAgreement"]` element.
+ */
+export type StaffEngagementAgreementDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId?: StaffEngagementAgreementFileIdDocument;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const StaffCredentialDocument = mongoose.model<StaffCredentialDocumentDocument, StaffCredentialDocumentModel>("StaffCredentialDocument", StaffCredentialDocumentSchema);
+ * ```
+ */
+export type StaffCredentialDocumentFileIdDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `StaffDocument["credentialDocuments"]` element.
+ */
+export type StaffCredentialDocumentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId?: StaffCredentialDocumentFileIdDocument;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Staff = mongoose.model<StaffDocument, StaffModel>("Staff", StaffSchema);
+ * ```
+ */
+export type StaffDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  StaffQueries
+> &
+  StaffMethods & {
+    contactId: ContactDocument;
+    engagementType: "Employee" | "Contractor";
+    position: "Nurse" | "Caregiver" | "Manager" | "Other";
+    startDate: Date;
+    endDate?: Date;
+    workPermitRequired?: boolean;
+    workPermitDocuments: mongoose.Types.DocumentArray<StaffWorkPermitDocumentDocument>;
+    engagementAgreement: mongoose.Types.DocumentArray<StaffEngagementAgreementDocument>;
+    personnelId: string;
+    department: string;
+    licenseCertificationType?: "Registered Nurse" | "MD" | "LPN" | "Other";
+    licenseNumber?: string;
+    licenseExpirationDate?: Date;
+    credentials: mongoose.Types.Array<string>;
+    credentialDocuments: mongoose.Types.DocumentArray<StaffCredentialDocumentDocument>;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+    groups: mongoose.Types.Array<GroupDocument>;
+  };
+
+/**
+ * Lean version of RecurrentTaskDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `RecurrentTaskDocument.toObject()`. To avoid conflicts with model names, use the type alias `RecurrentTaskObject`.
+ * ```
+ * const recurrenttaskObject = recurrenttask.toObject();
+ * ```
+ */
+export type RecurrentTask = {
+  startDate: Date;
+  endDate?: Date;
+  deltaTime?: number;
+  type: string;
+  repetitionTimes?: number;
+  repetitionLapse?: number;
+  repetitionSequence?:
+    | "annually"
+    | "monthly"
+    | "weekly"
+    | "daily"
+    | "firstInMonth"
+    | "secondInMonth"
+    | "thirdInMonth"
+    | "fourthInMonth";
+  repetitionDays: (
+    | "Monday"
+    | "Tuesday"
+    | "Wednesday"
+    | "Thursday"
+    | "Friday"
+    | "Saturday"
+    | "Sunday"
+  )[];
+  parentId?: Task["_id"] | Task;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of RecurrentTaskDocument (type alias of `RecurrentTask`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { RecurrentTask } from "../models"
+ * import { RecurrentTaskObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const recurrenttaskObject: RecurrentTaskObject = recurrenttask.toObject();
+ * ```
+ */
+export type RecurrentTaskObject = RecurrentTask;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type RecurrentTaskQuery = mongoose.Query<
+  any,
+  RecurrentTaskDocument,
+  RecurrentTaskQueries
+> &
+  RecurrentTaskQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `RecurrentTaskSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type RecurrentTaskQueries = {
+  paginate: (this: RecurrentTaskQuery, ...args: any[]) => RecurrentTaskQuery;
+};
+
+export type RecurrentTaskMethods = {};
+
+export type RecurrentTaskStatics = {
+  paginate: (this: RecurrentTaskModel, ...args: any[]) => any;
+  paginateSubDocs: (this: RecurrentTaskModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const RecurrentTask = mongoose.model<RecurrentTaskDocument, RecurrentTaskModel>("RecurrentTask", RecurrentTaskSchema);
+ * ```
+ */
+export type RecurrentTaskModel = mongoose.Model<
+  RecurrentTaskDocument,
+  RecurrentTaskQueries
+> &
+  RecurrentTaskStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new RecurrentTask schema instances:
+ * ```
+ * const RecurrentTaskSchema: RecurrentTaskSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type RecurrentTaskSchema = mongoose.Schema<
+  RecurrentTaskDocument,
+  RecurrentTaskModel,
+  RecurrentTaskMethods,
+  RecurrentTaskQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const RecurrentTask = mongoose.model<RecurrentTaskDocument, RecurrentTaskModel>("RecurrentTask", RecurrentTaskSchema);
+ * ```
+ */
+export type RecurrentTaskDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  RecurrentTaskQueries
+> &
+  RecurrentTaskMethods & {
+    startDate: Date;
+    endDate?: Date;
+    deltaTime?: number;
+    type: string;
+    repetitionTimes?: number;
+    repetitionLapse?: number;
+    repetitionSequence?:
+      | "annually"
+      | "monthly"
+      | "weekly"
+      | "daily"
+      | "firstInMonth"
+      | "secondInMonth"
+      | "thirdInMonth"
+      | "fourthInMonth";
+    repetitionDays: mongoose.Types.Array<
+      | "Monday"
+      | "Tuesday"
+      | "Wednesday"
+      | "Thursday"
+      | "Friday"
+      | "Saturday"
+      | "Sunday"
+    >;
+    parentId?: TaskDocument["_id"] | TaskDocument;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of TaskStageDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `TaskStageDocument.toObject()`. To avoid conflicts with model names, use the type alias `TaskStageObject`.
@@ -11557,6 +16449,19 @@ export type TaskAttachment = {
 };
 
 /**
+ * Lean version of TaskAssigneeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `TaskDocument.toObject()`.
+ * ```
+ * const taskObject = task.toObject();
+ * ```
+ */
+export type TaskAssignee = {
+  staffId?: Staff;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of TaskDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `TaskDocument.toObject()`. To avoid conflicts with model names, use the type alias `TaskObject`.
@@ -11585,6 +16490,12 @@ export type Task = {
   active?: boolean;
   isMilestone?: boolean;
   sequence?: number;
+  tags: string[];
+  assignees: TaskAssignee[];
+  recordId?: mongoose.Types.ObjectId;
+  contactId?: Contact;
+  recurrentTaskId?: RecurrentTask["_id"] | RecurrentTask;
+  done?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -11670,6 +16581,17 @@ export type TaskAttachmentDocument =
   };
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `TaskDocument["assignees"]` element.
+ */
+export type TaskAssigneeDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    staffId?: StaffDocument;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -11702,6 +16624,12 @@ export type TaskDocument = mongoose.Document<
     active?: boolean;
     isMilestone?: boolean;
     sequence?: number;
+    tags: mongoose.Types.Array<string>;
+    assignees: mongoose.Types.DocumentArray<TaskAssigneeDocument>;
+    recordId?: mongoose.Types.ObjectId;
+    contactId?: ContactDocument;
+    recurrentTaskId?: RecurrentTaskDocument["_id"] | RecurrentTaskDocument;
+    done?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -11827,403 +16755,6 @@ export type TemplateDocument = mongoose.Document<
       | "text/html"
       | "text/css";
     active?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Lean version of TicketRuleDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `TicketRuleDocument.toObject()`. To avoid conflicts with model names, use the type alias `TicketRuleObject`.
- * ```
- * const ticketruleObject = ticketrule.toObject();
- * ```
- */
-export type TicketRule = {
-  name: string;
-  description?: string;
-  field: "name" | "description" | "category" | "appModule" | "type" | "tags";
-  operator: "contains" | "equals" | "startsWith" | "endsWith";
-  value: string;
-  action: "setAssigned" | "setPriority";
-  actionValue: string;
-  order?: number;
-  active?: boolean;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of TicketRuleDocument (type alias of `TicketRule`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { TicketRule } from "../models"
- * import { TicketRuleObject } from "../interfaces/mongoose.gen.ts"
- *
- * const ticketruleObject: TicketRuleObject = ticketrule.toObject();
- * ```
- */
-export type TicketRuleObject = TicketRule;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type TicketRuleQuery = mongoose.Query<
-  any,
-  TicketRuleDocument,
-  TicketRuleQueries
-> &
-  TicketRuleQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `TicketRuleSchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type TicketRuleQueries = {
-  paginate: (this: TicketRuleQuery, ...args: any[]) => TicketRuleQuery;
-};
-
-export type TicketRuleMethods = {};
-
-export type TicketRuleStatics = {
-  paginate: (this: TicketRuleModel, ...args: any[]) => any;
-  paginateSubDocs: (this: TicketRuleModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const TicketRule = mongoose.model<TicketRuleDocument, TicketRuleModel>("TicketRule", TicketRuleSchema);
- * ```
- */
-export type TicketRuleModel = mongoose.Model<
-  TicketRuleDocument,
-  TicketRuleQueries
-> &
-  TicketRuleStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new TicketRule schema instances:
- * ```
- * const TicketRuleSchema: TicketRuleSchema = new mongoose.Schema({ ... })
- * ```
- */
-export type TicketRuleSchema = mongoose.Schema<
-  TicketRuleDocument,
-  TicketRuleModel,
-  TicketRuleMethods,
-  TicketRuleQueries
->;
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const TicketRule = mongoose.model<TicketRuleDocument, TicketRuleModel>("TicketRule", TicketRuleSchema);
- * ```
- */
-export type TicketRuleDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  TicketRuleQueries
-> &
-  TicketRuleMethods & {
-    name: string;
-    description?: string;
-    field: "name" | "description" | "category" | "appModule" | "type" | "tags";
-    operator: "contains" | "equals" | "startsWith" | "endsWith";
-    value: string;
-    action: "setAssigned" | "setPriority";
-    actionValue: string;
-    order?: number;
-    active?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Lean version of TicketAttachmentDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `TicketDocument.toObject()`.
- * ```
- * const ticketObject = ticket.toObject();
- * ```
- */
-export type TicketAttachment = {
-  fileId: mongoose.Types.ObjectId;
-  name: string;
-  mimeType: string;
-  size: number;
-  fileMetadata?: any;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of TicketActivityHistoryDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `TicketDocument.toObject()`.
- * ```
- * const ticketObject = ticket.toObject();
- * ```
- */
-export type TicketActivityHistory = {
-  field: string;
-  oldValue?: any;
-  newValue?: any;
-  changedBy?: User;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of TicketNotificationDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `TicketDocument.toObject()`.
- * ```
- * const ticketObject = ticket.toObject();
- * ```
- */
-export type TicketNotification = {
-  recipientId: User;
-  eventType:
-    | "ticket_created"
-    | "stage_changed"
-    | "priority_changed"
-    | "assigned_changed"
-    | "comment_added"
-    | "resolved"
-    | "closed"
-    | "reopened"
-    | "follower_added"
-    | "follower_removed";
-  message?: string;
-  readBy: User[];
-  isRead?: boolean;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of TicketDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `TicketDocument.toObject()`. To avoid conflicts with model names, use the type alias `TicketObject`.
- * ```
- * const ticketObject = ticket.toObject();
- * ```
- */
-export type Ticket = {
-  name: string;
-  description?: string;
-  internalNotes?: string;
-  priority?: "low" | "medium" | "high" | "urgent";
-  type?: "task" | "helpdesk";
-  stage?: HelpdeskStage;
-  assigned?: User;
-  senderUser?: User;
-  followers: User[];
-  tags: string[];
-  category?: string;
-  appModule?: string;
-  attachments: TicketAttachment[];
-  slaResponseDeadline?: Date;
-  slaResolutionDeadline?: Date;
-  resolvedAt?: Date;
-  closedAt?: Date;
-  taskIds: Task[];
-  activityHistory: TicketActivityHistory[];
-  notifications: TicketNotification[];
-  createdBy?: User;
-  updatedBy?: User;
-  active?: boolean;
-  dateStart?: Date;
-  dateEnd?: Date;
-  dateScheduled?: Date;
-  duration?: string;
-  number?: string;
-  _id: mongoose.Types.ObjectId;
-  createdAt?: Date;
-  updatedAt?: Date;
-};
-
-/**
- * Lean version of TicketDocument (type alias of `Ticket`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { Ticket } from "../models"
- * import { TicketObject } from "../interfaces/mongoose.gen.ts"
- *
- * const ticketObject: TicketObject = ticket.toObject();
- * ```
- */
-export type TicketObject = Ticket;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type TicketQuery = mongoose.Query<any, TicketDocument, TicketQueries> &
-  TicketQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `TicketSchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type TicketQueries = {
-  paginate: (this: TicketQuery, ...args: any[]) => TicketQuery;
-};
-
-export type TicketMethods = {};
-
-export type TicketStatics = {
-  paginate: (this: TicketModel, ...args: any[]) => any;
-  paginateSubDocs: (this: TicketModel, ...args: any[]) => any;
-};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const Ticket = mongoose.model<TicketDocument, TicketModel>("Ticket", TicketSchema);
- * ```
- */
-export type TicketModel = mongoose.Model<TicketDocument, TicketQueries> &
-  TicketStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new Ticket schema instances:
- * ```
- * const TicketSchema: TicketSchema = new mongoose.Schema({ ... })
- * ```
- */
-export type TicketSchema = mongoose.Schema<
-  TicketDocument,
-  TicketModel,
-  TicketMethods,
-  TicketQueries
->;
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `TicketDocument["attachments"]` element.
- */
-export type TicketAttachmentDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    fileId: mongoose.Types.ObjectId;
-    name: string;
-    mimeType: string;
-    size: number;
-    fileMetadata?: any;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `TicketDocument["activityHistory"]` element.
- */
-export type TicketActivityHistoryDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    field: string;
-    oldValue?: any;
-    newValue?: any;
-    changedBy?: UserDocument;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `TicketDocument["notifications"]` element.
- */
-export type TicketNotificationDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    recipientId: UserDocument;
-    eventType:
-      | "ticket_created"
-      | "stage_changed"
-      | "priority_changed"
-      | "assigned_changed"
-      | "comment_added"
-      | "resolved"
-      | "closed"
-      | "reopened"
-      | "follower_added"
-      | "follower_removed";
-    message?: string;
-    readBy: mongoose.Types.Array<UserDocument>;
-    isRead?: boolean;
-    _id: mongoose.Types.ObjectId;
-    createdAt?: Date;
-    updatedAt?: Date;
-  };
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const Ticket = mongoose.model<TicketDocument, TicketModel>("Ticket", TicketSchema);
- * ```
- */
-export type TicketDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  TicketQueries
-> &
-  TicketMethods & {
-    name: string;
-    description?: string;
-    internalNotes?: string;
-    priority?: "low" | "medium" | "high" | "urgent";
-    type?: "task" | "helpdesk";
-    stage?: HelpdeskStageDocument;
-    assigned?: UserDocument;
-    senderUser?: UserDocument;
-    followers: mongoose.Types.Array<UserDocument>;
-    tags: mongoose.Types.Array<string>;
-    category?: string;
-    appModule?: string;
-    attachments: mongoose.Types.DocumentArray<TicketAttachmentDocument>;
-    slaResponseDeadline?: Date;
-    slaResolutionDeadline?: Date;
-    resolvedAt?: Date;
-    closedAt?: Date;
-    taskIds: mongoose.Types.Array<TaskDocument>;
-    activityHistory: mongoose.Types.DocumentArray<TicketActivityHistoryDocument>;
-    notifications: mongoose.Types.DocumentArray<TicketNotificationDocument>;
-    createdBy?: UserDocument;
-    updatedBy?: UserDocument;
-    active?: boolean;
-    dateStart?: Date;
-    dateEnd?: Date;
-    dateScheduled?: Date;
-    duration?: string;
-    number?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -12692,6 +17223,543 @@ export type UserDocument = mongoose.Document<
     roles: mongoose.Types.Array<RoleDocument["_id"] | RoleDocument>;
     language?: string;
     contactId?: ContactDocument;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of VendorEngagementAgreementFileIdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `VendorEngagementAgreementDocument.toObject()`.
+ * ```
+ * const vendorengagementagreementObject = vendorengagementagreement.toObject();
+ * ```
+ */
+export type VendorEngagementAgreementFileId = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of VendorEngagementAgreementDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `VendorDocument.toObject()`.
+ * ```
+ * const vendorObject = vendor.toObject();
+ * ```
+ */
+export type VendorEngagementAgreement = {
+  fileId?: VendorEngagementAgreementFileId;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of VendorCredentialDocumentFileIdDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `VendorCredentialDocumentDocument.toObject()`.
+ * ```
+ * const vendorcredentialdocumentObject = vendorcredentialdocument.toObject();
+ * ```
+ */
+export type VendorCredentialDocumentFileId = {
+  fileId: mongoose.Types.ObjectId;
+  name: string;
+  mimeType: string;
+  size: number;
+  fileMetadata?: any;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of VendorCredentialDocumentDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `VendorDocument.toObject()`.
+ * ```
+ * const vendorObject = vendor.toObject();
+ * ```
+ */
+export type VendorCredentialDocument = {
+  fileId?: VendorCredentialDocumentFileId;
+  description?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of VendorDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `VendorDocument.toObject()`. To avoid conflicts with model names, use the type alias `VendorObject`.
+ * ```
+ * const vendorObject = vendor.toObject();
+ * ```
+ */
+export type Vendor = {
+  contactId: Contact;
+  positionRoles: string[];
+  startDate: Date;
+  endDate?: Date;
+  engagementAgreement: VendorEngagementAgreement[];
+  vendorId: string;
+  credentials: string[];
+  licenseCertificationType?: "Prepared foods vendor";
+  licenseNumber?: string;
+  licenseExpirationDate?: Date;
+  credentialDocuments: VendorCredentialDocument[];
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of VendorDocument (type alias of `Vendor`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Vendor } from "../models"
+ * import { VendorObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const vendorObject: VendorObject = vendor.toObject();
+ * ```
+ */
+export type VendorObject = Vendor;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type VendorQuery = mongoose.Query<any, VendorDocument, VendorQueries> &
+  VendorQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `VendorSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type VendorQueries = {
+  paginate: (this: VendorQuery, ...args: any[]) => VendorQuery;
+};
+
+export type VendorMethods = {};
+
+export type VendorStatics = {
+  paginate: (this: VendorModel, ...args: any[]) => any;
+  paginateSubDocs: (this: VendorModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Vendor = mongoose.model<VendorDocument, VendorModel>("Vendor", VendorSchema);
+ * ```
+ */
+export type VendorModel = mongoose.Model<VendorDocument, VendorQueries> &
+  VendorStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Vendor schema instances:
+ * ```
+ * const VendorSchema: VendorSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type VendorSchema = mongoose.Schema<
+  VendorDocument,
+  VendorModel,
+  VendorMethods,
+  VendorQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const VendorEngagementAgreement = mongoose.model<VendorEngagementAgreementDocument, VendorEngagementAgreementModel>("VendorEngagementAgreement", VendorEngagementAgreementSchema);
+ * ```
+ */
+export type VendorEngagementAgreementFileIdDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `VendorDocument["engagementAgreement"]` element.
+ */
+export type VendorEngagementAgreementDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId?: VendorEngagementAgreementFileIdDocument;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const VendorCredentialDocument = mongoose.model<VendorCredentialDocumentDocument, VendorCredentialDocumentModel>("VendorCredentialDocument", VendorCredentialDocumentSchema);
+ * ```
+ */
+export type VendorCredentialDocumentFileIdDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    fileId: mongoose.Types.ObjectId;
+    name: string;
+    mimeType: string;
+    size: number;
+    fileMetadata?: any;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `VendorDocument["credentialDocuments"]` element.
+ */
+export type VendorCredentialDocumentDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    fileId?: VendorCredentialDocumentFileIdDocument;
+    description?: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Vendor = mongoose.model<VendorDocument, VendorModel>("Vendor", VendorSchema);
+ * ```
+ */
+export type VendorDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  VendorQueries
+> &
+  VendorMethods & {
+    contactId: ContactDocument;
+    positionRoles: mongoose.Types.Array<string>;
+    startDate: Date;
+    endDate?: Date;
+    engagementAgreement: mongoose.Types.DocumentArray<VendorEngagementAgreementDocument>;
+    vendorId: string;
+    credentials: mongoose.Types.Array<string>;
+    licenseCertificationType?: "Prepared foods vendor";
+    licenseNumber?: string;
+    licenseExpirationDate?: Date;
+    credentialDocuments: mongoose.Types.DocumentArray<VendorCredentialDocumentDocument>;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of VitalSignTypeRangeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `VitalSignTypeDocument.toObject()`.
+ * ```
+ * const vitalsigntypeObject = vitalsigntype.toObject();
+ * ```
+ */
+export type VitalSignTypeRange = {
+  name?: string;
+  color?: string;
+  min?: number;
+  max?: number;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of VitalSignTypeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `VitalSignTypeDocument.toObject()`. To avoid conflicts with model names, use the type alias `VitalSignTypeObject`.
+ * ```
+ * const vitalsigntypeObject = vitalsigntype.toObject();
+ * ```
+ */
+export type VitalSignType = {
+  name: string;
+  value: string;
+  unit: string;
+  ranges: VitalSignTypeRange[];
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of VitalSignTypeDocument (type alias of `VitalSignType`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { VitalSignType } from "../models"
+ * import { VitalSignTypeObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const vitalsigntypeObject: VitalSignTypeObject = vitalsigntype.toObject();
+ * ```
+ */
+export type VitalSignTypeObject = VitalSignType;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type VitalSignTypeQuery = mongoose.Query<
+  any,
+  VitalSignTypeDocument,
+  VitalSignTypeQueries
+> &
+  VitalSignTypeQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `VitalSignTypeSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type VitalSignTypeQueries = {
+  paginate: (this: VitalSignTypeQuery, ...args: any[]) => VitalSignTypeQuery;
+};
+
+export type VitalSignTypeMethods = {};
+
+export type VitalSignTypeStatics = {
+  paginate: (this: VitalSignTypeModel, ...args: any[]) => any;
+  paginateSubDocs: (this: VitalSignTypeModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const VitalSignType = mongoose.model<VitalSignTypeDocument, VitalSignTypeModel>("VitalSignType", VitalSignTypeSchema);
+ * ```
+ */
+export type VitalSignTypeModel = mongoose.Model<
+  VitalSignTypeDocument,
+  VitalSignTypeQueries
+> &
+  VitalSignTypeStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new VitalSignType schema instances:
+ * ```
+ * const VitalSignTypeSchema: VitalSignTypeSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type VitalSignTypeSchema = mongoose.Schema<
+  VitalSignTypeDocument,
+  VitalSignTypeModel,
+  VitalSignTypeMethods,
+  VitalSignTypeQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `VitalSignTypeDocument["ranges"]` element.
+ */
+export type VitalSignTypeRangeDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    name?: string;
+    color?: string;
+    min?: number;
+    max?: number;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const VitalSignType = mongoose.model<VitalSignTypeDocument, VitalSignTypeModel>("VitalSignType", VitalSignTypeSchema);
+ * ```
+ */
+export type VitalSignTypeDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  VitalSignTypeQueries
+> &
+  VitalSignTypeMethods & {
+    name: string;
+    value: string;
+    unit: string;
+    ranges: mongoose.Types.DocumentArray<VitalSignTypeRangeDocument>;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
+ * Lean version of VitalSignMeasuredVitalDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `VitalSignDocument.toObject()`.
+ * ```
+ * const vitalsignObject = vitalsign.toObject();
+ * ```
+ */
+export type VitalSignMeasuredVital = {
+  value?: string;
+  method?: string;
+  vitalSignTypeId?: VitalSignType;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of VitalSignDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `VitalSignDocument.toObject()`. To avoid conflicts with model names, use the type alias `VitalSignObject`.
+ * ```
+ * const vitalsignObject = vitalsign.toObject();
+ * ```
+ */
+export type VitalSign = {
+  dateVital?: Date;
+  measuredVitals: VitalSignMeasuredVital[];
+  patientId: Patient;
+  createdBy?: User;
+  updatedBy?: User;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of VitalSignDocument (type alias of `VitalSign`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { VitalSign } from "../models"
+ * import { VitalSignObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const vitalsignObject: VitalSignObject = vitalsign.toObject();
+ * ```
+ */
+export type VitalSignObject = VitalSign;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type VitalSignQuery = mongoose.Query<
+  any,
+  VitalSignDocument,
+  VitalSignQueries
+> &
+  VitalSignQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `VitalSignSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type VitalSignQueries = {
+  paginate: (this: VitalSignQuery, ...args: any[]) => VitalSignQuery;
+};
+
+export type VitalSignMethods = {};
+
+export type VitalSignStatics = {
+  paginate: (this: VitalSignModel, ...args: any[]) => any;
+  paginateSubDocs: (this: VitalSignModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const VitalSign = mongoose.model<VitalSignDocument, VitalSignModel>("VitalSign", VitalSignSchema);
+ * ```
+ */
+export type VitalSignModel = mongoose.Model<
+  VitalSignDocument,
+  VitalSignQueries
+> &
+  VitalSignStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new VitalSign schema instances:
+ * ```
+ * const VitalSignSchema: VitalSignSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type VitalSignSchema = mongoose.Schema<
+  VitalSignDocument,
+  VitalSignModel,
+  VitalSignMethods,
+  VitalSignQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `VitalSignDocument["measuredVitals"]` element.
+ */
+export type VitalSignMeasuredVitalDocument =
+  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    value?: string;
+    method?: string;
+    vitalSignTypeId?: VitalSignTypeDocument;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const VitalSign = mongoose.model<VitalSignDocument, VitalSignModel>("VitalSign", VitalSignSchema);
+ * ```
+ */
+export type VitalSignDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  VitalSignQueries
+> &
+  VitalSignMethods & {
+    dateVital?: Date;
+    measuredVitals: mongoose.Types.DocumentArray<VitalSignMeasuredVitalDocument>;
+    patientId: PatientDocument;
+    createdBy?: UserDocument;
+    updatedBy?: UserDocument;
+    active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

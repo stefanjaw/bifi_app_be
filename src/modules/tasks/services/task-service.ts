@@ -28,9 +28,18 @@ export class TaskService extends BaseService<TaskDocument> {
       model: taskModel,
       refFields: [
         {
-          path: "stage",
-          getModel: () =>
-            this.connectionManager.getModel<TaskStageDocument>("TaskStage"),
+          path: "assigned",
+          getModel: () => this.connectionManager.getModel<UserDocument>("User"),
+          isArray: false,
+        },
+        {
+          path: "contactId",
+          getModel: () => this.connectionManager.getModel<any>("Contact"),
+          isArray: false,
+        },
+        {
+          path: "recurrentTaskId",
+          getModel: () => this.connectionManager.getModel<any>("RecurrentTask"),
           isArray: false,
         },
         {

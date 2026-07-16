@@ -9,6 +9,7 @@ import { ContactDTO, UpdateContactDTO } from "../models/contact.dto";
 import { ContactDocument, CountryDocument } from "@mongodb-types";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 
+/** Business logic service for contact operations, including photo upload and child-parent relationship management */
 export class ContactService extends BaseService<ContactDocument> {
   constructor() {
     super({

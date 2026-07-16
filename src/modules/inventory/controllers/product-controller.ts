@@ -5,6 +5,7 @@ import { ProductService } from "../services/product-service";
 
 const productService = new ProductService();
 
+/** Express controller for inventory product CRUD with file upload support (photo + attachments) */
 export class ProductController extends BaseController<ProductDocument> {
   fileValidator = new FileValidatorService();
 

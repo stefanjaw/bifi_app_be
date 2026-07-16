@@ -10,6 +10,10 @@ const facilitySchema = new Schema(
       type: String,
       required: true,
     },
+    category: {
+      type: String,
+      required: false,
+    },
     contactId: {
       type: Schema.Types.ObjectId,
       ref: "Contact",

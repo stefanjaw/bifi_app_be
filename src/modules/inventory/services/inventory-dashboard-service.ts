@@ -5,6 +5,7 @@ import {
 } from "../models/stock-balance.model";
 import { productModel } from "../models/product.model";
 
+/** Product summary for dashboard display (id, name, sku, total quantity) */
 export interface InventoryDashboardProduct {
   _id: string;
   name: string;
@@ -12,6 +13,7 @@ export interface InventoryDashboardProduct {
   totalQty: number;
 }
 
+/** Aggregated inventory dashboard data */
 export interface InventoryDashboard {
   totalProducts: number;
   totalStockValue: number;
@@ -21,6 +23,7 @@ export interface InventoryDashboard {
   lowStockProducts: InventoryDashboardProduct[];
 }
 
+/** Business logic service for inventory dashboard aggregation */
 export class InventoryDashboardService extends BaseService<StockBalanceDocument> {
   constructor() {
     super({ model: stockBalanceModel });

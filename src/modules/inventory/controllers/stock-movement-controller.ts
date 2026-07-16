@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from "express";
 
 const stockMovementService = new StockMovementService();
 
+/** Express controller for stock movement CRUD and transfer operations */
 export class StockMovementController extends BaseController<StockMovementDocument> {
   constructor() {
     super({ service: stockMovementService });

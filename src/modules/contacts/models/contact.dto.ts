@@ -15,9 +15,12 @@ import {
   Validate,
   IsArray,
   ValidateNested,
+  IsBoolean,
+  IsDate,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
+/** Validator that ensures at least one contact method (phone, email, or website for companies) is provided */
 @ValidatorConstraint({ name: "atLeastOneContact", async: false })
 export class AtLeastOneContactConstraint implements ValidatorConstraintInterface {
   validate(_: any, args: ValidationArguments) {
@@ -36,6 +39,7 @@ export class AtLeastOneContactConstraint implements ValidatorConstraintInterface
   }
 }
 
+/** DTO for a Costa Rica economic activity code and description */
 export class CrEconomicActivityCodeDTO {
   @IsString()
   @IsNotEmpty()
@@ -46,6 +50,22 @@ export class CrEconomicActivityCodeDTO {
   description!: string;
 }
 
+/** DTO for an emergency contact associated with a contact record */
+export class EmergencyContactDTO {
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  relationShip?: string;
+
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
+}
+
+/** DTO for creating a new contact (individual or company) */
 export class ContactDTO {
   @IsString()
   @IsNotEmpty()
@@ -139,10 +159,51 @@ export class ContactDTO {
   @IsOptional()
   photo?: unknown;
 
+  @IsString()
+  @IsOptional()
+  middleName?: string;
+
+  @IsString()
+  @IsOptional()
+  organizationName?: string;
+
+  @IsDate()
+  @IsOptional()
+  @Type(() => Date)
+  dob?: Date;
+
+  @IsMongoId()
+  @IsOptional()
+  genderId?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => EmergencyContactDTO)
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  emergencyContact?: EmergencyContactDTO;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(toBoolean)
+  isResident?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(toBoolean)
+  isStaff?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(toBoolean)
+  isVendor?: boolean;
+
   @IsOptional()
   active?: boolean;
 }
 
+/** DTO for updating an existing contact — all fields optional except _id */
 export class UpdateContactDTO extends PartialType(ContactDTO) {
   @IsMongoId()
   _id!: string;

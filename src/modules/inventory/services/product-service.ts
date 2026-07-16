@@ -5,6 +5,7 @@ import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
 import { isValidFileUpload } from "../../../system/libraries/file-storage/file-utils";
 import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
 
+/** Business logic service for product operations with file upload handling */
 export class ProductService extends BaseService<ProductDocument> {
   constructor() {
     super({ model: productModel });

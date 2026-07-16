@@ -8,6 +8,7 @@ import {
 } from "class-validator";
 import { PartialType, toBoolean } from "../../../system";
 
+/** DTO for creating a new unit of measure */
 export class UomDTO {
   @IsString()
   @IsNotEmpty()
@@ -30,6 +31,7 @@ export class UomDTO {
   active?: boolean;
 }
 
+/** DTO for updating an existing unit of measure */
 export class UpdateUomDTO extends PartialType(UomDTO) {
   @IsMongoId()
   _id!: string;

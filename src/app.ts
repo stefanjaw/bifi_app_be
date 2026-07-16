@@ -46,6 +46,7 @@ import {
   TaskStageRouter,
   TaskTypeRouter,
   TaskRouter,
+  RecurrentTaskRouter,
   GenAIRouter,
   ShippingRouter,
   BCDTransportOptionRouter,
@@ -113,6 +114,39 @@ import {
   SearchRouter,
   NotificationRouter,
   NotificationSettingsRouter,
+  ProgressNoteRouter,
+  NoteRouter,
+  ProgressNoteTagRouter,
+  VitalSignRouter,
+  VitalSignTypeRouter,
+  FluidTrackRouter,
+  FluidTrackItemRouter,
+  StaffRouter,
+  GroupRouter,
+  ShiftRouter,
+  VendorRouter,
+  CareContinuumRouter,
+  ProblemRouter,
+  AdmissionTypeRouter,
+  CareContinuumLevelRouter,
+  RaceRouter,
+  MedicalAllergyRouter,
+  MedicalPrecautionRouter,
+  AdmissionGoalRouter,
+  InterventionRouter,
+  OutcomeRouter,
+  GenderRouter,
+  MaritalStatusRouter,
+  ContactLabelRouter,
+  PatientRouter,
+  BedRouter,
+  BedHistoryRouter,
+  OrderSetRouter,
+  OrderRouter,
+  OrderMaintenanceRouter,
+  ProductFrequencyRouter,
+  ProductRouteRouter,
+  ProductLotRouter,
 } from "./modules";
 import { startCampaignScheduler } from "./modules/email-marketing/services/campaign-send-service";
 import { seedPurchaseStages } from "./modules/purchases";
@@ -198,6 +232,7 @@ app.use("/api", new ReportingRouter().getRouter);
 app.use("/api", new TemplateRouter().getRouter);
 app.use("/api", new ModelRouter().getRouter);
 app.use("/api", new TaskRouter().getRouter);
+  app.use("/api", new RecurrentTaskRouter().getRouter);
 app.use("/api", new ProjectRouter().getRouter);
 app.use("/api", new ProjectStageRouter().getRouter);
 app.use("/api", new TaskStageRouter().getRouter);
@@ -263,6 +298,39 @@ app.use("/api", new SearchDestinationRouter().getRouter);
 app.use("/api", new SearchRouter().getRouter);
 app.use("/api", new NotificationRouter().getRouter);
 app.use("/api", new NotificationSettingsRouter().getRouter);
+app.use("/api", new ProgressNoteRouter().getRouter);
+app.use("/api", new NoteRouter().getRouter);
+app.use("/api", new ProgressNoteTagRouter().getRouter);
+app.use("/api", new VitalSignRouter().getRouter);
+app.use("/api", new VitalSignTypeRouter().getRouter);
+app.use("/api", new FluidTrackRouter().getRouter);
+app.use("/api", new FluidTrackItemRouter().getRouter);
+app.use("/api", new StaffRouter().getRouter);
+app.use("/api", new GroupRouter().getRouter);
+app.use("/api", new ShiftRouter().getRouter);
+  app.use("/api", new VendorRouter().getRouter);
+  app.use("/api", new GenderRouter().getRouter);
+  app.use("/api", new MaritalStatusRouter().getRouter);
+  app.use("/api", new ContactLabelRouter().getRouter);
+  app.use("/api", new PatientRouter().getRouter);
+  app.use("/api", new BedRouter().getRouter);
+  app.use("/api", new BedHistoryRouter().getRouter);
+  app.use("/api", new CareContinuumRouter().getRouter);
+  app.use("/api", new ProblemRouter().getRouter);
+  app.use("/api", new AdmissionTypeRouter().getRouter);
+  app.use("/api", new CareContinuumLevelRouter().getRouter);
+  app.use("/api", new RaceRouter().getRouter);
+  app.use("/api", new MedicalAllergyRouter().getRouter);
+  app.use("/api", new MedicalPrecautionRouter().getRouter);
+  app.use("/api", new AdmissionGoalRouter().getRouter);
+  app.use("/api", new InterventionRouter().getRouter);
+  app.use("/api", new OutcomeRouter().getRouter);
+  app.use("/api", new OrderSetRouter().getRouter);
+  app.use("/api", new OrderRouter().getRouter);
+  app.use("/api", new OrderMaintenanceRouter().getRouter);
+  app.use("/api", new ProductFrequencyRouter().getRouter);
+  app.use("/api", new ProductRouteRouter().getRouter);
+  app.use("/api", new ProductLotRouter().getRouter);
 
 // CR E-Invoice routes
 app.use("/api", new CondicionVentaRouter().getRouter);

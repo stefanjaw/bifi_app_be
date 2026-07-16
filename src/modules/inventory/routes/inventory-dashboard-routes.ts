@@ -5,6 +5,7 @@ import { StockBalanceDocument } from "../models/stock-balance.model";
 
 const inventoryDashboardController = new InventoryDashboardController();
 
+/** Route definitions for the inventory dashboard endpoint */
 export class InventoryDashboardRouter extends BaseRoutes<StockBalanceDocument> {
   constructor() {
     super({

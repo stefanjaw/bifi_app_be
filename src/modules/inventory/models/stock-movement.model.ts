@@ -2,6 +2,7 @@ import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 
+/** Enumeration of stock movement types: IN, OUT, ADJUSTMENT, TRANSFER */
 export enum MovementType {
   IN = "IN",
   OUT = "OUT",
@@ -9,6 +10,7 @@ export enum MovementType {
   TRANSFER = "TRANSFER",
 }
 
+/** Mongoose schema for stock movement records */
 const stockMovementSchema = new Schema(
   {
     productId: {

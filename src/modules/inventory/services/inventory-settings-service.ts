@@ -5,6 +5,7 @@ import {
 } from "../models/inventory-settings.model";
 import { InventorySettingsDTO } from "../models/inventory-settings.dto";
 
+/** Business logic service for inventory settings (singleton get/upsert) */
 export class InventorySettingsService extends BaseService<InventorySettingsDocument> {
   constructor() {
     super({ model: inventorySettingsModel });

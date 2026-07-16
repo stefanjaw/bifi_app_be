@@ -4,6 +4,7 @@ import { StockBalanceService } from "../services/stock-balance-service";
 
 const stockBalanceService = new StockBalanceService();
 
+/** Express controller for stock balance CRUD operations */
 export class StockBalanceController extends BaseController<StockBalanceDocument> {
   constructor() {
     super({ service: stockBalanceService });

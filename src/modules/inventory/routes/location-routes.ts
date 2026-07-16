@@ -5,6 +5,7 @@ import { LocationDTO, UpdateLocationDTO } from "../models/location.dto";
 
 const locationController = new LocationController();
 
+/** Route definitions for inventory location endpoints */
 export class LocationRouter extends BaseRoutes<LocationDocument> {
   constructor() {
     super({

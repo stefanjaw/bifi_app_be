@@ -10,6 +10,7 @@ import {
 } from "class-validator";
 import { PartialType, toBoolean } from "../../../system";
 
+/** DTO for creating a new inventory location */
 export class LocationDTO {
   @IsString()
   @IsNotEmpty()
@@ -34,6 +35,7 @@ export class LocationDTO {
   active?: boolean;
 }
 
+/** DTO for updating an existing inventory location */
 export class UpdateLocationDTO extends PartialType(LocationDTO) {
   @IsMongoId()
   _id!: string;

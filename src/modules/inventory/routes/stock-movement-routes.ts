@@ -13,6 +13,7 @@ import {
 
 const stockMovementController = new StockMovementController();
 
+/** Route definitions for stock movement and transfer endpoints */
 export class StockMovementRouter extends BaseRoutes<StockMovementDocument> {
   constructor() {
     super({

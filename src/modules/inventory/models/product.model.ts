@@ -3,6 +3,7 @@ import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { fileSchema } from "../../../system";
 
+/** Mongoose schema for inventory product records */
 const productSchema = new Schema(
   {
     name: {
@@ -82,6 +83,28 @@ const productSchema = new Schema(
       type: String,
       default: "",
     },
+    clStrengths: [{ type: String }],
+    clRouteIds: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "ProductRoute",
+        autopopulate: { select: "name", maxDepth: 1 },
+      },
+    ],
+    clFrequencyIds: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "ProductFrequency",
+        autopopulate: { select: "name", maxDepth: 1 },
+      },
+    ],
+    clContactIds: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Contact",
+        autopopulate: { select: "name lastName", maxDepth: 1 },
+      },
+    ],
     active: {
       type: Boolean,
       default: true,

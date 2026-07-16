@@ -5,6 +5,7 @@ import { WarehouseDTO, UpdateWarehouseDTO } from "../models/warehouse.dto";
 
 const warehouseController = new WarehouseController();
 
+/** Route definitions for warehouse endpoints */
 export class WarehouseRouter extends BaseRoutes<WarehouseDocument> {
   constructor() {
     super({

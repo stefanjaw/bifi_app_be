@@ -2,6 +2,7 @@ import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 
+/** Mongoose schema for unit of measure (UOM) records */
 const uomSchema = new Schema(
   {
     name: {

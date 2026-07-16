@@ -8,6 +8,7 @@ import {
 } from "class-validator";
 import { PartialType, toBoolean } from "../../../system";
 
+/** DTO for creating a new warehouse */
 export class WarehouseDTO {
   @IsString()
   @IsNotEmpty()
@@ -27,6 +28,7 @@ export class WarehouseDTO {
   active?: boolean;
 }
 
+/** DTO for updating an existing warehouse */
 export class UpdateWarehouseDTO extends PartialType(WarehouseDTO) {
   @IsMongoId()
   _id!: string;

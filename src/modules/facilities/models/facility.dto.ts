@@ -23,6 +23,10 @@ export class FacilityDTO {
   @IsNotEmpty()
   name!: string;
 
+  @IsString()
+  @IsOptional()
+  category?: string;
+
   @IsMongoId()
   @IsOptional()
   contactId?: string;

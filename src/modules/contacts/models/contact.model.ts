@@ -4,6 +4,7 @@ import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 import { ContactDocument } from "@mongodb-types";
 
+/** Mongoose schema for contact records (individuals and companies) */
 const contactSchema = new Schema(
   {
     name: {
@@ -103,6 +104,23 @@ const contactSchema = new Schema(
       type: Schema.Types.ObjectId,
       autopopulate: false,
     },
+    middleName: { type: String, default: "" },
+    organizationName: { type: String, required: false },
+    dob: { type: Date, required: false },
+    genderId: {
+      type: Schema.Types.ObjectId,
+      ref: "Gender",
+      required: false,
+      autopopulate: { select: "name", maxDepth: 1 },
+    },
+    emergencyContact: {
+      name: { type: String, required: false },
+      relationShip: { type: String, required: false },
+      phoneNumber: { type: String, required: false },
+    },
+    isResident: { type: Boolean, default: false },
+    isStaff: { type: Boolean, default: false },
+    isVendor: { type: Boolean, default: false },
     active: {
       type: Boolean,
       default: true,
@@ -153,6 +171,7 @@ contactSchema.virtual("fullAddress").get(function (this: ContactDocument) {
 contactSchema.plugin(paginate);
 contactSchema.plugin(autopopulate);
 
+/** Mongoose paginate model for Contact */
 const contactModel = mongoose.model<
   ContactDocument,
   PaginateModel<ContactDocument>

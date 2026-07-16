@@ -13,6 +13,7 @@ import {
 import { PartialType, toBoolean } from "../../../system";
 import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
 
+/** DTO for creating a new inventory product */
 export class ProductDTO {
   @IsString()
   @IsNotEmpty()
@@ -100,6 +101,34 @@ export class ProductDTO {
   @IsOptional()
   barcode?: string;
 
+  @IsArray()
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  clStrengths?: string[];
+
+  @IsArray()
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  clRouteIds?: string[];
+
+  @IsArray()
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  clFrequencyIds?: string[];
+
+  @IsArray()
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  clContactIds?: string[];
+
   @IsBoolean()
   @Transform(toBoolean)
   @IsOptional()
@@ -112,6 +141,7 @@ export class ProductDTO {
   attachments?: FileUpload;
 }
 
+/** DTO for updating an existing inventory product */
 export class UpdateProductDTO extends PartialType(ProductDTO) {
   @IsMongoId()
   _id!: string;

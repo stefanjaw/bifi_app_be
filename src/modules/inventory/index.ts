@@ -1,3 +1,4 @@
+/** Barrel re-exporting all inventory module controllers, models, routes, and services */
 export * from "./controllers/warehouse-controller";
 export * from "./controllers/location-controller";
 export * from "./controllers/product-controller";

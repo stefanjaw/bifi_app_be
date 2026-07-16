@@ -5,6 +5,7 @@ import { UomDTO, UpdateUomDTO } from "../models/uom.dto";
 
 const uomController = new UomController();
 
+/** Route definitions for UOM endpoints */
 export class UomRouter extends BaseRoutes<UomDocument> {
   constructor() {
     super({

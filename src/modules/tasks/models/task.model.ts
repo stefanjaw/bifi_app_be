@@ -128,6 +128,44 @@ const taskSchema = new Schema(
       type: Number,
       default: 1,
     },
+    tags: {
+      type: [String],
+      default: [],
+    },
+    assignees: {
+      type: [
+        {
+          staffId: {
+            type: Schema.Types.ObjectId,
+            ref: "Staff",
+            autopopulate: {
+              select: "contactId position department",
+              maxDepth: 1,
+            },
+          },
+        },
+      ],
+      default: [],
+    },
+    recordId: {
+      type: Schema.Types.ObjectId,
+      required: false,
+    },
+    contactId: {
+      type: Schema.Types.ObjectId,
+      ref: "Contact",
+      autopopulate: { select: "name lastName email", maxDepth: 1 },
+      required: false,
+    },
+    recurrentTaskId: {
+      type: Schema.Types.ObjectId,
+      ref: "RecurrentTask",
+      required: false,
+    },
+    done: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

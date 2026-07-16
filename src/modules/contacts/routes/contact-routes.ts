@@ -9,6 +9,7 @@ import { ContactDTO, UpdateContactDTO } from "../models/contact.dto";
 
 const contactController = new ContactController();
 
+/** Route definitions for contact endpoints with photo upload support */
 export class ContactRouter extends BaseRoutes<ContactDocument> {
   constructor() {
     super({
@@ -19,6 +20,9 @@ export class ContactRouter extends BaseRoutes<ContactDocument> {
     });
   }
 
+  /**
+   * Overrides POST route to include photo file upload fields.
+   */
   override initPostRoute() {
     this.router.post(
       this.endpoint,
@@ -29,6 +33,9 @@ export class ContactRouter extends BaseRoutes<ContactDocument> {
     );
   }
 
+  /**
+   * Overrides PUT route to include photo file upload fields.
+   */
   override initPutRoute() {
     this.router.put(
       this.endpoint,

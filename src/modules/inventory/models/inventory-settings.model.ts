@@ -2,11 +2,13 @@ import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 
+/** Type representing an inventory settings document (singleton) */
 export type InventorySettingsDocument = mongoose.Document & {
   defaultWarehouseId?: mongoose.Types.ObjectId;
   defaultLocationId?: mongoose.Types.ObjectId;
 };
 
+/** Mongoose schema for inventory settings (singleton) */
 const inventorySettingsSchema = new Schema(
   {
     defaultWarehouseId: {

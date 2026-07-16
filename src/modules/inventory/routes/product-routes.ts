@@ -9,6 +9,7 @@ import { ProductDTO, UpdateProductDTO } from "../models/product.dto";
 
 const productController = new ProductController();
 
+/** Route definitions for product endpoints with file upload support */
 export class ProductRouter extends BaseRoutes<ProductDocument> {
   constructor() {
     super({

@@ -12,6 +12,7 @@ import { stockBalanceModel } from "../models/stock-balance.model";
 import { StockMovementDTO, TransferDTO } from "../models/stock-movement.dto";
 import { ClientSession } from "mongoose";
 
+/** Business logic service for stock movement and transfer operations */
 export class StockMovementService extends BaseService<StockMovementDocument> {
   constructor() {
     super({ model: stockMovementModel });

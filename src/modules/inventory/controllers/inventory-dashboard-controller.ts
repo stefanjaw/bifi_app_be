@@ -3,6 +3,7 @@ import { BaseController } from "../../../system";
 import { StockBalanceDocument } from "../models/stock-balance.model";
 import { InventoryDashboardService } from "../services/inventory-dashboard-service";
 
+/** Express controller for the inventory dashboard aggregated data */
 export class InventoryDashboardController extends BaseController<StockBalanceDocument> {
   constructor() {
     super({ service: new InventoryDashboardService() });

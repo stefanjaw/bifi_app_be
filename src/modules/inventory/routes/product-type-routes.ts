@@ -8,6 +8,7 @@ import {
 
 const productTypeController = new ProductTypeController();
 
+/** Route definitions for product type endpoints */
 export class ProductTypeRouter extends BaseRoutes<ProductTypeDocument> {
   constructor() {
     super({

@@ -8,6 +8,7 @@ import {
 
 const uomCategoryController = new UomCategoryController();
 
+/** Route definitions for UOM category endpoints */
 export class UomCategoryRouter extends BaseRoutes<UomCategoryDocument> {
   constructor() {
     super({

@@ -149,7 +149,7 @@ All under `src/modules/<name>/`. Check this before adding new features — impor
 | `vendors` | vendor records | `/vendors` |
 | `contacts` (extended) | contacts, patients, genders, marital statuses, contact labels | `/contacts`, `/patients`, `/genders`, `/marital-statuses`, `/contact-labels` |
 | `facilities` (extended) | facilities, rooms, beds, bed history | `/facilities`, `/rooms`, `/beds`, `/bed-histories` |
-| `inventory` (extended) | products, product types, UOMs, UOM categories, warehouses, locations, stock balances, stock movements, clinical products, product frequencies, product routes, product lots | `/inventory/products`, `/product-types`, `/uoms`, `/uom-categories`, `/warehouses`, `/locations`, `/stock-balances`, `/stock-movements`, `/clinical-products`, `/product-frequencies`, `/product-routes`, `/product-lots` |
+| `inventory` (extended) | products, product types, UOMs, UOM categories, warehouses, locations, stock balances, stock movements, product frequencies, product routes, product lots | `/inventory/products`, `/product-types`, `/uoms`, `/uom-categories`, `/warehouses`, `/locations`, `/stock-balances`, `/stock-movements`, `/product-frequencies`, `/product-routes`, `/product-lots` |
 
 ## System infrastructure (`src/system/`)
 
@@ -321,6 +321,87 @@ Each l10n module lives in `src/modules/l10n_<locale>/` and extends a core module
 
 `l10n_cr_einvoice/services/cr-einvoice-validator.service.ts` has ~40 validation error messages hardcoded in Spanish (277-line file, entirely Spanish).
 
+## Extending Existing Entities — Backend Pattern
+
+When adding fields to an existing entity (e.g., locale-specific fields, domain-specific clinical metadata), follow the `l10n_cr_einvoice` pattern:
+
+### 1. Distinguish Entity Types
+
+| Type | What to do | Example |
+|---|---|---|
+| **Genuinely new entity** | Create fresh in its own module | `product-frequency`, `product-route`, `product-lot` |
+| **Extension of existing entity** | Add prefixed fields to the **core entity's schema** — the extension module provides only business logic | `cr*` fields on Product, Uom, Contact, JournalEntry |
+| **Duplicate of existing entity** | Delete and redirect refs — never reimplement | `clinical-product` (was duplicate of `product`) |
+
+### 2. Field Prefix Convention
+
+Extension fields **must** use a module-specific prefix to namespace them and prevent collisions. The prefix can be anything unique to the module:
+
+```ts
+// l10n_cr_einvoice uses "cr" — Costa Rica
+crVatType, crUnidadMedida, crPartidaArancelaria, crEinvoiceType, crClave
+
+// Another module might use a different prefix, e.g. "mx" for Mexico, "cl" for clinical
+// The exact prefix doesn't matter — only that it's unique per module
+```
+
+The prefix makes ownership obvious at a glance. Without one, a future extension could collide with core fields or another module's fields.
+
+**Do NOT prefix** fields that are conceptually intrinsic to the entity across all deployments — only prefix fields added by an external module that may not be relevant in all contexts.
+
+### 2a. Schema Has the Fields — Core Frontend Interface Does NOT
+
+The Mongoose schema **must** include the extension fields (statically defined). But the corresponding frontend core interface must **not** define them:
+
+```
+Backend schema (bifi_app_be):                product.model.ts  → has clStrengths, clRouteIds, ...
+Frontend core interface (@avalantec/inventory):  product.ts      → NO cl* fields
+Frontend extension (@avalantec/clinical):        plugin component → (product as any)?.clStrengths
+```
+
+The frontend extension module uses `(entity as any)?.clFieldName` in its plugin components — the core interface stays clean. This makes the extension optional: a deployment without the clinical module never sees the `cl*` fields.
+
+### 3. Static Schema Fields — Not Dynamic Injection
+
+Extension fields are **statically defined** on the core entity's Mongoose schema file. They are NOT injected via a plugin/extension registry:
+
+```
+bifi_app_be/src/modules/inventory/models/product.model.ts    → codigoComercial, crPartidaArancelaria, productKind
+bifi_app_be/src/modules/inventory/models/uom.model.ts       → crUnidadMedida
+bifi_app_be/src/modules/contacts/models/contact.model.ts    → crVatType, commercialName, crDistrito, crEconomicActivityCodes
+bifi_app_be/src/modules/accounting/models/tax.model.ts      → crCodigo, crCodigoTarifa, crTarifa
+bifi_app_be/src/modules/accounting/models/journal-entry.model.ts → crEinvoiceType, crClave, crCondicionVentaId, crMedioPagoId, etc.
+```
+
+**The extension module (`l10n_cr_einvoice`) does NOT touch these schema files.** It provides:
+- Hacienda-specific business logic (JSON/XML builders, API submission, PDF gen, validation)
+- Reference lookup tables (`CrCondicionVenta`, `CrMedioPago`, `CrEinvoiceSettings`)
+- Action endpoints (`submit-einvoice`, `poll-status`, `create-note`, etc.)
+
+The core module (e.g., `accounting`) owns the data. The extension module enriches it.
+
+### 4. Cross-Model References
+
+Extension fields often reference lookup models from the extension module:
+
+```ts
+// in accounting/models/journal-entry.model.ts
+crCondicionVentaId: {
+  type: Schema.Types.ObjectId,
+  ref: "CrCondicionVenta",   // ← model defined in l10n_cr_einvoice
+  // ...
+}
+```
+
+These are standard Mongoose `ref` ObjectId fields with `autopopulate`.
+
+### 5. Reference Implementation
+
+See `src/modules/l10n_cr_einvoice/` for the canonical example:
+- `condicion-venta/`, `medio-pago/`, `settings/` — standalone sub-modules following standard CRUD pattern
+- `services/` — business logic that reads the `cr*` fields from core models
+- `routes/cr-einvoice-action-routes.ts` — action endpoints that operate on JournalEntry `cr*` fields
+
 ### Number Formatting
 
 All number formatting uses `.toFixed(2)` or `.toFixed(5)` — no `Intl.NumberFormat` usage.
@@ -342,10 +423,45 @@ All number formatting uses `.toFixed(2)` or `.toFixed(5)` — no `Intl.NumberFor
 - `ValidationMessageService` for `CrEinvoiceValidatorService`
 - Template string extraction from UI into translation keys
 
-## Code documentation
-- Every exported function, method, and class must have a full JSDoc comment describing its purpose, `@param` (with type and description), and `@returns` (with type and description) where applicable.
-- When editing existing code, update or add JSDoc to any undocumented function you touch.
-- Keep documentation in sync with the code — outdated docs are worse than no docs.
+## Documentation (JSDoc)
+
+**Documenting code is mandatory** — every public method, exported function, interface, type, and class must have a JSDoc comment (`/** ... */`) explaining its purpose, parameters, and return value.
+
+### Rules
+
+- **All public/exported functions and methods** must have JSDoc — includes controller handlers, service methods, route definitions, utility functions, and DTO class declarations
+- **Private methods with non-trivial logic** should also have JSDoc
+- **Interfaces and types** should have JSDoc if their purpose is not immediately obvious from the name
+- **Keep JSDoc concise** — one line summary is sufficient for simple methods. **Always include `@param` and `@returns`** when the method has parameters or a non-`void` return value
+- **Never add JSDoc to overrides** of `BaseController`, `BaseService`, or `BaseRoutes` methods unless the override adds non-trivial behavior
+
+### Examples
+
+```ts
+/**
+ * Fetches all payments registered against a specific invoice
+ * @param invoiceId - The invoice ID
+ * @returns Promise of payment records
+ */
+async getPayments(invoiceId: string): Promise<Payment[]> { ... }
+
+/** Logs out the current user by clearing the session and calling Firebase signOut */
+async logout(): Promise<void> { ... }
+
+/**
+ * Validates that at least one contact method is provided.
+ * Throws ValidationException if all contact fields are empty.
+ * @param contact - The contact DTO to validate
+ * @throws {ValidationException} When no phone, email, or website is provided
+ */
+validateContactMethod(contact: ContactDTO): void { ... }
+```
+
+### Enforcement
+
+- All new code must include JSDoc per these rules
+- When editing existing code, add missing JSDoc to nearby functions if you touch them
+- Keep documentation in sync with the code — outdated docs are worse than no docs
 
 ## Key quirks
 - **No tests, no linter, no formatter** configured in the project

@@ -6,6 +6,7 @@ import { InventorySettingsDocument } from "../models/inventory-settings.model";
 
 const inventorySettingsController = new InventorySettingsController();
 
+/** Route definitions for inventory settings endpoints */
 export class InventorySettingsRouter extends BaseRoutes<InventorySettingsDocument> {
   constructor() {
     super({

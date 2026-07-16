@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsBoolean,
   IsDate,
   IsEnum,
@@ -10,9 +11,16 @@ import {
   IsString,
   Max,
   Min,
+  ValidateNested,
 } from "class-validator";
 import { FileUpload, PartialType, toBoolean } from "../../../system";
 import { Transform, Type } from "class-transformer";
+
+export class TaskAssigneeDTO {
+  @IsMongoId()
+  @IsNotEmpty()
+  staffId!: string;
+}
 
 export class TaskDTO {
   @IsString()
@@ -33,14 +41,12 @@ export class TaskDTO {
   @Type(() => Date)
   plannedEndDate?: Date;
 
-  // in seconds
   @IsNumber()
   @Min(0)
   @IsOptional()
   @Type(() => Number)
   plannedDuration?: number;
 
-  // porcentages from 0 to 100
   @IsNumber()
   @Min(0)
   @Max(100)
@@ -101,6 +107,40 @@ export class TaskDTO {
   @IsOptional()
   @Type(() => Number)
   sequence?: number;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  tags?: string[];
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => TaskAssigneeDTO)
+  @IsOptional()
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  assignees?: TaskAssigneeDTO[];
+
+  @IsOptional()
+  @IsMongoId()
+  recordId?: string;
+
+  @IsOptional()
+  @IsMongoId()
+  contactId?: string;
+
+  @IsOptional()
+  @IsMongoId()
+  recurrentTaskId?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(toBoolean)
+  done?: boolean;
 }
 
 export class UpdateTaskDTO extends PartialType(TaskDTO) {

@@ -1,6 +1,7 @@
 import { IsMongoId, ValidateIf } from "class-validator";
 import { Transform } from "class-transformer";
 
+/** DTO for inventory settings (default warehouse/location) */
 export class InventorySettingsDTO {
   @IsMongoId()
   @ValidateIf((_, v) => !!v)
