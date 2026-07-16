@@ -135,7 +135,7 @@ All under `src/modules/<name>/`. Check this before adding new features — impor
 | `search-destinations` | search destinations (indexed models) + unified app-wide search | `/search-destinations`, `/search` |
 | `sequences` | auto-incrementing document numbering sequences | `/sequences` |
 | `shipping` | shipping records with HS code lookup, tariff generation, import from file | `/shippings` |
-| `tasks` | task records + task pipeline stage definitions + task type definitions | `/tasks`, `/task-stages`, `/task-types` |
+| `tasks` | task records, task pipeline stages, task types, recurring task scheduling | `/tasks`, `/task-stages`, `/task-types`, `/recurrent-tasks` |
 | `templates` | reusable document/email templates | `/templates` |
 | `translations` | UI translation key-value storage (locale, scope, key, value) + language definitions | `/translations`, `/languages` |
 | `users` | user accounts, profile (`/me`), user management, per-user shortcut/favorites — language/locale field + `/me/language` endpoint | `/users`, `/user-shortcuts` |
@@ -354,3 +354,7 @@ All number formatting uses `.toFixed(2)` or `.toFixed(5)` — no `Intl.NumberFor
 - `dotenv.config()` runs inside `app.ts` (not `index.ts`)
 - `dist/` is gitignored; build before commit if deployment depends on it
 - Docker: multi-stage build, `node:22-slim`, port 8081, Chromium pre-installed for Puppeteer (`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true`)
+
+## Task Tracking
+
+**MANDATORY**: When working on tasks in this codebase, you MUST mark each task as **completed** immediately after finishing it. Do not leave tasks in an ambiguous or "in_progress" state. If a task cannot be completed, mark it as **blocked** or **cancelled** with a clear reason. The person reviewing your work should always know exactly what is done and what isn't without having to ask.
