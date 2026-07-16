@@ -19,7 +19,7 @@ export * from "./facilities";
 export * from "./files";
 export * from "./helpdesk";
 export * from "./inventory";
-export * from "./clinical_inventory";
+export * from "./clinical-inventory";
 export * from "./l10n_cr_einvoice";
 export * from "./maintenance-windows";
 export * from "./models";
