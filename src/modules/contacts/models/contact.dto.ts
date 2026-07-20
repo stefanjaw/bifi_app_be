@@ -22,7 +22,9 @@ import { PartialType, toBoolean } from "../../../system";
 
 /** Validator that ensures at least one contact method (phone, email, or website for companies) is provided */
 @ValidatorConstraint({ name: "atLeastOneContact", async: false })
-export class AtLeastOneContactConstraint implements ValidatorConstraintInterface {
+export class AtLeastOneContactConstraint
+  implements ValidatorConstraintInterface
+{
   validate(_: any, args: ValidationArguments) {
     const obj = args.object as any;
 
@@ -161,20 +163,20 @@ export class ContactDTO {
 
   @IsString()
   @IsOptional()
-  middleName?: string;
+  clMiddleName?: string;
 
   @IsString()
   @IsOptional()
-  organizationName?: string;
+  clOrganizationName?: string;
 
   @IsDate()
   @IsOptional()
   @Type(() => Date)
-  dob?: Date;
+  clDob?: Date;
 
   @IsMongoId()
   @IsOptional()
-  genderId?: string;
+  clGenderId?: string;
 
   @IsOptional()
   @ValidateNested()
@@ -182,22 +184,22 @@ export class ContactDTO {
   @Transform(({ value }) =>
     typeof value === "string" ? JSON.parse(value) : value,
   )
-  emergencyContact?: EmergencyContactDTO;
+  clEmergencyContact?: EmergencyContactDTO;
 
   @IsBoolean()
   @IsOptional()
   @Transform(toBoolean)
-  isResident?: boolean;
+  clIsResident?: boolean;
 
   @IsBoolean()
   @IsOptional()
   @Transform(toBoolean)
-  isStaff?: boolean;
+  clIsStaff?: boolean;
 
   @IsBoolean()
   @IsOptional()
   @Transform(toBoolean)
-  isVendor?: boolean;
+  clIsVendor?: boolean;
 
   @IsOptional()
   active?: boolean;

@@ -128,11 +128,11 @@ const taskSchema = new Schema(
       type: Number,
       default: 1,
     },
-    tags: {
+    clTags: {
       type: [String],
       default: [],
     },
-    assignees: {
+    clAssignees: {
       type: [
         {
           staffId: {
@@ -147,22 +147,22 @@ const taskSchema = new Schema(
       ],
       default: [],
     },
-    recordId: {
+    clRecordId: {
       type: Schema.Types.ObjectId,
       required: false,
     },
-    contactId: {
+    clContactId: {
       type: Schema.Types.ObjectId,
       ref: "Contact",
       autopopulate: { select: "name lastName email", maxDepth: 1 },
       required: false,
     },
-    recurrentTaskId: {
+    clRecurrentTaskId: {
       type: Schema.Types.ObjectId,
       ref: "RecurrentTask",
       required: false,
     },
-    done: {
+    clDone: {
       type: Boolean,
       default: false,
     },

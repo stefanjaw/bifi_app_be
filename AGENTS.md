@@ -467,6 +467,7 @@ validateContactMethod(contact: ContactDTO): void { ... }
 - **No tests, no linter, no formatter** configured in the project
 - `mongoose.gen.ts` (12k+ lines) is **checked into git** — update it after model changes via `npm run generate:types`
 - Path alias `@mongodb-types` maps to `src/types/mongoose.gen.ts` (configured in tsconfig `paths`)
+- **Every `.model.ts` file MUST import and use the generated TypeScript type from `@mongodb-types`** for the model's document type (e.g., `import { ContactDocument } from "@mongodb-types"`). Do NOT manually declare document interfaces — mongoose-tsgen generates them from the schema. The generated type is used as the generic parameter for `mongoose.model<T, PaginateModel<T>>()` and in controllers/services.
 - `dotenv.config()` runs inside `app.ts` (not `index.ts`)
 - `dist/` is gitignored; build before commit if deployment depends on it
 - Docker: multi-stage build, `node:22-slim`, port 8081, Chromium pre-installed for Puppeteer (`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true`)

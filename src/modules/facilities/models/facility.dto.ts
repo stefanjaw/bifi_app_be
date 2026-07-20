@@ -25,7 +25,7 @@ export class FacilityDTO {
 
   @IsString()
   @IsOptional()
-  category?: string;
+  clCategory?: string;
 
   @IsMongoId()
   @IsOptional()

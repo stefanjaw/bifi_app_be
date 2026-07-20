@@ -27,7 +27,7 @@ const roomSchema = new Schema(
         maxDepth: 1,
       },
     },
-    genderId: {
+    clGenderId: {
       type: Schema.Types.ObjectId,
       ref: "Gender",
       required: false,

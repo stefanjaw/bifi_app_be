@@ -27,7 +27,7 @@ export class RoomDTO {
 
   @IsOptional()
   @IsMongoId()
-  genderId?: string;
+  clGenderId?: string;
 
   @IsOptional()
   active?: string;

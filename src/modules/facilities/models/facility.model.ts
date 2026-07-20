@@ -10,7 +10,7 @@ const facilitySchema = new Schema(
       type: String,
       required: true,
     },
-    category: {
+    clCategory: {
       type: String,
       required: false,
     },

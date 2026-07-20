@@ -4405,7 +4405,7 @@ export type CareContinuumSurgicalHistory = {
  */
 export type CareContinuumMedication = {
   productId?: InventoryProduct;
-  uomId?: ProductUOM;
+  uomId?: InventoryUom;
   strength?: string;
   routeId?: ProductRoute;
   frequencyId?: ProductFrequency;
@@ -4718,7 +4718,7 @@ export type CareContinuumSurgicalHistoryDocument =
 export type CareContinuumMedicationDocument =
   mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
     productId?: InventoryProductDocument;
-    uomId?: ProductUOMDocument;
+    uomId?: InventoryUomDocument;
     strength?: string;
     routeId?: ProductRouteDocument;
     frequencyId?: ProductFrequencyDocument;
@@ -16094,6 +16094,7 @@ export type RecurrentTask = {
     | "Sunday"
   )[];
   parentId?: Task["_id"] | Task;
+  active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -16207,6 +16208,7 @@ export type RecurrentTaskDocument = mongoose.Document<
       | "Sunday"
     >;
     parentId?: TaskDocument["_id"] | TaskDocument;
+    active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

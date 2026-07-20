@@ -114,7 +114,7 @@ export class TaskDTO {
   @Transform(({ value }) =>
     typeof value === "string" ? JSON.parse(value) : value,
   )
-  tags?: string[];
+  clTags?: string[];
 
   @IsArray()
   @ValidateNested({ each: true })
@@ -123,24 +123,24 @@ export class TaskDTO {
   @Transform(({ value }) =>
     typeof value === "string" ? JSON.parse(value) : value,
   )
-  assignees?: TaskAssigneeDTO[];
+  clAssignees?: TaskAssigneeDTO[];
 
   @IsOptional()
   @IsMongoId()
-  recordId?: string;
+  clRecordId?: string;
 
   @IsOptional()
   @IsMongoId()
-  contactId?: string;
+  clContactId?: string;
 
   @IsOptional()
   @IsMongoId()
-  recurrentTaskId?: string;
+  clRecurrentTaskId?: string;
 
   @IsBoolean()
   @IsOptional()
   @Transform(toBoolean)
-  done?: boolean;
+  clDone?: boolean;
 }
 
 export class UpdateTaskDTO extends PartialType(TaskDTO) {

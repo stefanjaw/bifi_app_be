@@ -104,23 +104,23 @@ const contactSchema = new Schema(
       type: Schema.Types.ObjectId,
       autopopulate: false,
     },
-    middleName: { type: String, default: "" },
-    organizationName: { type: String, required: false },
-    dob: { type: Date, required: false },
-    genderId: {
+    clMiddleName: { type: String, default: "" },
+    clOrganizationName: { type: String, required: false },
+    clDob: { type: Date, required: false },
+    clGenderId: {
       type: Schema.Types.ObjectId,
       ref: "Gender",
       required: false,
       autopopulate: { select: "name", maxDepth: 1 },
     },
-    emergencyContact: {
+    clEmergencyContact: {
       name: { type: String, required: false },
       relationShip: { type: String, required: false },
       phoneNumber: { type: String, required: false },
     },
-    isResident: { type: Boolean, default: false },
-    isStaff: { type: Boolean, default: false },
-    isVendor: { type: Boolean, default: false },
+    clIsResident: { type: Boolean, default: false },
+    clIsStaff: { type: Boolean, default: false },
+    clIsVendor: { type: Boolean, default: false },
     active: {
       type: Boolean,
       default: true,
