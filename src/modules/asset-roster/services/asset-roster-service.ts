@@ -4,6 +4,7 @@ import {
   InternalServerException,
   NotFoundException,
   runTransaction,
+  userStorage,
   ValidationException,
 } from "../../../system";
 import { assetRosterModel } from "../models/asset-roster.model";
@@ -13,7 +14,10 @@ import {
   SkipAssetRosterPMDTO,
   UpdateAssetRosterDTO,
 } from "../models/asset-roster.dto";
-import { InnerFile } from "../../../system/libraries/file-storage/file-upload.types";
+import {
+  FileUpload,
+  InnerFile,
+} from "../../../system/libraries/file-storage/file-upload.types";
 import { ContactService } from "../../contacts/services/contact-service";
 import { AssetRosterCSVDTO } from "../models/asset-roster-csv.dto";
 import {
@@ -85,7 +89,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         const fileId = await bucket.uploadFile(
           Array.isArray(data.photo) ? data.photo[0] : data.photo,
         );
-        data.photo = fileId; // Store the file ID in the assetRoster data
+        data.photo = fileId as any; // Store the file ID in the assetRoster data
       }
 
       // assetType & make
@@ -138,7 +142,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         const fileId = await bucket.uploadFile(
           Array.isArray(photo) ? photo[0] : photo,
         );
-        photo = fileId; // Store the file ID in the assetRoster data
+        photo = fileId as any; // Store the file ID in the assetRoster data
       } else if (photo !== undefined) {
         // Delete the file if no file is provided and there is a value on the photo field
         photo = null;
@@ -367,7 +371,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
           .join(";"),
         location: p.locationId ? p.locationId.code : "",
         warrantyDate: p.warrantyDate?.toISOString().split("T")[0] ?? "",
-        remarks: p.remarks,
+        remarks: p.remarks.map((r) => r.remark).join(";"),
         status:
           p.status
             ?.replace("-", " ")
@@ -496,6 +500,15 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
               )
             : [];
 
+          // Remarks
+          const remarks = assetRoster.remarks
+            ? assetRoster.remarks.split(";").map((remark) => ({
+                remark,
+                performDate: new Date(),
+                createdBy: userStorage.getStore()?.user?._id,
+              }))
+            : [];
+
           assetRosters.push({
             productModel: assetRoster.productModel,
             serialNumber: assetRoster.serialNumber,
@@ -507,7 +520,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
             vendorIds: vendorIds,
             makeIds: makeIds,
             warrantyDate: assetRoster.warrantyDate,
-            remarks: assetRoster.remarks,
+            remarks: remarks,
             active: assetRoster.active,
           });
         }

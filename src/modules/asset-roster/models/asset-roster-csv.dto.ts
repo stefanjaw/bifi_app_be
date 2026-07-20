@@ -67,10 +67,10 @@ export class AssetRosterCSVDTO {
   @IsOptional()
   warrantyDate?: Date;
 
-  @IsArray()
-  @IsString({ each: true })
+  @IsString()
+  @IsNotEmpty()
   @IsOptional()
-  remarks?: string[];
+  remarks?: CSVStringSeparator;
 
   @IsBoolean()
   @IsOptional()

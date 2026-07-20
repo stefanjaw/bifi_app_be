@@ -170,6 +170,7 @@ export class AssetRosterController extends BaseController<AssetRosterDocument> {
       next(error);
     }
   }
+  
   readDocuments = async (req: Request, res: Response, next: NextFunction) => {
     await this.readDocumentsHandler(req, res, next);
   };
