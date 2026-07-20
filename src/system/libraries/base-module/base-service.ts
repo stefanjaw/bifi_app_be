@@ -291,17 +291,30 @@ export class BaseService<T> {
    * @param data - Optional array of objects to export as CSV.
    * @returns A Promise resolving to a Buffer containing the CSV data.
    */
-  async exportCSV(data: Record<string, any>[] = []): Promise<Buffer> {
+  async exportCSV(
+    data: Record<string, any>[] = [],
+    keys?: string[],
+  ): Promise<Buffer> {
     try {
       const model = this.connectionManager.bindModelToDb(this.model);
 
-      if (data.length === 0) {
+      if (data.length === 0 && !keys) {
         data = (await model.find().lean()).map((item) =>
           JSON.parse(JSON.stringify(item)),
         );
       }
 
-      const csv = json2csv(data);
+      if (!keys) {
+        if (data.length > 0) {
+          keys = Object.keys(data[0]);
+        } else {
+          keys = Object.keys(model.schema.paths).filter(
+            (key) => key !== "_id" && key !== "__v" && !key.includes("."),
+          );
+        }
+      }
+
+      const csv = json2csv(data, { keys });
       return Buffer.from(csv, "utf-8");
     } catch (err) {
       throw err;

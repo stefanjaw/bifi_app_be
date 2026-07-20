@@ -382,7 +382,24 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
         active: p.active,
       }));
 
-      return super.exportCSV(json);
+      return super.exportCSV(json, [
+        "productModel",
+        "serialNumber",
+        "acquiredDate",
+        "acquiredPrice",
+        "currentPrice",
+        "condition",
+        "assetTypes",
+        "vendors",
+        "makes",
+        "maintenanceWindows",
+        "location",
+        "warrantyDate",
+        "remarks",
+        "status",
+        "maintenanceDate",
+        "active",
+      ]);
     });
   }
 
