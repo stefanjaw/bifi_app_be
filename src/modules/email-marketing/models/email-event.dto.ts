@@ -36,7 +36,7 @@ export class EmailEventDTO {
   url?: string;
 
   @IsOptional()
-  meta?: any;
+  meta?: Record<string, unknown>;
 }
 
 export class UpdateEmailEventDTO extends PartialType(EmailEventDTO) {

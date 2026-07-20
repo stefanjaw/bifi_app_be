@@ -1,4 +1,4 @@
-import { BaseRoutes } from "../../../../system";
+import { BaseRoutes, authorizeMiddleware } from "../../../../system";
 import { PatientController } from "../controllers/patient-controller";
 import { PatientDTO, UpdatePatientDTO } from "../models/patient.dto";
 import { PatientDocument } from "../models/patient.model";
@@ -14,5 +14,21 @@ export class PatientRouter extends BaseRoutes<PatientDocument> {
       dtoCreateClass: PatientDTO,
       dtoUpdateClass: UpdatePatientDTO,
     });
+  }
+
+  protected override initRoutes() {
+    super.initRoutes();
+
+    this.router.get(
+      "/patients/available-to-admit",
+      authorizeMiddleware("patients", "read"),
+      patientController.getAvailableToAdmit,
+    );
+
+    this.router.get(
+      "/patients/available-to-create-users",
+      authorizeMiddleware("patients", "read"),
+      patientController.getAvailableToCreateUsers,
+    );
   }
 }

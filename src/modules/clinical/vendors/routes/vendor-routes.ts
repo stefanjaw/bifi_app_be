@@ -5,6 +5,7 @@ import { VendorDTO, UpdateVendorDTO } from "../models/vendor.dto";
 
 const vendorController = new VendorController();
 
+/** Route definitions for vendor endpoints */
 export class VendorRouter extends BaseRoutes<VendorDocument> {
   constructor() {
     super({

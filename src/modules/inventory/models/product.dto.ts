@@ -135,7 +135,7 @@ export class ProductDTO {
   active?: boolean;
 
   @IsOptional()
-  photo?: unknown;
+  photo?: FileUpload;
 
   @IsOptional()
   attachments?: FileUpload;

@@ -41,7 +41,7 @@ export class EmailCampaignDTO {
   templateId?: string;
 
   @IsOptional()
-  designJson?: any;
+  designJson?: Record<string, unknown>;
 
   @IsString()
   @IsOptional()

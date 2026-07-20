@@ -42,7 +42,8 @@ export class UserDTO {
   picture?: string;
 
   @IsOptional()
-  uploadedPictureId?: unknown;
+  @IsString()
+  uploadedPictureId?: string;
 
   @IsString()
   @IsOptional()

@@ -195,7 +195,7 @@ export class AssetRosterDTO {
   maintenanceWindowIds?: string[];
 
   @IsOptional()
-  photo?: unknown;
+  photo?: FileUpload;
 
   @IsMongoId()
   @IsOptional()
@@ -316,7 +316,7 @@ export class UpdateAssetRosterDTO extends PartialType(AssetRosterDTO) {
   @Transform(({ value }) =>
     typeof value === "string" ? JSON.parse(value) : value,
   )
-  attachmentsMetadata?: object[];
+  attachmentsMetadata?: Record<string, unknown>[];
 }
 
 export class SkipAssetRosterPMDTO {

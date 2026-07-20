@@ -38,7 +38,7 @@ patientSchema.virtual("activeCareContinuum", {
   match: { state: "Active" },
 });
 
-patientSchema.virtual("age").get(function (this: any) {
+patientSchema.virtual("age").get(function (this: PatientDocument) {
   if (!this.dob) return null;
   const today = new Date();
   const birthDate = new Date(this.dob);

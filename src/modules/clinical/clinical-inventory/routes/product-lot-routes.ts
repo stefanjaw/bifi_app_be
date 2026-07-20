@@ -1,4 +1,4 @@
-import { BaseRoutes } from "../../../../system";
+import { BaseRoutes, authorizeMiddleware } from "../../../../system";
 import { ProductLotDocument } from "@mongodb-types";
 import { ProductLotController } from "../controllers/product-lot-controller";
 import { ProductLotDTO, UpdateProductLotDTO } from "../models/product-lot.dto";
@@ -14,5 +14,21 @@ export class ProductLotRouter extends BaseRoutes<ProductLotDocument> {
       dtoCreateClass: ProductLotDTO,
       dtoUpdateClass: UpdateProductLotDTO,
     });
+  }
+
+  protected override initRoutes() {
+    super.initRoutes();
+
+    this.router.put(
+      "/product-lots/:id/add-product",
+      authorizeMiddleware("product-lots", "update"),
+      productLotController.addProduct,
+    );
+
+    this.router.put(
+      "/product-lots/:id/remove-product",
+      authorizeMiddleware("product-lots", "update"),
+      productLotController.removeProduct,
+    );
   }
 }

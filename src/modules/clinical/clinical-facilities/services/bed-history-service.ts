@@ -2,6 +2,7 @@ import { BaseService } from "../../../../system";
 import { bedHistoryModel } from "../models/bed-history.model";
 import { BedHistoryDocument } from "../models/bed-history.model";
 
+/** Service for bed history CRUD and audit logging */
 export class BedHistoryService extends BaseService<BedHistoryDocument> {
   constructor() {
     super({

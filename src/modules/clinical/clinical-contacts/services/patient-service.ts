@@ -1,6 +1,7 @@
 import { BaseService, runTransaction } from "../../../../system";
 import { patientModel } from "../models/patient.model";
 import { PatientDocument } from "../models/patient.model";
+import { Patient, Contact } from "@mongodb-types";
 import { PatientDTO, UpdatePatientDTO } from "../models/patient.dto";
 import { ClientSession } from "mongoose";
 
@@ -33,7 +34,7 @@ export class PatientService extends BaseService<PatientDocument> {
   override async create(
     data: PatientDTO,
     session?: ClientSession,
-  ): Promise<any> {
+  ): Promise<PatientDocument> {
     return await runTransaction(session, async (newSession) => {
       return await super.create(data, newSession);
     });
@@ -48,9 +49,69 @@ export class PatientService extends BaseService<PatientDocument> {
   override async update(
     data: UpdatePatientDTO,
     session?: ClientSession,
-  ): Promise<any> {
+  ): Promise<PatientDocument> {
     return await runTransaction(session, async (newSession) => {
       return await super.update(data, newSession);
     });
+  }
+
+  /**
+   * Gets contacts available for admission (patients not currently admitted).
+   * @param session - Optional Mongoose client session
+   */
+  async getAvailableToAdmit(
+    session?: ClientSession,
+  ): Promise<Patient[]> {
+    const CareContinuumModel =
+      this.connectionManager.getModel("CareContinuum");
+
+    const admittedPatientIds = await CareContinuumModel.find({
+      state: { $ne: "Discharge" },
+      active: true,
+    })
+      .session(session || null)
+      .distinct("patientId")
+      .lean();
+
+    return patientModel
+      .find({
+        _id: { $nin: admittedPatientIds },
+        active: true,
+      })
+      .session(session || null)
+      .lean<Patient[]>();
+  }
+
+  /**
+   * Gets contacts available to create users (contacts not yet linked to a user).
+   * @param session - Optional Mongoose client session
+   */
+  async getAvailableToCreateUsers(
+    session?: ClientSession,
+  ): Promise<Patient[]> {
+    const ContactModel = this.connectionManager.getModel("Contact");
+    const UserModel = this.connectionManager.getModel("User");
+
+    const userIds = await UserModel.find({ active: true })
+      .session(session || null)
+      .distinct("contactId")
+      .lean();
+
+    const contacts = await ContactModel.find({
+      _id: { $nin: userIds },
+      active: true,
+    })
+      .session(session || null)
+      .lean<Contact[]>();
+
+    const contactIds = contacts.map((c: Contact) => c._id);
+
+    return patientModel
+      .find({
+        contactId: { $in: contactIds },
+        active: true,
+      })
+      .session(session || null)
+      .lean<Patient[]>();
   }
 }

@@ -91,7 +91,7 @@ export class CareContinuumService extends BaseService<CareContinuumDocument> {
   override async create(
     data: CareContinuumDTO,
     session?: ClientSession,
-  ): Promise<any> {
+  ): Promise<CareContinuumDocument> {
     return await runTransaction(session, async (newSession) => {
       const actorId = userStorage.getStore()?.user?._id?.toString();
       return await super.create({ ...data, createdBy: actorId }, newSession);
@@ -107,7 +107,7 @@ export class CareContinuumService extends BaseService<CareContinuumDocument> {
   override async update(
     data: UpdateCareContinuumDTO,
     session?: ClientSession,
-  ): Promise<any> {
+  ): Promise<CareContinuumDocument> {
     return await runTransaction(session, async (newSession) => {
       const actorId = userStorage.getStore()?.user?._id?.toString();
       return await super.update({ ...data, updatedBy: actorId }, newSession);

@@ -19,6 +19,7 @@ import {
   IsDate,
 } from "class-validator";
 import { PartialType, toBoolean } from "../../../system";
+import { FileUpload } from "../../../system/libraries/file-storage/file-upload.types";
 
 /** Validator that ensures at least one contact method (phone, email, or website for companies) is provided */
 @ValidatorConstraint({ name: "atLeastOneContact", async: false })
@@ -159,7 +160,7 @@ export class ContactDTO {
   childIds?: string[];
 
   @IsOptional()
-  photo?: unknown;
+  photo?: FileUpload;
 
   @IsString()
   @IsOptional()

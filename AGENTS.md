@@ -170,6 +170,10 @@ Everything re-exported through `src/system/index.ts` and importable via `"../../
 - `PartialType(CreateDTO)` generates `UpdateDTO` with all optional fields — used in every module.
 - **`@Transform(toBoolean)` is required on every `boolean` DTO field** — the frontend sends FormData, which serializes booleans as strings `"true"`/`"false"`. Without `@Transform(toBoolean)`, `@IsBoolean()` will reject valid input. Import from `"../../../system"`. Used in ~25+ DTOs.
 - `validateBodyMiddleware(dtoClass)` runs `class-validator` + `class-transformer` on req.body, throws `ValidationException` with structured errors on failure.
+- **Sub-objects used as DTO fields MUST be their own DTO classes** (not plain interfaces or inline types). Each sub-object DTO must have full `class-validator` decorators on every field. Reference: `src/modules/asset-roster/models/asset-roster.dto.ts` — `LocationAssignmentDTO`, `SoftwareConfigurationDTO`, `NotesDTO`, `makeInformationDTO`, `assetTypeInformationDTO` are all standalone DTO classes with decorators.
+  - In the parent DTO, declare the sub-DTO field with `@ValidateNested()` (or `@ValidateNested({ each: true })` for arrays), `@Type(() => SubDTO)`, and `@Transform(({ value }) => plainToInstance(SubDTO, typeof value === "string" ? JSON.parse(value) : value))` for FormData support.
+  - Sub-DTOs that extend another module's DTO (e.g. `makeInformationDTO extends ContactDTO`) should add only the extra fields needed, plus `@IsMongoId() @IsOptional() _id?: string` for create-vs-update reference.
+  - The `@Transform` for FormData must handle both string (from multipart form) and already-parsed object (from JSON body).
 
 ### File handling
 - `FileValidatorService` — validates type + size (5MB limit) before upload.

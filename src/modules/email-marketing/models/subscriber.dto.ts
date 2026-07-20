@@ -37,7 +37,7 @@ export class SubscriberDTO {
   tags?: string[];
 
   @IsOptional()
-  customFields?: any;
+  customFields?: Record<string, string>;
 
   @IsBoolean()
   @Transform(toBoolean)

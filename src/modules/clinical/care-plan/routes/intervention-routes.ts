@@ -1,4 +1,4 @@
-import { BaseRoutes } from "../../../../system";
+import { BaseRoutes, authorizeMiddleware } from "../../../../system";
 import { InterventionDocument } from "@mongodb-types";
 import { InterventionController } from "../controllers/intervention-controller";
 import {
@@ -17,5 +17,33 @@ export class InterventionRouter extends BaseRoutes<InterventionDocument> {
       dtoCreateClass: InterventionDTO,
       dtoUpdateClass: UpdateInterventionDTO,
     });
+  }
+
+  protected override initRoutes() {
+    super.initRoutes();
+
+    this.router.put(
+      "/interventions/:id/add-order-set",
+      authorizeMiddleware("interventions", "update"),
+      interventionController.addOrderSet,
+    );
+
+    this.router.put(
+      "/interventions/:id/remove-order-set",
+      authorizeMiddleware("interventions", "update"),
+      interventionController.removeOrderSet,
+    );
+
+    this.router.put(
+      "/interventions/:id/add-multiple-order",
+      authorizeMiddleware("interventions", "update"),
+      interventionController.addMultipleOrders,
+    );
+
+    this.router.put(
+      "/interventions/:id/remove-multiple-order",
+      authorizeMiddleware("interventions", "update"),
+      interventionController.removeMultipleOrders,
+    );
   }
 }

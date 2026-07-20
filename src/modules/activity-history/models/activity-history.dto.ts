@@ -30,7 +30,7 @@ export class ActivityHistoryDTO {
   modelId!: string;
 
   @IsOptional()
-  metadata?: object;
+  metadata?: Record<string, unknown>;
 }
 
 export class UpdateActivityHistoryDTO extends PartialType(ActivityHistoryDTO) {

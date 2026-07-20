@@ -1,4 +1,4 @@
-import { BaseRoutes } from "../../../../system";
+import { BaseRoutes, authorizeMiddleware } from "../../../../system";
 import { VitalSignDocument } from "@mongodb-types";
 import { VitalSignController } from "../controllers/vitalsign-controller";
 import { VitalSignDTO, UpdateVitalSignDTO } from "../models/vitalsign.dto";
@@ -14,5 +14,15 @@ export class VitalSignRouter extends BaseRoutes<VitalSignDocument> {
       dtoCreateClass: VitalSignDTO,
       dtoUpdateClass: UpdateVitalSignDTO,
     });
+  }
+
+  protected override initRoutes() {
+    super.initRoutes();
+
+    this.router.post(
+      "/vital-signs/many",
+      authorizeMiddleware("vital-signs", "create"),
+      vitalSignController.createMany,
+    );
   }
 }

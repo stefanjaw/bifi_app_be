@@ -1,4 +1,4 @@
-import { BaseRoutes } from "../../../../system";
+import { BaseRoutes, authorizeMiddleware } from "../../../../system";
 import { ProgressNoteDocument } from "@mongodb-types";
 import { ProgressNoteController } from "../controllers/progress-note-controller";
 import {
@@ -17,5 +17,21 @@ export class ProgressNoteRouter extends BaseRoutes<ProgressNoteDocument> {
       dtoCreateClass: ProgressNoteDTO,
       dtoUpdateClass: UpdateProgressNoteDTO,
     });
+  }
+
+  protected override initRoutes() {
+    super.initRoutes();
+
+    this.router.put(
+      "/progress-notes/:id/add-user-readby",
+      authorizeMiddleware("progress-notes", "update"),
+      progressNoteController.addUserReadBy,
+    );
+
+    this.router.put(
+      "/progress-notes/:id/remove-user-readby",
+      authorizeMiddleware("progress-notes", "update"),
+      progressNoteController.removeUserReadBy,
+    );
   }
 }

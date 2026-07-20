@@ -2,6 +2,7 @@ import { ContactDocument, UserDocument, VendorDocument } from "@mongodb-types";
 import { BaseService } from "../../../../system";
 import { vendorModel } from "../models/vendor.model";
 
+/** Business logic service for vendor management */
 export class VendorService extends BaseService<VendorDocument> {
   constructor() {
     super({

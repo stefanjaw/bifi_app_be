@@ -25,7 +25,7 @@ export class ConditionDTO {
   operator!: string;
 
   @IsNotEmpty()
-  value!: any;
+  value!: unknown;
 }
 
 export class PolicyDTO {

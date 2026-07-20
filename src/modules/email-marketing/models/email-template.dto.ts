@@ -22,7 +22,7 @@ export class EmailTemplateDTO {
   category?: string;
 
   @IsOptional()
-  designJson?: any;
+  designJson?: Record<string, unknown>;
 
   @IsString()
   @IsOptional()
