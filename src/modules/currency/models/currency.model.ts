@@ -29,10 +29,6 @@ const currencySchema = new Schema(
       type: Boolean,
       default: true,
     },
-    isDefault: {
-      type: Boolean,
-      default: false,
-    },
   },
   { timestamps: true },
 );
