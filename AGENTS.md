@@ -479,3 +479,35 @@ validateContactMethod(contact: ContactDTO): void { ... }
 ## Task Tracking
 
 **MANDATORY**: When working on tasks in this codebase, you MUST mark each task as **completed** immediately after finishing it. Do not leave tasks in an ambiguous or "in_progress" state. If a task cannot be completed, mark it as **blocked** or **cancelled** with a clear reason. The person reviewing your work should always know exactly what is done and what isn't without having to ask.
+
+## Migration Anti-Patterns (Lessons Learned)
+
+> **Read this before starting new module migration.** Every item below was found and fixed during the clinical module migration.
+
+### DTOs
+- **Sub-objects MUST be `class` with validation decorators** — `interface` + `class-validator` doesn't work. Use `class` with `@ValidateNested()`, `@Type(() => Xxx)`, `@Transform(({ value }) => plainToInstance(Xxx, value))`.
+- **Never `any` in DTO fields** — use `Record<string, unknown>`, `Record<string, string>`, or a proper typed interface. No exceptions.
+- **Every `boolean` field needs `@Transform(toBoolean)`** — frontend FormData serializes booleans as strings `"true"`/`"false"`. Without this, `@IsBoolean()` rejects valid input.
+
+### Services & Controllers
+- **Never `Promise<any>` return types** — use proper `Promise<XxxDocument>` from `@mongodb-types`.
+- **Never `as any` casts** — fix the underlying type mismatch instead.
+- **Never `this: any` in model methods** — use `this: XxxDocument`.
+- **Always use `BaseService<XxxDocument>` / `BaseRoutes<XxxDocument>`** — never untyped base classes.
+- **Always use `this.sendData(res, data)`** — never raw `res.json()`. `sendData` is required for consistent error handling and response formatting.
+
+### Imports & Structure
+- **Every `.model.ts` must import from `@mongodb-types`** — use the generated document type, never manually declare interfaces.
+- **Verify relative import paths after restructuring** — use `tsc --noEmit` to catch wrong depths.
+- **One class per file** — never multiple controllers/services/routes in a single file.
+
+### Pre-Commit Checklist (run after every pass)
+```
+tsc --noEmit passes with zero errors
+No any types remain (search: : any, as any, Promise<any>)
+All DTO sub-objects are class with @ValidateNested, @Type, @Transform
+All boolean fields have @Transform(toBoolean)
+All controllers use this.sendData() — search: res.json(
+All imports from @mongodb-types
+All relative imports resolve to correct paths
+```

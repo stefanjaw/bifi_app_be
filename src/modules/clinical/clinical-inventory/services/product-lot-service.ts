@@ -29,9 +29,7 @@ export class ProductLotService extends BaseService<ProductLotDocument> {
     productId: string,
     session?: ClientSession,
   ): Promise<ProductLotDocument> {
-    const lot = await productLotModel
-      .findById(lotId)
-      .session(session || null);
+    const lot = await productLotModel.findById(lotId).session(session || null);
     if (!lot) throw new NotFoundException("Product lot not found");
 
     const exists = (lot.products || []).some(
@@ -56,9 +54,7 @@ export class ProductLotService extends BaseService<ProductLotDocument> {
     productId: string,
     session?: ClientSession,
   ): Promise<ProductLotDocument> {
-    const lot = await productLotModel
-      .findById(lotId)
-      .session(session || null);
+    const lot = await productLotModel.findById(lotId).session(session || null);
     if (!lot) throw new NotFoundException("Product lot not found");
 
     await productLotModel.updateOne(

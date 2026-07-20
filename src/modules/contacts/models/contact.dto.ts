@@ -23,9 +23,7 @@ import { FileUpload } from "../../../system/libraries/file-storage/file-upload.t
 
 /** Validator that ensures at least one contact method (phone, email, or website for companies) is provided */
 @ValidatorConstraint({ name: "atLeastOneContact", async: false })
-export class AtLeastOneContactConstraint
-  implements ValidatorConstraintInterface
-{
+export class AtLeastOneContactConstraint implements ValidatorConstraintInterface {
   validate(_: any, args: ValidationArguments) {
     const obj = args.object as any;
 

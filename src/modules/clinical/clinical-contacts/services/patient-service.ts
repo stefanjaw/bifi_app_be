@@ -59,11 +59,8 @@ export class PatientService extends BaseService<PatientDocument> {
    * Gets contacts available for admission (patients not currently admitted).
    * @param session - Optional Mongoose client session
    */
-  async getAvailableToAdmit(
-    session?: ClientSession,
-  ): Promise<Patient[]> {
-    const CareContinuumModel =
-      this.connectionManager.getModel("CareContinuum");
+  async getAvailableToAdmit(session?: ClientSession): Promise<Patient[]> {
+    const CareContinuumModel = this.connectionManager.getModel("CareContinuum");
 
     const admittedPatientIds = await CareContinuumModel.find({
       state: { $ne: "Discharge" },
@@ -86,9 +83,7 @@ export class PatientService extends BaseService<PatientDocument> {
    * Gets contacts available to create users (contacts not yet linked to a user).
    * @param session - Optional Mongoose client session
    */
-  async getAvailableToCreateUsers(
-    session?: ClientSession,
-  ): Promise<Patient[]> {
+  async getAvailableToCreateUsers(session?: ClientSession): Promise<Patient[]> {
     const ContactModel = this.connectionManager.getModel("Contact");
     const UserModel = this.connectionManager.getModel("User");
 

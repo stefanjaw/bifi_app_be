@@ -14,9 +14,10 @@ export class ProgressNoteController extends BaseController<ProgressNoteDocument>
   /** Adds a user to the read-by list */
   addUserReadBy = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const result = await (
-        this.service as ProgressNoteService
-      ).addUserReadBy(req.params.id, req.body.userId);
+      const result = await (this.service as ProgressNoteService).addUserReadBy(
+        req.params.id,
+        req.body.userId,
+      );
       this.sendData(res, result);
     } catch (error) {
       next(error);

@@ -111,7 +111,7 @@ export class CareContinuumDTO {
   @Transform(({ value }) =>
     typeof value === "string"
       ? JSON.parse(value).map((v: any) => plainToInstance(HistoryEntry, v))
-      : value?.map?.((v: any) => plainToInstance(HistoryEntry, v)) ?? value,
+      : (value?.map?.((v: any) => plainToInstance(HistoryEntry, v)) ?? value),
   )
   socialHistory?: HistoryEntry[];
   @IsOptional()
@@ -120,7 +120,7 @@ export class CareContinuumDTO {
   @Transform(({ value }) =>
     typeof value === "string"
       ? JSON.parse(value).map((v: any) => plainToInstance(HistoryEntry, v))
-      : value?.map?.((v: any) => plainToInstance(HistoryEntry, v)) ?? value,
+      : (value?.map?.((v: any) => plainToInstance(HistoryEntry, v)) ?? value),
   )
   familyHistory?: HistoryEntry[];
   @IsOptional()
@@ -129,7 +129,7 @@ export class CareContinuumDTO {
   @Transform(({ value }) =>
     typeof value === "string"
       ? JSON.parse(value).map((v: any) => plainToInstance(HistoryEntry, v))
-      : value?.map?.((v: any) => plainToInstance(HistoryEntry, v)) ?? value,
+      : (value?.map?.((v: any) => plainToInstance(HistoryEntry, v)) ?? value),
   )
   medicalHistory?: HistoryEntry[];
   @IsOptional()
@@ -138,7 +138,7 @@ export class CareContinuumDTO {
   @Transform(({ value }) =>
     typeof value === "string"
       ? JSON.parse(value).map((v: any) => plainToInstance(HistoryEntry, v))
-      : value?.map?.((v: any) => plainToInstance(HistoryEntry, v)) ?? value,
+      : (value?.map?.((v: any) => plainToInstance(HistoryEntry, v)) ?? value),
   )
   surgicalHistory?: HistoryEntry[];
   @IsOptional()
@@ -147,7 +147,8 @@ export class CareContinuumDTO {
   @Transform(({ value }) =>
     typeof value === "string"
       ? JSON.parse(value).map((v: any) => plainToInstance(MedicationEntry, v))
-      : value?.map?.((v: any) => plainToInstance(MedicationEntry, v)) ?? value,
+      : (value?.map?.((v: any) => plainToInstance(MedicationEntry, v)) ??
+        value),
   )
   medications?: MedicationEntry[];
   @IsOptional()
@@ -156,7 +157,7 @@ export class CareContinuumDTO {
   @Transform(({ value }) =>
     typeof value === "string"
       ? JSON.parse(value).map((v: any) => plainToInstance(AllergyEntry, v))
-      : value?.map?.((v: any) => plainToInstance(AllergyEntry, v)) ?? value,
+      : (value?.map?.((v: any) => plainToInstance(AllergyEntry, v)) ?? value),
   )
   allergies?: AllergyEntry[];
   @IsOptional()
@@ -165,7 +166,8 @@ export class CareContinuumDTO {
   @Transform(({ value }) =>
     typeof value === "string"
       ? JSON.parse(value).map((v: any) => plainToInstance(ImmunizationEntry, v))
-      : value?.map?.((v: any) => plainToInstance(ImmunizationEntry, v)) ?? value,
+      : (value?.map?.((v: any) => plainToInstance(ImmunizationEntry, v)) ??
+        value),
   )
   immunizations?: ImmunizationEntry[];
   @IsOptional()
@@ -174,14 +176,18 @@ export class CareContinuumDTO {
   @Transform(({ value }) =>
     typeof value === "string"
       ? JSON.parse(value).map((v: any) => plainToInstance(PrecautionEntry, v))
-      : value?.map?.((v: any) => plainToInstance(PrecautionEntry, v)) ?? value,
+      : (value?.map?.((v: any) => plainToInstance(PrecautionEntry, v)) ??
+        value),
   )
   precautions?: PrecautionEntry[];
   @IsOptional()
   @ValidateNested()
   @Type(() => HealthCareProxyEntry)
   @Transform(({ value }) =>
-    plainToInstance(HealthCareProxyEntry, typeof value === "string" ? JSON.parse(value) : value),
+    plainToInstance(
+      HealthCareProxyEntry,
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
   )
   healthCareProxy?: HealthCareProxyEntry;
   @IsOptional()
@@ -189,8 +195,11 @@ export class CareContinuumDTO {
   @Type(() => ExternalProviderEntry)
   @Transform(({ value }) =>
     typeof value === "string"
-      ? JSON.parse(value).map((v: any) => plainToInstance(ExternalProviderEntry, v))
-      : value?.map?.((v: any) => plainToInstance(ExternalProviderEntry, v)) ?? value,
+      ? JSON.parse(value).map((v: any) =>
+          plainToInstance(ExternalProviderEntry, v),
+        )
+      : (value?.map?.((v: any) => plainToInstance(ExternalProviderEntry, v)) ??
+        value),
   )
   externalProviders?: ExternalProviderEntry[];
   @IsOptional()
@@ -198,8 +207,11 @@ export class CareContinuumDTO {
   @Type(() => AdvanceDirectiveEntry)
   @Transform(({ value }) =>
     typeof value === "string"
-      ? JSON.parse(value).map((v: any) => plainToInstance(AdvanceDirectiveEntry, v))
-      : value?.map?.((v: any) => plainToInstance(AdvanceDirectiveEntry, v)) ?? value,
+      ? JSON.parse(value).map((v: any) =>
+          plainToInstance(AdvanceDirectiveEntry, v),
+        )
+      : (value?.map?.((v: any) => plainToInstance(AdvanceDirectiveEntry, v)) ??
+        value),
   )
   advanceDirectives?: AdvanceDirectiveEntry[];
   @IsOptional()

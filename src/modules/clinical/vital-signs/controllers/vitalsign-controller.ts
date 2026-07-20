@@ -14,9 +14,9 @@ export class VitalSignController extends BaseController<VitalSignDocument> {
   /** Creates multiple vital sign records in a single batch */
   createMany = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const records = await (
-        this.service as VitalSignService
-      ).createMany(req.body);
+      const records = await (this.service as VitalSignService).createMany(
+        req.body,
+      );
       this.sendData(res, records);
     } catch (error) {
       next(error);

@@ -40,7 +40,9 @@ const admissionGoalSchema = new Schema(
   },
 );
 
-admissionGoalSchema.virtual("summary").get(function (this: AdmissionGoalDocument) {
+admissionGoalSchema.virtual("summary").get(function (
+  this: AdmissionGoalDocument,
+) {
   return `${this.contentTitle}: ${this.contentBody.substring(0, 50)}...`;
 });
 

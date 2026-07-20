@@ -25,11 +25,7 @@ export class FluidTrackController extends BaseController<FluidTrackDocument> {
   };
 
   /** Gets fluid tracks within a date range */
-  getFromDateDays = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  getFromDateDays = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const results = await (this.service as FluidTrackService).getFromDateDays(
         req.query.patientId as string,

@@ -47,7 +47,10 @@ export class BedService extends BaseService<BedDocument> {
     });
   }
 
-  override async create(data: BedDTO, session?: ClientSession): Promise<BedDocument> {
+  override async create(
+    data: BedDTO,
+    session?: ClientSession,
+  ): Promise<BedDocument> {
     return await runTransaction(session, async (newSession) => {
       const actorId = userStorage.getStore()?.user?._id?.toString();
       const bed = await super.create(
@@ -286,7 +289,9 @@ export class BedService extends BaseService<BedDocument> {
         .session(newSession)
         .lean<Room[]>();
       const facilityIds = [
-        ...new Set(rooms.map((r: Room) => r.facilityId?.toString()).filter(Boolean)),
+        ...new Set(
+          rooms.map((r: Room) => r.facilityId?.toString()).filter(Boolean),
+        ),
       ];
 
       const beds = await bedModel
@@ -314,7 +319,8 @@ export class BedService extends BaseService<BedDocument> {
           (r: Room) => r.facilityId?.toString() === f._id.toString(),
         );
         const availableBeds = facilityRooms.reduce(
-          (sum: number, r: Room) => sum + (roomBedCounts[r._id?.toString()] || 0),
+          (sum: number, r: Room) =>
+            sum + (roomBedCounts[r._id?.toString()] || 0),
           0,
         );
         return { ...f, availableBeds };

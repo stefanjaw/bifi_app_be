@@ -1,6 +1,9 @@
 import { BaseService, NotFoundException } from "../../../../system";
 import { progressNoteModel } from "../models/progress-note.model";
-import { ProgressNoteDocument, ProgressNoteReadByDocument } from "@mongodb-types";
+import {
+  ProgressNoteDocument,
+  ProgressNoteReadByDocument,
+} from "@mongodb-types";
 import { ClientSession } from "mongoose";
 
 /** Business logic service for progress note operations */
