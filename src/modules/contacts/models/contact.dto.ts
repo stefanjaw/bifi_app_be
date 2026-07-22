@@ -90,9 +90,11 @@ export class ContactDTO {
   @IsOptional()
   website?: string;
 
-  @IsMongoId()
   @IsOptional()
-  parentId?: string;
+  @IsString()
+  @ValidateIf((obj) => obj.parentId != null && obj.parentId !== '')
+  @IsMongoId()
+  parentId?: string | null;
 
   @Validate(AtLeastOneContactConstraint)
   @IsEnum(["individual", "company"])

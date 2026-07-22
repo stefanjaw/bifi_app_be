@@ -137,6 +137,10 @@ export class ContactService extends BaseService<ContactDocument> {
 
       delete data.childIds;
 
+      if (data.parentId === '') {
+        (data as any).parentId = null;
+      }
+
       const updatedContact = await super.update(data, session);
       return updatedContact;
     });
