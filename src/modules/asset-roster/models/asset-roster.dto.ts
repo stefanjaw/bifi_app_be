@@ -165,6 +165,7 @@ export class AssetRosterDTO {
   @ValidateNested({ each: true })
   @Type(() => LocationAssignmentDTO)
   @Transform(({ value }) => {
+    if (value == null) return value;
     const parsed = typeof value === "string" ? JSON.parse(value) : value;
     return parsed.map((la: any) => plainToInstance(LocationAssignmentDTO, la));
   })
@@ -216,6 +217,7 @@ export class AssetRosterDTO {
   @ValidateNested({ each: true })
   @Type(() => NotesDTO)
   @Transform(({ value }) => {
+    if (value == null) return value;
     const parsed = typeof value === "string" ? JSON.parse(value) : value;
     return parsed.map((note: any) => plainToInstance(NotesDTO, note));
   })
