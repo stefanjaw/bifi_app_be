@@ -129,8 +129,9 @@ export class ContactDTO {
   @IsOptional()
   vat?: string;
 
-  @IsEnum(["01", "02", "03", "04", "05", "06"])
   @IsOptional()
+  @IsEnum(["01", "02", "03", "04", "05", "06"])
+  @Transform(({ value }) => value === '' ? undefined : value)
   crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
 
   @IsArray()
