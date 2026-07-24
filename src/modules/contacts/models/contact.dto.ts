@@ -92,7 +92,7 @@ export class ContactDTO {
 
   @IsOptional()
   @IsString()
-  @ValidateIf((obj) => obj.parentId != null && obj.parentId !== '')
+  @ValidateIf((obj) => obj.parentId != null && obj.parentId !== "")
   @IsMongoId()
   parentId?: string | null;
 
@@ -131,7 +131,7 @@ export class ContactDTO {
 
   @IsOptional()
   @IsEnum(["01", "02", "03", "04", "05", "06"])
-  @Transform(({ value }) => value === '' ? undefined : value)
+  @Transform(({ value }) => (value === "" ? undefined : value))
   crVatType?: "01" | "02" | "03" | "04" | "05" | "06";
 
   @IsArray()

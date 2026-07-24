@@ -74,7 +74,10 @@ export class CurrencyService extends BaseService<CurrencyDocument> {
         });
 
         // RETURN THE NEWLY CREATED CURRENCIES
-        return [...updatedCurrencies, ...createdCurrencies] as CurrencyDocument[];
+        return [
+          ...updatedCurrencies,
+          ...createdCurrencies,
+        ] as CurrencyDocument[];
       },
     );
   }

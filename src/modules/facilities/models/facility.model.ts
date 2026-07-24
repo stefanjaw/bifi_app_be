@@ -52,6 +52,13 @@ facilitySchema.virtual("rooms", {
 facilitySchema.plugin(paginate);
 facilitySchema.plugin(autopopulate);
 
+// Partial unique index: enforces unique names only among active records,
+// allowing soft-deleted (active: false) records to share the same name.
+facilitySchema.index(
+  { name: 1 },
+  { unique: true, partialFilterExpression: { active: true } },
+);
+
 const facilityModel = mongoose.model<
   FacilityDocument,
   PaginateModel<FacilityDocument>

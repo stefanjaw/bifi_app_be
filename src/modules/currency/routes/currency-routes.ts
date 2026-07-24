@@ -23,7 +23,7 @@ export class CurrencyRouter extends BaseRoutes<CurrencyDocument> {
     this.router.post(
       this.endpoint + "/populate",
       authorizeMiddleware("currencies/populate", "create"),
-      currencyController.populateCurrencies.bind(currencyController)
+      currencyController.populateCurrencies.bind(currencyController),
     );
   }
 }

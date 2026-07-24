@@ -137,12 +137,35 @@ export class ContactService extends BaseService<ContactDocument> {
 
       delete data.childIds;
 
-      if (data.parentId === '') {
+      if (data.parentId === "") {
         (data as any).parentId = null;
       }
 
       const updatedContact = await super.update(data, session);
       return updatedContact;
+    });
+  }
+
+  /**
+   * Soft-deletes a contact and nullifies the parentId of any child contacts
+   * that reference this contact as their parent.
+   * @param _id - The ID of the contact to delete.
+   * @param session - Optional client session for transaction.
+   * @returns Whether the deletion was successful.
+   */
+  override async delete(
+    _id: string,
+    session?: ClientSession | undefined,
+  ): Promise<boolean> {
+    return runTransaction<boolean>(session, async (newSession) => {
+      const model = this.connectionManager.bindModelToDb(this.model);
+      await model.updateMany(
+        { parentId: _id, active: true },
+        { parentId: null },
+        { session: newSession },
+      );
+
+      return await super.delete(_id, newSession);
     });
   }
 }

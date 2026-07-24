@@ -44,6 +44,13 @@ const maintenanceWindowSchema = new Schema(
 maintenanceWindowSchema.plugin(paginate);
 maintenanceWindowSchema.plugin(autopopulate);
 
+// Partial unique index: enforces unique names only among active records,
+// allowing soft-deleted (active: false) records to share the same name.
+maintenanceWindowSchema.index(
+  { name: 1 },
+  { unique: true, partialFilterExpression: { active: true } },
+);
+
 maintenanceWindowSchema.methods.parseRecurrencyForDayjs = function () {
   const recurrency = this.recurrency;
   let unit: ManipulateType;

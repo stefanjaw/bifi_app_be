@@ -92,4 +92,35 @@ export class FacilityService extends BaseService<FacilityDocument> {
       return await super.update(data, newSession);
     });
   }
+
+  /**
+   * Soft-deletes a facility and all its active rooms.
+   * Checks for active rooms associated with the facility and cascades the
+   * soft-delete to them before deactivating the facility itself.
+   * @param _id - The ID of the facility to delete.
+   * @param session - Optional client session for transaction.
+   * @returns Whether the deletion was successful.
+   */
+  override async delete(
+    _id: string,
+    session?: ClientSession | undefined,
+  ): Promise<boolean> {
+    return runTransaction<boolean>(session, async (newSession) => {
+      const Room = this.connectionManager.getModel("Room");
+      const activeRooms = await Room.countDocuments({
+        facilityId: _id,
+        active: true,
+      }).session(newSession);
+
+      if (activeRooms > 0) {
+        await Room.updateMany(
+          { facilityId: _id, active: true },
+          { active: false },
+          { session: newSession },
+        );
+      }
+
+      return await super.delete(_id, newSession);
+    });
+  }
 }
