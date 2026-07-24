@@ -23,6 +23,23 @@ export const catchExceptionMiddleware = (
       errors: error.errors || [],
       errorCount: Array.isArray(error.errors) ? error.errors.length : 0,
     });
+  } else if ((error as any).code === 11000) {
+    const keyValue = (error as any).keyValue;
+    const errors = [];
+    if (keyValue) {
+      for (const [key, value] of Object.entries(keyValue)) {
+        errors.push({
+          path: key,
+          messages: [`Duplicate value '${value}'`],
+        });
+      }
+    }
+    res.status(400).json({
+      error: true,
+      message: "Validation Error: Duplicate key",
+      errors: errors,
+      errorCount: errors.length,
+    });
   } else {
     res.status(500).json({
       error: true,
