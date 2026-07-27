@@ -342,7 +342,7 @@ app.use("/api", new CrEinvoiceActionRouter().getRouter);
 app.get("/api/health-check", (req, res) => {
   res.status(200).json({
     message: "Welcome to the BIFI App Backend API",
-    version: "202607131320",
+    version: "202607271449",
     status: "OK",
   });
 });
