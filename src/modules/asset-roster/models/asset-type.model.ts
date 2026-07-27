@@ -25,6 +25,13 @@ const assetTypeSchema = new Schema(
 
 assetTypeSchema.plugin(paginate);
 
+// Partial unique index: enforces unique names only among active records,
+// allowing soft-deleted (active: false) records to share the same name.
+assetTypeSchema.index(
+  { name: 1 },
+  { unique: true, partialFilterExpression: { active: true } },
+);
+
 const assetTypeModel = mongoose.model<
   AssetTypeDocument,
   PaginateModel<AssetTypeDocument>

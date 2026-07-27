@@ -169,7 +169,7 @@ contactSchema.virtual("fullAddress").get(function (this: ContactDocument) {
 
 contactSchema.index(
   { email: 1 },
-  { unique: true, partialFilterExpression: { active: true, email: { $type: "string", $ne: "" } } }
+  { unique: true, partialFilterExpression: { active: true, email: { $type: "string" } } }
 );
 
 contactSchema.plugin(paginate);

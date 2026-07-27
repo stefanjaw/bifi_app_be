@@ -46,6 +46,10 @@ export class ContactService extends BaseService<ContactDocument> {
       const model = this.connectionManager.bindModelToDb(this.model);
       const bucket = this.connectionManager.bindBucketToDb();
 
+      if (data.parentId === "") {
+        (data as any).parentId = null;
+      }
+
       if (isValidFileUpload(data.photo)) {
         const fileId = await bucket.uploadFile(
           Array.isArray(data.photo) ? data.photo[0] : data.photo,
