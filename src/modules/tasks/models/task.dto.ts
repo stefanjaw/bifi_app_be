@@ -11,6 +11,7 @@ import {
   IsString,
   Max,
   Min,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
 import { FileUpload, PartialType, toBoolean } from "../../../system";
@@ -63,8 +64,9 @@ export class TaskDTO {
   stage?: string;
 
   @IsOptional()
+  @ValidateIf((obj) => obj.projectId != null && obj.projectId !== "")
   @IsMongoId()
-  projectId?: string;
+  projectId?: string | null;
 
   @IsOptional()
   @IsMongoId()

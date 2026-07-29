@@ -142,6 +142,10 @@ export class TaskService extends BaseService<TaskDocument> {
           : dayjs().add(1, "day").toDate();
       }
 
+      if ((data as any).projectId === "") {
+        (data as any).projectId = null;
+      }
+
       const actorId = userStorage.getStore()?.user?._id?.toString();
       const created = await super.create(
         {
@@ -194,6 +198,10 @@ export class TaskService extends BaseService<TaskDocument> {
             size: file.size,
           })),
         );
+      }
+
+      if ((data as any).projectId === "") {
+        (data as any).projectId = null;
       }
 
       const actorId = userStorage.getStore()?.user?._id?.toString();
