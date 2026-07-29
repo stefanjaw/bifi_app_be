@@ -192,6 +192,44 @@ Everything re-exported through `src/system/index.ts` and importable via `"../../
 5. `validateBodyMiddleware(dtoClass)` — DTO validation
 6. Route handler → `catchExceptionMiddleware` (catches all errors)
 
+### ALS Context Loss & `withAlsContext`
+
+**Problem**: Multer v2 uses `busboy` + `concat-stream` + `readable-stream` to handle file uploads. The internal `process.nextTick()` chain in the `readable-stream` polyfill drops the `AsyncLocalStorage` context set by `userStorage.run()`. After multer finishes processing, subsequent middleware (`validateBodyMiddleware`, `authorizeMiddleware`, controller handler) see `userStorage.getStore()` returning `undefined`, causing 401 Unauthorized and broken tenant DB connections.
+
+**Root cause**: `AsyncLocalStorage.snapshot()` is not available on Node.js v25.2.1 (the `snapshot` method does not exist on the prototype). The fix uses `enterWith()` instead.
+
+**`withAlsContext(middleware)`** — wraps any middleware that may lose the ALS context (typically multer). It captures the store before the middleware runs, and if the store reference changed after the middleware completes, it restores the original store via `userStorage.enterWith()`.
+
+```
+Location: src/system/libraries/with-als-context.ts
+Import:   import { withAlsContext } from "../../../system"
+```
+
+**Usage** — always wrap multer middleware when files are uploaded:
+
+```ts
+import { withAlsContext } from "../../../system";
+
+override initPutRoute() {
+  this.router.put(
+    this.endpoint,
+    withAlsContext(this.upload.fields([
+      { name: "photo", maxCount: 1 },
+      { name: "attachments", maxCount: 10 },
+    ])),
+    validateBodyMiddleware(this.dtoUpdateClass),
+    authorizeMiddleware(this.resource, "update"),
+    this.controller.update,
+  );
+}
+```
+
+**When to use**: Any route that uses `this.upload.any()`, `this.upload.fields()`, `this.upload.single()`, or any other multer middleware that processes file data. The bare multer middleware drops the ALS context; wrapping it with `withAlsContext()` restores the context before the next middleware in the chain runs.
+
+**Currently applied to** (asset-roster module):
+- `PUT /asset-rosters` — `withAlsContext(this.upload.fields([photo, attachments]))`
+- `POST /asset-rosters/read-documents` — `withAlsContext(this.upload.any())`
+
 ### Permission & Authorization System
 
 The backend enforces the same RBAC/PBAC model as the frontend: Policy → Role → User. Authorization is wired at the route level via `authorizeMiddleware`.

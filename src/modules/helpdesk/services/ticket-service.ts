@@ -484,7 +484,7 @@ export class TicketService extends BaseService<TicketDocument> {
             body: `Ticket "${
               (existing as any)?.name ?? data._id
             }" has been resolved.`,
-            link: `/helpdesk/${(data as any)._id}`,
+            link: `/helpdesk/edit/${(data as any)._id}`,
             module: "helpdesk",
           });
         } else if (stageName.includes("closed")) {
@@ -574,7 +574,7 @@ export class TicketService extends BaseService<TicketDocument> {
           body: `Ticket "${
             (existing as any)?.name ?? data._id
           }" has been assigned to you.`,
-          link: `/helpdesk/${(data as any)._id}`,
+          link: `/helpdesk/edit/${(data as any)._id}`,
           module: "helpdesk",
         });
       }

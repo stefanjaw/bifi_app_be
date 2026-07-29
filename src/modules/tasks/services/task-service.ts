@@ -158,7 +158,7 @@ export class TaskService extends BaseService<TaskDocument> {
           context: { assignee: data.assigned, creator: actorId },
           title: "Task assigned to you",
           body: `A new task has been assigned to you.`,
-          link: `/tasks/${created._id}`,
+            link: `/tasks/view?id=${created._id}`,
           module: "tasks",
         });
       }
@@ -214,7 +214,7 @@ export class TaskService extends BaseService<TaskDocument> {
             context: { assignee: data.assigned, creator: actorId },
             title: "Task assigned to you",
             body: `A task has been assigned to you.`,
-            link: `/tasks/${(updated as any)._id}`,
+            link: `/tasks/view?id=${(updated as any)._id}`,
             module: "tasks",
           });
         }
