@@ -1,5 +1,6 @@
 export * from "./auth/user-storage";
 export * from "./base-module/base-controller";
+export * from "./with-als-context";
 export * from "./base-module/base-routes";
 export * from "./base-module/base-service";
 export * from "./base-module/connection-manager";

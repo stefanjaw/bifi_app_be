@@ -3,6 +3,7 @@ import {
   authorizeMiddleware,
   BaseRoutes,
   validateBodyMiddleware,
+  withAlsContext,
 } from "../../../system";
 import { AssetRosterController } from "../controllers/asset-roster-controller";
 import { AssetRosterCSVDTO } from "../models/asset-roster-csv.dto";
@@ -34,10 +35,10 @@ export class AssetRosterRouter extends BaseRoutes<AssetRosterDocument> {
   override initPutRoute() {
     this.router.put(
       this.endpoint,
-      this.upload.fields([
+      withAlsContext(this.upload.fields([
         { name: "photo", maxCount: 1 },
         { name: "attachments", maxCount: 10 },
-      ]),
+      ])),
       validateBodyMiddleware(this.dtoUpdateClass),
       authorizeMiddleware(this.resource, "update"),
       this.controller.update,
@@ -57,7 +58,7 @@ export class AssetRosterRouter extends BaseRoutes<AssetRosterDocument> {
   initReadDocumentsRoute() {
     this.router.post(
       `${this.endpoint}/read-documents`,
-      this.upload.any(),
+      withAlsContext(this.upload.any()),
       authorizeMiddleware(`${this.resource}/read-documents`, "create"),
       assetRosterController.readDocuments,
     );
