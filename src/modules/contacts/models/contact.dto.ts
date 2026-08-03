@@ -80,14 +80,17 @@ export class ContactDTO {
   // @IsPhoneNumber("BM")
   @IsString()
   @IsOptional()
+  @Transform(({ value }) => (value === "" ? null : value))
   phoneNumber?: string;
 
   @IsEmail()
   @IsOptional()
+  @Transform(({ value }) => (value === "" ? null : value))
   email?: string;
 
   @IsUrl()
   @IsOptional()
+  @Transform(({ value }) => (value === "" ? null : value))
   website?: string;
 
   @IsOptional()
