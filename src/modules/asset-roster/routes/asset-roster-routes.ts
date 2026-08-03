@@ -48,7 +48,7 @@ export class AssetRosterRouter extends BaseRoutes<AssetRosterDocument> {
   initSkipAssetPMRoute() {
     this.router.put(
       `${this.endpoint}/skip-pm`,
-      this.upload.any(),
+      withAlsContext(this.upload.any()),
       validateBodyMiddleware(SkipAssetRosterPMDTO),
       authorizeMiddleware(`${this.resource}/skip-pm`, "update"),
       assetRosterController.updateSkipAssetPM,

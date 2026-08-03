@@ -2,6 +2,7 @@ import {
   authorizeMiddleware,
   BaseRoutes,
   validateBodyMiddleware,
+  withAlsContext,
 } from "../../../system";
 import { AssetCommissioningDocument } from "../../../types/mongoose.gen";
 import { AssetCommissioningController } from "../controllers/asset-commissioning-controller";
@@ -25,11 +26,31 @@ export class AssetCommissioningRouter extends BaseRoutes<AssetCommissioningDocum
     this.initPutDecommissionRoute();
   }
 
+  protected override initPostRoute(): void {
+    this.router.post(
+      this.endpoint,
+      withAlsContext(this.upload.any()),
+      validateBodyMiddleware(this.dtoCreateClass),
+      authorizeMiddleware(this.resource, "create"),
+      this.controller.create,
+    );
+  }
+
+  protected override initPutRoute(): void {
+    this.router.put(
+      this.endpoint,
+      withAlsContext(this.upload.any()),
+      validateBodyMiddleware(this.dtoUpdateClass),
+      authorizeMiddleware(this.resource, "update"),
+      this.controller.update,
+    );
+  }
+
   initPutDecommissionRoute() {
     // custom routes
     this.router.put(
       this.endpoint + "/decommission",
-      this.upload.any(),
+      withAlsContext(this.upload.any()),
       validateBodyMiddleware(UpdateAssetCommissioningDTO),
       authorizeMiddleware(this.resource, "update"),
       (this.controller as AssetCommissioningController).updateDecommission,

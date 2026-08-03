@@ -1,5 +1,10 @@
 import { AssetMaintenanceDocument } from "@mongodb-types";
-import { BaseRoutes } from "../../../system";
+import {
+  authorizeMiddleware,
+  BaseRoutes,
+  validateBodyMiddleware,
+  withAlsContext,
+} from "../../../system";
 import { AssetMaintenanceController } from "../controllers/asset-maintenance-controller";
 import {
   AssetMaintenanceDTO,
@@ -16,5 +21,25 @@ export class AssetMaintenanceRouter extends BaseRoutes<AssetMaintenanceDocument>
       dtoCreateClass: AssetMaintenanceDTO,
       dtoUpdateClass: UpdateAssetMaintenanceDTO,
     });
+  }
+
+  protected override initPostRoute(): void {
+    this.router.post(
+      this.endpoint,
+      withAlsContext(this.upload.any()),
+      validateBodyMiddleware(this.dtoCreateClass),
+      authorizeMiddleware(this.resource, "create"),
+      this.controller.create,
+    );
+  }
+
+  protected override initPutRoute(): void {
+    this.router.put(
+      this.endpoint,
+      withAlsContext(this.upload.any()),
+      validateBodyMiddleware(this.dtoUpdateClass),
+      authorizeMiddleware(this.resource, "update"),
+      this.controller.update,
+    );
   }
 }
