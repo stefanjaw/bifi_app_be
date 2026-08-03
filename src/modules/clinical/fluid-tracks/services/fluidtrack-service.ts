@@ -57,7 +57,7 @@ export class FluidTrackService extends BaseService<FluidTrackDocument> {
         .session(newSession);
       if (!track) throw new NotFoundException("Fluid track not found");
 
-      const actorId = userStorage.getStore()?.user?._id?.toString();
+      const actorId = userStorage.getStore()?.user?._id as any;
       const existingItems = track.get("items") || [];
       track.set("items", [
         ...existingItems,

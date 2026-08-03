@@ -22,7 +22,7 @@ export class ProductService extends BaseService<ProductDocument> {
         const fileId = await bucket.uploadFile(
           Array.isArray(data.photo) ? data.photo[0] : data.photo,
         );
-        data.photo = fileId;
+        (data as any).photo = fileId;
       } else {
         delete (data as any).photo;
       }
@@ -61,7 +61,7 @@ export class ProductService extends BaseService<ProductDocument> {
         const fileId = await bucket.uploadFile(
           Array.isArray(photo) ? photo[0] : photo,
         );
-        photo = fileId;
+        photo = fileId as any;
       } else if (photo !== undefined) {
         photo = null;
       }

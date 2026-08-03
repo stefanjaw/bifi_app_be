@@ -71,7 +71,7 @@ export class OrderService extends BaseService<OrderDocument> {
       const order = await orderModel.findById(orderId).session(newSession);
       if (!order) throw new NotFoundException("Order not found");
 
-      const actorId = userStorage.getStore()?.user?._id?.toString();
+      const actorId = userStorage.getStore()?.user?._id as any;
       order.status = status;
       order.updatedBy = actorId;
       await order.save({ session: newSession });
