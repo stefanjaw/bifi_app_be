@@ -13,5 +13,6 @@ export class CRMRouter extends BaseRoutes<CRMDocument> {
       dtoCreateClass: CRMDTO,
       dtoUpdateClass: UpdateCRMDTO,
     });
+    this.resource = "sales/opportunities";
   }
 }

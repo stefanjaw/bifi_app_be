@@ -148,7 +148,7 @@ export class BaseController<T> {
     next: NextFunction,
   ) {
     try {
-      const _id = req.query._id;
+      const _id = req.body?._id || req.query._id;
       if (typeof _id !== "string")
         throw new ValidationException("_id is required for deletion");
 

@@ -1,4 +1,4 @@
-import { BaseService, runTransaction } from "../../../system";
+import { BaseService, runTransaction, ValidationException } from "../../../system";
 import { crmStageModel } from "../models/crm-stage.model";
 import { CrmStageDocument } from "@mongodb-types";
 import { ClientSession } from "mongoose";
@@ -11,10 +11,17 @@ export class CrmStageService extends BaseService<CrmStageDocument> {
     });
   }
 
+  private validateMutualExclusivity(data: CrmStageDTO | UpdateCrmStageDTO): void {
+    if (data.isWon && data.isLost) {
+      throw new ValidationException("A stage cannot be both 'won' and 'lost'");
+    }
+  }
+
   override async create(
     data: CrmStageDTO,
     session?: ClientSession | undefined,
   ): Promise<CrmStageDocument> {
+    this.validateMutualExclusivity(data);
     return await runTransaction<CrmStageDocument>(
       session,
       async (newSession) => {
@@ -37,6 +44,7 @@ export class CrmStageService extends BaseService<CrmStageDocument> {
     data: UpdateCrmStageDTO,
     session?: ClientSession | undefined,
   ): Promise<CrmStageDocument> {
+    this.validateMutualExclusivity(data);
     return await runTransaction<CrmStageDocument>(
       session,
       async (newSession) => {
