@@ -1,5 +1,6 @@
-import { Type } from "class-transformer";
+import { Transform, Type } from "class-transformer";
 import {
+  IsBoolean,
   IsISO4217CurrencyCode,
   IsMongoId,
   IsNotEmpty,
@@ -10,7 +11,7 @@ import {
   Max,
   Min,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class SalesTargetDTO {
   @IsString()
@@ -39,6 +40,11 @@ export class SalesTargetDTO {
   @IsMongoId()
   @IsOptional()
   salesperson?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(toBoolean)
+  active?: boolean;
 }
 
 export class UpdateSalesTargetDTO extends PartialType(SalesTargetDTO) {

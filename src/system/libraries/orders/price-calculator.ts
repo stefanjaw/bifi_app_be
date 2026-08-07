@@ -1,6 +1,7 @@
 export interface LineItemInput {
   quantity: number;
   unitPrice: number;
+  discountPercent?: number;
 }
 
 export interface LineItemWithTaxIds extends LineItemInput {
@@ -31,8 +32,13 @@ export interface TaxCalculationResult {
 export function calculateLineItemTotal(
   quantity: number,
   unitPrice: number,
+  discountPercent?: number,
 ): number {
-  return Number((quantity * unitPrice).toFixed(2));
+  const gross = quantity * unitPrice;
+  if (discountPercent) {
+    return Number((gross * (1 - discountPercent / 100)).toFixed(2));
+  }
+  return Number(gross.toFixed(2));
 }
 
 /**
@@ -47,6 +53,7 @@ export function calculateSubtotal(lineItems: LineItemInput[]): number {
       calculateLineItemTotal(
         Number(item.quantity ?? 0),
         Number(item.unitPrice ?? 0),
+        item.discountPercent,
       )
     );
   }, 0);
@@ -98,6 +105,7 @@ export function calculateTaxesPerLine(
     const lineBase = calculateLineItemTotal(
       Number(item.quantity ?? 0),
       Number(item.unitPrice ?? 0),
+      item.discountPercent,
     );
     for (const taxId of item.taxIds ?? []) {
       const tax = taxDocsMap.get(taxId);

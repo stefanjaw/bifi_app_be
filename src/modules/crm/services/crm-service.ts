@@ -42,6 +42,7 @@ export class CRMService extends BaseService<CRMDocument> {
     data: Record<string, any>,
     session?: ClientSession,
   ): Promise<CRMDocument> {
+    const dealId = (data as any)._id;
     const updated = await super.update(data, session);
 
     if (data.stage) {
@@ -54,7 +55,7 @@ export class CRMService extends BaseService<CRMDocument> {
         if (stageName.toLowerCase().includes("won")) {
           const existing = await this.connectionManager
             .bindModelToDb(this.model)
-            .findById((data as any)._id)
+            .findById(dealId)
             .lean();
           await fireNotification({
             type: "deal_won",
@@ -64,9 +65,9 @@ export class CRMService extends BaseService<CRMDocument> {
             },
             title: "CRM Deal Won",
             body: `Deal "${
-              (existing as any)?.name ?? (data as any)._id
+              (existing as any)?.title ?? dealId
             }" has been marked as Won.`,
-            link: `/sales/opportunities/edit/${(data as any)._id}`,
+            link: `/sales/opportunities/edit/${dealId}`,
             module: "sales",
           });
         }

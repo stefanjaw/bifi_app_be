@@ -2,6 +2,7 @@ import { plainToInstance, Transform, Type } from "class-transformer";
 import {
   ArrayUnique,
   IsArray,
+  IsBoolean,
   IsDate,
   IsEnum,
   IsMongoId,
@@ -12,7 +13,7 @@ import {
   Min,
   ValidateNested,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export const SALES_ORDER_STATUSES = [
   "draft",
@@ -153,6 +154,11 @@ export class SalesOrderDTO {
   @Type(() => Number)
   @IsOptional()
   grandTotal?: number;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(toBoolean)
+  active?: boolean;
 }
 
 export class UpdateSalesOrderDTO extends PartialType(SalesOrderDTO) {

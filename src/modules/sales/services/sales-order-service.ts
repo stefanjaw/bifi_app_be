@@ -1,11 +1,12 @@
 import { ClientSession, Types } from "mongoose";
-import { BaseService } from "../../../system";
+import { BaseService, runTransaction, ValidationException } from "../../../system";
 import { SalesOrderDocument } from "@mongodb-types";
 import { salesOrderModel } from "../models/sales-order.model";
 import { SalesSettingsService } from "./sales-settings-service";
 import { SequenceService } from "../../sequences/services/sequence-service";
 import { CurrencyService } from "../../currency/services/currency-service";
 import { taxModel, TaxType } from "../../accounting/models/tax.model";
+import { discountModel } from "../../accounting/models/discount.model";
 import {
   calculateSubtotal,
   calculateTaxesPerLine,
@@ -25,6 +26,7 @@ interface NormalizedLineItem {
   unitPrice: number;
   total: number;
   taxIds: string[];
+  discountPercent?: number;
 }
 
 export class SalesOrderService extends BaseService<SalesOrderDocument> {
@@ -45,9 +47,7 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
     for (const item of lineItems) {
       for (const id of item.taxIds ?? []) {
         if (!Types.ObjectId.isValid(id)) {
-          const err: any = new Error(`Invalid taxId: ${id}`);
-          err.status = 400;
-          throw err;
+          throw new ValidationException(`Invalid taxId: ${id}`);
         }
         allIds.add(id);
       }
@@ -64,24 +64,18 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
     if (foundTaxes.length !== allIds.size) {
       const foundIds = new Set(foundTaxes.map((t: any) => t._id.toString()));
       const missing = [...allIds].find((id) => !foundIds.has(id));
-      const err: any = new Error(`Tax not found: ${missing}`);
-      err.status = 400;
-      throw err;
+      throw new ValidationException(`Tax not found: ${missing}`);
     }
 
     const taxMap = new Map<string, TaxInput>();
     for (const tax of foundTaxes as any[]) {
       if (!tax.active) {
-        const err: any = new Error(`Tax "${tax.name}" is inactive`);
-        err.status = 400;
-        throw err;
+        throw new ValidationException(`Tax "${tax.name}" is inactive`);
       }
       if (tax.taxType !== TaxType.SALES) {
-        const err: any = new Error(
+        throw new ValidationException(
           `Tax "${tax.name}" is not a sales tax (taxType: ${tax.taxType})`,
         );
-        err.status = 400;
-        throw err;
       }
       taxMap.set(tax._id.toString(), {
         _id: tax._id.toString(),
@@ -97,23 +91,47 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
    * subtotal, taxTotal, grandTotal, and amount using per-line taxIds.
    * The frontend MUST NOT be trusted to provide these computed values.
    */
-  private recomputeTotals(
+  private async recomputeTotals(
     data: Record<string, any>,
     taxDocsMap: Map<string, TaxInput>,
-  ): void {
-    const lineItems: NormalizedLineItem[] = Array.isArray(data.lineItems)
-      ? data.lineItems.map((item: any) => {
-          const quantity = Number(item?.quantity ?? 0);
-          const unitPrice = Number(item?.unitPrice ?? 0);
-          return {
-            ...item,
-            quantity,
-            unitPrice,
-            total: calculateLineItemTotal(quantity, unitPrice),
-            taxIds: Array.isArray(item.taxIds) ? item.taxIds : [],
-          };
-        })
-      : [];
+    session?: ClientSession,
+  ): Promise<void> {
+    const rawItems: any[] = Array.isArray(data.lineItems) ? data.lineItems : [];
+
+    const discountIds = new Set<string>();
+    for (const item of rawItems) {
+      const did = item.discountId;
+      if (did && typeof did === "string") discountIds.add(did);
+    }
+
+    const discountMap = new Map<string, number>();
+    if (discountIds.size > 0) {
+      const boundDiscountModel = this.connectionManager.bindModelToDb(discountModel);
+      const discounts = await boundDiscountModel
+        .find({ _id: { $in: [...discountIds] } })
+        .lean()
+        .session(session as any);
+      for (const d of discounts as any[]) {
+        if (d.discountType === "percentage") {
+          discountMap.set(d._id.toString(), d.value);
+        }
+      }
+    }
+
+    const lineItems: NormalizedLineItem[] = rawItems.map((item: any) => {
+      const quantity = Number(item?.quantity ?? 0);
+      const unitPrice = Number(item?.unitPrice ?? 0);
+      const discountId = typeof item.discountId === "string" ? item.discountId : item.discountId?._id;
+      const discountPercent = discountId ? discountMap.get(discountId?.toString()) : undefined;
+      return {
+        ...item,
+        quantity,
+        unitPrice,
+        total: calculateLineItemTotal(quantity, unitPrice, discountPercent),
+        taxIds: Array.isArray(item.taxIds) ? item.taxIds : [],
+        discountPercent,
+      };
+    });
 
     if (Array.isArray(data.lineItems)) {
       data.lineItems = lineItems;
@@ -145,16 +163,12 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
         : currencyId.toString();
 
     if (!Types.ObjectId.isValid(id)) {
-      const err: any = new Error("Invalid currency reference");
-      err.status = 400;
-      throw err;
+      throw new ValidationException("Invalid currency reference");
     }
 
     const found = await currencyService.getById(id, undefined);
     if (!found) {
-      const err: any = new Error("Invalid currency reference");
-      err.status = 400;
-      throw err;
+      throw new ValidationException("Invalid currency reference");
     }
   }
 
@@ -169,7 +183,7 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
       : [];
     const taxDocsMap = await this.assertLineTaxesValid(rawLineItems, session);
 
-    this.recomputeTotals(data, taxDocsMap);
+    await this.recomputeTotals(data, taxDocsMap, session);
 
     const settings = await salesSettingsService.getSettings();
     const orderSequence = settings?.orderSequence as any;
@@ -204,9 +218,22 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
         data.lineItems,
         session,
       );
-      this.recomputeTotals(data, taxDocsMap);
+      await this.recomputeTotals(data, taxDocsMap, session);
     }
 
     return super.update(data, session);
+  }
+
+  override async importCSV(
+    data: Record<string, any>[],
+    session?: ClientSession,
+  ): Promise<SalesOrderDocument[]> {
+    return await runTransaction<SalesOrderDocument[]>(session, async (newSession) => {
+      const created: SalesOrderDocument[] = [];
+      for (const row of data) {
+        created.push(await this.create(row, newSession));
+      }
+      return created;
+    });
   }
 }

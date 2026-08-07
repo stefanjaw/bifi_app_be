@@ -13,7 +13,7 @@ export class PricingIndexRouter extends BaseRoutes<CatalogCacheDocument> {
   constructor() {
     super({
       controller: pricingIndexController,
-      endpoint: "/pricing-search",
+      endpoint: "/pricing-index",
       dtoCreateClass: PricingIndexTriggerDTO,
       dtoUpdateClass: PricingIndexTriggerDTO,
     });
@@ -21,39 +21,39 @@ export class PricingIndexRouter extends BaseRoutes<CatalogCacheDocument> {
 
   protected override initRoutes() {
     this.router.get(
-      "/pricing-search/status",
-      authorizeMiddleware("pricing-search", "read"),
+      "/pricing-index/status",
+      authorizeMiddleware("pricing-index", "read"),
       pricingIndexController.getStatus,
     );
 
     this.router.get(
-      "/pricing-search/text-search",
-      authorizeMiddleware("pricing-search", "read"),
+      "/pricing-index/text-search",
+      authorizeMiddleware("pricing-index", "read"),
       pricingIndexController.textSearch,
     );
 
     this.router.get(
-      "/pricing-search",
-      authorizeMiddleware("pricing-search", "read"),
+      "/pricing-index",
+      authorizeMiddleware("pricing-index", "read"),
       pricingIndexController.get,
     );
 
     this.router.post(
-      "/pricing-search/trigger",
-      authorizeMiddleware("pricing-search", "create"),
+      "/pricing-index/trigger",
+      authorizeMiddleware("pricing-index", "create"),
       validateBodyMiddleware(PricingIndexTriggerDTO),
       pricingIndexController.triggerIndexing,
     );
 
     this.router.post(
-      "/pricing-search/schedule/start",
-      authorizeMiddleware("pricing-search", "create"),
+      "/pricing-index/schedule/start",
+      authorizeMiddleware("pricing-index", "create"),
       pricingIndexController.startSchedule,
     );
 
     this.router.post(
-      "/pricing-search/schedule/stop",
-      authorizeMiddleware("pricing-search", "create"),
+      "/pricing-index/schedule/stop",
+      authorizeMiddleware("pricing-index", "create"),
       pricingIndexController.stopSchedule,
     );
   }

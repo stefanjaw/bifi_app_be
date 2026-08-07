@@ -39,7 +39,7 @@ export class SalesOrderRouter extends BaseRoutes<SalesOrderDocument> {
 
   private initUpdateStatusRoute(): void {
     this.router.patch(
-      "/:id/status",
+      `${this.endpoint}/:id/status`,
       authorizeMiddleware("sales-orders", "update"),
       validateBodyMiddleware(UpdateSalesOrderStatusDTO),
       salesOrderController.updateStatus,

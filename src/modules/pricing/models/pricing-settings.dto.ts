@@ -29,6 +29,7 @@ export class PricingSettingsDTO {
   estimateSequence?: string;
 
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   defaultWharfageBankFeePct?: number;
 
@@ -42,10 +43,12 @@ export class PricingSettingsDTO {
   defaultPricingMethod?: string;
 
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   defaultMarkupFactor?: number;
 
   @IsNumber()
+  @Type(() => Number)
   @IsOptional()
   defaultMargin?: number;
 

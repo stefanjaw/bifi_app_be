@@ -1,6 +1,7 @@
 import { Transform, Type } from "class-transformer";
 import {
   IsArray,
+  IsBoolean,
   IsDate,
   IsISO4217CurrencyCode,
   IsMongoId,
@@ -12,7 +13,7 @@ import {
   Max,
   Min,
 } from "class-validator";
-import { PartialType } from "../../../system";
+import { PartialType, toBoolean } from "../../../system";
 
 export class CRMDTO {
   @IsString()
@@ -82,6 +83,11 @@ export class CRMDTO {
   @IsNotEmpty()
   @IsOptional()
   notes?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  @Transform(toBoolean)
+  active?: boolean;
 }
 
 export class UpdateCRMDTO extends PartialType(CRMDTO) {
