@@ -135,6 +135,9 @@ const salesOrderSchema = new Schema(
       ],
       default: "draft",
     },
+    title: {
+      type: String,
+    },
     notes: {
       type: String,
     },

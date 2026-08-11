@@ -128,6 +128,12 @@ export class SalesOrderDTO {
   @IsNotEmpty()
   @IsOptional()
   @Transform(({ value }) => (value === "" ? null : value))
+  title?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsOptional()
+  @Transform(({ value }) => (value === "" ? null : value))
   notes?: string;
 
   @IsArray()

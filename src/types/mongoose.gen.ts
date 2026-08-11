@@ -15741,6 +15741,7 @@ export type SalesOrder = {
     | "shipped"
     | "completed"
     | "cancelled";
+  title?: string;
   notes?: string;
   number?: string;
   active?: boolean;
@@ -15877,6 +15878,7 @@ export type SalesOrderDocument = mongoose.Document<
       | "shipped"
       | "completed"
       | "cancelled";
+    title?: string;
     notes?: string;
     number?: string;
     active?: boolean;
