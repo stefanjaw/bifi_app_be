@@ -15725,6 +15725,8 @@ export type SalesOrder = {
   contact: Contact;
   company: Company;
   salesperson?: User;
+  warehouseId?: Warehouse;
+  locationId?: InventoryLocation;
   stageId?: SalesOrderStage;
   amount: number;
   currency: Currency;
@@ -15862,6 +15864,8 @@ export type SalesOrderDocument = mongoose.Document<
     contact: ContactDocument;
     company: CompanyDocument;
     salesperson?: UserDocument;
+    warehouseId?: WarehouseDocument;
+    locationId?: InventoryLocationDocument;
     stageId?: SalesOrderStageDocument;
     amount: number;
     currency: CurrencyDocument;

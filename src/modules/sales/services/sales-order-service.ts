@@ -1,7 +1,16 @@
 import { ClientSession, Types } from "mongoose";
-import { BaseService, runTransaction, ValidationException } from "../../../system";
+import {
+  BaseService,
+  runTransaction,
+  ValidationException,
+} from "../../../system";
 import { SalesOrderDocument } from "@mongodb-types";
 import { salesOrderModel } from "../models/sales-order.model";
+import { stockBalanceModel } from "../../inventory/models/stock-balance.model";
+import {
+  stockMovementModel,
+  MovementType,
+} from "../../inventory/models/stock-movement.model";
 import { SalesSettingsService } from "./sales-settings-service";
 import { SequenceService } from "../../sequences/services/sequence-service";
 import { CurrencyService } from "../../currency/services/currency-service";
@@ -106,7 +115,8 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
 
     const discountMap = new Map<string, number>();
     if (discountIds.size > 0) {
-      const boundDiscountModel = this.connectionManager.bindModelToDb(discountModel);
+      const boundDiscountModel =
+        this.connectionManager.bindModelToDb(discountModel);
       const discounts = await boundDiscountModel
         .find({ _id: { $in: [...discountIds] } })
         .lean()
@@ -121,8 +131,13 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
     const lineItems: NormalizedLineItem[] = rawItems.map((item: any) => {
       const quantity = Number(item?.quantity ?? 0);
       const unitPrice = Number(item?.unitPrice ?? 0);
-      const discountId = typeof item.discountId === "string" ? item.discountId : item.discountId?._id;
-      const discountPercent = discountId ? discountMap.get(discountId?.toString()) : undefined;
+      const discountId =
+        typeof item.discountId === "string"
+          ? item.discountId
+          : item.discountId?._id;
+      const discountPercent = discountId
+        ? discountMap.get(discountId?.toString())
+        : undefined;
       return {
         ...item,
         quantity,
@@ -202,7 +217,113 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
     status: string,
   ): Promise<SalesOrderDocument | null> {
     const boundModel = this.connectionManager.bindModelToDb(salesOrderModel);
+
+    if (status === "shipped") {
+      const order = await boundModel.findById(id);
+      if (!order) {
+        throw new ValidationException("Sales order not found");
+      }
+      return this.shipOrder(id, order);
+    }
+
     return boundModel.findByIdAndUpdate(id, { status }, { new: true });
+  }
+
+  /**
+   * Ships a confirmed sales order by decrementing stock balances and creating
+   * an OUT stock movement per shippable line. Validates that every line has
+   * enough stock at the order's warehouse/location before mutating anything,
+   * then updates the order status to "shipped". Runs atomically.
+   * @param id - The sales order id
+   * @param order - The loaded sales order document
+   * @returns The updated sales order document
+   */
+  private async shipOrder(
+    id: string,
+    order: SalesOrderDocument,
+  ): Promise<SalesOrderDocument> {
+    const status = order.status as string;
+    if (status === "shipped") {
+      throw new ValidationException("This order has already been shipped.");
+    }
+    if (status !== "confirmed") {
+      throw new ValidationException(
+        `Cannot ship an order that is ${status}. The order must be confirmed first.`,
+      );
+    }
+
+    const warehouseId = (order.warehouseId as any)?._id ?? order.warehouseId;
+    const locationId = (order.locationId as any)?._id ?? order.locationId;
+    if (!warehouseId || !locationId) {
+      throw new ValidationException(
+        "Set a warehouse and location on the order before shipping.",
+      );
+    }
+
+    const lineItems = (order.lineItems ?? []) as any[];
+    const toShip = lineItems
+      .map((li: any) => {
+        const productId = (li.productId as any)?._id ?? li.productId;
+        const quantity = Number(li.quantity ?? 0);
+        return { li, productId, quantity };
+      })
+      .filter(({ productId, quantity }) => !!productId && quantity > 0);
+
+    if (toShip.length === 0) {
+      throw new ValidationException(
+        "No shippable lines on this order. Lines need a product and a quantity.",
+      );
+    }
+
+    const reference = (order.number as string) ?? id;
+
+    return await runTransaction<SalesOrderDocument>(undefined, async (s) => {
+      const boundBalanceModel =
+        this.connectionManager.bindModelToDb(stockBalanceModel);
+      const boundMovementModel =
+        this.connectionManager.bindModelToDb(stockMovementModel);
+
+      for (const { li, productId, quantity } of toShip) {
+        const balance = await boundBalanceModel
+          .findOne({ productId, locationId, warehouseId })
+          .session(s);
+
+        if (!balance || (balance.quantity ?? 0) < quantity) {
+          throw new ValidationException(
+            `Insufficient stock for "${li.description}". Available: ${
+              balance?.quantity ?? 0
+            }, requested: ${quantity}`,
+          );
+        }
+      }
+
+      for (const { productId, quantity } of toShip) {
+        await boundBalanceModel.findOneAndUpdate(
+          { productId, locationId, warehouseId },
+          { $inc: { quantity: -quantity } },
+          { new: true, session: s },
+        );
+
+        await boundMovementModel.create(
+          [
+            {
+              productId,
+              warehouseId,
+              locationId,
+              quantity,
+              type: MovementType.OUT,
+              reference,
+              notes: `Shipped from SO ${reference}`,
+              date: new Date(),
+            },
+          ],
+          { session: s },
+        );
+      }
+
+      order.status = "shipped";
+      return await order.save({ session: s });
+    });
   }
 
   override async update(
@@ -228,12 +349,15 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
     data: Record<string, any>[],
     session?: ClientSession,
   ): Promise<SalesOrderDocument[]> {
-    return await runTransaction<SalesOrderDocument[]>(session, async (newSession) => {
-      const created: SalesOrderDocument[] = [];
-      for (const row of data) {
-        created.push(await this.create(row, newSession));
-      }
-      return created;
-    });
+    return await runTransaction<SalesOrderDocument[]>(
+      session,
+      async (newSession) => {
+        const created: SalesOrderDocument[] = [];
+        for (const row of data) {
+          created.push(await this.create(row, newSession));
+        }
+        return created;
+      },
+    );
   }
 }

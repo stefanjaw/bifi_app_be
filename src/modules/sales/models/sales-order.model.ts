@@ -65,6 +65,24 @@ const salesOrderSchema = new Schema(
         maxDepth: 1,
       },
     },
+    warehouseId: {
+      type: Schema.Types.ObjectId,
+      ref: "Warehouse",
+      required: false,
+      autopopulate: {
+        select: "name code",
+        maxDepth: 1,
+      },
+    },
+    locationId: {
+      type: Schema.Types.ObjectId,
+      ref: "InventoryLocation",
+      required: false,
+      autopopulate: {
+        select: "name code",
+        maxDepth: 1,
+      },
+    },
     stageId: {
       type: Schema.Types.ObjectId,
       ref: "SalesOrderStage",

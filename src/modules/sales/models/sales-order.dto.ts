@@ -93,6 +93,14 @@ export class SalesOrderDTO {
 
   @IsMongoId()
   @IsOptional()
+  warehouseId?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  locationId?: string;
+
+  @IsMongoId()
+  @IsOptional()
   stageId?: string;
 
   @IsEnum(SALES_ORDER_STATUSES)
