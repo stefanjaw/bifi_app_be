@@ -45,4 +45,19 @@ export class ProductRouter extends BaseRoutes<ProductDocument> {
       this.controller.update,
     );
   }
+
+  /**
+   * Registers the standard CRUD routes (via super) plus a custom
+   * GET /inventory/products/:id/stock-summary endpoint that returns the
+   * aggregated stock summary for a product. Permission-gated with the same
+   * `inventory/products:read` policy as the standard getById route.
+   */
+  protected override initRoutes(): void {
+    super.initRoutes();
+    this.router.get(
+      `${this.endpoint}/:id/stock-summary`,
+      authorizeMiddleware(this.resource, "read"),
+      productController.getStockSummary,
+    );
+  }
 }

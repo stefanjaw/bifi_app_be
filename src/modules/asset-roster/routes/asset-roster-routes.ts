@@ -35,10 +35,12 @@ export class AssetRosterRouter extends BaseRoutes<AssetRosterDocument> {
   override initPutRoute() {
     this.router.put(
       this.endpoint,
-      withAlsContext(this.upload.fields([
-        { name: "photo", maxCount: 1 },
-        { name: "attachments", maxCount: 10 },
-      ])),
+      withAlsContext(
+        this.upload.fields([
+          { name: "photo", maxCount: 1 },
+          { name: "attachments", maxCount: 10 },
+        ]),
+      ),
       validateBodyMiddleware(this.dtoUpdateClass),
       authorizeMiddleware(this.resource, "update"),
       this.controller.update,

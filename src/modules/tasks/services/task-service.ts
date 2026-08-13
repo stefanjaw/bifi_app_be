@@ -162,7 +162,7 @@ export class TaskService extends BaseService<TaskDocument> {
           context: { assignee: data.assigned, creator: actorId },
           title: "Task assigned to you",
           body: `A new task has been assigned to you.`,
-            link: `/tasks/view?id=${created._id}`,
+          link: `/tasks/view?id=${created._id}`,
           module: "tasks",
         });
       }

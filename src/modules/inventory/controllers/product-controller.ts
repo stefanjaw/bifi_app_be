@@ -105,4 +105,18 @@ export class ProductController extends BaseController<ProductDocument> {
 
     await super.updateHandler(req, res, next);
   }
+
+  /** Express handler — returns the aggregated stock summary for a product by id. */
+  getStockSummary = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const summary = await productService.getStockSummary(req.params.id);
+      this.sendData(res, summary);
+    } catch (error) {
+      next(error);
+    }
+  };
 }

@@ -1,10 +1,17 @@
-import { BaseService, runTransaction, ValidationException } from "../../../system";
+import {
+  BaseService,
+  runTransaction,
+  ValidationException,
+} from "../../../system";
 import {
   salesOrderStageModel,
   SalesOrderStageDocument,
 } from "../models/sales-order-stage.model";
 import { ClientSession } from "mongoose";
-import { SalesOrderStageDTO, UpdateSalesOrderStageDTO } from "../models/sales-order-stage.dto";
+import {
+  SalesOrderStageDTO,
+  UpdateSalesOrderStageDTO,
+} from "../models/sales-order-stage.dto";
 
 export class SalesOrderStageService extends BaseService<SalesOrderStageDocument> {
   constructor() {
