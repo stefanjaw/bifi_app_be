@@ -54,17 +54,21 @@ export async function getChromiumExecutablePath(): Promise<string> {
 
 /**
  * Default Puppeteer launch arguments.
- * Merges `@sparticuz/chromium` args (if available) with sandbox flags.
+ * Merges `@sparticuz/chromium` args (if available) with sandbox-safe flags.
+ * `--no-sandbox` is intentionally NOT included — the container must be run
+ * with the kernel capabilities Chrome needs (`--cap-add=SYS_ADMIN` or a
+ * seccomp profile) rather than disabling the sandbox. See C8.
  */
 export function getLaunchArgs(): string[] {
   const base = [
-    "--no-sandbox",
     "--disable-setuid-sandbox",
     "--disable-dev-shm-usage",
   ];
 
   try {
     const chromium = require("@sparticuz/chromium");
+    // @sparticuz/chromium args already exclude --no-sandbox for Lambda environments.
+    // For containerized deployments, add SYS_ADMIN capability or a seccomp profile.
     return [...chromium.args, ...base];
   } catch {
     return base;

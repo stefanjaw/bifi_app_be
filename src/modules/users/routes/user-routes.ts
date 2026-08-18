@@ -4,6 +4,7 @@ import { UserController } from "../controllers/user-controller";
 import {
   UpdateUserLanguageDTO,
   UpdateUserDTO,
+  UpdateProfileDTO,
   UserDTO,
 } from "../models/user.dto";
 
@@ -39,7 +40,11 @@ export class UserRouter extends BaseRoutes<UserDocument> {
     );
   }
 
-  // !!! wont have authorization, all users can update their profile
+  // Self-scoped profile endpoints. Auth is enforced via the global
+  // authenticateMiddleware (registered before routes in app.ts), and the
+  // service-layer ownership check ensures a user can only touch their own
+  // record. The dedicated UpdateProfileDTO prevents privilege-bearing fields
+  // (roles, active, confirmed, authId, provider, email) from being submitted.
   initGetProfileRoute(): void {
     this.router.get(this.endpoint + "/profile/", userController.getProfile);
   }
@@ -48,7 +53,7 @@ export class UserRouter extends BaseRoutes<UserDocument> {
     this.router.put(
       this.endpoint + "/profile",
       this.upload.any(),
-      validateBodyMiddleware(this.dtoUpdateClass),
+      validateBodyMiddleware(UpdateProfileDTO),
       userController.updateProfile,
     );
   }

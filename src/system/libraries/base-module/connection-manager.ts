@@ -7,6 +7,14 @@ export class ConnectionManager {
   private static dbCache: Record<string, mongoose.Connection> = {};
 
   /**
+   * Upper bound on the number of cached tenant connections. Prevents unbounded
+   * growth from an attacker-supplied `dbname` header (see C3) or a misconfigured
+   * proxy. When the cap is reached, new entries are refused — callers see the
+   * existing entry for the requested db or a thrown InternalServerException.
+   */
+  private static readonly MAX_DB_CACHE_SIZE = 32;
+
+  /**
    * Returns the default database name from the root mongoose connection.
    * @returns The default database name string, or undefined if no connection exists.
    */
@@ -16,13 +24,22 @@ export class ConnectionManager {
 
   /**
    * Gets the mongoose database connection for the given database name.
-   * If the connection does not exist, it creates a new connection and caches it.
+   * If the connection does not exist, it creates a new connection and caches it,
+   * up to MAX_DB_CACHE_SIZE entries. Above the cap, new entries are refused.
    * @param dbName - The name of the database to use.
    * @returns The mongoose database connection for the given database name.
+   * @throws {InternalServerException} If the cache cap has been reached for a new db.
    * @private
    */
   private getDbByName(dbName: string) {
     if (!ConnectionManager.dbCache[dbName]) {
+      const currentSize = Object.keys(ConnectionManager.dbCache).length;
+      if (currentSize >= ConnectionManager.MAX_DB_CACHE_SIZE) {
+        throw new InternalServerException(
+          `Tenant DB cache cap (${ConnectionManager.MAX_DB_CACHE_SIZE}) reached — refusing to open new connection for "${dbName}"`,
+        );
+      }
+
       ConnectionManager.dbCache[dbName] = mongoose.connection.useDb(dbName);
 
       const db = ConnectionManager.dbCache[dbName];

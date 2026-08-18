@@ -104,6 +104,9 @@ function evaluateCondition(
   const key = condition.key;
   const operator = condition.operator;
 
+  // NOTE: variable names are swapped relative to the frontend's evaluator
+  // (frontend: left=resource, right=policy; backend: right=resource, left=policy)
+  // but the comparisons produce the same result: resourceValue OPERATOR policyValue.
   const right = resourceData[key];
   const left = resolveConditionValue(
     condition.value,
@@ -112,7 +115,7 @@ function evaluateCondition(
     context,
   );
 
-  if (!(key in document)) return false;
+  if (!(key in resourceData)) return false;
 
   switch (operator) {
     case "==":

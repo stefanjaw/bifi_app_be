@@ -7,11 +7,28 @@ import admin from "firebase-admin";
 import { FirebaseAppError } from "firebase-admin/app";
 
 const ignoreEndpoints: { endpoint: string; method: string }[] = [
-  { endpoint: "/templates", method: "GET" },
-  { endpoint: "/health-check", method: "GET" },
-  { endpoint: "/report-bug", method: "POST" },
-  { endpoint: "/translations/scope", method: "GET" },
+  { endpoint: "/api/templates", method: "GET" },
+  { endpoint: "/api/health-check", method: "GET" },
+  { endpoint: "/api/report-bug", method: "POST" },
+  { endpoint: "/api/translations/scope", method: "GET" },
 ];
+
+/**
+ * Parses the TENANT_DB_NAMES env var (comma-separated) into a Set for O(1) lookup.
+ * Returns null when the variable is unset or empty — callers should treat this as
+ * "allowlist disabled, header rejected fail-closed" when in production, or
+ * "no allowlist configured, accept any" when in non-production (for dev convenience).
+ */
+function getAllowedDbNames(): Set<string> | null {
+  const raw = process.env.TENANT_DB_NAMES;
+  if (!raw || !raw.trim()) return null;
+  return new Set(
+    raw
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean),
+  );
+}
 
 /**
  * Middleware to authenticate requests using a Firebase Authentication token.
@@ -28,17 +45,28 @@ export function authenticateMiddleware(userService: UserService) {
 
     if (
       ignoreEndpoints.some(
-        (x) => req.path.includes(x.endpoint) && req.method === x.method,
+        (x) => req.path === x.endpoint && req.method === x.method,
       )
     ) {
       next();
       return;
     }
 
-    // TODO: this is momentary
+    // TODO: this is momentary — the upstream proxy should strip client-supplied
+    // `dbname` headers and inject the tenant binding server-side. Until then,
+    // validate the header against an allowlist (TENANT_DB_NAMES env var) so an
+    // arbitrary value cannot silently instantiate a new database handle.
     const dbNameHeader: string = req.headers["dbname"] as string;
 
     if (dbNameHeader && storage) {
+      const allowed = getAllowedDbNames();
+      if (allowed !== null && !allowed.has(dbNameHeader)) {
+        next(new UnauthorizedException("Unauthorized"));
+        return;
+      }
+      // When allowlist is null (unset/empty), accept the header as before so
+      // existing dev workflows keep working. Document that production must set
+      // TENANT_DB_NAMES to fail-closed on unknown tenants.
       storage.dbName = dbNameHeader;
     }
 
@@ -102,11 +130,37 @@ export function authenticateMiddleware(userService: UserService) {
         )?.[0];
       };
 
-      if (!user && firebaseUser.email) {
+      if (!user && firebaseUser.email && firebaseUser.email_verified === true) {
         user = (await rebindExistingByEmail(firebaseUser.email))!;
       }
 
       if (!user) {
+        // Auto-provisioning gate: by default, refuse unknown uids so an open
+        // Firebase signup cannot silently mint an application account. Set
+        // AUTO_PROVISION_EMAIL_DOMAINS (comma-separated) to allow self-provision
+        // for specific email domains (e.g. "yourcompany.com").
+        const allowedDomainsRaw = process.env.AUTO_PROVISION_EMAIL_DOMAINS || "";
+        const allowedDomains = new Set(
+          allowedDomainsRaw
+            .split(",")
+            .map((s) => s.trim().toLowerCase())
+            .filter(Boolean),
+        );
+        const emailDomain = (firebaseUser.email || "").split("@")[1]?.toLowerCase();
+        const mayAutoProvision =
+          allowedDomains.size > 0 &&
+          emailDomain !== undefined &&
+          allowedDomains.has(emailDomain);
+
+        if (!mayAutoProvision) {
+          next(
+            new UnauthorizedException(
+              "Unauthorized — account not provisioned. Contact an administrator.",
+            ),
+          );
+          return;
+        }
+
         const [fName, lName] = (firebaseUser.name || " ").split(" ");
 
         try {
@@ -134,7 +188,8 @@ export function authenticateMiddleware(userService: UserService) {
           // than failing the login.
           if (
             (createError as { code?: number })?.code === 11000 &&
-            firebaseUser.email
+            firebaseUser.email &&
+            firebaseUser.email_verified === true
           ) {
             user = (await rebindExistingByEmail(firebaseUser.email))!;
           }

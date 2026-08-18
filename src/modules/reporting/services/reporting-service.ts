@@ -9,6 +9,7 @@ import {
   getLaunchArgs,
 } from "../../../system/libraries/pdf";
 import { ClientSession } from "mongoose";
+import type mongoose from "mongoose";
 import puppeteer from "puppeteer";
 import dayjs from "dayjs";
 import { reportingModel } from "../models/reporting.model";
@@ -150,7 +151,7 @@ export class ReportingService extends BaseService<ReportingDocument> {
           throw new ValidationException("Template's model is not valid");
 
         // finding data
-        const model = this.connectionManager.getModel<Document>(
+        const model = this.connectionManager.getModel<mongoose.Document>(
           reportingTemplate.model,
         );
 
@@ -175,29 +176,47 @@ export class ReportingService extends BaseService<ReportingDocument> {
         const html = template({ items: data });
 
         // generate pdf buffer
-        const browser = await puppeteer.launch({
-          executablePath: await getChromiumExecutablePath(),
-          args: getLaunchArgs(),
-          headless: true,
-        });
+        // Timeout prevents a malicious template that never settles from
+        // holding a Chrome process open (C8). browser.close() is in a finally
+        // block so the process is always released, even on throw.
+        const PDF_TIMEOUT_MS = 30_000;
+        let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
 
-        const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: "domcontentloaded" });
+        try {
+          browser = await puppeteer.launch({
+            executablePath: await getChromiumExecutablePath(),
+            args: getLaunchArgs(),
+            headless: true,
+          });
 
-        const pdfBuffer = await page.pdf({
-          format: "TABLOID",
-          printBackground: true,
-          margin: {
-            top: "20px",
-            bottom: "20px",
-            left: "20px",
-            right: "20px",
-          },
-        });
+          const page = await browser.newPage();
+          await page.setContent(html, {
+            waitUntil: "domcontentloaded",
+            timeout: PDF_TIMEOUT_MS,
+          });
 
-        await browser.close();
+          const pdfBuffer = await page.pdf({
+            format: "TABLOID",
+            printBackground: true,
+            timeout: PDF_TIMEOUT_MS,
+            margin: {
+              top: "20px",
+              bottom: "20px",
+              left: "20px",
+              right: "20px",
+            },
+          });
 
-        return pdfBuffer;
+          return pdfBuffer;
+        } finally {
+          if (browser) {
+            try {
+              await browser.close();
+            } catch {
+              // best-effort close — the process may already be dead
+            }
+          }
+        }
       },
     );
   }

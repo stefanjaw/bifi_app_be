@@ -9,7 +9,7 @@ import {
 import { userModel } from "../models/user.model";
 import mongoose, { ClientSession } from "mongoose";
 import admin from "firebase-admin";
-import { UpdateUserDTO, UserDTO } from "../models/user.dto";
+import { UpdateUserDTO, UpdateProfileDTO, UserDTO } from "../models/user.dto";
 import { ContactService } from "../../contacts/services/contact-service";
 
 export class UserService extends BaseService<UserDocument> {
@@ -138,8 +138,22 @@ export class UserService extends BaseService<UserDocument> {
     return await runTransaction<UserDocument>(session, async (newSession) => {
       const bucket = this.connectionManager.bindBucketToDb();
 
-      // Prevent updating authId through this method
-      if (data.authId) delete data.authId;
+      // Strip privilege-bearing fields that must never be set via a generic
+      // update payload. `roles`, `active`, `confirmed`, `authId`, `provider`,
+      // and `email` are admin-only — see C6. BaseService.update passes the
+      // raw object to findByIdAndUpdate, so this is the last line of defense.
+      const FORBIDDEN_UPDATE_FIELDS = [
+        "authId",
+        "roles",
+        "active",
+        "confirmed",
+        "provider",
+        "email",
+      ] as const;
+      for (const field of FORBIDDEN_UPDATE_FIELDS) {
+        if (field in data)
+          delete (data as unknown as Record<string, unknown>)[field];
+      }
 
       let contactId: string | undefined = data.contactId;
 
@@ -215,7 +229,7 @@ export class UserService extends BaseService<UserDocument> {
   }
 
   async updateProfile(
-    data: UpdateUserDTO,
+    data: UpdateProfileDTO,
     session?: mongoose.ClientSession | undefined,
   ): Promise<UserDocument> {
     return await runTransaction<UserDocument>(session, async (newSession) => {
@@ -224,7 +238,10 @@ export class UserService extends BaseService<UserDocument> {
           "The logged user can update only the own profile",
         );
 
-      return this.update(data, newSession);
+      // UpdateProfileDTO only exposes picture/language/contactInformation,
+      // and UserService.update strips privilege-bearing fields as a second
+      // line of defense. Cast to UpdateUserDTO for the call.
+      return this.update(data as unknown as UpdateUserDTO, newSession);
     });
   }
 }

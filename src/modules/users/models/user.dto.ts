@@ -94,6 +94,41 @@ export class UpdateUserDTO extends PartialType(UserDTO) {
   _id!: string;
 }
 
+/**
+ * Dedicated DTO for the self-service `PUT /users/profile` endpoint.
+ * Exposes only the fields a user may edit on their own profile — never
+ * `roles`, `active`, `confirmed`, `authId`, `provider`, or `email`, which
+ * are privilege-bearing and must be admin-only. Inherits the picture,
+ * language, and contactInformation fields from UserDTO.
+ */
+export class UpdateProfileDTO {
+  @IsMongoId()
+  _id!: string;
+
+  @IsString()
+  @IsOptional()
+  picture?: string;
+
+  @IsMongoId()
+  @IsOptional()
+  uploadedPictureId?: string;
+
+  @IsString()
+  @IsOptional()
+  language?: string;
+
+  @Transform(({ value }) =>
+    plainToInstance(
+      UserContactInformationDTO,
+      typeof value === "string" ? JSON.parse(value) : value,
+    ),
+  )
+  @Type(() => UserContactInformationDTO)
+  @ValidateNested()
+  @IsOptional()
+  contactInformation?: UserContactInformationDTO;
+}
+
 export class UpdateUserLanguageDTO {
   @IsString()
   @IsNotEmpty()

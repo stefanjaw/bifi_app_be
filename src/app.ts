@@ -161,6 +161,17 @@ const MONGO_DB_URL =
 const FIREBASE_SERVICE_ACCOUNT =
   process.env.FIREBASE_SERVICE_ACCOUNT || "../firebase-admin-sdk.json";
 
+// Refuse to boot with RBAC disabled in production — authorization must be explicit.
+if (
+  process.env.NODE_ENV === "production" &&
+  process.env.RBAC_ENABLE !== "true"
+) {
+  console.error(
+    "FATAL: RBAC_ENABLE must be \"true\" when NODE_ENV=production. Aborting startup.",
+  );
+  process.exit(1);
+}
+
 // load firebase account
 admin.initializeApp({
   credential: admin.credential.cert(JSON.parse(FIREBASE_SERVICE_ACCOUNT)),
