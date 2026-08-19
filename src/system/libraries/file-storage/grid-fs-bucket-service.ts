@@ -1,5 +1,6 @@
 import { Db, GridFSBucket } from "mongodb";
 import { Types } from "mongoose";
+import { userStorage } from "../auth/user-storage";
 import {
   InternalServerException,
   NotFoundException,
@@ -38,6 +39,7 @@ export class GridFSBucketService {
               mimetype: file.mimetype,
               originalname: file.originalname,
               size: file.size,
+              uploadedBy: userStorage.getStore()?.user?._id,
             },
           })
         : this.bucket.openUploadStream(file.name, {
@@ -46,6 +48,7 @@ export class GridFSBucketService {
               mimetype: file.type,
               originalname: file.name,
               size: file.size,
+              uploadedBy: userStorage.getStore()?.user?._id,
             },
           });
 

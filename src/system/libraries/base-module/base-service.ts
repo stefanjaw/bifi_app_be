@@ -6,6 +6,14 @@ import { ConnectionManager } from "./connection-manager";
 import { ClientSession, FilterQuery, PaginateModel } from "mongoose";
 import { PaginateResult } from "mongoose";
 
+/**
+ * System fields that must never arrive through a mass-assignment update.
+ * __v is managed by Mongoose versioning; timestamps by Mongoose plugins;
+ * audit fields (createdBy, updatedBy) are set server-side by overrides;
+ * active controls soft-delete via BaseService.delete(). (C6)
+ */
+const STRIP_FIELDS = ["__v", "createdAt", "updatedAt", "createdBy"] as const;
+
 export class BaseService<T> {
   protected connectionManager = new ConnectionManager();
 
@@ -241,6 +249,15 @@ export class BaseService<T> {
       // check _id and get it
       const _id = data._id;
       delete data._id;
+
+      // Strip system-managed fields to prevent mass-assignment. These fields
+      // are controlled by Mongoose (timestamps, versioning) or set server-side
+      // by module overrides (createdBy, active for soft-delete). Module-specific
+      // forbidden fields (e.g. roles on User) are handled in each service's
+      // own update() override. (C6)
+      for (const field of STRIP_FIELDS) {
+        delete data[field];
+      }
 
       const record = await model.findByIdAndUpdate(_id, data, {
         session: newSession,

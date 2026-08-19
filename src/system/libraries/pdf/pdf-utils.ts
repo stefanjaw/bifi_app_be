@@ -1,5 +1,6 @@
 import { existsSync, readdirSync } from "fs";
 import * as nodePath from "path";
+import type { Page } from "puppeteer";
 import { InternalServerException } from "../exceptions/service-exception";
 
 let _resolvedPath: string | null = null;
@@ -73,4 +74,68 @@ export function getLaunchArgs(): string[] {
   } catch {
     return base;
   }
+}
+
+/**
+ * Checks whether a hostname belongs to a private/internal IP range.
+ * Used by {@link blockPrivateNetworkRequests} to prevent SSRF from
+ * user-authored content rendered in Chrome (C8).
+ * @param hostname - The hostname to check.
+ * @returns True if the hostname is private, loopback, link-local, or cloud metadata.
+ */
+function isPrivateHost(hostname: string): boolean {
+  const h = hostname.toLowerCase();
+  if (
+    h === "localhost" ||
+    h === "127.0.0.1" ||
+    h === "::1" ||
+    h === "0.0.0.0"
+  )
+    return true;
+
+  // RFC 1918 + link-local + cloud metadata
+  if (
+    h.startsWith("10.") ||
+    h.startsWith("192.168.") ||
+    h === "169.254.169.254" || // AWS/GCP metadata
+    h === "metadata.google.internal" || // GCP metadata
+    h.endsWith(".internal") ||
+    h.endsWith(".local")
+  )
+    return true;
+
+  // 172.16.0.0/12
+  if (h.startsWith("172.")) {
+    const second = parseInt(h.split(".")[1], 10);
+    if (second >= 16 && second <= 31) return true;
+  }
+
+  return false;
+}
+
+/**
+ * Intercepts all network requests on a Puppeteer page and blocks any
+ * targeting private, loopback, link-local, or cloud-metadata hostnames.
+ * Prevents SSRF when rendering user-authored HTML in Chrome (C8).
+ *
+ * Must be called after `browser.newPage()` and before `page.setContent()`.
+ * @param page - The Puppeteer page to protect.
+ */
+export async function blockPrivateNetworkRequests(
+  page: Page,
+): Promise<void> {
+  await page.setRequestInterception(true);
+  page.on("request", (req) => {
+    try {
+      const url = new URL(req.url());
+      if (isPrivateHost(url.hostname)) {
+        req.abort("blockedbyclient").catch(() => {});
+      } else {
+        req.continue().catch(() => {});
+      }
+    } catch {
+      // Invalid URL — abort as a safety measure
+      req.abort("blockedbyclient").catch(() => {});
+    }
+  });
 }

@@ -5,6 +5,7 @@ import {
   ValidationException,
 } from "../../../system";
 import {
+  blockPrivateNetworkRequests,
   getChromiumExecutablePath,
   getLaunchArgs,
 } from "../../../system/libraries/pdf";
@@ -212,6 +213,8 @@ export class ReportingService extends BaseService<ReportingDocument> {
           });
 
           const page = await browser.newPage();
+          await page.setJavaScriptEnabled(false);
+          await blockPrivateNetworkRequests(page);
           await page.setContent(html, {
             waitUntil: "domcontentloaded",
             timeout: PDF_TIMEOUT_MS,
