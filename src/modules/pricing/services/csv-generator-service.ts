@@ -51,7 +51,7 @@ export class CsvGeneratorService {
       });
     }
 
-    const csv = json2csv(rows);
+    const csv = json2csv(rows, { preventCsvInjection: true });
     return Buffer.from(csv, "utf-8");
   }
 }

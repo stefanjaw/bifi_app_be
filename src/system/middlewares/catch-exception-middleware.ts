@@ -27,7 +27,7 @@ export const catchExceptionMiddleware = (
     res.status(500).json({
       error: true,
       message:
-        "Something v2 went wrong processing your request... An internal server error occurred",
+        "An internal server error occurred",
       errors: [],
       errorCount: 0,
     });

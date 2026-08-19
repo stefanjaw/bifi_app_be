@@ -39,7 +39,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
     this.router.put(
       `${this.endpoint}/from-file/:id`,
       this.upload.array("files"),
-      authorizeMiddleware(`${this.resource}/from-file/:id`, "update"),
+      authorizeMiddleware(`${this.resource}/from-file`, "update"),
       (this.controller as ShippingController).generateShippingFromFile,
     );
   }
@@ -49,7 +49,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
       `${this.endpoint}/hs-code/generate`,
       this.upload.any(),
       validateBodyMiddleware(HScodeDTO),
-      authorizeMiddleware(`${this.resource}/hs-code/generate/:id`, "update"),
+      authorizeMiddleware(`${this.resource}/hs-code/generate`, "update"),
       (this.controller as ShippingController).generateHSCodesForShipping,
     );
   }
@@ -59,7 +59,7 @@ export class ShippingRouter extends BaseRoutes<ShippingDocument> {
       `${this.endpoint}/tariff/generate`,
       this.upload.any(),
       validateBodyMiddleware(HScodeDTO),
-      authorizeMiddleware(`${this.resource}/tariff/generate/:id`, "update"),
+      authorizeMiddleware(`${this.resource}/tariff/generate`, "update"),
       (this.controller as ShippingController).generateTariffForShipping,
     );
   }

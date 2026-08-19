@@ -109,7 +109,6 @@ export class BaseController<T> {
             JSON.parse(this.normalize(req.query.searchParams as string)),
           )
         : {};
-      console.log("🚀 ~ BaseController ~ getHandler ~ searchParams:", searchParams)
       const paginationOptions = req.query.paginationOptions
         ? capPaginationLimit(
             JSON.parse(this.normalize(req.query.paginationOptions as string)),

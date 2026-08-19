@@ -14,6 +14,7 @@ import puppeteer from "puppeteer";
 import dayjs from "dayjs";
 import { reportingModel } from "../models/reporting.model";
 import Handlebars from "handlebars";
+import sanitizeHtml from "sanitize-html";
 import { ReportingDocument } from "@mongodb-types";
 import { ReportingDTO, UpdateReportingDTO } from "../models/reporting.dto";
 
@@ -171,9 +172,30 @@ export class ReportingService extends BaseService<ReportingDocument> {
             .session(newSession)
         ).map((doc) => doc.toObject());
 
-        // generate html
+        // generate html — sanitize to block triple-stache unescaped output
+        // and script injection from user-authored templates (M5)
         const template = Handlebars.compile(reportingTemplate.template);
-        const html = template({ items: data });
+        const html = sanitizeHtml(template({ items: data }), {
+          allowedTags: sanitizeHtml.defaults.allowedTags.concat([
+            "table",
+            "thead",
+            "tbody",
+            "tr",
+            "th",
+            "td",
+            "style",
+            "h1",
+            "h2",
+            "h3",
+            "h4",
+            "h5",
+            "h6",
+          ]),
+          allowedAttributes: {
+            ...sanitizeHtml.defaults.allowedAttributes,
+            "*": ["style", "class", "id"],
+          },
+        });
 
         // generate pdf buffer
         // Timeout prevents a malicious template that never settles from

@@ -194,8 +194,21 @@ app.use((req, res, next) => {
   );
 });
 
-// enable morgan
-app.use(morgan("dev"));
+// enable morgan — strip control characters to prevent log forging (M7)
+const sanitizeLog = (s: string) => s.replace(/[\x00-\x1f\x7f-\x9f]/g, "");
+app.use(
+  morgan((tokens, req, res) => {
+    return [
+      tokens.method(req, res),
+      sanitizeLog(tokens.url(req, res) ?? ""),
+      tokens.status(req, res),
+      tokens.res(req, res, "content-length"),
+      "-",
+      tokens["response-time"](req, res),
+      "ms",
+    ].join(" ");
+  }),
+);
 
 // security headers (H5)
 app.use(helmet());

@@ -314,7 +314,7 @@ export class BaseService<T> {
         }
       }
 
-      const csv = json2csv(data, { keys });
+      const csv = json2csv(data, { keys, preventCsvInjection: true });
       return Buffer.from(csv, "utf-8");
     } catch (err) {
       throw err;

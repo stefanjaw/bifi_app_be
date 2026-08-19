@@ -154,13 +154,13 @@ function resolveConditionValue(
   resourceData: Record<string, any>,
   context: object = {},
 ) {
-  // Ejemplo {{user.id}}
+  // Example {{user.id}}
   if (
     typeof value === "string" &&
     value.startsWith("{{") &&
     value.endsWith("}}")
   ) {
-    const path = value.slice(2, -2).trim(); // ej: "user.id"
+    const path = value.slice(2, -2).trim(); // e.g. "user.id"
     const [root, ...rest] = path.split(".");
 
     let source: any;

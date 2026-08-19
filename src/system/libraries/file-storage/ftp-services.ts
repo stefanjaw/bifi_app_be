@@ -117,8 +117,6 @@ export class FTPService {
       }
 
       await client.uploadFrom(stream, `${this.createPath(path)}/${name}`);
-    } catch (error) {
-      throw error;
     } finally {
       client?.close();
     }
@@ -150,8 +148,6 @@ export class FTPService {
 
       await client.downloadTo(writable, `${this.createPath(path)}/${name}`);
       return Buffer.concat(chunks);
-    } catch (error) {
-      throw error;
     } finally {
       client?.close();
     }
@@ -222,8 +218,6 @@ export class FTPService {
       }
 
       return response;
-    } catch (error) {
-      throw error;
     } finally {
       client?.close();
     }
@@ -261,8 +255,6 @@ export class FTPService {
           await this.safeMove(client, from, to);
         }
       }
-    } catch (error) {
-      throw error;
     } finally {
       client?.close();
     }
