@@ -1,11 +1,41 @@
 import { BaseController } from "./base-controller";
 import { Router } from "express";
 import multer from "multer";
+import rateLimit from "express-rate-limit";
 import {
   authorizeMiddleware,
   validateBodyMiddleware,
   validateAndTransformCSVMiddleware,
 } from "../../middlewares";
+
+/**
+ * Shared multer instance with file size and count limits. (H6)
+ * Memory storage (default) is kept — files are streamed to GridFS by the service.
+ * 10 MB per file, max 10 files per request.
+ */
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILES = 10;
+
+/**
+ * Rate limiter applied to file upload routes (POST, PUT with multipart).
+ * Limits each client to 200 uploads per 15-minute window. (H5)
+ */
+const uploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: true, message: "Too many upload requests." },
+});
+
+export function createUploadMiddleware() {
+  return multer({
+    limits: {
+      fileSize: MAX_FILE_SIZE,
+      files: MAX_FILES,
+    },
+  });
+}
 
 export class BaseRoutes<T> {
   controller!: BaseController<T>;
@@ -15,7 +45,7 @@ export class BaseRoutes<T> {
   csvDtoClass?: new () => any;
 
   protected router = Router();
-  protected upload = multer();
+  protected upload = createUploadMiddleware();
   protected resource!: string;
 
   /**
@@ -110,6 +140,7 @@ export class BaseRoutes<T> {
   protected initPostRoute(): void {
     this.router.post(
       this.endpoint,
+      uploadLimiter,
       this.upload.any(),
       validateBodyMiddleware(this.dtoCreateClass),
       authorizeMiddleware(this.resource, "create"),
@@ -143,6 +174,7 @@ export class BaseRoutes<T> {
   protected initPutRoute(): void {
     this.router.put(
       this.endpoint,
+      uploadLimiter,
       this.upload.any(),
       validateBodyMiddleware(this.dtoUpdateClass),
       authorizeMiddleware(this.resource, "update"),

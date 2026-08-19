@@ -38,13 +38,23 @@ export class FileController {
 
       const { file, bufferDownload } = await bucket.downloadFile(id);
 
-      res.setHeader(
-        "Content-Type",
-        file.metadata?.mimetype || "application/octet-stream",
-      );
+      const mimetype = file.metadata?.mimetype || "application/octet-stream";
+      const isImage = mimetype.startsWith("image/");
+
+      res.setHeader("Content-Type", mimetype);
+      // Serve images inline (needed for <img> display), but force attachment
+      // for all other types to prevent stored XSS via uploaded HTML/script
+      // files rendered on the API origin. (H7)
       res.setHeader(
         "Content-Disposition",
-        `inline; filename="${file.filename}"`,
+        isImage
+          ? `inline; filename="${file.filename}"`
+          : `attachment; filename="${file.filename}"`,
+      );
+      // Restrict what the browser can do with the response. (H7)
+      res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'",
       );
 
       // Write the buffer to the response

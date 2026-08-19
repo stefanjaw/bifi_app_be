@@ -6,6 +6,8 @@ dotenv.config();
 import mongoose from "mongoose";
 import morgan from "morgan";
 import cors from "cors";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import {
   authenticateMiddleware,
   catchExceptionMiddleware,
@@ -167,7 +169,7 @@ if (
   process.env.RBAC_ENABLE !== "true"
 ) {
   console.error(
-    "FATAL: RBAC_ENABLE must be \"true\" when NODE_ENV=production. Aborting startup.",
+    'FATAL: RBAC_ENABLE must be "true" when NODE_ENV=production. Aborting startup.',
   );
   process.exit(1);
 }
@@ -195,10 +197,40 @@ app.use((req, res, next) => {
 // enable morgan
 app.use(morgan("dev"));
 
-// enable cors
+// security headers (H5)
+app.use(helmet());
+
+// rate limiting on sensitive endpoints (H5)
+// Skip public, high-frequency endpoints (translations, languages) that fire
+// many requests per page load and don't carry user credentials.
+const PUBLIC_SKIP_PATHS = new Set(["/translations/scope", "/languages"]);
+
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: ({ url }) => PUBLIC_SKIP_PATHS.has(url.split("?")[0]),
+  message: {
+    error: true,
+    message: "Too many requests, please try again later.",
+  },
+});
+
+// enable cors — restrict to known frontend origins. (H4)
+// CORS_ORIGINS is a comma-separated list (e.g. "http://localhost:4200,https://app.example.com").
+// When unset/empty, falls back to localhost for dev. Production MUST set this.
+const corsOriginsRaw = process.env.CORS_ORIGINS || "";
+const corsOrigins =
+  corsOriginsRaw.trim().length > 0
+    ? corsOriginsRaw
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean)
+    : ["http://localhost:4200", "http://localhost:8080"];
 app.use(
   cors({
-    origin: "*",
+    origin: corsOrigins,
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     exposedHeaders: ["Content-Disposition"],
   }),
@@ -211,6 +243,9 @@ app.use("/api", new EmailMarketingPublicRouter().getRouter);
 
 // public, unauthenticated CR E-Invoice Hacienda callback
 app.use("/api", new CrEinvoicePublicRouter().getRouter);
+
+// apply general API rate limiter to all authenticated routes
+app.use("/api", apiLimiter);
 
 app.use(authenticateMiddleware(new UserService()));
 

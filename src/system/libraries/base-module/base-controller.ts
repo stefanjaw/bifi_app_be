@@ -1,7 +1,60 @@
 import mongoose from "mongoose";
 import { ValidationException } from "../exceptions/service-exception";
 import { BaseService } from "./base-service";
+import { paginationOptions } from "./query-options.type";
 import { NextFunction, Request, Response } from "express";
+
+/**
+ * Maximum number of records a single paginated request can return.
+ * Prevents clients from materializing entire collections via `?limit=1000000`. (H3)
+ */
+const MAX_PAGE_LIMIT = 100;
+
+/**
+ * Operators that can execute code or run aggregation pipelines.
+ * Blocked from client-supplied `searchParams` as a security measure. (H2)
+ */
+const BLOCKED_OPERATORS = new Set([
+  "$expr",
+  "$where",
+  "$function",
+  "$accumulator",
+]);
+
+/**
+ * Removes dangerous operators from a Mongoose filter object.
+ * Blocks operators that can execute code or run aggregation pipelines
+ * (`$expr`, `$where`, `$function`, `$accumulator`) from client-supplied
+ * `searchParams`. Legitimate Mongoose operators (`$or`, `$and`, `$regex`,
+ * `$in`, `$ne`, `$gt`, etc.) pass through unchanged. (H2)
+ * @param obj - The parsed searchParams object.
+ * @returns The sanitized object with dangerous operators removed.
+ */
+function sanitizeSearchParams(obj: any): Record<string, any> {
+  if (obj !== null && typeof obj === "object" && !Array.isArray(obj)) {
+    const clean: Record<string, any> = {};
+    for (const key of Object.keys(obj)) {
+      if (BLOCKED_OPERATORS.has(key)) continue;
+      clean[key] = obj[key];
+    }
+    return clean;
+  }
+  return obj as Record<string, any>;
+}
+
+/**
+ * Caps the `limit` field in pagination options to MAX_PAGE_LIMIT. (H3)
+ * @param opts - The parsed paginationOptions object.
+ * @returns The paginationOptions with `limit` clamped, matching the `paginationOptions` type.
+ */
+function capPaginationLimit(
+  opts: Record<string, any>,
+): paginationOptions & { paginate: true } {
+  if (opts && typeof opts.limit === "number") {
+    opts.limit = Math.min(opts.limit, MAX_PAGE_LIMIT);
+  }
+  return opts as paginationOptions & { paginate: true };
+}
 
 export class BaseController<T> {
   service!: BaseService<T>;
@@ -52,23 +105,39 @@ export class BaseController<T> {
     try {
       // get elements
       const searchParams = req.query.searchParams
-        ? JSON.parse(this.normalize(req.query.searchParams as string))
+        ? sanitizeSearchParams(
+            JSON.parse(this.normalize(req.query.searchParams as string)),
+          )
         : {};
+      console.log("🚀 ~ BaseController ~ getHandler ~ searchParams:", searchParams)
       const paginationOptions = req.query.paginationOptions
-        ? JSON.parse(this.normalize(req.query.paginationOptions as string))
-        : {};
+        ? capPaginationLimit(
+            JSON.parse(this.normalize(req.query.paginationOptions as string)),
+          )
+        : undefined;
       const orderBy = req.query.orderBy
         ? JSON.parse(this.normalize(req.query.orderBy as string))
-        : {};
+        : undefined;
       const count = req.query.count === "true" ? true : false;
 
-      const records = await this.service.get(
-        searchParams,
-        paginationOptions,
-        orderBy,
-        count,
-        undefined,
-      );
+      let records;
+      if (paginationOptions) {
+        records = await this.service.get(
+          searchParams,
+          paginationOptions,
+          orderBy,
+          count,
+          undefined,
+        );
+      } else {
+        records = await this.service.get(
+          searchParams,
+          undefined,
+          orderBy,
+          count,
+          undefined,
+        );
+      }
 
       this.sendData(res, records);
     } catch (error: any) {

@@ -2,6 +2,7 @@ import {
   BaseService,
   NotFoundException,
   ValidationException,
+  userStorage,
 } from "../../../system";
 import {
   emailCampaignModel,
@@ -15,7 +16,10 @@ import { emailEventModel } from "../models/email-event.model";
 import { EmailSettingsService } from "./email-settings-service";
 import { createSender } from "../senders/sender-factory";
 import { EmailSettingsDocument } from "../models/email-settings.model";
-import { createUnsubscribeToken } from "../libraries/unsubscribe-token";
+import {
+  createUnsubscribeToken,
+  signValue,
+} from "../libraries/unsubscribe-token";
 
 export interface SendSummary {
   recipients: number;
@@ -55,11 +59,18 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
       subscriber: SubscriberDocument;
       trackOpens: boolean;
       trackClicks: boolean;
+      /** Tenant DB name — embedded in signed tokens/URLs for public route resolution. (H11) */
+      dbName?: string;
     },
   ): string {
-    const { baseUrl, campaignId, subscriber, trackOpens, trackClicks } = opts;
+    const { baseUrl, campaignId, subscriber, trackOpens, trackClicks, dbName } =
+      opts;
     const sid = String(subscriber._id);
-    const token = createUnsubscribeToken({ subscriberId: sid, campaignId });
+    const token = createUnsubscribeToken({
+      subscriberId: sid,
+      campaignId,
+      dbName,
+    });
     const unsubscribeUrl = `${baseUrl}/api/email-marketing/unsubscribe?token=${encodeURIComponent(
       token,
     )}`;
@@ -77,9 +88,14 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
         /<a\b([^>]*?)href=["']((?:https?:)\/\/[^"']+)["']/gi,
         (match, pre, url) => {
           if (url.includes("/api/email-marketing/")) return match;
-          const tracked = `${baseUrl}/api/email-marketing/track/click?c=${campaignId}&s=${sid}&u=${encodeURIComponent(
+          // Sign the destination URL (H13) and the DB name (H11).
+          const dbSig = dbName
+            ? `&db=${encodeURIComponent(dbName)}&dsig=${encodeURIComponent(signValue(`${dbName}:${campaignId}:${url}`))}`
+            : "";
+          const urlSig = signValue(url);
+          const tracked = `${baseUrl}/api/email-marketing/track/click?c=${campaignId}&s=${sid}${dbSig}&u=${encodeURIComponent(
             url,
-          )}`;
+          )}&usig=${encodeURIComponent(urlSig)}`;
           return `<a ${pre}href="${tracked}"`;
         },
       );
@@ -94,7 +110,11 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
     }
 
     if (baseUrl && trackOpens) {
-      const pixel = `<img src="${baseUrl}/api/email-marketing/track/open?c=${campaignId}&s=${sid}" width="1" height="1" alt="" style="display:none" />`;
+      // Open pixel also carries the signed DB name (H11).
+      const dbParam = dbName
+        ? `&db=${encodeURIComponent(dbName)}&dsig=${encodeURIComponent(signValue(`${dbName}:${campaignId}:open`))}`
+        : "";
+      const pixel = `<img src="${baseUrl}/api/email-marketing/track/open?c=${campaignId}&s=${sid}${dbParam}" width="1" height="1" alt="" style="display:none" />`;
       out = /<\/body>/i.test(out)
         ? out.replace(/<\/body>/i, `${pixel}</body>`)
         : out + pixel;
@@ -127,6 +147,7 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
       subscriber: { _id: "test", email: toEmail } as any,
       trackOpens: false,
       trackClicks: false,
+      dbName: userStorage.getStore()?.dbName,
     });
 
     const result = await sender.send({
@@ -213,6 +234,7 @@ export class CampaignSendService extends BaseService<EmailCampaignDocument> {
         subscriber,
         trackOpens: settings.trackOpens !== false,
         trackClicks: settings.trackClicks !== false,
+        dbName: userStorage.getStore()?.dbName,
       });
 
       const result = await sender.send({

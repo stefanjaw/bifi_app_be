@@ -1,10 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import { ConnectionManager } from "../../../system";
+import crypto from "crypto";
+import { ConnectionManager, userStorage } from "../../../system";
 import { emailEventModel } from "../models/email-event.model";
 import { emailCampaignModel } from "../models/email-campaign.model";
 import { subscriberModel } from "../models/subscriber.model";
 import { emailSettingsModel } from "../models/email-settings.model";
-import { verifyUnsubscribeToken } from "../libraries/unsubscribe-token";
+import {
+  verifyUnsubscribeToken,
+  verifySignature,
+} from "../libraries/unsubscribe-token";
 
 const TRANSPARENT_GIF = Buffer.from(
   "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
@@ -39,11 +43,35 @@ export class EmailMarketingPublicController {
     await this.incrementStat(data.campaignId, data.type);
   }
 
+  /**
+   * Resolves the tenant DB from signed `db`/`dsig` query params and enters
+   * an ALS context so all subsequent `bindModelToDb` calls hit the correct
+   * tenant database. (H11)
+   * @param req - The express Request object containing query params.
+   * @param contextLabel - Label used in the signature (e.g. campaignId + ":open").
+   * @returns True if the DB was resolved and set, false if params are missing/invalid.
+   */
+  private resolveDbFromQuery(req: Request, contextLabel: string): boolean {
+    const db = req.query.db as string | undefined;
+    const dsig = req.query.dsig as string | undefined;
+    if (!db || !dsig) return false;
+    if (!verifySignature(`${db}:${contextLabel}`, dsig)) return false;
+    // Enter ALS context with the resolved dbName so bindModelToDb uses it.
+    userStorage.enterWith({
+      user: undefined,
+      token: undefined,
+      dbName: db,
+    });
+    return true;
+  }
+
   trackOpen = async (req: Request, res: Response) => {
     try {
       const campaignId = req.query.c as string;
       const subscriberId = req.query.s as string;
       if (campaignId && subscriberId) {
+        // Resolve tenant DB from signed params (H11).
+        this.resolveDbFromQuery(req, `${campaignId}:open`);
         await this.recordEvent({
           campaignId,
           subscriberId,
@@ -60,10 +88,17 @@ export class EmailMarketingPublicController {
 
   trackClick = async (req: Request, res: Response) => {
     const url = (req.query.u as string) || "";
+    const urlSig = (req.query.usig as string) || "";
     try {
       const campaignId = req.query.c as string;
       const subscriberId = req.query.s as string;
+
+      // Verify the destination URL signature before using it (H13).
+      const urlValid = verifySignature(url, urlSig);
+
+      // Resolve tenant DB from signed params (H11).
       if (campaignId && subscriberId) {
+        this.resolveDbFromQuery(req, `${campaignId}:${url}`);
         await this.recordEvent({
           campaignId,
           subscriberId,
@@ -74,7 +109,12 @@ export class EmailMarketingPublicController {
     } catch {
       // ignore
     }
-    if (url && /^https?:\/\//i.test(url)) {
+    if (
+      url &&
+      /^https?:\/\//i.test(url) &&
+      urlSig &&
+      verifySignature(url, urlSig)
+    ) {
       res.redirect(url);
     } else {
       res.status(400).send("Invalid link");
@@ -94,6 +134,14 @@ export class EmailMarketingPublicController {
           ),
         );
       return;
+    }
+    // Resolve tenant DB from the signed token (H11).
+    if (payload.dbName) {
+      userStorage.enterWith({
+        user: undefined,
+        token: undefined,
+        dbName: payload.dbName,
+      });
     }
     try {
       const subscribers = this.connectionManager.bindModelToDb(subscriberModel);
@@ -123,6 +171,15 @@ export class EmailMarketingPublicController {
   webhook = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const provider = req.params.provider;
+
+      // Verify the webhook signature before processing. (H10)
+      // Each ESP signs its callbacks differently — check per provider.
+      const verified = this.verifyWebhookSignature(provider, req);
+      if (!verified) {
+        res.status(403).json({ error: true, message: "Invalid signature" });
+        return;
+      }
+
       const events = this.normalizeWebhook(provider, req.body);
       for (const ev of events) {
         await this.handleNormalizedEvent(ev);
@@ -132,6 +189,94 @@ export class EmailMarketingPublicController {
       next(error);
     }
   };
+
+  /**
+   * Verifies the webhook signature for the given provider. (H10)
+   * Requires EMAIL_WEBHOOK_SECRET to be set in .env.
+   * - Resend: HMAC-SHA256 of the raw body with the webhook secret, sent in
+   *   the `svix-signature` header (timestamp + signature).
+   * - SendGrid: ECDSA signature in the `X-Twilio-Email-Webhook-Signature` header
+   *   (or legacy `Signature` header with a verification key from SendGrid).
+   * - Mailgun: HMAC-SHA256 of the concatenated timestamp+token, sent in
+   *   `signature` field of the body.
+   * - SES: SNS signature verification (complex — deferred to SNS-level config).
+   * When EMAIL_WEBHOOK_SECRET is not set, falls back to accepting all (dev only).
+   * @param provider - The ESP provider name.
+   * @param req - The express Request object.
+   * @returns True if the signature is valid or the secret is not set (dev mode).
+   */
+  private verifyWebhookSignature(provider: string, req: Request): boolean {
+    const secret = process.env.EMAIL_WEBHOOK_SECRET;
+    if (!secret) {
+      // Dev mode: no secret set, accept all. Production MUST set this.
+      return true;
+    }
+
+    try {
+      if (provider === "mailgun") {
+        const signature = req.body?.signature;
+        const token = req.body?.token;
+        const timestamp = req.body?.timestamp;
+        if (!signature || !token || !timestamp) return false;
+        const expected = crypto
+          .createHmac("sha256", secret)
+          .update(timestamp.concat(token))
+          .digest("hex");
+        return crypto.timingSafeEqual(
+          Buffer.from(signature),
+          Buffer.from(expected),
+        );
+      }
+
+      if (provider === "resend") {
+        const sigHeader = req.headers["svix-signature"] as string;
+        if (!sigHeader) return false;
+        // Resend/Svix format: "t=timestamp,v1=signature"
+        const parts = sigHeader.split(",").map((p) => p.trim());
+        const timestamp = parts.find((p) => p.startsWith("t="))?.slice(2);
+        const v1 = parts.find((p) => p.startsWith("v1="))?.slice(3);
+        if (!timestamp || !v1) return false;
+        // The signed payload is timestamp + raw body
+        const rawBody = JSON.stringify(req.body);
+        const expected = crypto
+          .createHmac("sha256", secret)
+          .update(`${timestamp}.${rawBody}`)
+          .digest("base64");
+        return crypto.timingSafeEqual(Buffer.from(v1), Buffer.from(expected));
+      }
+
+      if (provider === "sendgrid") {
+        // SendGrid Event Webhook verification key is configured in their dashboard.
+        // The verification key is an ECDSA public key. For simplicity, we use
+        // a shared HMAC secret here until the full ECDSA verification is implemented.
+        const signature = req.headers[
+          "x-twilio-email-webhook-signature"
+        ] as string;
+        if (!signature) return false;
+        const rawBody = JSON.stringify(req.body);
+        const expected = crypto
+          .createHmac("sha256", secret)
+          .update(rawBody)
+          .digest("base64");
+        return crypto.timingSafeEqual(
+          Buffer.from(signature),
+          Buffer.from(expected),
+        );
+      }
+
+      if (provider === "ses") {
+        // SES via SNS — SNS-level signature verification is complex and
+        // typically handled at the SNS subscription confirmation level.
+        // Accept in dev; production should verify SNS signatures.
+        return true;
+      }
+
+      // Unknown provider — reject
+      return false;
+    } catch {
+      return false;
+    }
+  }
 
   private async handleNormalizedEvent(ev: {
     type: string;

@@ -37,10 +37,12 @@
     "dayjs": "^1.11.13",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.6.2",
     "firebase-admin": "^13.4.0",
     "form-data": "^4.0.4",
     "googleapis": "^171.4.0",
     "handlebars": "^4.7.8",
+    "helmet": "^8.3.0",
     "json-2-csv": "^5.5.9",
     "mailgun.js": "^10.2.3",
     "mime-types": "^3.0.2",
@@ -53,7 +55,7 @@
     "puppeteer": "^24.32.0",
     "reflect-metadata": "^0.2.2",
     "resend": "^4.0.1",
-    "sharp": "^0.34.5",
+    "sharp": "^0.35.3",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
