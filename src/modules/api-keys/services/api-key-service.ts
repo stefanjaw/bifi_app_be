@@ -46,15 +46,37 @@ const SALT_BYTES = 16;
 const CACHE_TTL_MS = 60_000;
 
 /**
- * In-memory cache of successful verifications keyed by the non-secret prefix:
- * `prefix -> { user, expiresAt }`. Avoids a DB lookup + scrypt derivation on every
- * request for hot keys. Entries expire after {@link CACHE_TTL_MS} and are evicted
- * when a key is revoked. Trade-off: RBAC/role changes take effect within the TTL.
+ * In-memory cache of successful verifications keyed by a fast SHA-256 of the
+ * FULL raw key: `keyHash -> { user, expiresAt }`. Keying by the full key (rather
+ * than the non-secret prefix) guarantees a modified suffix produces a cache miss
+ * and falls through to full scrypt verification, so a forged key can never pass
+ * via a warm prefix-only cache hit. Avoids a DB lookup + scrypt derivation on
+ * every request for hot keys. Entries expire after {@link CACHE_TTL_MS}.
+ * Trade-off: RBAC/role changes take effect within the TTL.
  */
 const verifyCache = new Map<
   string,
   { user: UserDocument; expiresAt: number }
 >();
+
+/**
+ * Secondary index `prefix -> keyHash` used to evict exactly one key's cached
+ * verification on revoke. Since the cache is keyed by the full-key hash (which we
+ * cannot recompute from the deleted record), this prefix index lets `delete()` drop
+ * only the revoked key's entry without clearing every other cached key.
+ */
+const verifyCachePrefix = new Map<string, string>();
+
+/**
+ * Derives a fast, secret-free key fingerprint used to look up cached verifications.
+ * A SHA-256 of the raw key uniquely binds the FULL key (so a wrong suffix misses)
+ * without storing the raw key itself in memory.
+ * @param rawKey - The full raw API key.
+ * @returns The hex SHA-256 digest used as the cache key.
+ */
+function keyCacheHash(rawKey: string): string {
+  return crypto.createHash("sha256").update(rawKey).digest("hex");
+}
 
 /**
  * Service managing API keys. Key material is generated once, hashed with
@@ -100,7 +122,11 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
       .randomBytes(KEY_ENTROPY_BYTES)
       .toString("base64url")}`;
     const salt = crypto.randomBytes(SALT_BYTES).toString("hex");
-    const hashedKey = this._hash(rawKey, salt);
+    // Store as hex (not a raw Buffer) so verifyKey can re-derive and compare
+    // with Buffer.from(doc.hashedKey, "hex"). Persisting the raw Buffer would,
+    // via the schema's String cast, store the UTF-8 rendering of the binary
+    // scrypt output, which is not hex and breaks the constant-time comparison.
+    const hashedKey = this._hash(rawKey, salt).toString("hex");
 
     const doc = await this.create(
       {
@@ -131,12 +157,16 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
     if (!rawKey || typeof rawKey !== "string") return null;
     if (!rawKey.startsWith(KEY_PREFIX)) return null;
     const prefix = ApiKeyService.getPrefix(rawKey);
+    const keyHash = keyCacheHash(rawKey);
 
-    // Warm cache hit within TTL — serve without a DB lookup or scrypt derivation.
-    const cached = verifyCache.get(prefix);
+    // Warm cache hit within TTL — keyed by the FULL key hash, so a modified suffix
+    // produces a miss and falls through to full scrypt verification below. Serves
+    // without a DB lookup or scrypt derivation for verified repeat requests.
+    const cached = verifyCache.get(keyHash);
     if (cached) {
       if (cached.expiresAt > Date.now()) return cached.user;
-      verifyCache.delete(prefix);
+      verifyCache.delete(keyHash);
+      verifyCachePrefix.delete(prefix);
     }
 
     const model = this.connectionManager.bindModelToDb(this.model);
@@ -174,7 +204,8 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
     }
 
     if (user) {
-      verifyCache.set(prefix, { user, expiresAt: Date.now() + CACHE_TTL_MS });
+      verifyCache.set(keyHash, { user, expiresAt: Date.now() + CACHE_TTL_MS });
+      verifyCachePrefix.set(prefix, keyHash);
     }
     return (user as UserDocument | null) ?? null;
   }
@@ -277,8 +308,11 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
           "API key not found or does not belong to the current user",
         );
 
-      // A revoked key must stop working immediately — drop any cached verification.
-      verifyCache.delete(record.prefix);
+      // A revoked key must stop working immediately, without evicting every other
+      // cached key. Locate this key's entry via the prefix index and drop only it.
+      const keyHash = verifyCachePrefix.get(record.prefix);
+      if (keyHash) verifyCache.delete(keyHash);
+      verifyCachePrefix.delete(record.prefix);
 
       return true;
     });
