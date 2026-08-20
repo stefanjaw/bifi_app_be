@@ -1781,6 +1781,117 @@ export type AiSettingsDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of ApiKeyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ApiKeyDocument.toObject()`. To avoid conflicts with model names, use the type alias `ApiKeyObject`.
+ * ```
+ * const apikeyObject = apikey.toObject();
+ * ```
+ */
+export type ApiKey = {
+  name: string;
+  userId: User["_id"] | User;
+  prefix: string;
+  hashedKey: string;
+  salt: string;
+  lastUsedAt?: Date;
+  expiresAt?: Date;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of ApiKeyDocument (type alias of `ApiKey`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { ApiKey } from "../models"
+ * import { ApiKeyObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const apikeyObject: ApiKeyObject = apikey.toObject();
+ * ```
+ */
+export type ApiKeyObject = ApiKey;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type ApiKeyQuery = mongoose.Query<any, ApiKeyDocument, ApiKeyQueries> &
+  ApiKeyQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `ApiKeySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type ApiKeyQueries = {
+  paginate: (this: ApiKeyQuery, ...args: any[]) => ApiKeyQuery;
+};
+
+export type ApiKeyMethods = {};
+
+export type ApiKeyStatics = {
+  paginate: (this: ApiKeyModel, ...args: any[]) => any;
+  paginateSubDocs: (this: ApiKeyModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ApiKey = mongoose.model<ApiKeyDocument, ApiKeyModel>("ApiKey", ApiKeySchema);
+ * ```
+ */
+export type ApiKeyModel = mongoose.Model<ApiKeyDocument, ApiKeyQueries> &
+  ApiKeyStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new ApiKey schema instances:
+ * ```
+ * const ApiKeySchema: ApiKeySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type ApiKeySchema = mongoose.Schema<
+  ApiKeyDocument,
+  ApiKeyModel,
+  ApiKeyMethods,
+  ApiKeyQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ApiKey = mongoose.model<ApiKeyDocument, ApiKeyModel>("ApiKey", ApiKeySchema);
+ * ```
+ */
+export type ApiKeyDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ApiKeyQueries
+> &
+  ApiKeyMethods & {
+    name: string;
+    userId: UserDocument["_id"] | UserDocument;
+    prefix: string;
+    hashedKey: string;
+    salt: string;
+    lastUsedAt?: Date;
+    expiresAt?: Date;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of AssetCommissioningAttachmentDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `AssetCommissioningDocument.toObject()`.

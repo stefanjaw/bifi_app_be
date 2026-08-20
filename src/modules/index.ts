@@ -1,6 +1,7 @@
 export * from "./accounting";
 export * from "./activity-history";
 export * from "./ai";
+export * from "./api-keys";
 export * from "./asset-roster";
 export * from "./bcd";
 export * from "./branch-office";

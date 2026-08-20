@@ -16,6 +16,8 @@ import {
 } from "./system";
 import {
   ActivityHistoryRouter,
+  ApiKeyRouter,
+  ApiKeyService,
   HelpdeskStageRouter,
   TicketRouter,
   TicketRuleRouter,
@@ -260,7 +262,7 @@ app.use("/api", new CrEinvoicePublicRouter().getRouter);
 // apply general API rate limiter to all authenticated routes
 app.use("/api", apiLimiter);
 
-app.use(authenticateMiddleware(new UserService()));
+app.use(authenticateMiddleware(new UserService(), new ApiKeyService()));
 
 // routes will be here, main route inits with /api and then it uses the routers
 app.use("/api", new FileRouter().getRouter);
@@ -277,6 +279,7 @@ app.use("/api", new AssetMaintenanceRouter().getRouter);
 app.use("/api", new ActivityHistoryRouter().getRouter);
 app.use("/api", new UserRouter().getRouter);
 app.use("/api", new RoleRouter().getRouter);
+app.use("/api", new ApiKeyRouter().getRouter);
 app.use("/api", new PolicyRouter().getRouter);
 app.use("/api", new HelpdeskStageRouter().getRouter);
 app.use("/api", new TicketRouter().getRouter);

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { UnauthorizedException, userStorage } from "../libraries";
 import { ConnectionManager } from "../libraries/base-module/connection-manager";
-import { UserService } from "../../modules";
+import type { UserService, ApiKeyService } from "../../modules";
 import { userModel } from "../../modules/users/models/user.model";
 import admin from "firebase-admin";
 import { FirebaseAppError } from "firebase-admin/app";
@@ -12,6 +12,19 @@ const ignoreEndpoints: { endpoint: string; method: string }[] = [
   { endpoint: "/api/report-bug", method: "POST" },
   { endpoint: "/api/translations/scope", method: "GET" },
 ];
+
+/**
+ * Endpoints that must NOT be reached via an API key. These are self-scoped /
+ * account-management routes where an external key would create a confusion vector;
+ * they always require a Firebase Bearer token. When an `X-Api-Key` is presented
+ * for one of these, the middleware falls through to the Firebase path, which fails
+ * if no Bearer token is supplied (HTTP 401).
+ */
+const SENSITIVE_ENDPOINTS = new Set([
+  "/api/api-keys",
+  "/api/users/me",
+  "/api/users/profile",
+]);
 
 /**
  * Parses the TENANT_DB_NAMES env var (comma-separated) into a Set for O(1) lookup.
@@ -35,10 +48,14 @@ function getAllowedDbNames(): Set<string> | null {
  * If the token is invalid, expired, or revoked, it will throw an UnauthorizedException.
  * If the user associated with the token is not found, it will create a new user with the provided information.
  * If the user is found but not active, it will throw an UnauthorizedException.
- * @param {UserService} userService - The UserService instance to use for authentication.
+ * @param userService - The UserService instance to use for Firebase-token authentication.
+ * @param apiKeyService - The ApiKeyService instance to use for `X-Api-Key` authentication.
  * @returns {(req: Request, res: Response, next: NextFunction) => Promise<void>}
  */
-export function authenticateMiddleware(userService: UserService) {
+export function authenticateMiddleware(
+  userService: UserService,
+  apiKeyService: ApiKeyService,
+) {
   return async (req: Request, res: Response, next: NextFunction) => {
     // Set the user and token in the UserStore
     const storage = userStorage.getStore();
@@ -68,6 +85,40 @@ export function authenticateMiddleware(userService: UserService) {
       // existing dev workflows keep working. Document that production must set
       // TENANT_DB_NAMES to fail-closed on unknown tenants.
       storage.dbName = dbNameHeader;
+    }
+
+    // API-key auth path — external clients (Postman, scripts, agents) authenticate
+    // with an `X-Api-Key: bak_live_...` header instead of a Firebase ID token.
+    // The dbname header above is shared, so tenant routing already applies here.
+    // Sensitive endpoints are excluded: they require the Firebase Bearer path.
+    const apiKey = req.headers["x-api-key"] as string | undefined;
+    if (
+      apiKey &&
+      apiKey.startsWith("bak_live_") &&
+      !SENSITIVE_ENDPOINTS.has(req.path)
+    ) {
+      try {
+        // verifyKey already loads the owning user with roles+policies populated,
+        // so the entire authorizeMiddleware RBAC system works unchanged.
+        const keyUser = await apiKeyService.verifyKey(apiKey);
+        if (!keyUser) {
+          next(new UnauthorizedException("Invalid API key"));
+          return;
+        }
+
+        if (storage) {
+          storage.user = keyUser;
+          storage.token = apiKey;
+          storage.locale = keyUser.language || "en";
+        }
+
+        next();
+        return;
+      } catch (error) {
+        console.error("API key authentication error:", error);
+        next(new UnauthorizedException("Unauthorized"));
+        return;
+      }
     }
 
     // Get the token from the request headers
@@ -139,14 +190,17 @@ export function authenticateMiddleware(userService: UserService) {
         // Firebase signup cannot silently mint an application account. Set
         // AUTO_PROVISION_EMAIL_DOMAINS (comma-separated) to allow self-provision
         // for specific email domains (e.g. "yourcompany.com").
-        const allowedDomainsRaw = process.env.AUTO_PROVISION_EMAIL_DOMAINS || "";
+        const allowedDomainsRaw =
+          process.env.AUTO_PROVISION_EMAIL_DOMAINS || "";
         const allowedDomains = new Set(
           allowedDomainsRaw
             .split(",")
             .map((s) => s.trim().toLowerCase())
             .filter(Boolean),
         );
-        const emailDomain = (firebaseUser.email || "").split("@")[1]?.toLowerCase();
+        const emailDomain = (firebaseUser.email || "")
+          .split("@")[1]
+          ?.toLowerCase();
         const mayAutoProvision =
           allowedDomains.size > 0 &&
           emailDomain !== undefined &&
