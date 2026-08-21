@@ -2,6 +2,7 @@ import { ApiKeyDocument, UserDocument } from "@mongodb-types";
 import { ClientSession, PaginateModel } from "mongoose";
 import { PaginateResult } from "mongoose";
 import crypto from "crypto";
+import dayjs from "dayjs";
 import {
   BaseService,
   paginationOptions,
@@ -42,22 +43,30 @@ const HASH_KEY_LENGTH = 64;
 /** scrypt salt length in bytes. */
 const SALT_BYTES = 16;
 
+/** Default lifetime of a key when no expiry is supplied (days). (4.1) */
+const DEFAULT_EXPIRY_DAYS = 30;
+
 /** TTL for the in-memory verification cache, in milliseconds. (1.10) */
 const CACHE_TTL_MS = 60_000;
 
 /**
  * In-memory cache of successful verifications keyed by a fast SHA-256 of the
- * FULL raw key: `keyHash -> { user, expiresAt }`. Keying by the full key (rather
- * than the non-secret prefix) guarantees a modified suffix produces a cache miss
- * and falls through to full scrypt verification, so a forged key can never pass
- * via a warm prefix-only cache hit. Avoids a DB lookup + scrypt derivation on
- * every request for hot keys. Entries expire after {@link CACHE_TTL_MS}.
- * Trade-off: RBAC/role changes take effect within the TTL.
+ * FULL raw key: `keyHash -> { user, cacheExpiresAt, keyExpiresAt }`. Keying by
+ * the full key (rather than the non-secret prefix) guarantees a modified suffix
+ * produces a cache miss and falls through to full scrypt verification, so a
+ * forged key can never pass via a warm prefix-only cache hit. Avoids a DB lookup
+ * + scrypt derivation on every request for hot keys. `cacheExpiresAt` is when the
+ * cache entry itself expires; `keyExpiresAt` is the key's REAL expiry (from the
+ * DB doc) so an expired key is never served from a warm cache. Trade-off: RBAC /
+ * role changes take effect within the cache TTL.
  */
-const verifyCache = new Map<
-  string,
-  { user: UserDocument; expiresAt: number }
->();
+interface VerifyCacheEntry {
+  user: UserDocument;
+  cacheExpiresAt: number;
+  keyExpiresAt?: number;
+}
+
+const verifyCache = new Map<string, VerifyCacheEntry>();
 
 /**
  * Secondary index `prefix -> keyHash` used to evict exactly one key's cached
@@ -116,12 +125,23 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
     userId: string,
     name: string,
     expiresAt?: Date,
+    expires?: boolean,
     session?: ClientSession,
   ): Promise<{ doc: ApiKeyDocument; rawKey: string }> {
+    // Expiry resolution:
+    //  - `expires === false` → key NEVER expires (persist no expiresAt).
+    //  - otherwise → if an explicit `expiresAt` was provided, use it; else default
+    //    to expiring 30 days from now (server-side single source of truth). (4.1)
+    const effectiveExpiry =
+      expires === false
+        ? undefined
+        : (expiresAt ?? dayjs().add(DEFAULT_EXPIRY_DAYS, "day").toDate());
+
     const rawKey = `${KEY_PREFIX}${crypto
       .randomBytes(KEY_ENTROPY_BYTES)
       .toString("base64url")}`;
     const salt = crypto.randomBytes(SALT_BYTES).toString("hex");
+    
     // Store as hex (not a raw Buffer) so verifyKey can re-derive and compare
     // with Buffer.from(doc.hashedKey, "hex"). Persisting the raw Buffer would,
     // via the schema's String cast, store the UTF-8 rendering of the binary
@@ -135,7 +155,7 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
         prefix: ApiKeyService.getPrefix(rawKey),
         hashedKey,
         salt,
-        expiresAt,
+        expiresAt: effectiveExpiry,
         active: true,
       },
       session,
@@ -161,10 +181,15 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
 
     // Warm cache hit within TTL — keyed by the FULL key hash, so a modified suffix
     // produces a miss and falls through to full scrypt verification below. Serves
-    // without a DB lookup or scrypt derivation for verified repeat requests.
+    // without a DB lookup or scrypt derivation for verified repeat requests, but
+    // ONLY if the key has not actually expired (keyExpiresAt is the key's real
+    // expiry from the DB, not the cache's own TTL). (4.2)
     const cached = verifyCache.get(keyHash);
     if (cached) {
-      if (cached.expiresAt > Date.now()) return cached.user;
+      const now = Date.now();
+      const notExpired =
+        cached.keyExpiresAt === undefined || cached.keyExpiresAt > now;
+      if (cached.cacheExpiresAt > now && notExpired) return cached.user;
       verifyCache.delete(keyHash);
       verifyCachePrefix.delete(prefix);
     }
@@ -204,7 +229,11 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
     }
 
     if (user) {
-      verifyCache.set(keyHash, { user, expiresAt: Date.now() + CACHE_TTL_MS });
+      verifyCache.set(keyHash, {
+        user,
+        cacheExpiresAt: Date.now() + CACHE_TTL_MS,
+        keyExpiresAt: doc.expiresAt?.getTime(),
+      });
       verifyCachePrefix.set(prefix, keyHash);
     }
     return (user as UserDocument | null) ?? null;

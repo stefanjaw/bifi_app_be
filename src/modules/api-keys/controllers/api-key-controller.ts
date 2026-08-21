@@ -47,6 +47,7 @@ export class ApiKeyController extends BaseController<ApiKeyDocument> {
         userId,
         data.name,
         data.expiresAt ? new Date(data.expiresAt) : undefined,
+        data.expires,
         undefined,
       );
 

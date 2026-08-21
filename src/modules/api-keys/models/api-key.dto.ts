@@ -14,6 +14,16 @@ export class CreateApiKeyDTO {
   @IsNotEmpty()
   name!: string;
 
+  /**
+   * Explicit flag distinguishing "never expires" (`false`) from "no date chosen"
+   * (omitted → server defaults to 30 days). When `expires` is `false`, no
+   * `expiresAt` is persisted even if the field is absent. (4.1/never-expire fix)
+   */
+  @IsBoolean()
+  @IsOptional()
+  @Transform(toBoolean)
+  expires?: boolean;
+
   @IsDateString()
   @IsOptional()
   expiresAt?: string;
