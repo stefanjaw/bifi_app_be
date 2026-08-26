@@ -37,6 +37,13 @@ const PEPPER = process.env.API_KEY_HASH_PEPPER;
 /** Number of random bytes of entropy in each raw key. */
 const KEY_ENTROPY_BYTES = 32;
 
+/**
+ * Length of the base64url-encoded entropy string in each raw key. 32 bytes always
+ * encode to exactly 43 base64url chars (no padding). It sits at positions 9-51 of
+ * the key, so positions are deterministic for stamp extraction. (6.2)
+ */
+const ENTROPY_STRING_LENGTH = 43;
+
 /** scrypt derived-key length in bytes. */
 const HASH_KEY_LENGTH = 64;
 
@@ -45,6 +52,15 @@ const SALT_BYTES = 16;
 
 /** Default lifetime of a key when no expiry is supplied (days). (4.1) */
 const DEFAULT_EXPIRY_DAYS = 30;
+
+/** Separator between the key entropy and the embedded expiry stamp. (6.1) */
+const STAMP_SEPARATOR = "_";
+
+/** Length of the expiry stamp suffix (`YYYYMMDDHHmm` or `NEVEREXPIRES`). (6.1) */
+const STAMP_LENGTH = 12;
+
+/** Stamp used for keys that never expire (not a parseable date). (6.1) */
+export const NEVER_EXPIRE_STAMP = "NEVEREXPIRES";
 
 /** TTL for the in-memory verification cache, in milliseconds. (1.10) */
 const CACHE_TTL_MS = 60_000;
@@ -112,6 +128,45 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
   }
 
   /**
+   * Builds a fresh raw API key with the expiry embedded as a fixed-length suffix.
+   * Format: `bak_live_<43-char-entropy>` + `_` + a 12-char stamp, where the stamp
+   * is `YYYYMMDDHHmm` (expiring) or `NEVEREXPIRES` (never expires). The returned
+   * key is 65 chars: entropy at positions 9-51, separator at 52, stamp at 53-64.
+   * @param effectiveExpiry - The resolved expiry Date, or `undefined` for a never-expiring key.
+   * @returns The full raw API key including the expiry stamp suffix.
+   */
+  static buildRawKey(effectiveExpiry?: Date): string {
+    const entropy = crypto.randomBytes(KEY_ENTROPY_BYTES).toString("base64url");
+    const stamp = effectiveExpiry
+      ? dayjs(effectiveExpiry).format("YYYYMMDDHHmm")
+      : NEVER_EXPIRE_STAMP;
+    return `${KEY_PREFIX}${entropy}${STAMP_SEPARATOR}${stamp}`;
+  }
+
+  /**
+   * Extracts the embedded expiry stamp from a raw key. The stamp is located by
+   * FIXED POSITION (the 12 chars starting at index 53 in a stamped key), never by
+   * splitting on `_` — that character is a valid base64url entropy char, so it
+   * would be ambiguous. A stamped key is 65 chars; an old-format / unstamped key
+   * (52 chars) or any other length returns null.
+   * @param rawKey - The full raw API key.
+   * @returns The 12-char stamp (`YYYYMMDDHHmm` or `NEVEREXPIRES`), or null when the key has no stamp.
+   */
+  static getExpiryStamp(rawKey: string): string | null {
+    const tagLen = KEY_PREFIX.length; // "bak_live_" = 9
+    const stampedLen =
+      tagLen + ENTROPY_STRING_LENGTH + STAMP_SEPARATOR.length + STAMP_LENGTH; // 65
+    if (rawKey.length >= stampedLen) {
+      // Stamp starts right after the separator (tag + entropy + separator).
+      return rawKey.slice(
+        tagLen + ENTROPY_STRING_LENGTH + STAMP_SEPARATOR.length,
+        stampedLen,
+      );
+    }
+    return null;
+  }
+
+  /**
    * Generates a new raw API key, stores only its hash + prefix, and returns the
    * raw key exactly once (irretrievable model).
    * @param userId - The owner user id.
@@ -135,13 +190,14 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
     const effectiveExpiry =
       expires === false
         ? undefined
-        : (expiresAt ?? dayjs().add(DEFAULT_EXPIRY_DAYS, "day").toDate());
+        : expiresAt ?? dayjs().add(DEFAULT_EXPIRY_DAYS, "day").toDate();
 
-    const rawKey = `${KEY_PREFIX}${crypto
-      .randomBytes(KEY_ENTROPY_BYTES)
-      .toString("base64url")}`;
+    // Raw key embeds the expiry stamp: `bak_live_<entropy>_YYYYMMDDHHmm`
+    // (or `_NEVEREXPIRES` when the key never expires). The full key (including the
+    // stamp) is what gets hashed, so the stamp is cryptographically bound. (6.1)
+    const rawKey = ApiKeyService.buildRawKey(effectiveExpiry);
     const salt = crypto.randomBytes(SALT_BYTES).toString("hex");
-    
+
     // Store as hex (not a raw Buffer) so verifyKey can re-derive and compare
     // with Buffer.from(doc.hashedKey, "hex"). Persisting the raw Buffer would,
     // via the schema's String cast, store the UTF-8 rendering of the binary
@@ -178,6 +234,18 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
     if (!rawKey.startsWith(KEY_PREFIX)) return null;
     const prefix = ApiKeyService.getPrefix(rawKey);
     const keyHash = keyCacheHash(rawKey);
+
+    // Pre-validate the embedded expiry stamp BEFORE cache/DB/scrypt. The stamp is
+    // hash-bound (it is part of what gets hashed), so a forged/past date cannot
+    // pass — tampering breaks the hash and the full verify below rejects it. This
+    // is a fast-path optimization that rejects clearly-expired keys without a DB
+    // lookup or scrypt derivation. `NEVEREXPIRES`/invalid stamps are skipped and
+    // fall through (the DB remains the authority). (6.3)
+    const stamp = ApiKeyService.getExpiryStamp(rawKey);
+    if (stamp) {
+      const stampDate = dayjs(stamp, "YYYYMMDDHHmm");
+      if (stampDate.isValid() && stampDate.isBefore(dayjs())) return null;
+    }
 
     // Warm cache hit within TTL — keyed by the FULL key hash, so a modified suffix
     // produces a miss and falls through to full scrypt verification below. Serves
@@ -237,6 +305,69 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
       verifyCachePrefix.set(prefix, keyHash);
     }
     return (user as UserDocument | null) ?? null;
+  }
+
+  /**
+   * Renews (rotates) an API key: mints a brand-new raw key on the SAME document,
+   * resets its expiry to now + 30 days, and invalidates the old secret immediately.
+   * Self-scoped — a user can only renew their own keys. The new raw key is
+   * stamped (Phase 6) and returned exactly once.
+   * @param id - The API key record id to renew.
+   * @param userId - The owner user id (from the authenticated context).
+   * @param session - Optional client session for the transaction.
+   * @returns The renewed document plus the one-time `rawKey`.
+   * @throws {ValidationException} When the key is not found or not owned by the user.
+   */
+  async renewKey(
+    id: string,
+    userId: string,
+    session?: ClientSession,
+  ): Promise<{ doc: ApiKeyDocument; rawKey: string }> {
+    return await runTransaction<{ doc: ApiKeyDocument; rawKey: string }>(
+      session,
+      async (newSession) => {
+        const model = this.connectionManager.bindModelToDb(this.model);
+
+        const existing = await model
+          .findOne({ _id: id, userId })
+          .session(newSession);
+
+        if (!existing)
+          throw new ValidationException(
+            "API key not found or does not belong to the current user",
+          );
+
+        const oldPrefix = existing.prefix;
+        const newExpiry = dayjs().add(DEFAULT_EXPIRY_DAYS, "day").toDate();
+        const rawKey = ApiKeyService.buildRawKey(newExpiry);
+        const salt = crypto.randomBytes(SALT_BYTES).toString("hex");
+        const hashedKey = this._hash(rawKey, salt).toString("hex");
+
+        const doc = await model
+          .findByIdAndUpdate(
+            existing._id,
+            {
+              prefix: ApiKeyService.getPrefix(rawKey),
+              hashedKey,
+              salt,
+              expiresAt: newExpiry,
+              active: true,
+            },
+            { new: true, session: newSession },
+          )
+          .session(newSession);
+
+        if (!doc) throw new ValidationException("Failed to renew API key");
+
+        // Old secret stops working immediately: its prefix no longer matches the
+        // rotated doc, and any cached verification for it must be evicted too.
+        const cacheKeyHash = verifyCachePrefix.get(oldPrefix);
+        if (cacheKeyHash) verifyCache.delete(cacheKeyHash);
+        verifyCachePrefix.delete(oldPrefix);
+
+        return { doc, rawKey };
+      },
+    );
   }
 
   /**

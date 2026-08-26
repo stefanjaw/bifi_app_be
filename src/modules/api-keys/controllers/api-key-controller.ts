@@ -1,7 +1,8 @@
 import { ApiKeyDocument } from "@mongodb-types";
 import { NextFunction, Request, Response } from "express";
+import dayjs from "dayjs";
 import { BaseController, userStorage } from "../../../system";
-import { ApiKeyService } from "../services/api-key-service";
+import { ApiKeyService, NEVER_EXPIRE_STAMP } from "../services/api-key-service";
 import { CreateApiKeyDTO } from "../models/api-key.dto";
 
 export class ApiKeyController extends BaseController<ApiKeyDocument> {
@@ -22,7 +23,13 @@ export class ApiKeyController extends BaseController<ApiKeyDocument> {
     const plain = doc.toObject() as Record<string, unknown>;
     delete plain["hashedKey"];
     delete plain["salt"];
-    const maskedKey = `${plain["prefix"] as string}••••`;
+    // Re-derive the stamp from the stored expiry (mirroring buildRawKey) so the
+    // masked key shows when it expires, e.g. "bak_live_aB3x••••_202612312359". (6.5)
+    const expiry = plain["expiresAt"] as string | Date | undefined;
+    const stamp = expiry
+      ? dayjs(expiry).format("YYYYMMDDHHmm")
+      : NEVER_EXPIRE_STAMP;
+    const maskedKey = `${plain["prefix"] as string}••••_${stamp}`;
     return { ...plain, maskedKey };
   }
 
