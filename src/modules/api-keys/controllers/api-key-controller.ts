@@ -134,4 +134,30 @@ export class ApiKeyController extends BaseController<ApiKeyDocument> {
       next(error);
     }
   }
+
+  /**
+   * Express handler for renewing (rotating) a key. Mints a new raw key on the same
+   * record, invalidating the old one immediately; returns the new raw key exactly
+   * once (plus the masked representation). Self-scoped in the service. (5.2)
+   * Kept as an arrow field (like BaseController's public handlers) so `this` stays
+   * bound when Express calls it standalone as a route handler.
+   */
+  renew = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id;
+      const userId = userStorage.getStore()?.user?._id.toString();
+      if (!userId) throw new Error("Authenticated user not found");
+
+      const { doc, rawKey } = await (this.service as ApiKeyService).renewKey(
+        id,
+        userId,
+        undefined,
+      );
+
+      const safe = this.toSafeResponse(doc);
+      this.sendData(res, { ...safe, key: rawKey });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
