@@ -51,6 +51,7 @@ export class ActivityHistoryService extends BaseService<ActivityHistoryDocument>
         .session(newSession);
 
       const json = activityHistory.map((p) => ({
+        id: String(p._id),
         Title: p.title,
 
         Details: p.details ?? "N/A",

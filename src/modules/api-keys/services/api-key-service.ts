@@ -190,7 +190,7 @@ export class ApiKeyService extends BaseService<ApiKeyDocument> {
     const effectiveExpiry =
       expires === false
         ? undefined
-        : expiresAt ?? dayjs().add(DEFAULT_EXPIRY_DAYS, "day").toDate();
+        : (expiresAt ?? dayjs().add(DEFAULT_EXPIRY_DAYS, "day").toDate());
 
     // Raw key embeds the expiry stamp: `bak_live_<entropy>_YYYYMMDDHHmm`
     // (or `_NEVEREXPIRES` when the key never expires). The full key (including the

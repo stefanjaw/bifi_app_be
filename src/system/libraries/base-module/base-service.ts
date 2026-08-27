@@ -321,17 +321,34 @@ export class BaseService<T> {
         );
       }
 
-      if (!keys) {
-        if (data.length > 0) {
-          keys = Object.keys(data[0]);
-        } else {
-          keys = Object.keys(model.schema.paths).filter(
-            (key) => key !== "_id" && key !== "__v" && !key.includes("."),
-          );
-        }
-      }
+      const normalizedData = data.map((item) => {
+        const { _id, id: existingId, __v, ...rest } = item;
 
-      const csv = json2csv(data, { keys, preventCsvInjection: true });
+        return {
+          id: String(_id ?? existingId ?? ""),
+          ...rest,
+        };
+      });
+
+      const availableKeys =
+        normalizedData.length > 0
+          ? Object.keys(normalizedData[0])
+          : Object.keys(model.schema.paths).filter(
+              (key) => key !== "_id" && key !== "__v" && !key.includes("."),
+            );
+
+      keys = [
+        "id",
+        ...(keys ?? availableKeys).filter(
+          (key) => key !== "id" && key !== "_id" && key !== "__v",
+        ),
+      ];
+
+      const csv = json2csv(normalizedData, {
+        keys,
+        preventCsvInjection: true,
+      });
+
       return Buffer.from(csv, "utf-8");
     } catch (err) {
       throw err;

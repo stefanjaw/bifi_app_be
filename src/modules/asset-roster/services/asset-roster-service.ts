@@ -25,11 +25,15 @@ import {
   AssetRosterDocument,
   RoomDocument,
   AssetTypeDocument,
+  MaintenanceWindowDocument,
 } from "@mongodb-types";
 import { ActivityHistoryService } from "../../activity-history/services/activity-history-service";
 import { AssetRosterStatusService } from "./asset-roster-status-service";
 import { AssetTypeService } from "./asset-type-service";
 import { GenAIService } from "../../ai/services/genai-service";
+import { RoomService } from "../../facilities/services/room-service";
+import { MaintenanceWindowsService } from "../../maintenance-windows/services/maintenance-window-service";
+import { AssetConditionService } from "./asset-condition-service";
 
 export class AssetRosterService extends BaseService<AssetRosterDocument> {
   private assetRosterStatusService = new AssetRosterStatusService();
@@ -37,6 +41,9 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
   private contactsService = new ContactService();
   private activityHistoryService = new ActivityHistoryService();
   private readonly genAIService = new GenAIService();
+  private roomService = new RoomService();
+  private maintenanceWindowsService = new MaintenanceWindowsService();
+  private conditionService = new AssetConditionService();
 
   constructor() {
     super({
@@ -66,6 +73,91 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
           isArray: false,
         },
       ],
+    });
+  }
+
+  /**
+   * Soft-archives Asset Roster records by setting active to false.
+   * Archived records and their activity history remain available for audit.
+   */
+  async archiveSelected(
+    ids: string[],
+    session?: ClientSession,
+  ): Promise<{ archivedCount: number }> {
+    return await runTransaction(session, async (newSession) => {
+      const model = this.connectionManager.bindModelToDb(this.model);
+
+      const activeRecordCount = await model
+        .countDocuments({
+          _id: { $in: ids },
+          active: true,
+        })
+        .session(newSession);
+
+      if (activeRecordCount !== ids.length) {
+        throw new ValidationException(
+          "One or more selected Asset Roster records no longer exist or are already archived.",
+        );
+      }
+
+      const result = await model.updateMany(
+        {
+          _id: { $in: ids },
+          active: true,
+        },
+        {
+          $set: { active: false },
+        },
+        {
+          session: newSession,
+        },
+      );
+
+      return {
+        archivedCount: result.modifiedCount ?? 0,
+      };
+    });
+  }
+
+  /**
+   * Restores archived Asset Roster records by setting active to true.
+   */
+  async unarchiveSelected(
+    ids: string[],
+    session?: ClientSession,
+  ): Promise<{ unarchivedCount: number }> {
+    return await runTransaction(session, async (newSession) => {
+      const model = this.connectionManager.bindModelToDb(this.model);
+
+      const archivedRecordCount = await model
+        .countDocuments({
+          _id: { $in: ids },
+          active: false,
+        })
+        .session(newSession);
+
+      if (archivedRecordCount !== ids.length) {
+        throw new ValidationException(
+          "One or more selected Asset Roster records no longer exist or are already active.",
+        );
+      }
+
+      const result = await model.updateMany(
+        {
+          _id: { $in: ids },
+          active: false,
+        },
+        {
+          $set: { active: true },
+        },
+        {
+          session: newSession,
+        },
+      );
+
+      return {
+        unarchivedCount: result.modifiedCount ?? 0,
+      };
     });
   }
 
@@ -346,10 +438,18 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
    * @param {Record<string, any>[]} [data] - The data to export as a CSV file.
    * @returns {Promise<Buffer>} - A promise resolving to a Buffer containing the CSV data.
    */
-  override async exportCSV(data?: Record<string, any>[]): Promise<Buffer> {
+  override async exportCSV(
+    data?: Record<string, any>[],
+    assetRosterIds?: string[],
+  ): Promise<Buffer> {
     return runTransaction<Buffer>(undefined, async (newSession) => {
+      const filter = {
+        active: true,
+        ...(assetRosterIds?.length ? { _id: { $in: assetRosterIds } } : {}),
+      };
+
       const assetRosters = await this.get(
-        { active: true },
+        filter,
         undefined,
         undefined,
         undefined,
@@ -357,12 +457,13 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
       );
 
       const json = assetRosters.map((p) => ({
+        id: String(p._id),
         productModel: p.productModel,
         serialNumber: p.serialNumber,
         acquiredDate: p.acquiredDate?.toISOString().split("T")[0] ?? "",
         acquiredPrice: p.acquiredPrice,
         currentPrice: p.currentPrice,
-        condition: p.condition,
+        condition: (p.conditionId as any)?.name ?? "",
         assetTypes: p.assetTypeIds?.map((t: any) => t.name).join(";"),
         vendors: p.vendorIds?.map((v: any) => v.email).join(";"),
         makes: p.makeIds.map((m: any) => m.email).join(";"),
@@ -371,7 +472,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
           .join(";"),
         location: p.locationId ? p.locationId.code : "",
         warrantyDate: p.warrantyDate?.toISOString().split("T")[0] ?? "",
-        remarks: p.remarks.map((r) => r.remark).join(";"),
+        remarks: p.remarks.map((r: any) => r.remark).join(";"),
         status:
           p.status
             ?.replace("-", " ")
@@ -383,6 +484,7 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
       }));
 
       return super.exportCSV(json, [
+        "id",
         "productModel",
         "serialNumber",
         "acquiredDate",
@@ -404,6 +506,121 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
   }
 
   /**
+   * Validates a parsed CSV payload before the actual import.
+   * Runs only the database-lookup checks that class-validator cannot perform:
+   * - location: each Room code must exist in the system.
+   * - maintenanceWindows: each "name - recurrency" entry must exist in the system.
+   *
+   * Errors from every row are collected before throwing so the user can fix
+   * all problems in one pass instead of re-validating after each correction.
+   *
+   * @param rows - Parsed and DTO-transformed CSV rows from the request body.
+   * @returns { valid: true, rowCount } when all rows pass.
+   * @throws ValidationException with a newline-separated list of messages on failure.
+   */
+  async validateImport(
+    rows: AssetRosterCSVDTO[],
+  ): Promise<{ valid: boolean; rowCount: number }> {
+    const errors: string[] = [];
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const rowLabel = `Row ${i + 1}`;
+
+      // Validate required-on-create fields when the row has no id (new record).
+      if (!row.id?.trim()) {
+        if (!row.productModel) {
+          errors.push(
+            `${rowLabel}: productModel is required when creating a new record.`,
+          );
+        }
+        if (!row.acquiredDate) {
+          errors.push(
+            `${rowLabel}: acquiredDate is required when creating a new record.`,
+          );
+        }
+        if (!row.assetTypes) {
+          errors.push(
+            `${rowLabel}: assetTypes is required when creating a new record.`,
+          );
+        }
+      }
+
+      // Validate location — must match an existing Room code or name.
+      if (row.location) {
+        const rooms = await this.roomService.get({
+          $or: [{ code: row.location }, { name: row.location }],
+        });
+        if (!rooms[0]) {
+          errors.push(
+            `${rowLabel}: Location "${row.location}" was not found in the system. ` +
+              `Ensure the value matches an existing Room code or name exactly.`,
+          );
+        }
+      }
+
+      // Validate maintenanceWindows — each semicolon-separated entry must be
+      // in the exported format "name - recurrency" and match an existing record.
+      if (row.maintenanceWindows) {
+        const entries = row.maintenanceWindows
+          .split(";")
+          .map((e) => e.trim())
+          .filter(Boolean);
+
+        for (const entry of entries) {
+          // Split on " - " from the right so names that contain " - " are preserved.
+          const parts = entry.split(" - ");
+
+          if (parts.length < 2) {
+            errors.push(
+              `${rowLabel}: Maintenance window "${entry}" is not in the expected format "name - recurrency".`,
+            );
+            continue;
+          }
+
+          const recurrency = parts[parts.length - 1].trim();
+          const name = parts
+            .slice(0, parts.length - 1)
+            .join(" - ")
+            .trim();
+
+          const windows = await this.maintenanceWindowsService.get({
+            name,
+            recurrency,
+          });
+
+          if (!windows[0]) {
+            errors.push(
+              `${rowLabel}: Maintenance window "${entry}" was not found in the system. ` +
+                `Ensure the name and recurrency match an existing Maintenance Window exactly.`,
+            );
+          }
+        }
+      }
+
+      // Validate condition — must match an existing AssetCondition name exactly.
+      if (row.condition) {
+        const conditions = await this.conditionService.get({
+          name: row.condition,
+        });
+
+        if (!conditions[0]) {
+          errors.push(
+            `${rowLabel}: Condition "${row.condition}" was not found in the system. ` +
+              `Ensure the value matches an existing Condition name exactly.`,
+          );
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new ValidationException(errors.join("\n"));
+    }
+
+    return { valid: true, rowCount: rows.length };
+  }
+
+  /**
    * Imports a CSV file into the database.
    * The function expects a plain array of objects to be passed as the first argument.
    * The objects should have the same structure as the records in the database.
@@ -419,130 +636,383 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
     return await runTransaction<AssetRosterDocument[]>(
       session,
       async (newSession) => {
-        if (!data || !Array.isArray(data)) {
-          throw new ValidationException("Invalid data format");
+        if (!data || !Array.isArray(data) || data.length === 0) {
+          throw new ValidationException("Invalid or empty import data");
         }
 
-        const assetRosters: any[] = [];
+        const model = this.connectionManager.bindModelToDb(this.model);
+        const seenIds = new Set<string>();
+        const importedRecords: AssetRosterDocument[] = [];
 
         for (const assetRoster of data) {
-          const assetTypeNames = assetRoster.assetTypes.split(";");
-          const vendorEmails = assetRoster.vendors?.split(";");
-          const makeEmails = assetRoster.makes?.split(";");
+          const hasField = (field: keyof AssetRosterCSVDTO): boolean =>
+            Object.prototype.hasOwnProperty.call(assetRoster, field);
 
-          // Find or create assetRoster types
-          const assetTypeIds = await Promise.all(
-            assetTypeNames.map(async (name) => {
-              let assetType = (
-                await this.assetTypeService.get(
-                  { name },
-                  undefined,
-                  undefined,
-                  undefined,
-                  newSession,
+          const recordId = assetRoster.id?.trim() || undefined;
+
+          if (recordId) {
+            if (seenIds.has(recordId)) {
+              throw new ValidationException(
+                `The ID "${recordId}" appears more than once in the CSV file.`,
+              );
+            }
+
+            seenIds.add(recordId);
+          }
+
+          const existingRecord = recordId
+            ? await model.findById(recordId).session(newSession)
+            : null;
+
+          // Required fields are validated here so the error message is clear
+          // and points to the row rather than the DTO layer.
+          if (!existingRecord) {
+            if (!assetRoster.productModel) {
+              throw new ValidationException(
+                "productModel is required when creating a new record.",
+              );
+            }
+            if (!assetRoster.acquiredDate) {
+              throw new ValidationException(
+                "acquiredDate is required when creating a new record.",
+              );
+            }
+            if (!assetRoster.assetTypes) {
+              throw new ValidationException(
+                "assetTypes is required when creating a new record.",
+              );
+            }
+          }
+
+          // Resolve assetTypes only when the column was selected.
+          let assetTypeIds: any[] | undefined;
+          if (hasField("assetTypes")) {
+            const assetTypeNames = assetRoster.assetTypes
+              ? assetRoster.assetTypes
+                  .split(";")
+                  .map((name) => name.trim())
+                  .filter(Boolean)
+              : [];
+
+            if (assetTypeNames.length === 0 && !existingRecord) {
+              throw new ValidationException(
+                "At least one asset type is required when creating a new record.",
+              );
+            }
+
+            // Find or create asset types.
+            assetTypeIds = await Promise.all(
+              assetTypeNames.map(async (name) => {
+                let assetType = (
+                  await this.assetTypeService.get(
+                    { name },
+                    undefined,
+                    undefined,
+                    undefined,
+                    newSession,
+                  )
+                )[0];
+
+                if (!assetType) {
+                  assetType = await this.assetTypeService.create(
+                    { name },
+                    newSession,
+                  );
+                }
+
+                return assetType._id;
+              }),
+            );
+          }
+
+          const vendorEmails = assetRoster.vendors
+            ?.split(";")
+            .map((email) => email.trim())
+            .filter(Boolean);
+
+          // Only resolve and replace vendors when the column was selected.
+          const vendorIds = hasField("vendors")
+            ? vendorEmails
+              ? await Promise.all(
+                  vendorEmails.map(async (email) => {
+                    let vendor = (
+                      await this.contactsService.get(
+                        { email },
+                        undefined,
+                        undefined,
+                        undefined,
+                        newSession,
+                      )
+                    )[0];
+
+                    if (!vendor) {
+                      vendor = await this.contactsService.create(
+                        {
+                          name: "default",
+                          lastName: "default",
+                          email,
+                          phoneNumber: "0000000000",
+                          type: "company",
+                        },
+                        newSession,
+                      );
+                    }
+
+                    return vendor._id;
+                  }),
                 )
-              )[0];
+              : []
+            : undefined;
 
-              if (!assetType)
-                assetType = await this.assetTypeService.create(
-                  {
-                    name,
-                  },
-                  newSession,
+          const makeEmails = assetRoster.makes
+            ?.split(";")
+            .map((email) => email.trim())
+            .filter(Boolean);
+
+          // Only resolve and replace makes when the column was selected.
+          const makeIds = hasField("makes")
+            ? makeEmails
+              ? await Promise.all(
+                  makeEmails.map(async (email) => {
+                    let make = (
+                      await this.contactsService.get(
+                        { email },
+                        undefined,
+                        undefined,
+                        undefined,
+                        newSession,
+                      )
+                    )[0];
+
+                    if (!make) {
+                      make = await this.contactsService.create(
+                        {
+                          name: "default",
+                          lastName: "default",
+                          email,
+                          phoneNumber: "0000000000",
+                          type: "company",
+                        },
+                        newSession,
+                      );
+                    }
+
+                    return make._id;
+                  }),
+                )
+              : []
+            : undefined;
+
+          // Resolve location by Room code or name when the column was selected.
+          // Errors if neither matches any Room in the system.
+          let resolvedLocationId: any = undefined; // undefined = column not selected; null = clear
+          if (hasField("location")) {
+            if (assetRoster.location) {
+              const rooms = await this.roomService.get(
+                {
+                  $or: [
+                    { code: assetRoster.location },
+                    { name: assetRoster.location },
+                  ],
+                },
+                undefined,
+                undefined,
+                undefined,
+                newSession,
+              );
+              const room = rooms[0];
+              if (!room) {
+                throw new ValidationException(
+                  `Location "${assetRoster.location}" was not found in the system. ` +
+                    `Ensure the value matches an existing Room code or name exactly.`,
                 );
+              }
+              resolvedLocationId = room._id;
+            } else {
+              // Column was selected but cell is empty — clear the location.
+              resolvedLocationId = null;
+            }
+          }
 
-              return assetType._id;
-            }),
+          // Resolve maintenance windows when the column was selected.
+          // Each entry must be in the exported format "name - recurrency".
+          // Errors if any entry does not match an existing Maintenance Window.
+          let resolvedMaintenanceWindowIds: any[] | undefined;
+          if (hasField("maintenanceWindows")) {
+            if (assetRoster.maintenanceWindows) {
+              const entries = assetRoster.maintenanceWindows
+                .split(";")
+                .map((e) => e.trim())
+                .filter(Boolean);
+
+              resolvedMaintenanceWindowIds = await Promise.all(
+                entries.map(async (entry) => {
+                  // The export format is "name - recurrency".
+                  // Split on " - " from the right so names containing " - " are preserved.
+                  const parts = entry.split(" - ");
+
+                  if (parts.length < 2) {
+                    throw new ValidationException(
+                      `Maintenance window "${entry}" is not in the expected format "name - recurrency".`,
+                    );
+                  }
+
+                  const recurrency = parts[parts.length - 1].trim();
+                  const name = parts
+                    .slice(0, parts.length - 1)
+                    .join(" - ")
+                    .trim();
+
+                  const windows = await this.maintenanceWindowsService.get(
+                    { name, recurrency },
+                    undefined,
+                    undefined,
+                    undefined,
+                    newSession,
+                  );
+
+                  const window = windows[0];
+
+                  if (!window) {
+                    throw new ValidationException(
+                      `Maintenance window "${entry}" was not found in the system. ` +
+                        `Ensure the name and recurrency match an existing Maintenance Window exactly.`,
+                    );
+                  }
+
+                  return window._id;
+                }),
+              );
+            } else {
+              // Column selected but empty — clear the maintenance windows.
+              resolvedMaintenanceWindowIds = [];
+            }
+          }
+
+          // Build importData using only selected columns for updates;
+          // required fields are always included for new records.
+          const importData: Record<string, any> = {};
+
+          if (hasField("productModel") || !existingRecord) {
+            importData.productModel = assetRoster.productModel;
+          }
+
+          if (hasField("serialNumber") || !existingRecord) {
+            importData.serialNumber = assetRoster.serialNumber;
+          }
+
+          if (hasField("acquiredDate") || !existingRecord) {
+            importData.acquiredDate = assetRoster.acquiredDate;
+          }
+
+          if (assetTypeIds !== undefined) {
+            importData.assetTypeIds = assetTypeIds;
+          }
+
+          if (resolvedLocationId !== undefined) {
+            importData.locationId = resolvedLocationId;
+          }
+
+          if (resolvedMaintenanceWindowIds !== undefined) {
+            importData.maintenanceWindowIds = resolvedMaintenanceWindowIds;
+          }
+
+          if (hasField("acquiredPrice")) {
+            importData.acquiredPrice = assetRoster.acquiredPrice;
+          }
+
+          if (hasField("currentPrice")) {
+            importData.currentPrice = assetRoster.currentPrice;
+          }
+
+          if (hasField("condition")) {
+            if (assetRoster.condition) {
+              const conditions = await this.conditionService.get(
+                { name: assetRoster.condition },
+                undefined,
+                undefined,
+                undefined,
+                newSession,
+              );
+
+              const condition = conditions[0];
+
+              if (!condition) {
+                throw new ValidationException(
+                  `Condition "${assetRoster.condition}" was not found in the system. ` +
+                    `Ensure the value matches an existing Condition name exactly.`,
+                );
+              }
+
+              importData.conditionId = condition._id;
+            } else {
+              importData.conditionId = null;
+            }
+          }
+
+          if (hasField("warrantyDate")) {
+            importData.warrantyDate = assetRoster.warrantyDate;
+          }
+
+          if (hasField("active")) {
+            importData.active = assetRoster.active;
+          }
+
+          // For a new record, omitted relationship columns become empty arrays.
+          // For an existing record, omitted columns are preserved.
+          if (hasField("vendors") || !existingRecord) {
+            importData.vendorIds = vendorIds ?? [];
+          }
+
+          if (hasField("makes") || !existingRecord) {
+            importData.makeIds = makeIds ?? [];
+          }
+
+          if (hasField("remarks") || !existingRecord) {
+            importData.remarks = assetRoster.remarks
+              ? assetRoster.remarks.split(";").map((remark) => ({
+                  remark: remark.trim(),
+                  performDate: new Date(),
+                  createdBy: userStorage.getStore()?.user?._id,
+                }))
+              : [];
+          }
+
+          if (existingRecord && recordId) {
+            const updatedRecord = await model.findByIdAndUpdate(
+              recordId,
+              { $set: importData },
+              {
+                new: true,
+                runValidators: true,
+                session: newSession,
+              },
+            );
+
+            if (!updatedRecord) {
+              throw new ValidationException(
+                `Asset Roster record "${recordId}" could not be updated.`,
+              );
+            }
+
+            importedRecords.push(updatedRecord as AssetRosterDocument);
+            continue;
+          }
+
+          const [createdRecord] = await model.create(
+            [
+              {
+                ...(recordId ? { _id: recordId } : {}),
+                ...importData,
+              },
+            ],
+            { session: newSession },
           );
 
-          // Find or create vendors
-          const vendorIds = vendorEmails
-            ? await Promise.all(
-                vendorEmails.map(async (email) => {
-                  let vendor = (
-                    await this.contactsService.get(
-                      { email },
-                      undefined,
-                      undefined,
-                      undefined,
-                      newSession,
-                    )
-                  )[0];
-
-                  if (!vendor)
-                    vendor = await this.contactsService.create(
-                      {
-                        name: "default",
-                        lastName: "default",
-                        email,
-                        phoneNumber: "0000000000",
-                        type: "company",
-                      },
-                      newSession,
-                    );
-
-                  return vendor._id;
-                }),
-              )
-            : [];
-
-          // Find or create makes
-          const makeIds = makeEmails
-            ? await Promise.all(
-                makeEmails.map(async (email) => {
-                  let make = (
-                    await this.contactsService.get(
-                      { email },
-                      undefined,
-                      undefined,
-                      undefined,
-                      newSession,
-                    )
-                  )[0];
-
-                  if (!make)
-                    make = await this.contactsService.create(
-                      {
-                        name: "default",
-                        lastName: "default",
-                        email,
-                        phoneNumber: "0000000000",
-                        type: "company",
-                      },
-                      newSession,
-                    );
-
-                  return make._id;
-                }),
-              )
-            : [];
-
-          // Remarks
-          const remarks = assetRoster.remarks
-            ? assetRoster.remarks.split(";").map((remark) => ({
-                remark,
-                performDate: new Date(),
-                createdBy: userStorage.getStore()?.user?._id,
-              }))
-            : [];
-
-          assetRosters.push({
-            productModel: assetRoster.productModel,
-            serialNumber: assetRoster.serialNumber,
-            acquiredDate: assetRoster.acquiredDate,
-            acquiredPrice: assetRoster.acquiredPrice,
-            currentPrice: assetRoster.currentPrice,
-            condition: assetRoster.condition,
-            assetTypeIds: assetTypeIds,
-            vendorIds: vendorIds,
-            makeIds: makeIds,
-            warrantyDate: assetRoster.warrantyDate,
-            remarks: remarks,
-            active: assetRoster.active,
-          });
+          importedRecords.push(createdRecord as AssetRosterDocument);
         }
 
-        return await super.importCSV(assetRosters, newSession);
+        return importedRecords;
       },
     );
   }

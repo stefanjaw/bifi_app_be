@@ -1,5 +1,6 @@
 import {
   ArrayMinSize,
+  ArrayUnique,
   IsArray,
   IsBoolean,
   IsDate,
@@ -144,7 +145,7 @@ export class AssetRosterDTO {
 
   @IsString()
   @IsNotEmpty()
-  @ValidateIf((o) => !o.deviceType || o.deviceType === "serialized")
+  @IsOptional()
   serialNumber?: string;
 
   @IsString()
@@ -182,9 +183,9 @@ export class AssetRosterDTO {
   )
   softwareConfiguration?: SoftwareConfigurationDTO;
 
-  @IsIn(["excellent", "good", "fair", "poor"])
+  @IsMongoId()
   @IsOptional()
-  condition?: string;
+  conditionId?: string;
 
   @IsArray()
   @ArrayMinSize(1)
@@ -343,4 +344,15 @@ export class NotesDTO {
   @IsDate()
   @Type(() => Date)
   performDate?: Date;
+}
+
+export class ArchiveAssetRostersDTO {
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayUnique()
+  @IsMongoId({ each: true })
+  @Transform(({ value }) =>
+    typeof value === "string" ? JSON.parse(value) : value,
+  )
+  ids!: string[];
 }

@@ -21,3 +21,8 @@ export * from "./services/asset-roster-status-service";
 export * from "./services/asset-commissioning-service";
 export * from "./services/asset-maintenance-service";
 export * from "./services/asset-type-service";
+export * from "./controllers/asset-condition-controller";
+export * from "./models/asset-condition.dto";
+export * from "./models/asset-condition.model";
+export * from "./routes/asset-condition-routes";
+export * from "./services/asset-condition-service";

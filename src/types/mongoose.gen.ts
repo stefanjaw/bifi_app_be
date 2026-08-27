@@ -2043,6 +2043,114 @@ export type AssetCommissioningDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of AssetConditionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AssetConditionDocument.toObject()`. To avoid conflicts with model names, use the type alias `AssetConditionObject`.
+ * ```
+ * const assetconditionObject = assetcondition.toObject();
+ * ```
+ */
+export type AssetCondition = {
+  name: string;
+  description?: string;
+  active?: boolean;
+  _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Lean version of AssetConditionDocument (type alias of `AssetCondition`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { AssetCondition } from "../models"
+ * import { AssetConditionObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const assetconditionObject: AssetConditionObject = assetcondition.toObject();
+ * ```
+ */
+export type AssetConditionObject = AssetCondition;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetConditionQuery = mongoose.Query<
+  any,
+  AssetConditionDocument,
+  AssetConditionQueries
+> &
+  AssetConditionQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `AssetConditionSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type AssetConditionQueries = {
+  paginate: (this: AssetConditionQuery, ...args: any[]) => AssetConditionQuery;
+};
+
+export type AssetConditionMethods = {};
+
+export type AssetConditionStatics = {
+  paginate: (this: AssetConditionModel, ...args: any[]) => any;
+  paginateSubDocs: (this: AssetConditionModel, ...args: any[]) => any;
+};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetCondition = mongoose.model<AssetConditionDocument, AssetConditionModel>("AssetCondition", AssetConditionSchema);
+ * ```
+ */
+export type AssetConditionModel = mongoose.Model<
+  AssetConditionDocument,
+  AssetConditionQueries
+> &
+  AssetConditionStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new AssetCondition schema instances:
+ * ```
+ * const AssetConditionSchema: AssetConditionSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type AssetConditionSchema = mongoose.Schema<
+  AssetConditionDocument,
+  AssetConditionModel,
+  AssetConditionMethods,
+  AssetConditionQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AssetCondition = mongoose.model<AssetConditionDocument, AssetConditionModel>("AssetCondition", AssetConditionSchema);
+ * ```
+ */
+export type AssetConditionDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  AssetConditionQueries
+> &
+  AssetConditionMethods & {
+    name: string;
+    description?: string;
+    active?: boolean;
+    _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+/**
  * Lean version of AssetMaintenanceAttachmentDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `AssetMaintenanceDocument.toObject()`.
@@ -2292,7 +2400,7 @@ export type AssetRoster = {
   quantity?: number;
   locationAssignments: AssetRosterLocationAssignment[];
   softwareConfiguration?: AssetRosterSoftwareConfiguration;
-  condition?: "excellent" | "good" | "fair" | "poor";
+  conditionId?: AssetCondition;
   maintenanceWindowIds: MaintenanceWindow[];
   photo?: mongoose.Types.ObjectId;
   locationId?: Room;
@@ -2485,7 +2593,7 @@ export type AssetRosterDocument = mongoose.Document<
     quantity?: number;
     locationAssignments: mongoose.Types.DocumentArray<AssetRosterLocationAssignmentDocument>;
     softwareConfiguration?: AssetRosterSoftwareConfigurationDocument;
-    condition?: "excellent" | "good" | "fair" | "poor";
+    conditionId?: AssetConditionDocument;
     maintenanceWindowIds: mongoose.Types.Array<MaintenanceWindowDocument>;
     photo?: mongoose.Types.ObjectId;
     locationId?: RoomDocument;
@@ -17929,20 +18037,20 @@ type PopulatedProperty<Root, T extends keyof Root> = Omit<Root, T> & {
 export type PopulatedDocument<DocType, T> = T extends keyof DocType
   ? PopulatedProperty<DocType, T>
   : ParentProperty<T> extends keyof DocType
-  ? Omit<DocType, ParentProperty<T>> & {
-      [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
-        infer U
-      >
-        ? mongoose.Types.Array<
-            ChildProperty<T> extends keyof U
-              ? PopulatedProperty<U, ChildProperty<T>>
-              : PopulatedDocument<U, ChildProperty<T>>
-          >
-        : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
-        ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
-        : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
-    }
-  : DocType;
+    ? Omit<DocType, ParentProperty<T>> & {
+        [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
+          infer U
+        >
+          ? mongoose.Types.Array<
+              ChildProperty<T> extends keyof U
+                ? PopulatedProperty<U, ChildProperty<T>>
+                : PopulatedDocument<U, ChildProperty<T>>
+            >
+          : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
+            ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
+            : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
+      }
+    : DocType;
 
 /**
  * Helper types used by the populate overloads
@@ -17959,26 +18067,26 @@ declare module "mongoose" {
       path: T,
       select?: string | any,
       model?: string | Model<any, THelpers>,
-      match?: any
+      match?: any,
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>
         : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
+          ? PopulatedDocument<Unarray<ResultType>, T>
+          : ResultType,
       DocType,
       THelpers
     > &
       THelpers;
 
     populate<T extends string>(
-      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>
+      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>,
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>
         : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
+          ? PopulatedDocument<Unarray<ResultType>, T>
+          : ResultType,
       DocType,
       THelpers
     > &

@@ -61,10 +61,7 @@ export async function getChromiumExecutablePath(): Promise<string> {
  * seccomp profile) rather than disabling the sandbox. See C8.
  */
 export function getLaunchArgs(): string[] {
-  const base = [
-    "--disable-setuid-sandbox",
-    "--disable-dev-shm-usage",
-  ];
+  const base = ["--disable-setuid-sandbox", "--disable-dev-shm-usage"];
 
   try {
     const chromium = require("@sparticuz/chromium");
@@ -85,12 +82,7 @@ export function getLaunchArgs(): string[] {
  */
 function isPrivateHost(hostname: string): boolean {
   const h = hostname.toLowerCase();
-  if (
-    h === "localhost" ||
-    h === "127.0.0.1" ||
-    h === "::1" ||
-    h === "0.0.0.0"
-  )
+  if (h === "localhost" || h === "127.0.0.1" || h === "::1" || h === "0.0.0.0")
     return true;
 
   // RFC 1918 + link-local + cloud metadata
@@ -121,9 +113,7 @@ function isPrivateHost(hostname: string): boolean {
  * Must be called after `browser.newPage()` and before `page.setContent()`.
  * @param page - The Puppeteer page to protect.
  */
-export async function blockPrivateNetworkRequests(
-  page: Page,
-): Promise<void> {
+export async function blockPrivateNetworkRequests(page: Page): Promise<void> {
   await page.setRequestInterception(true);
   page.on("request", (req) => {
     try {

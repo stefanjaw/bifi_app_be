@@ -2,12 +2,14 @@ import { AssetRosterDocument } from "@mongodb-types";
 import {
   authorizeMiddleware,
   BaseRoutes,
+  validateAndTransformCSVMiddleware,
   validateBodyMiddleware,
   withAlsContext,
 } from "../../../system";
 import { AssetRosterController } from "../controllers/asset-roster-controller";
 import { AssetRosterCSVDTO } from "../models/asset-roster-csv.dto";
 import {
+  ArchiveAssetRostersDTO,
   AssetRosterDTO,
   SkipAssetRosterPMDTO,
   UpdateAssetRosterDTO,
@@ -27,6 +29,9 @@ export class AssetRosterRouter extends BaseRoutes<AssetRosterDocument> {
   }
 
   protected override initRoutes(): void {
+    this.initValidateImportRoute();
+    this.initArchiveSelectedRoute();
+    this.initUnarchiveSelectedRoute();
     this.initSkipAssetPMRoute();
     this.initReadDocumentsRoute();
     super.initRoutes();
@@ -44,6 +49,36 @@ export class AssetRosterRouter extends BaseRoutes<AssetRosterDocument> {
       validateBodyMiddleware(this.dtoUpdateClass),
       authorizeMiddleware(this.resource, "update"),
       this.controller.update,
+    );
+  }
+
+  private initValidateImportRoute(): void {
+    this.router.post(
+      `${this.endpoint}/import/validate`,
+      this.upload.single("csv"),
+      validateAndTransformCSVMiddleware(AssetRosterCSVDTO),
+      authorizeMiddleware(`${this.resource}/import`, "create"),
+      assetRosterController.validateImport,
+    );
+  }
+
+  private initArchiveSelectedRoute(): void {
+    this.router.post(
+      `${this.endpoint}/archive`,
+      withAlsContext(this.upload.none()),
+      validateBodyMiddleware(ArchiveAssetRostersDTO),
+      authorizeMiddleware(this.resource, "update"),
+      assetRosterController.archiveSelected,
+    );
+  }
+
+  private initUnarchiveSelectedRoute(): void {
+    this.router.post(
+      `${this.endpoint}/unarchive`,
+      withAlsContext(this.upload.none()),
+      validateBodyMiddleware(ArchiveAssetRostersDTO),
+      authorizeMiddleware(this.resource, "update"),
+      assetRosterController.unarchiveSelected,
     );
   }
 

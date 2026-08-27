@@ -26,8 +26,7 @@ export const catchExceptionMiddleware = (
   } else {
     res.status(500).json({
       error: true,
-      message:
-        "An internal server error occurred",
+      message: "An internal server error occurred",
       errors: [],
       errorCount: 0,
     });

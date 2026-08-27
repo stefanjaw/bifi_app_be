@@ -145,11 +145,14 @@ const assetRosterSchema = new Schema(
       type: softwareConfigurationSchema,
       required: false,
     },
-    condition: {
-      type: String,
-      enum: ["excellent", "good", "fair", "poor"],
+    conditionId: {
+      type: Schema.Types.ObjectId,
+      ref: "AssetCondition",
+      autopopulate: {
+        select: "name active",
+        maxDepth: 1,
+      },
       required: false,
-      default: "excellent",
     },
     maintenanceWindowIds: {
       type: [Schema.Types.ObjectId],

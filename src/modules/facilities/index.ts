@@ -3,6 +3,7 @@ export * from "./controllers/room-controller";
 export * from "./models/facility.dto";
 export * from "./models/facility.model";
 export * from "./models/room.dto";
+export * from "./models/room-csv.dto";
 export * from "./models/room.model";
 export * from "./services/facility-service";
 export * from "./services/room-service";
