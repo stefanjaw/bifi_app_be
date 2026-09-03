@@ -548,9 +548,16 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
 
       // Validate location — must match an existing Room code or name.
       if (row.location) {
-        const rooms = await this.roomService.get({
-          $or: [{ code: row.location }, { name: row.location }],
-        });
+        const rooms = await this.roomService.get(
+          {
+            $or: [{ code: row.location }, { name: row.location }],
+          },
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+        );
+
         if (!rooms[0]) {
           errors.push(
             `${rowLabel}: Location "${row.location}" was not found in the system. ` +
@@ -584,10 +591,16 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
             .join(" - ")
             .trim();
 
-          const windows = await this.maintenanceWindowsService.get({
-            name,
-            recurrency,
-          });
+          const windows = await this.maintenanceWindowsService.get(
+            {
+              name,
+              recurrency,
+            },
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+          );
 
           if (!windows[0]) {
             errors.push(
@@ -600,9 +613,15 @@ export class AssetRosterService extends BaseService<AssetRosterDocument> {
 
       // Validate condition — must match an existing AssetCondition name exactly.
       if (row.condition) {
-        const conditions = await this.conditionService.get({
-          name: row.condition,
-        });
+        const conditions = await this.conditionService.get(
+          {
+            name: row.condition,
+          },
+          undefined,
+          undefined,
+          undefined,
+          undefined,
+        );
 
         if (!conditions[0]) {
           errors.push(
