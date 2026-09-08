@@ -144,7 +144,7 @@ export class UserService extends BaseService<UserDocument> {
       // raw object to findByIdAndUpdate, so this is the last line of defense.
       const FORBIDDEN_UPDATE_FIELDS = [
         "authId",
-        "roles",
+        //"roles",
         "active",
         "confirmed",
         "provider",
