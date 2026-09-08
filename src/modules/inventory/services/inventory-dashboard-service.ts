@@ -54,7 +54,7 @@ export class InventoryDashboardService extends BaseService<StockBalanceDocument>
               value: {
                 $multiply: [
                   "$totalQty",
-                  { $ifNull: ["$product.costPrice", 0] },
+                  { $ifNull: ["$product.averageCost", 0] },
                 ],
               },
             },
@@ -67,11 +67,16 @@ export class InventoryDashboardService extends BaseService<StockBalanceDocument>
       ],
     );
 
-    const inStockIds = (stockByProduct as any[])
+    const stockTotals = stockByProduct as unknown as Array<{
+      _id: string;
+      totalQty: number;
+    }>;
+
+    const inStockIds = stockTotals
       .filter((r) => r.totalQty >= 1)
       .map((r) => r._id);
 
-    const lowStockEntries = (stockByProduct as any[]).filter(
+    const lowStockEntries = stockTotals.filter(
       (r) => r.totalQty >= 1 && r.totalQty <= 4,
     );
     const lowStockIds = lowStockEntries.map((r) => r._id);
@@ -106,11 +111,19 @@ export class InventoryDashboardService extends BaseService<StockBalanceDocument>
       ]);
 
     const outOfStockProducts: InventoryDashboardProduct[] = (
-      outOfStockDocs as any[]
+      outOfStockDocs as unknown as Array<{
+        _id: string;
+        name: string;
+        sku: string;
+      }>
     ).map((p) => ({ _id: p._id, name: p.name, sku: p.sku, totalQty: 0 }));
 
     const lowStockProducts: InventoryDashboardProduct[] = (
-      lowStockDocs as any[]
+      lowStockDocs as unknown as Array<{
+        _id: string;
+        name: string;
+        sku: string;
+      }>
     ).map((p) => ({
       _id: p._id,
       name: p.name,
@@ -120,7 +133,9 @@ export class InventoryDashboardService extends BaseService<StockBalanceDocument>
 
     return {
       totalProducts,
-      totalStockValue: (stockValueResult as any[])[0]?.total ?? 0,
+      totalStockValue:
+        (stockValueResult as unknown as Array<{ total: number }>)[0]?.total ??
+        0,
       outOfStockItems,
       lowStockItems,
       outOfStockProducts,

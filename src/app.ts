@@ -72,6 +72,7 @@ import {
   ProductRouter,
   InventoryDashboardRouter,
   InventorySettingsRouter,
+  InventoryValuationRouter,
   StockBalanceRouter,
   StockMovementRouter,
   UomCategoryRouter,
@@ -325,6 +326,7 @@ app.use("/api", new UomRouter().getRouter);
 app.use("/api", new ProductTypeRouter().getRouter);
 app.use("/api", new InventoryDashboardRouter().getRouter);
 app.use("/api", new InventorySettingsRouter().getRouter);
+app.use("/api", new InventoryValuationRouter().getRouter);
 app.use("/api", new CurrencyRouter().getRouter);
 app.use("/api", new ExchangeRateRouter().getRouter);
 app.use("/api", new AccountRouter().getRouter);

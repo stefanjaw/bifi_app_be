@@ -2,11 +2,11 @@ import mongoose, { PaginateModel, Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
 import autopopulate from "mongoose-autopopulate";
 
-/** Type representing an inventory settings document (singleton) */
-export type InventorySettingsDocument = mongoose.Document & {
-  defaultWarehouseId?: mongoose.Types.ObjectId;
-  defaultLocationId?: mongoose.Types.ObjectId;
-};
+/** Enumeration of inventory valuation methods (FIFO reserved for future use) */
+export enum ValuationMethod {
+  WEIGHTED_AVERAGE = "WEIGHTED_AVERAGE",
+  FIFO = "FIFO",
+}
 
 /** Mongoose schema for inventory settings (singleton) */
 const inventorySettingsSchema = new Schema(
@@ -25,6 +25,13 @@ const inventorySettingsSchema = new Schema(
       default: null,
       autopopulate: { select: "name code warehouseId", maxDepth: 1 },
     },
+    /** Costing method used for inventory valuation */
+    valuationMethod: {
+      type: String,
+      enum: Object.values(ValuationMethod),
+      required: false,
+      default: ValuationMethod.WEIGHTED_AVERAGE,
+    },
   },
   {
     collection: "inventorysettings",
@@ -36,6 +43,10 @@ const inventorySettingsSchema = new Schema(
 
 inventorySettingsSchema.plugin(paginate);
 inventorySettingsSchema.plugin(autopopulate);
+
+import { InventorySettingsDocument } from "@mongodb-types";
+
+export { InventorySettingsDocument };
 
 const inventorySettingsModel = mongoose.model<
   InventorySettingsDocument,

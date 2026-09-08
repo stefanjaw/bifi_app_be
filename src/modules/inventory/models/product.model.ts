@@ -48,6 +48,12 @@ const productSchema = new Schema(
       default: 0,
       min: 0,
     },
+    /** Running weighted average cost used for inventory valuation (per product, global) */
+    averageCost: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
     salePrice: {
       type: Number,
       default: 0,

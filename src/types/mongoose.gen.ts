@@ -12283,6 +12283,7 @@ export type TicketDocument = mongoose.Document<
 export type InventorySettings = {
   defaultWarehouseId?: Warehouse | null;
   defaultLocationId?: InventoryLocation | null;
+  valuationMethod?: "WEIGHTED_AVERAGE" | "FIFO";
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -12376,6 +12377,7 @@ export type InventorySettingsDocument = mongoose.Document<
   InventorySettingsMethods & {
     defaultWarehouseId?: WarehouseDocument | null;
     defaultLocationId?: InventoryLocationDocument | null;
+    valuationMethod?: "WEIGHTED_AVERAGE" | "FIFO";
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
@@ -12642,6 +12644,7 @@ export type InventoryProduct = {
   unitOfMeasureId?: InventoryUom;
   productTypeId?: InventoryProductType;
   costPrice?: number;
+  averageCost?: number;
   salePrice?: number;
   defaultSaleTaxIds: (Tax["_id"] | Tax)[];
   defaultPurchaseTaxIds: (Tax["_id"] | Tax)[];
@@ -12771,6 +12774,7 @@ export type InventoryProductDocument = mongoose.Document<
     unitOfMeasureId?: InventoryUomDocument;
     productTypeId?: InventoryProductTypeDocument;
     costPrice?: number;
+    averageCost?: number;
     salePrice?: number;
     defaultSaleTaxIds: mongoose.Types.Array<TaxDocument["_id"] | TaxDocument>;
     defaultPurchaseTaxIds: mongoose.Types.Array<
@@ -12915,8 +12919,13 @@ export type StockMovement = {
   warehouseId: Warehouse;
   locationId: InventoryLocation;
   quantity: number;
+  unitCost?: number;
+  totalCost?: number;
   type: "IN" | "OUT" | "ADJUSTMENT" | "TRANSFER";
+  adjustmentDirection?: "INCREASE" | "DECREASE" | null;
   reference?: string;
+  referenceType?: string;
+  reversalOf?: StockMovement["_id"] | StockMovement | null;
   notes?: string;
   date?: Date;
   _id: mongoose.Types.ObjectId;
@@ -13011,8 +13020,13 @@ export type StockMovementDocument = mongoose.Document<
     warehouseId: WarehouseDocument;
     locationId: InventoryLocationDocument;
     quantity: number;
+    unitCost?: number;
+    totalCost?: number;
     type: "IN" | "OUT" | "ADJUSTMENT" | "TRANSFER";
+    adjustmentDirection?: "INCREASE" | "DECREASE" | null;
     reference?: string;
+    referenceType?: string;
+    reversalOf?: StockMovementDocument["_id"] | StockMovementDocument | null;
     notes?: string;
     date?: Date;
     _id: mongoose.Types.ObjectId;

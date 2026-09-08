@@ -9,7 +9,7 @@ import {
   Min,
 } from "class-validator";
 import { PartialType } from "../../../system";
-import { MovementType } from "./stock-movement.model";
+import { AdjustmentDirection, MovementType } from "./stock-movement.model";
 
 /** DTO for creating a new stock movement */
 export class StockMovementDTO {
@@ -27,13 +27,30 @@ export class StockMovementDTO {
   @Type(() => Number)
   quantity!: number;
 
+  /** Unit cost override for the movement; defaults to the product's cost price when omitted (IN/ADJUSTMENT) or to the current weighted average (OUT) */
+  @IsNumber()
+  @Min(0)
+  @IsOptional()
+  @Type(() => Number)
+  unitCost?: number;
+
   @IsEnum(MovementType)
   @IsNotEmpty()
   type!: MovementType;
 
+  /** Direction for ADJUSTMENT movements; the type/direction combination rule is enforced in the service */
+  @IsOptional()
+  @IsEnum(AdjustmentDirection)
+  adjustmentDirection?: AdjustmentDirection;
+
   @IsString()
   @IsOptional()
   reference?: string;
+
+  /** Classification of the external reference (e.g. purchase-order, sales-order); reserved for future integrations */
+  @IsString()
+  @IsOptional()
+  referenceType?: string;
 
   @IsString()
   @IsOptional()
@@ -75,6 +92,14 @@ export class TransferDTO {
   @IsOptional()
   reference?: string;
 
+  @IsString()
+  @IsOptional()
+  notes?: string;
+}
+
+/** DTO for reversing a posted stock movement */
+export class ReversalDTO {
+  /** Optional note attached to the reversal movement */
   @IsString()
   @IsOptional()
   notes?: string;

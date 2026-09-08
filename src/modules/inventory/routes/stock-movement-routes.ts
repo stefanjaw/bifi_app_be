@@ -8,12 +8,17 @@ import { StockMovementController } from "../controllers/stock-movement-controlle
 import {
   StockMovementDTO,
   TransferDTO,
+  ReversalDTO,
   UpdateStockMovementDTO,
 } from "../models/stock-movement.dto";
 
 const stockMovementController = new StockMovementController();
 
-/** Route definitions for stock movement and transfer endpoints */
+/**
+ * Route definitions for stock movement endpoints.
+ * Posted stock movements are immutable: PUT/DELETE routes are intentionally not
+ * registered; corrections go through POST /{endpoint}/:id/reversal.
+ */
 export class StockMovementRouter extends BaseRoutes<StockMovementDocument> {
   constructor() {
     super({
@@ -33,5 +38,17 @@ export class StockMovementRouter extends BaseRoutes<StockMovementDocument> {
       authorizeMiddleware("inventory/movements", "create"),
       stockMovementController.transfer,
     );
+    this.router.post(
+      `${this.endpoint}/:id/reversal`,
+      validateBodyMiddleware(ReversalDTO),
+      authorizeMiddleware("inventory/movements", "create"),
+      stockMovementController.reverse,
+    );
   }
+
+  /** Posted movements are immutable — updates are not allowed */
+  protected override initPutRoute(): void {}
+
+  /** Posted movements are immutable — deletions are not allowed */
+  protected override initDeleteRoute(): void {}
 }

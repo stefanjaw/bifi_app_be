@@ -20,7 +20,9 @@
     "dev": "nodemon --exec \"ts-node -r tsconfig-paths/register --transpile-only\" src/index.ts",
     "prestart": "npm run build",
     "generate:types": "mtgen \"src/modules/**/*.model.ts\" -o src/types/mongoose.gen.ts -p tsconfig.json",
-    "generate:graph": "npx depcruise --config .dependency-cruiser.js src --output-type dot | dot -Tsvg -o graph.svg"
+    "generate:graph": "npx depcruise --config .dependency-cruiser.js src --output-type dot | dot -Tsvg -o graph.svg",
+    "typecheck:scripts": "tsc -p tsconfig.scripts.json --noEmit",
+    "backfill-inventory-valuation": "ts-node -r tsconfig-paths/register --transpile-only scripts/backfill-inventory-valuation.ts"
   },
   "dependencies": {
     "@aws-sdk/client-sesv2": "^3.679.0",
