@@ -67,6 +67,9 @@ export type ValuationReport = ValuationAsOfReport | ValuationDateRangeReport;
 /** Internal per-product ledger replay state */
 interface ReplayState {
   quantity: number;
+  /** Σ of signed movement.totalCost (value ledger): + on stock-in effects, − on stock-out effects */
+  valueCost: number;
+  /** Derived from the value ledger: valueCost / quantity (0 when quantity <= 0) */
   averageCost: number;
   name: string;
   sku: string;
@@ -87,9 +90,11 @@ interface ReplayMovement {
 /**
  * Historical inventory valuation engine. Reconstructs weighted average cost and stock
  * quantity for any historical date by replaying the stock movement ledger chronologically.
- * The replay applies the same weighted average formula as StockMovementService, so report
- * values match the product's running average. Legacy untagged TRANSFER legs are skipped
- * (value-neutral at product level).
+ * The replay uses value-ledger accounting: each product's running value is the Σ of signed
+ * movement.totalCost and its average cost is derived per movement (valueCost / quantity),
+ * matching StockMovementService (stock-out consumes at the recorded cost; reversals
+ * de-layer/restore at the original movement's cost). Legacy untagged TRANSFER legs are
+ * skipped (value-neutral at product level).
  */
 export class InventoryValuationService extends BaseService<StockMovementDocument> {
   constructor() {
@@ -271,9 +276,11 @@ export class InventoryValuationService extends BaseService<StockMovementDocument
       const quantity = movement.quantity ?? 0;
       const unitCost = roundCost(movement.unitCost ?? 0);
       const sign = this.movementSign(movement);
+      // Same recorded cost feeds both the range sums and the value ledger, so
+      // the DATE_RANGE identity (beginning + in − out ± adj = ending) is exact.
+      const cost = movement.totalCost ?? unitCost * quantity;
 
       if (snapshotTaken) {
-        const cost = movement.totalCost ?? unitCost * quantity;
         if (movement.type === MovementType.IN) {
           incomingValue += cost;
         } else if (movement.type === MovementType.OUT) {
@@ -300,18 +307,16 @@ export class InventoryValuationService extends BaseService<StockMovementDocument
       const state = this.ensureState(states, key, movement);
 
       if (sign > 0) {
-        const totalQuantity = state.quantity + quantity;
-        state.averageCost =
-          totalQuantity > 0
-            ? roundCost(
-                (state.quantity * state.averageCost + quantity * unitCost) /
-                  totalQuantity,
-              )
-            : 0;
+        state.valueCost += cost;
         state.quantity += quantity;
       } else {
+        state.valueCost -= cost;
         state.quantity -= quantity;
       }
+      state.averageCost =
+        state.quantity > 0
+          ? roundCost(state.valueCost / state.quantity)
+          : 0;
     }
 
     if (boundary !== null && !snapshotTaken) {
@@ -377,6 +382,7 @@ export class InventoryValuationService extends BaseService<StockMovementDocument
         : null;
     const created: ReplayState = {
       quantity: 0,
+      valueCost: 0,
       averageCost: 0,
       name: populated ? String(populated.name ?? "") : "",
       sku: populated ? String(populated.sku ?? "") : "",
@@ -451,7 +457,7 @@ export class InventoryValuationService extends BaseService<StockMovementDocument
   private sumValues(states: Map<string, ReplayState>): number {
     let total = 0;
     for (const state of states.values()) {
-      total += state.quantity * state.averageCost;
+      total += state.valueCost;
     }
     return total;
   }
@@ -467,8 +473,26 @@ export class InventoryValuationService extends BaseService<StockMovementDocument
     if (!value) {
       throw new ValidationException(`${field} is required.`);
     }
-    const parsed = new Date(value);
+    // Date-only strings ("YYYY-MM-DD") must parse as LOCAL midnight, not UTC
+    // midnight, so startOfDay/endOfDay normalization stays inside the intended
+    // calendar day in the server timezone (INV-V2).
+    const dateOnly = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+    const parsed = dateOnly
+      ? new Date(
+          Number(dateOnly[1]),
+          Number(dateOnly[2]) - 1,
+          Number(dateOnly[3]),
+        )
+      : new Date(value);
     if (Number.isNaN(parsed.getTime())) {
+      throw new ValidationException(`${field} is not a valid date: ${value}.`);
+    }
+    // JavaScript silently rolls overflow dates (e.g. 2026-02-31 → Mar 3); reject them.
+    if (
+      dateOnly &&
+      (parsed.getMonth() !== Number(dateOnly[2]) - 1 ||
+        parsed.getDate() !== Number(dateOnly[3]))
+    ) {
       throw new ValidationException(`${field} is not a valid date: ${value}.`);
     }
     return parsed;
