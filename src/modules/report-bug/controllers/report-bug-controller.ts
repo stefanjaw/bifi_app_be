@@ -33,6 +33,8 @@ export class ReportBugController extends BaseController<TicketDocument> {
       req.body.attachments = [];
     }
 
+    req.body.dateStart = new Date();
+
     await super.createHandler(req, res, next);
   }
 }
