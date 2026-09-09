@@ -9,7 +9,6 @@ import {
   StockMovementDTO,
   TransferDTO,
   ReversalDTO,
-  UpdateStockMovementDTO,
 } from "../models/stock-movement.dto";
 
 const stockMovementController = new StockMovementController();
@@ -25,7 +24,8 @@ export class StockMovementRouter extends BaseRoutes<StockMovementDocument> {
       controller: stockMovementController,
       endpoint: "/inventory/movements",
       dtoCreateClass: StockMovementDTO,
-      dtoUpdateClass: UpdateStockMovementDTO,
+      // Movements are immutable (PUT/DELETE not registered), so no update DTO is needed.
+      dtoUpdateClass: StockMovementDTO,
     });
   }
 

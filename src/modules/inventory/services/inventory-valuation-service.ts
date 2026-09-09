@@ -314,9 +314,7 @@ export class InventoryValuationService extends BaseService<StockMovementDocument
         state.quantity -= quantity;
       }
       state.averageCost =
-        state.quantity > 0
-          ? roundCost(state.valueCost / state.quantity)
-          : 0;
+        state.quantity > 0 ? roundCost(state.valueCost / state.quantity) : 0;
     }
 
     if (boundary !== null && !snapshotTaken) {

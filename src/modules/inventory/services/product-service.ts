@@ -120,4 +120,59 @@ export class ProductService extends BaseService<ProductDocument> {
       available: onHand,
     };
   }
+
+  /**
+   * Imports products from CSV through a strict whitelist of editable fields —
+   * the raw base importCSV would let a CSV inject arbitrary schema fields.
+   * Ledger-managed fields can never arrive via CSV: `averageCost` is seeded
+   * from the imported `costPrice` so newly imported products do not valuate
+   * at 0 on their first stock movement.
+   * @param data - The rows parsed from the CSV file.
+   * @param session - The optional client session to reuse inside an existing transaction.
+   * @returns The created product documents.
+   */
+  override async importCSV(
+    data: Record<string, unknown>[],
+    session?: ClientSession,
+  ): Promise<ProductDocument[]> {
+    const importableFields = new Set([
+      "name",
+      "sku",
+      "description",
+      "unit",
+      "unitOfMeasureId",
+      "productTypeId",
+      "costPrice",
+      "salePrice",
+      "codigoComercial",
+      "productKind",
+      "crPartidaArancelaria",
+      "barcode",
+      "active",
+    ]);
+    const normalized = data.map((row) => {
+      const product: Record<string, unknown> = {};
+      for (const [key, value] of Object.entries(row)) {
+        if (importableFields.has(key)) {
+          product[key] =
+            key === "productKind" && value === "" ? "storable" : value;
+        }
+      }
+      if (product.costPrice === undefined || product.costPrice === "") {
+        product.costPrice = 0;
+      }
+      product.averageCost = product.costPrice;
+      return product;
+    });
+    return await runTransaction(session, async (newSession) => {
+      const boundModel = this.connectionManager.bindModelToDb(this.model);
+      const records: ProductDocument[] = [];
+      for (const row of normalized) {
+        records.push(
+          (await boundModel.create([row], { session: newSession }))[0],
+        );
+      }
+      return records;
+    });
+  }
 }

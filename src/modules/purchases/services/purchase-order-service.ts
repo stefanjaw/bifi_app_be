@@ -5,11 +5,9 @@ import {
   ValidationException,
 } from "../../../system";
 import { fireNotification } from "../../notifications/services/notification-service";
-import { stockBalanceModel } from "../../inventory/models/stock-balance.model";
-import {
-  stockMovementModel,
-  MovementType,
-} from "../../inventory/models/stock-movement.model";
+import { StockMovementService } from "../../inventory/services/stock-movement-service";
+import { StockMovementDTO } from "../../inventory/models/stock-movement.dto";
+import { MovementType } from "../../inventory/models/stock-movement.model";
 import {
   purchaseOrderModel,
   PurchaseOrderDocument,
@@ -27,6 +25,7 @@ import {
 
 const purchaseSettingsService = new PurchaseSettingsService();
 const sequenceService = new SequenceService();
+const stockMovementService = new StockMovementService();
 
 interface NormalizedLineItem {
   description: string;
@@ -322,36 +321,26 @@ export class PurchaseOrderService extends BaseService<PurchaseOrderDocument> {
     }
 
     return runTransaction<PurchaseOrderDocument>(undefined, async (session) => {
-      const boundBalanceModel =
-        this.connectionManager.bindModelToDb(stockBalanceModel);
-      const boundMovementModel =
-        this.connectionManager.bindModelToDb(stockMovementModel);
-
       for (const line of toReceive) {
         const li = lineItems[line.index];
         const productId = (li.productId as any)?._id ?? li.productId;
 
-        await boundBalanceModel.findOneAndUpdate(
-          { productId, locationId, warehouseId },
-          { $inc: { quantity: line.quantity } },
-          { upsert: true, new: true, setDefaultsOnInsert: true, session },
-        );
-
-        await boundMovementModel.create(
-          [
-            {
-              productId,
-              warehouseId,
-              locationId,
-              quantity: line.quantity,
-              type: MovementType.IN,
-              reference: po.poNumber,
-              notes: `Received from PO ${po.poNumber}`,
-              date: new Date(),
-            },
-          ],
-          { session },
-        );
+        // Delegates to StockMovementService.create() so the stock balance update,
+        // cost stamping (unitCost = the PO line's purchase price) and the product's
+        // weighted average recomputation happen through the single WAC-aware path.
+        const movement: StockMovementDTO = {
+          productId: String(productId),
+          warehouseId: String(warehouseId),
+          locationId: String(locationId),
+          quantity: line.quantity,
+          type: MovementType.IN,
+          unitCost: Number(li.unitPrice ?? 0),
+          reference: po.poNumber,
+          referenceType: "purchase-order",
+          notes: `Received from PO ${po.poNumber}`,
+          date: new Date(),
+        };
+        await stockMovementService.create(movement, session);
 
         li.receivedQuantity = Number(li.receivedQuantity ?? 0) + line.quantity;
       }

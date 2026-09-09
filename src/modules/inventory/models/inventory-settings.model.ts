@@ -25,7 +25,10 @@ const inventorySettingsSchema = new Schema(
       default: null,
       autopopulate: { select: "name code warehouseId", maxDepth: 1 },
     },
-    /** Costing method used for inventory valuation */
+    /** Costing method used for inventory valuation. INFORMATIONAL-ONLY (decided 2026-09,
+     * phase 11.10): the movement and valuation services always apply weighted average
+     * (WEIGHTED_AVERAGE semantics); the setting is persisted for future FIFO layers.
+     * FIFO cannot be selected yet (frontend option disabled + backend ignores it). */
     valuationMethod: {
       type: String,
       enum: Object.values(ValuationMethod),

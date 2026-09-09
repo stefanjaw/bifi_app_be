@@ -191,6 +191,9 @@ export class CrEinvoiceReceptionService {
             name: description,
             sku,
             codigoComercial: codigo || undefined,
+            // The received-invoice unit price is the actual purchase cost; seeding
+            // both keeps future stock IN movements from valuing at zero (WAC).
+            costPrice: unitPrice,
             salePrice: unitPrice,
             active: true,
           },

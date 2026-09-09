@@ -10,7 +10,7 @@ const stockBalanceSchema = new Schema(
       ref: "InventoryProduct",
       required: true,
       autopopulate: {
-        select: "name sku unit unitOfMeasureId costPrice salePrice",
+        select: "name sku unit unitOfMeasureId costPrice averageCost salePrice",
         maxDepth: 1,
       },
     },

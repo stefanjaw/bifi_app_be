@@ -6,11 +6,10 @@ import {
 } from "../../../system";
 import { SalesOrderDocument } from "@mongodb-types";
 import { salesOrderModel } from "../models/sales-order.model";
+import { StockMovementService } from "../../inventory/services/stock-movement-service";
+import { StockMovementDTO } from "../../inventory/models/stock-movement.dto";
 import { stockBalanceModel } from "../../inventory/models/stock-balance.model";
-import {
-  stockMovementModel,
-  MovementType,
-} from "../../inventory/models/stock-movement.model";
+import { MovementType } from "../../inventory/models/stock-movement.model";
 import { SalesSettingsService } from "./sales-settings-service";
 import { SequenceService } from "../../sequences/services/sequence-service";
 import { CurrencyService } from "../../currency/services/currency-service";
@@ -27,6 +26,7 @@ import {
 const salesSettingsService = new SalesSettingsService();
 const sequenceService = new SequenceService();
 const currencyService = new CurrencyService();
+const stockMovementService = new StockMovementService();
 
 interface NormalizedLineItem {
   productId?: string;
@@ -280,8 +280,6 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
     return await runTransaction<SalesOrderDocument>(undefined, async (s) => {
       const boundBalanceModel =
         this.connectionManager.bindModelToDb(stockBalanceModel);
-      const boundMovementModel =
-        this.connectionManager.bindModelToDb(stockMovementModel);
 
       for (const { li, productId, quantity } of toShip) {
         const balance = await boundBalanceModel
@@ -298,27 +296,21 @@ export class SalesOrderService extends BaseService<SalesOrderDocument> {
       }
 
       for (const { productId, quantity } of toShip) {
-        await boundBalanceModel.findOneAndUpdate(
-          { productId, locationId, warehouseId },
-          { $inc: { quantity: -quantity } },
-          { new: true, session: s },
-        );
-
-        await boundMovementModel.create(
-          [
-            {
-              productId,
-              warehouseId,
-              locationId,
-              quantity,
-              type: MovementType.OUT,
-              reference,
-              notes: `Shipped from SO ${reference}`,
-              date: new Date(),
-            },
-          ],
-          { session: s },
-        );
+        // Delegates to StockMovementService.create() so the stock balance update,
+        // cost stamping (unitCost = the current weighted average) and validation
+        // happen through the single WAC-aware path.
+        const movement: StockMovementDTO = {
+          productId: String(productId),
+          warehouseId: String(warehouseId),
+          locationId: String(locationId),
+          quantity,
+          type: MovementType.OUT,
+          reference,
+          referenceType: "sales-order",
+          notes: `Shipped from SO ${reference}`,
+          date: new Date(),
+        };
+        await stockMovementService.create(movement, s);
       }
 
       order.status = "shipped";

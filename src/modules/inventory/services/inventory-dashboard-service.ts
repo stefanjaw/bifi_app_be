@@ -54,7 +54,16 @@ export class InventoryDashboardService extends BaseService<StockBalanceDocument>
               value: {
                 $multiply: [
                   "$totalQty",
-                  { $ifNull: ["$product.averageCost", 0] },
+                  {
+                    $ifNull: [
+                      // Valuation cost basis: weighted average, falling back to
+                      // list cost for products without a running average.
+                      {
+                        $ifNull: ["$product.averageCost", "$product.costPrice"],
+                      },
+                      0,
+                    ],
+                  },
                 ],
               },
             },
