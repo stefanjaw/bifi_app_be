@@ -50,4 +50,18 @@ export class InvoiceController extends BaseController<JournalEntryDocument> {
       next(error);
     }
   };
+
+  /** Creates a credit note (NC) against the posted invoice with the given ID */
+  createCreditNote = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const result = await invoiceService.createCreditNote(req.params.id);
+      this.sendData(res, result);
+    } catch (error: any) {
+      next(error);
+    }
+  };
 }

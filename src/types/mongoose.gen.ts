@@ -347,8 +347,8 @@ export type DiscountDocument = mongoose.Document<
  * ```
  */
 export type FiscalPositionTaxMapping = {
-  fromTaxId: Tax["_id"] | Tax;
-  toTaxId: Tax["_id"] | Tax;
+  fromTaxId: Tax;
+  toTaxId: Tax;
 };
 
 /**
@@ -360,8 +360,8 @@ export type FiscalPositionTaxMapping = {
  * ```
  */
 export type FiscalPositionAccountMapping = {
-  fromAccountId: Account["_id"] | Account;
-  toAccountId: Account["_id"] | Account;
+  fromAccountId: Account;
+  toAccountId: Account;
 };
 
 /**
@@ -459,8 +459,8 @@ export type FiscalPositionSchema = mongoose.Schema<
  */
 export type FiscalPositionTaxMappingDocument =
   mongoose.Types.Subdocument<any> & {
-    fromTaxId: TaxDocument["_id"] | TaxDocument;
-    toTaxId: TaxDocument["_id"] | TaxDocument;
+    fromTaxId: TaxDocument;
+    toTaxId: TaxDocument;
   };
 
 /**
@@ -470,8 +470,8 @@ export type FiscalPositionTaxMappingDocument =
  */
 export type FiscalPositionAccountMappingDocument =
   mongoose.Types.Subdocument<any> & {
-    fromAccountId: AccountDocument["_id"] | AccountDocument;
-    toAccountId: AccountDocument["_id"] | AccountDocument;
+    fromAccountId: AccountDocument;
+    toAccountId: AccountDocument;
   };
 
 /**
@@ -625,6 +625,19 @@ export type JournalEntryLine = {
 };
 
 /**
+ * Lean version of JournalEntryDueDateDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `JournalEntryDocument.toObject()`.
+ * ```
+ * const journalentryObject = journalentry.toObject();
+ * ```
+ */
+export type JournalEntryDueDate = {
+  amount?: number;
+  date: Date;
+};
+
+/**
  * Lean version of JournalEntryCrPdfFileDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `JournalEntryDocument.toObject()`.
@@ -700,9 +713,13 @@ export type JournalEntry = {
   active?: boolean;
   isInvoice?: boolean;
   number?: string;
+  reversalOf?: JournalEntry["_id"] | JournalEntry;
+  isCreditNote?: boolean;
   contactId?: Contact;
   paymentTermId?: PaymentTerm;
   dueDate?: Date;
+  dueDates: JournalEntryDueDate[];
+  isFullyPaid?: boolean;
   salespersonId?: User;
   paymentReference?: string;
   fiscalPositionId?: FiscalPosition;
@@ -854,6 +871,16 @@ export type JournalEntryLineDocument =
   };
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `JournalEntryDocument["dueDates"]` element.
+ */
+export type JournalEntryDueDateDocument = mongoose.Types.Subdocument<any> & {
+  amount?: number;
+  date: Date;
+};
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -936,9 +963,13 @@ export type JournalEntryDocument = mongoose.Document<
     active?: boolean;
     isInvoice?: boolean;
     number?: string;
+    reversalOf?: JournalEntryDocument["_id"] | JournalEntryDocument;
+    isCreditNote?: boolean;
     contactId?: ContactDocument;
     paymentTermId?: PaymentTermDocument;
     dueDate?: Date;
+    dueDates: mongoose.Types.DocumentArray<JournalEntryDueDateDocument>;
+    isFullyPaid?: boolean;
     salespersonId?: UserDocument;
     paymentReference?: string;
     fiscalPositionId?: FiscalPositionDocument;

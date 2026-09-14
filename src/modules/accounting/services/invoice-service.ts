@@ -159,6 +159,63 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     return `INV/${year}/${counter}`;
   }
 
+  /**
+   * Calculates the schedule of due dates from the payment term installments
+   * (Phase 3 / B5 fix). Every installment line (`percentage` + `dueDays`)
+   * becomes one due entry: `amount` = proportional share of `invoiceTotal`
+   * and `date` = invoiceDate + dueDays.
+   * @param invoiceTotal - Grand total of the invoice
+   * @param invoiceDate - Invoice date
+   * @param paymentTerm - Payment term document (with installment lines)
+   * @returns Installment schedule, or undefined when the term has no lines
+   */
+  private calculateDueDates(
+    invoiceTotal: number,
+    invoiceDate: Date,
+    paymentTerm: any,
+  ): { amount: number; date: Date }[] | undefined {
+    if (!paymentTerm || !paymentTerm.lines || paymentTerm.lines.length === 0) {
+      return undefined;
+    }
+    const addDays = (base: Date, days: number): Date => {
+      const due = new Date(base);
+      due.setDate(due.getDate() + (days ?? 0));
+      return due;
+    };
+    const entries = paymentTerm.lines
+      .map((l: any) => ({
+        dueDays: l.dueDays ?? 0,
+        percentage: l.percentage ?? 0,
+      }))
+      .sort((a: any, b: any) => a.dueDays - b.dueDays);
+
+    // Single 100% (or unspecified) installment keeps the old behaviour:
+    // one due date carrying the whole invoice total.
+    if (
+      entries.length === 1 &&
+      (entries[0].percentage === 0 || entries[0].percentage >= 100)
+    ) {
+      return [
+        {
+          amount: Number(invoiceTotal.toFixed(2)),
+          date: addDays(invoiceDate, entries[0].dueDays),
+        },
+      ];
+    }
+
+    return entries.map((e: any) => ({
+      amount: Number((invoiceTotal * (e.percentage / 100)).toFixed(2)),
+      date: addDays(invoiceDate, e.dueDays),
+    }));
+  }
+
+  /**
+   * Legacy single due date kept for backwards compatibility: the latest
+   * installment date of the schedule (falls back to the invoice date).
+   * @param invoiceDate - Invoice date
+   * @param paymentTerm - Payment term document
+   * @returns The last due date, or undefined without a payment term
+   */
   private calculateDueDate(
     invoiceDate: Date,
     paymentTerm: any,
@@ -166,9 +223,11 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     if (!paymentTerm || !paymentTerm.lines || paymentTerm.lines.length === 0) {
       return undefined;
     }
-    const dueDays = paymentTerm.lines[0].dueDays ?? 0;
+    const lastDueDays = Math.max(
+      ...paymentTerm.lines.map((l: any) => l.dueDays ?? 0),
+    );
     const due = new Date(invoiceDate);
-    due.setDate(due.getDate() + dueDays);
+    due.setDate(due.getDate() + lastDueDays);
     return due;
   }
 
@@ -295,8 +354,11 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     session?: ClientSession,
   ): Promise<JournalEntryDocument> {
     return await runTransaction(session, async (s) => {
-      const number = await this.generateNumber(s);
+      // B4 fix: the invoice number is no longer consumed at creation time.
+      // It is generated once, when the invoice is posted (see post()), so
+      // drafts and pre-post cancellations no longer produce numbering gaps.
 
+      // ---- [1] Load referenced journal and payment term ----
       const boundJournalModel =
         this.connectionManager.bindModelToDb(journalModel);
       const journal = await boundJournalModel
@@ -315,16 +377,25 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       }
 
       const invoiceDate = new Date(data.invoiceDate);
-      const dueDate = data.dueDate
-        ? new Date(data.dueDate)
-        : this.calculateDueDate(invoiceDate, paymentTerm);
 
+      // ---- [2] Enrich incoming lines, compute totals (fixes B1-adjacent) ----
       const rawLines = data.lines ?? [];
       const enrichedLines = await this.enrichLines(rawLines, s);
       const { untaxedAmount, taxAmount, taxLines } =
         this.calculateLineTotals(enrichedLines);
       const totalAmount = untaxedAmount + taxAmount;
 
+      // ---- [3] Due-date schedule from the payment term (Phase 3 / B5) ----
+      const dueDate = data.dueDate
+        ? new Date(data.dueDate)
+        : this.calculateDueDate(invoiceDate, paymentTerm);
+      const dueDates = this.calculateDueDates(
+        totalAmount,
+        invoiceDate,
+        paymentTerm,
+      );
+
+      // ---- [4] Build the balanced journal-entry lines ----
       const jeLines = this.buildJELines(
         enrichedLines,
         taxLines,
@@ -332,12 +403,12 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         journal.defaultDebitAccountId,
       );
 
+      // ---- [5] Persist the draft invoice (number pending, nothing due) ----
       const model = this.connectionManager.bindModelToDb(this.model);
       const docs = await model.create(
         [
           {
             isInvoice: true,
-            number,
             status: JournalEntryStatus.DRAFT,
             journalId: data.journalId,
             date: invoiceDate,
@@ -346,6 +417,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
             contactId: data.contactId,
             paymentTermId: data.paymentTermId,
             dueDate,
+            dueDates,
             salespersonId: data.salespersonId,
             paymentReference: data.paymentReference,
             fiscalPositionId: data.fiscalPositionId,
@@ -382,6 +454,10 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       if (!existing) throw new ValidationException("Invoice not found.");
       if (!existing.isInvoice)
         throw new ValidationException("Document is not an invoice.");
+      if (existing.status !== JournalEntryStatus.DRAFT)
+        throw new ValidationException(
+          "Only draft invoices can be edited. Cancel payments and reopen or cancel the invoice first.",
+        );
 
       const boundJournalModel =
         this.connectionManager.bindModelToDb(journalModel);
@@ -403,20 +479,48 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       const invoiceDate = fields.invoiceDate
         ? new Date(fields.invoiceDate)
         : existing.date;
+      // Recalculate the due date whenever the invoice date, the payment term
+      // or the explicit due date meaning change (fixes B5-adjacent staleness).
       const dueDate = fields.dueDate
         ? new Date(fields.dueDate)
-        : fields.invoiceDate
-          ? this.calculateDueDate(invoiceDate, paymentTerm)
+        : fields.invoiceDate || fields.paymentTermId
+          ? this.calculateDueDate(new Date(invoiceDate), paymentTerm)
           : existing.dueDate;
 
+      // ---- [2] Due single date + recompute totals from incoming lines ----
       const rawLines = fields.lines ?? [];
       const productLines = rawLines.filter(
         (l: any) => !l.lineType || l.lineType === "product",
       );
       const enrichedProductLines = await this.enrichLines(productLines, s);
-      const { untaxedAmount, taxAmount } =
+      const { untaxedAmount, taxAmount, taxLines } =
         this.calculateLineTotals(enrichedProductLines);
       const totalAmount = untaxedAmount + taxAmount;
+
+      // ---- [3] Due-date schedule from the payment term (Phase 3 / B5) ----
+      const dueDates = fields.dueDates?.length
+        ? fields.dueDates.map((d: any) => ({
+            amount: Number(d.amount),
+            date: new Date(d.date),
+          }))
+        : fields.invoiceDate || fields.paymentTermId || !fields.dueDate
+          ? this.calculateDueDates(
+              totalAmount,
+              new Date(invoiceDate),
+              paymentTerm,
+            )
+          : existing.dueDates;
+
+      // ---- [4] B1 fix: rebuild the computed journal lines ----
+      // Always rebuild the computed journal lines (counterpart + product +
+      // tax) instead of persisting the raw DTO lines, which would leave the
+      // invoice unbalanced.
+      const jeLines = this.buildJELines(
+        enrichedProductLines,
+        taxLines,
+        totalAmount,
+        journal?.defaultDebitAccountId,
+      );
 
       const crUpdate: Record<string, any> = {};
       if (fields.crEinvoiceType !== undefined)
@@ -457,6 +561,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           contactId: fields.contactId ?? existing.contactId,
           paymentTermId,
           dueDate,
+          dueDates,
           salespersonId: fields.salespersonId ?? existing.salespersonId,
           paymentReference:
             fields.paymentReference ?? existing.paymentReference,
@@ -466,7 +571,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           untaxedAmount,
           taxAmount,
           totalAmount,
-          lines: rawLines,
+          lines: jeLines,
           ...crUpdate,
         },
         { new: true, session: s },
@@ -482,12 +587,26 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       .lean();
   }
 
+  /**
+   * Registers a payment against a posted invoice (Phase 2 fix).
+   * - Runs inside a transaction.
+   * - Rejects payments on drafts/cancelled invoices, zero/negative amounts and
+   *   overpayments (total paid would exceed the invoice total).
+   * - Creates the settlement journal entry that debits the bank account
+   *   (from the payment journal) and credits the invoice's receivable account
+   *   (the counterpart line of the invoice), so account 430/4xx is relieved.
+   * @param invoiceId - The invoice ID
+   * @param data - Register payment payload
+   * @param session - Optional MongoDB session
+   * @returns The last registered payment document
+   */
   async registerPayment(
     invoiceId: string,
     data: RegisterPaymentDTO,
     session?: ClientSession,
   ): Promise<any> {
     return await runTransaction(session, async (s) => {
+      // ---- [1] Load invoice and validate registers (guards) ----
       const model = this.connectionManager.bindModelToDb(this.model);
       const invoice = await model.findById(invoiceId).session(s);
       if (!invoice) throw new ValidationException("Invoice not found.");
@@ -497,28 +616,120 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         throw new ValidationException(
           "Cannot register payment on a cancelled invoice.",
         );
+      if (invoice.status !== JournalEntryStatus.POSTED)
+        throw new ValidationException(
+          "Payments can only be registered on posted invoices.",
+        );
+      const paymentAmount = Number(data.amount);
+      if (!paymentAmount || paymentAmount <= 0)
+        throw new ValidationException(
+          "Payment amount must be greater than zero.",
+        );
 
+      // ---- [2] Compute outstanding from active confirmed payments ----
       const boundPaymentModel =
         this.connectionManager.bindModelToDb(paymentModel);
-      await boundPaymentModel.create(
+      const existingPayments = await boundPaymentModel
+        .find({
+          invoiceId: new mongoose.Types.ObjectId(invoiceId),
+          status: PaymentStatus.CONFIRMED,
+          active: true,
+        })
+        .session(s)
+        .lean();
+      const alreadyPaid = existingPayments.reduce(
+        (sum, p) => sum + (p.amount ?? 0),
+        0,
+      );
+      const pendingDue = Math.max(
+        0,
+        Number(invoice.totalAmount ?? 0) - alreadyPaid,
+      );
+      if (pendingDue <= 0)
+        throw new ValidationException("Invoice is already fully paid.");
+      if (paymentAmount > pendingDue)
+        throw new ValidationException(
+          `Payment exceeds the outstanding amount (pending ${pendingDue}).`,
+        );
+
+      // ---- [3] Create the settlement JE: debit bank, credit AR (430) ----
+      // Debit the bank account (payment journal default debit or the
+      // receiving journal default) and credit the invoice's receivable
+      // account so the ledger reflects the partial collection.
+      const boundJournalModel =
+        this.connectionManager.bindModelToDb(journalModel);
+      const paymentJournal = await boundJournalModel
+        .findById(data.journalId)
+        .session(s);
+      if (!paymentJournal)
+        throw new ValidationException("Payment journal not found.");
+      const bankAccountId =
+        paymentJournal.defaultDebitAccountId ??
+        paymentJournal.defaultCreditAccountId;
+      const counterpartLine = (invoice.lines ?? []).find(
+        (l: any) => l.lineType === "counterpart",
+      );
+      const counterpartAccountId = counterpartLine?.accountId;
+      let settlementEntryId: mongoose.Types.ObjectId | undefined;
+      if (bankAccountId && counterpartAccountId) {
+        const boundJournalEntryModel =
+          this.connectionManager.bindModelToDb(journalEntryModel);
+        const entryDocs = await boundJournalEntryModel.create(
+          [
+            {
+              journalId: data.journalId,
+              date: new Date(data.paymentDate),
+              currencyId: (invoice as any).currencyId,
+              status: JournalEntryStatus.POSTED,
+              reference:
+                data.reference ??
+                `Payment of invoice ${(invoice as any).number ?? invoiceId}`,
+              lines: [
+                {
+                  accountId: bankAccountId,
+                  debit: paymentAmount,
+                  credit: 0,
+                  description: `Payment of invoice ${(invoice as any).number ?? invoiceId}`,
+                },
+                {
+                  accountId: counterpartAccountId,
+                  debit: 0,
+                  credit: paymentAmount,
+                  description: "Accounts Receivable settlement",
+                },
+              ],
+            },
+          ],
+          { session: s },
+        );
+        settlementEntryId = entryDocs[0]._id;
+      }
+
+      // ---- [4] Persist the payment document linked to its JE ----
+      const creationResult = await boundPaymentModel.create(
         [
           {
             paymentType: PaymentType.INBOUND,
             journalId: data.journalId,
-            amount: data.amount,
+            amount: paymentAmount,
             currencyId: data.currencyId,
             paymentDate: new Date(data.paymentDate),
             reference: data.reference,
             invoiceId: new mongoose.Types.ObjectId(invoiceId),
             status: PaymentStatus.CONFIRMED,
+            journalEntryId: settlementEntryId,
             active: true,
           },
         ],
         { session: s },
       );
 
+      // ---- [5] Recalculate outstanding and the `isFullyPaid` flag ----
       const allPayments = await boundPaymentModel
-        .find({ invoiceId: new mongoose.Types.ObjectId(invoiceId) })
+        .find({
+          invoiceId: new mongoose.Types.ObjectId(invoiceId),
+          active: true,
+        })
         .session(s)
         .lean();
       const totalPaid = allPayments.reduce(
@@ -527,9 +738,15 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       );
       const amountDue = Math.max(0, (invoice.totalAmount ?? 0) - totalPaid);
 
-      await model.findByIdAndUpdate(invoiceId, { amountDue }, { session: s });
+      const updateResult = await model
+        .findByIdAndUpdate(
+          invoiceId,
+          { amountDue, isFullyPaid: amountDue === 0 },
+          { new: true, session: s },
+        )
+        .lean();
 
-      // Alert 3: invoice fully paid
+      // ---- [6] Notify when the invoice is fully paid ----
       if (amountDue === 0) {
         await fireNotification({
           context: {
@@ -546,7 +763,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         });
       }
 
-      return allPayments[allPayments.length - 1];
+      return creationResult[0];
     });
   }
 
@@ -560,9 +777,16 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       if (invoice.status !== JournalEntryStatus.DRAFT)
         throw new ValidationException("Only draft invoices can be posted.");
 
+      // B4 fix: the number is assigned exactly once, when the invoice is
+      // posted, so drafts and pre-post cancellations leave no gaps.
+      if (!invoice.number) {
+        const number = await this.generateNumber(s);
+        if (number) invoice.number = number;
+      }
+
       const result = await model.findByIdAndUpdate(
         id,
-        { status: JournalEntryStatus.POSTED },
+        { status: JournalEntryStatus.POSTED, number: invoice.number },
         { new: true, session: s },
       );
 
@@ -582,19 +806,175 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     });
   }
 
+  /**
+   * Cancels an invoice (B3 fix).
+   * - Runs inside a transaction.
+   * - Blocks cancellation of already-cancelled invoices and of invoices with
+   *   confirmed payments (those must be reversed first).
+   * - When the invoice was already posted, creates a reverting journal entry
+   *   (every line flipped Debit<->Credit, linked via `reversalOf`) instead of
+   *   silently leaving the original lines in place.
+   * @param id - The invoice (JournalEntry) ID
+   * @returns The cancelled invoice document
+   */
   async cancel(id: string): Promise<JournalEntryDocument> {
-    const model = this.connectionManager.bindModelToDb(this.model);
-    const invoice = await model.findById(id);
-    if (!invoice) throw new ValidationException("Invoice not found.");
-    if (!invoice.isInvoice)
-      throw new ValidationException("Document is not an invoice.");
-    if (invoice.status === JournalEntryStatus.CANCEL)
-      throw new ValidationException("Invoice is already cancelled.");
+    return await runTransaction(undefined, async (s) => {
+      // ---- [1] Load invoice guards (exists / is invoice / not cancelled) ----
+      const model = this.connectionManager.bindModelToDb(this.model);
+      const invoice = await model.findById(id).session(s);
+      if (!invoice) throw new ValidationException("Invoice not found.");
+      if (!invoice.isInvoice)
+        throw new ValidationException("Document is not an invoice.");
+      if (invoice.status === JournalEntryStatus.CANCEL)
+        throw new ValidationException("Invoice is already cancelled.");
 
-    return model.findByIdAndUpdate(
-      id,
-      { status: JournalEntryStatus.CANCEL },
-      { new: true },
-    ) as any;
+      // ---- [2] Block cancellation while confirmed payments exist ----
+      const boundPaymentModel =
+        this.connectionManager.bindModelToDb(paymentModel);
+      const confirmedPayments = await boundPaymentModel.countDocuments({
+        invoiceId: new mongoose.Types.ObjectId(id),
+        status: PaymentStatus.CONFIRMED,
+      });
+      if (confirmedPayments > 0)
+        throw new ValidationException(
+          "Invoice has confirmed payments. Reverse the payments before cancelling the invoice.",
+        );
+
+      // ---- [3] Posted invoices leave a reversing JE (B3 fix) ----
+      // Ledger stays balanced after the cancellation.
+      if (invoice.status === JournalEntryStatus.POSTED) {
+        const reversalLines = (invoice.lines ?? []).map((l: any) => ({
+          accountId: l.accountId,
+          description: l.description,
+          debit: l.credit ?? 0,
+          credit: l.debit ?? 0,
+          lineType: l.lineType,
+          productId: l.productId,
+          quantity: l.quantity,
+          unitPrice: l.unitPrice,
+          taxIds: l.taxIds,
+          discountId: l.discountId,
+          amount: l.amount,
+        }));
+        await model.create(
+          [
+            {
+              isInvoice: false,
+              journalId: invoice.journalId,
+              date: new Date(),
+              currencyId: invoice.currencyId,
+              status: JournalEntryStatus.POSTED,
+              lines: reversalLines,
+              reversalOf: invoice._id,
+              reference: `Reversal of invoice ${(invoice as any).number ?? id}`,
+            },
+          ],
+          { session: s },
+        );
+      }
+
+      // ---- [4] Mark cancelled and re-open the outstanding amount ----
+      const result = (await model.findByIdAndUpdate(
+        id,
+        {
+          status: JournalEntryStatus.CANCEL,
+          amountDue: invoice.totalAmount,
+        },
+        { new: true, session: s },
+      )) as any;
+
+      return result as JournalEntryDocument;
+    });
+  }
+
+  /**
+   * Creates a credit note (NC) against a posted invoice (Phase 4 / B7 fix).
+   * Core accounting behaviour, reusable by the CR localization plugin:
+   * - Source invoice must be `posted` and have a positive pending amount.
+   * - A new `JournalEntry` is created with every line flipped
+   *   Debit<->Credit, flagged `isCreditNote` and linked to the source via
+   *   `reversalOf`.
+   * - The NC gets its own number and its own `amountDue`.
+   * - The source invoice's `amountDue`/`isFullyPaid` are reduced by the
+   *   credited total (this is the purchase/sales return relief).
+   * @param id - The source invoice ID
+   * @returns The newly created credit note document
+   */
+  async createCreditNote(id: string): Promise<JournalEntryDocument> {
+    return await runTransaction(undefined, async (s) => {
+      // ---- [1] Load source and validate (guards) ----
+      const model = this.connectionManager.bindModelToDb(this.model);
+      const invoice = await model.findById(id).session(s);
+      if (!invoice) throw new ValidationException("Invoice not found.");
+      if (!invoice.isInvoice)
+        throw new ValidationException("Document is not an invoice.");
+      if (invoice.status !== JournalEntryStatus.POSTED)
+        throw new ValidationException(
+          "Credit notes can only be created against posted invoices.",
+        );
+      const sourceNumber = (invoice as any).number ?? id;
+      const unsettledAmount = Number(
+        invoice.amountDue ?? invoice.totalAmount ?? 0,
+      );
+      if (unsettledAmount <= 0)
+        throw new ValidationException(
+          "Invoice pending amount is zero; a credit note cannot exceed the pending amount.",
+        );
+
+      // ---- [2] Build inverted source lines (B7 fix: Debit<->Credit) ----
+      const invertedLines = (invoice.lines ?? []).map((l: any) => ({
+        accountId: l.accountId,
+        description: l.description,
+        debit: l.credit ?? 0,
+        credit: l.debit ?? 0,
+        lineType: l.lineType,
+        productId: l.productId,
+        quantity: l.quantity,
+        unitPrice: l.unitPrice,
+        taxIds: l.taxIds,
+        discountId: l.discountId,
+        amount: l.amount,
+      }));
+
+      // ---- [3] Persist the NC: own number, own outstanding, linked source ----
+      const number = await this.generateNumber(s);
+      const docs = await model.create(
+        [
+          {
+            isInvoice: true,
+            isCreditNote: true,
+            status: JournalEntryStatus.POSTED,
+            journalId: invoice.journalId,
+            date: new Date(),
+            currencyId: invoice.currencyId,
+            contactId: invoice.contactId,
+            paymentTermId: invoice.paymentTermId,
+            fiscalPositionId: invoice.fiscalPositionId,
+            companyId: invoice.companyId,
+            number,
+            reference: `Credit note of invoice ${sourceNumber}`,
+            untaxedAmount: invoice.untaxedAmount,
+            taxAmount: invoice.taxAmount,
+            totalAmount: invoice.totalAmount,
+            amountDue: invoice.totalAmount,
+            lines: invertedLines,
+            reversalOf: invoice._id,
+            active: true,
+          },
+        ],
+        { session: s },
+      );
+
+      // ---- [4] Reduce the source invoice outstanding (return/abono) ----
+      const creditTotal = Number(invoice.totalAmount ?? 0);
+      const newDue = Math.max(0, unsettledAmount - creditTotal);
+      await model.findByIdAndUpdate(
+        id,
+        { amountDue: newDue, isFullyPaid: newDue === 0 },
+        { session: s },
+      );
+
+      return docs[0];
+    });
   }
 }

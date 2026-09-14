@@ -11,8 +11,18 @@ export interface FiscalPositionDocument extends mongoose.Document {
 
 const taxMappingSchema = new Schema(
   {
-    fromTaxId: { type: Schema.Types.ObjectId, ref: "Tax", required: true, autopopulate: true },
-    toTaxId: { type: Schema.Types.ObjectId, ref: "Tax", required: true, autopopulate: true },
+    fromTaxId: {
+      type: Schema.Types.ObjectId,
+      ref: "Tax",
+      required: true,
+      autopopulate: true,
+    },
+    toTaxId: {
+      type: Schema.Types.ObjectId,
+      ref: "Tax",
+      required: true,
+      autopopulate: true,
+    },
   },
   { _id: false },
 );

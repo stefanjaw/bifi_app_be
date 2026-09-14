@@ -44,5 +44,11 @@ export class InvoiceRouter extends BaseRoutes<JournalEntryDocument> {
       authorizeMiddleware("accounting/invoices", "update"),
       invoiceController.cancelInvoice,
     );
+
+    this.router.post(
+      "/accounting/invoices/:id/credit-note",
+      authorizeMiddleware("accounting/invoices", "update"),
+      invoiceController.createCreditNote,
+    );
   }
 }

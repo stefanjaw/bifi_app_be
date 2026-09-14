@@ -34,9 +34,13 @@ export interface JournalEntryDocument extends mongoose.Document {
   active: boolean;
   isInvoice: boolean;
   number?: string;
+  reversalOf?: any;
+  isCreditNote?: boolean;
   contactId?: any;
   paymentTermId?: any;
   dueDate?: Date;
+  dueDates?: { amount?: number; date?: Date }[];
+  isFullyPaid?: boolean;
   salespersonId?: any;
   paymentReference?: string;
   fiscalPositionId?: any;
@@ -159,6 +163,13 @@ const journalEntrySchema = new Schema(
     active: { type: Boolean, default: true },
     isInvoice: { type: Boolean, default: false, index: true },
     number: { type: String, required: false },
+    reversalOf: {
+      type: Schema.Types.ObjectId,
+      ref: "JournalEntry",
+      required: false,
+      index: true,
+    },
+    isCreditNote: { type: Boolean, default: false, index: true },
     contactId: {
       type: Schema.Types.ObjectId,
       ref: "Contact",
@@ -176,6 +187,19 @@ const journalEntrySchema = new Schema(
       autopopulate: { select: "name lines", maxDepth: 1 },
     },
     dueDate: { type: Date, required: false },
+    dueDates: {
+      type: [
+        new Schema(
+          {
+            amount: { type: Number, required: false },
+            date: { type: Date, required: true },
+          },
+          { _id: false },
+        ),
+      ],
+      required: false,
+    },
+    isFullyPaid: { type: Boolean, required: false, index: true },
     salespersonId: {
       type: Schema.Types.ObjectId,
       ref: "User",
