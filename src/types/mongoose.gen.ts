@@ -130,6 +130,7 @@ export type AccountDocument = mongoose.Document<
  */
 export type AccountingSettings = {
   invoiceSequence?: Sequence | null;
+  purchasePayableAccountId?: Account | null;
   description?: string;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -223,6 +224,7 @@ export type AccountingSettingsDocument = mongoose.Document<
 > &
   AccountingSettingsMethods & {
     invoiceSequence?: SequenceDocument | null;
+    purchasePayableAccountId?: AccountDocument | null;
     description?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;

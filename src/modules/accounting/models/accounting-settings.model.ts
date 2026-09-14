@@ -14,6 +14,13 @@ const accountingSettingsSchema = new Schema(
       default: null,
       autopopulate: { maxDepth: 1 },
     },
+    purchasePayableAccountId: {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+      required: false,
+      default: null,
+      autopopulate: { select: "code name", maxDepth: 1 },
+    },
     description: {
       type: String,
       required: false,

@@ -5,6 +5,10 @@ export class AccountingSettingsDTO {
   @IsOptional()
   invoiceSequence?: string;
 
+  @IsMongoId()
+  @IsOptional()
+  purchasePayableAccountId?: string;
+
   @IsString()
   @IsOptional()
   description?: string;

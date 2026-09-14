@@ -306,18 +306,58 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
     return enrichedLines;
   }
 
+  /**
+   * Resolves the AP fallback account from the singleton settings, only used
+   * for purchase journals whose default credit account is not configured.
+   * @param _s - MongoDB session (reserved; settings lookup runs unbundled)
+   * @returns The configured payable account ID, or undefined
+   */
+  private async getPurchasePayableFallbackAccountId(
+    _s?: ClientSession,
+  ): Promise<any> {
+    const settings = await new AccountingSettingsService().getSettings();
+    return (
+      (settings as any)?.purchasePayableAccountId?._id ??
+      (settings as any)?.purchasePayableAccountId
+    );
+  }
+
+  /**
+   * Builds the journal-entry lines for an invoice (Phase A1 fix).
+   * Orientation now depends on the journal type:
+   * - Sales journals (default): counterpart debited (Accounts Receivable),
+   *   product/inventory and tax lines credited.
+   * - Purchase journals: counterpart credited (Accounts Payable, resolved
+   *   from the journal default credit account or the
+   *   `purchasePayableAccountId` setting), product/inventory and tax lines
+   *   debited — the correct 600/472/400 orientation.
+   * @param enrichedLines - Lines previously enriched with taxes/discounts
+   * @param taxLines - Grouped tax amounts per posting account
+   * @param totalAmount - Invoice grand total (untaxed + taxes)
+   * @param journal - Full journal document (provides type + default accounts)
+   * @param payableFallbackAccountId - Optional AP fallback from settings
+   * @returns Balanced journal-entry lines for the invoice
+   */
   private buildJELines(
     enrichedLines: any[],
     taxLines: { accountId: string; amount: number }[],
     totalAmount: number,
-    debitAccountId: any,
+    journal?: JournalDocument | null,
+    payableFallbackAccountId?: any,
   ): any[] {
+    // ---- [1] Decide orientation from the journal type ----
+    const isPurchase = journal?.journalType === "purchase";
+    const lineSide = (mainAmount: number): { debit: number; credit: number } =>
+      isPurchase
+        ? { debit: mainAmount, credit: 0 }
+        : { debit: 0, credit: mainAmount };
+
+    // ---- [2] Product / inventory lines ----
     const productLines = enrichedLines.map((line) => ({
       lineType: "product",
       accountId: line.accountId,
       description: line.description ?? "",
-      debit: 0,
-      credit: line._computedAmount ?? 0,
+      ...lineSide(line._computedAmount ?? 0),
       productId: line.productId,
       quantity: line.quantity ?? 1,
       unitPrice: line.unitPrice ?? 0,
@@ -326,22 +366,30 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       amount: line._computedAmount ?? 0,
     }));
 
+    // ---- [3] Tax lines (472 supported / 477 charged, via Tax.accountId) ----
     const taxJELines = taxLines.map((t) => ({
       lineType: "tax",
       accountId: t.accountId,
       description: "Tax",
-      debit: 0,
-      credit: t.amount,
+      ...lineSide(t.amount),
     }));
 
-    const counterpartLine = debitAccountId
+    // ---- [4] Counterpart line (AR for sales, AP for purchase) ----
+    const counterpartAccountId = isPurchase
+      ? (journal?.defaultCreditAccountId ?? payableFallbackAccountId ?? null)
+      : (journal?.defaultDebitAccountId ?? null);
+
+    const counterpartLine = counterpartAccountId
       ? [
           {
             lineType: "counterpart",
-            accountId: debitAccountId,
-            description: "Accounts Receivable",
-            debit: totalAmount,
-            credit: 0,
+            accountId: counterpartAccountId,
+            description: isPurchase
+              ? "Accounts Payable"
+              : "Accounts Receivable",
+            ...(isPurchase
+              ? { debit: 0, credit: totalAmount }
+              : { debit: totalAmount, credit: 0 }),
           },
         ]
       : [];
@@ -396,11 +444,16 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       );
 
       // ---- [4] Build the balanced journal-entry lines ----
+      const payableFallback =
+        journal?.journalType === "purchase"
+          ? await this.getPurchasePayableFallbackAccountId(s)
+          : undefined;
       const jeLines = this.buildJELines(
         enrichedLines,
         taxLines,
         totalAmount,
-        journal.defaultDebitAccountId,
+        journal,
+        payableFallback,
       );
 
       // ---- [5] Persist the draft invoice (number pending, nothing due) ----
@@ -511,15 +564,21 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
             )
           : existing.dueDates;
 
-      // ---- [4] B1 fix: rebuild the computed journal lines ----
+      // ---- [5] Rebuild the computed journal lines (B1 fix) ----
       // Always rebuild the computed journal lines (counterpart + product +
       // tax) instead of persisting the raw DTO lines, which would leave the
-      // invoice unbalanced.
+      // invoice unbalanced. The journal may be undefined in edge callers; the
+      // orientation then falls back to sales.
+      const payableFallback =
+        journal?.journalType === "purchase"
+          ? await this.getPurchasePayableFallbackAccountId(s)
+          : undefined;
       const jeLines = this.buildJELines(
         enrichedProductLines,
         taxLines,
         totalAmount,
-        journal?.defaultDebitAccountId,
+        journal,
+        payableFallback,
       );
 
       const crUpdate: Record<string, any> = {};
