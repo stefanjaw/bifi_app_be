@@ -307,19 +307,31 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
   }
 
   /**
+   * Resolves an account-type setting (ObjectId or autopopulated document)
+   * from the singleton accounting settings.
+   * @param settingKey - The settings document key to read
+   * @param _s - MongoDB session (reserved; settings lookup runs unbound)
+   * @returns The configured account ID, or undefined when not set
+   */
+  private async getSettingsAccountId(
+    settingKey: string,
+    _s?: ClientSession,
+  ): Promise<any> {
+    const settings = await new AccountingSettingsService().getSettings();
+    const value = (settings as any)?.[settingKey];
+    return value?._id ?? value ?? undefined;
+  }
+
+  /**
    * Resolves the AP fallback account from the singleton settings, only used
    * for purchase journals whose default credit account is not configured.
-   * @param _s - MongoDB session (reserved; settings lookup runs unbundled)
+   * @param _s - MongoDB session (reserved; settings lookup runs unbound)
    * @returns The configured payable account ID, or undefined
    */
   private async getPurchasePayableFallbackAccountId(
     _s?: ClientSession,
   ): Promise<any> {
-    const settings = await new AccountingSettingsService().getSettings();
-    return (
-      (settings as any)?.purchasePayableAccountId?._id ??
-      (settings as any)?.purchasePayableAccountId
-    );
+    return this.getSettingsAccountId("purchasePayableAccountId", _s);
   }
 
   /**
@@ -647,13 +659,14 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
   }
 
   /**
-   * Registers a payment against a posted invoice (Phase 2 fix).
+   * Registers a payment against a posted invoice (Phase 2 + A2 fix).
    * - Runs inside a transaction.
    * - Rejects payments on drafts/cancelled invoices, zero/negative amounts and
-   *   overpayments (total paid would exceed the invoice total).
-   * - Creates the settlement journal entry that debits the bank account
-   *   (from the payment journal) and credits the invoice's receivable account
-   *   (the counterpart line of the invoice), so account 430/4xx is relieved.
+   *   overpayments (cash + discount would exceed the invoice total).
+   * - Creates the settlement journal entry: bank debited (from the payment
+   *   journal), early-payment discount (Debe `discountGrantedAccountId`,
+   *   when `discountAmount` > 0) and the invoice's receivable account
+   *   credited by the gross amount — the 572/765/430 three-line pattern.
    * @param invoiceId - The invoice ID
    * @param data - Register payment payload
    * @param session - Optional MongoDB session
@@ -685,7 +698,24 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           "Payment amount must be greater than zero.",
         );
 
+      // ---- [1b] Early-payment discount (Phase A2) ----
+      const discountAmount = Number(data.discountAmount ?? 0);
+      if (discountAmount < 0)
+        throw new ValidationException("Discount amount cannot be negative.");
+      let discountAccountId: any;
+      if (discountAmount > 0) {
+        discountAccountId = await this.getSettingsAccountId(
+          "discountGrantedAccountId",
+          s,
+        );
+        if (!discountAccountId)
+          throw new ValidationException(
+            "Early-payment discount requires the 'discountGrantedAccountId' setting to be configured.",
+          );
+      }
+
       // ---- [2] Compute outstanding from active confirmed payments ----
+      // (cash + granted early-payment discounts both settle the invoice)
       const boundPaymentModel =
         this.connectionManager.bindModelToDb(paymentModel);
       const existingPayments = await boundPaymentModel
@@ -696,8 +726,9 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         })
         .session(s)
         .lean();
+      const settleOf = (p: any) => (p.amount ?? 0) + (p.discountAmount ?? 0);
       const alreadyPaid = existingPayments.reduce(
-        (sum, p) => sum + (p.amount ?? 0),
+        (sum, p) => sum + settleOf(p),
         0,
       );
       const pendingDue = Math.max(
@@ -706,7 +737,8 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       );
       if (pendingDue <= 0)
         throw new ValidationException("Invoice is already fully paid.");
-      if (paymentAmount > pendingDue)
+      const settlingAmount = paymentAmount + discountAmount;
+      if (settlingAmount > pendingDue)
         throw new ValidationException(
           `Payment exceeds the outstanding amount (pending ${pendingDue}).`,
         );
@@ -744,16 +776,29 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
                 data.reference ??
                 `Payment of invoice ${(invoice as any).number ?? invoiceId}`,
               lines: [
+                // Bank in: cash actually received
                 {
                   accountId: bankAccountId,
                   debit: paymentAmount,
                   credit: 0,
                   description: `Payment of invoice ${(invoice as any).number ?? invoiceId}`,
                 },
+                // Early-payment discount granted (Phase A2): Debe 765/665-like
+                ...(discountAmount > 0
+                  ? [
+                      {
+                        accountId: discountAccountId,
+                        debit: discountAmount,
+                        credit: 0,
+                        description: "Early-payment discount",
+                      },
+                    ]
+                  : []),
+                // Receivable relieved by the full gross amount
                 {
                   accountId: counterpartAccountId,
                   debit: 0,
-                  credit: paymentAmount,
+                  credit: settlingAmount,
                   description: "Accounts Receivable settlement",
                 },
               ],
@@ -771,6 +816,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
             paymentType: PaymentType.INBOUND,
             journalId: data.journalId,
             amount: paymentAmount,
+            discountAmount: discountAmount > 0 ? discountAmount : undefined,
             currencyId: data.currencyId,
             paymentDate: new Date(data.paymentDate),
             reference: data.reference,
@@ -791,10 +837,7 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         })
         .session(s)
         .lean();
-      const totalPaid = allPayments.reduce(
-        (sum, p) => sum + (p.amount ?? 0),
-        0,
-      );
+      const totalPaid = allPayments.reduce((sum, p) => sum + settleOf(p), 0);
       const amountDue = Math.max(0, (invoice.totalAmount ?? 0) - totalPaid);
 
       const updateResult = await model

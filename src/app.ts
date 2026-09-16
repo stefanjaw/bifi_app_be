@@ -91,6 +91,7 @@ import {
   InvoiceRouter,
   SequenceRouter,
   AccountingSettingsRouter,
+  GlRouter,
   GemsRouter,
   AiSettingsRouter,
   DriveSettingsRouter,
@@ -339,6 +340,7 @@ app.use("/api", new JournalEntryRouter().getRouter);
 app.use("/api", new PaymentRouter().getRouter);
 app.use("/api", new InvoiceRouter().getRouter);
 app.use("/api", new AccountingSettingsRouter().getRouter);
+app.use("/api", new GlRouter().getRouter);
 app.use("/api", new SequenceRouter().getRouter);
 app.use("/api", new GemsRouter().getRouter);
 app.use("/api", new AiSettingsRouter().getRouter);

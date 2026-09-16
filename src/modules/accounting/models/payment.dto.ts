@@ -29,6 +29,12 @@ export class PaymentDTO {
   @Type(() => Number)
   amount!: number;
 
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  discountAmount?: number;
+
   @IsMongoId()
   currencyId!: string;
 
@@ -48,6 +54,12 @@ export class PaymentDTO {
   @IsOptional()
   @Type(() => Number)
   exchangeRate?: number;
+}
+
+export class ApplyPaymentDTO {
+  @IsMongoId()
+  @IsNotEmpty()
+  invoiceId!: string;
 }
 
 export class UpdatePaymentDTO extends PartialType(PaymentDTO) {

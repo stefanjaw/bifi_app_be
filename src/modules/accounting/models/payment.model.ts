@@ -17,11 +17,14 @@ export interface PaymentDocument extends mongoose.Document {
   partnerId?: any;
   journalId: any;
   amount: number;
+  discountAmount?: number;
   currencyId: any;
   paymentDate: Date;
   reference?: string;
   journalEntryId?: any;
   invoiceId?: any;
+  appliedInvoiceId?: any;
+  appliedJournalEntryId?: any;
   exchangeRate?: number;
   status: PaymentStatus;
   active: boolean;
@@ -53,6 +56,7 @@ const paymentSchema = new Schema(
       },
     },
     amount: { type: Number, required: true, min: 0 },
+    discountAmount: { type: Number, required: false, min: 0 },
     currencyId: {
       type: Schema.Types.ObjectId,
       ref: "Currency",
@@ -79,6 +83,18 @@ const paymentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "JournalEntry",
       required: false,
+    },
+    appliedInvoiceId: {
+      type: Schema.Types.ObjectId,
+      ref: "JournalEntry",
+      required: false,
+      default: null,
+    },
+    appliedJournalEntryId: {
+      type: Schema.Types.ObjectId,
+      ref: "JournalEntry",
+      required: false,
+      default: null,
     },
     active: { type: Boolean, default: true },
   },

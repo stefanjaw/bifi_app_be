@@ -226,6 +226,12 @@ export class RegisterPaymentDTO {
   @Type(() => Number)
   amount!: number;
 
+  @IsNumber()
+  @Min(0)
+  @Type(() => Number)
+  @IsOptional()
+  discountAmount?: number;
+
   @IsDate()
   @Type(() => Date)
   paymentDate!: Date;

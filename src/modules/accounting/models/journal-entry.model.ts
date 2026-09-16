@@ -36,6 +36,7 @@ export interface JournalEntryDocument extends mongoose.Document {
   number?: string;
   reversalOf?: any;
   isCreditNote?: boolean;
+  sourceStockMovementId?: any;
   contactId?: any;
   paymentTermId?: any;
   dueDate?: Date;
@@ -170,6 +171,12 @@ const journalEntrySchema = new Schema(
       index: true,
     },
     isCreditNote: { type: Boolean, default: false, index: true },
+    sourceStockMovementId: {
+      type: Schema.Types.ObjectId,
+      ref: "StockMovement",
+      required: false,
+      default: null,
+    },
     contactId: {
       type: Schema.Types.ObjectId,
       ref: "Contact",
@@ -293,6 +300,16 @@ const journalEntrySchema = new Schema(
 
 journalEntrySchema.plugin(paginate);
 journalEntrySchema.plugin(autopopulate);
+
+// One journal entry per stock movement (Phase B2 idempotency): unique only
+// when the link exists, so non-GL JEs with null can coexist.
+journalEntrySchema.index(
+  { sourceStockMovementId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { sourceStockMovementId: { $type: "objectId" } },
+  },
+);
 
 export const journalEntryModel = mongoose.model<
   JournalEntryDocument,

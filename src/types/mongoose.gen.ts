@@ -121,6 +121,22 @@ export type AccountDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of AccountingSettingsInventoryAccountDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `AccountingSettingsDocument.toObject()`.
+ * ```
+ * const accountingsettingsObject = accountingsettings.toObject();
+ * ```
+ */
+export type AccountingSettingsInventoryAccount = {
+  inventoryAccountId?: Account["_id"] | Account | null;
+  cogsAccountId?: Account["_id"] | Account | null;
+  adjustmentLossAccountId?: Account["_id"] | Account | null;
+  apPendingAccountId?: Account["_id"] | Account | null;
+  defaultCurrencyId?: Currency["_id"] | Currency | null;
+};
+
+/**
  * Lean version of AccountingSettingsDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `AccountingSettingsDocument.toObject()`. To avoid conflicts with model names, use the type alias `AccountingSettingsObject`.
@@ -131,6 +147,9 @@ export type AccountDocument = mongoose.Document<
 export type AccountingSettings = {
   invoiceSequence?: Sequence | null;
   purchasePayableAccountId?: Account | null;
+  depreciationJournalId?: Journal | null;
+  discountGrantedAccountId?: Account | null;
+  inventoryAccounts?: AccountingSettingsInventoryAccount;
   description?: string;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -218,6 +237,23 @@ export type AccountingSettingsSchema = mongoose.Schema<
  * const AccountingSettings = mongoose.model<AccountingSettingsDocument, AccountingSettingsModel>("AccountingSettings", AccountingSettingsSchema);
  * ```
  */
+export type AccountingSettingsInventoryAccountDocument =
+  mongoose.Document<any> & {
+    inventoryAccountId?: AccountDocument["_id"] | AccountDocument | null;
+    cogsAccountId?: AccountDocument["_id"] | AccountDocument | null;
+    adjustmentLossAccountId?: AccountDocument["_id"] | AccountDocument | null;
+    apPendingAccountId?: AccountDocument["_id"] | AccountDocument | null;
+    defaultCurrencyId?: CurrencyDocument["_id"] | CurrencyDocument | null;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const AccountingSettings = mongoose.model<AccountingSettingsDocument, AccountingSettingsModel>("AccountingSettings", AccountingSettingsSchema);
+ * ```
+ */
 export type AccountingSettingsDocument = mongoose.Document<
   mongoose.Types.ObjectId,
   AccountingSettingsQueries
@@ -225,6 +261,9 @@ export type AccountingSettingsDocument = mongoose.Document<
   AccountingSettingsMethods & {
     invoiceSequence?: SequenceDocument | null;
     purchasePayableAccountId?: AccountDocument | null;
+    depreciationJournalId?: JournalDocument | null;
+    discountGrantedAccountId?: AccountDocument | null;
+    inventoryAccounts?: AccountingSettingsInventoryAccountDocument;
     description?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -717,6 +756,7 @@ export type JournalEntry = {
   number?: string;
   reversalOf?: JournalEntry["_id"] | JournalEntry;
   isCreditNote?: boolean;
+  sourceStockMovementId?: StockMovement["_id"] | StockMovement | null;
   contactId?: Contact;
   paymentTermId?: PaymentTerm;
   dueDate?: Date;
@@ -967,6 +1007,10 @@ export type JournalEntryDocument = mongoose.Document<
     number?: string;
     reversalOf?: JournalEntryDocument["_id"] | JournalEntryDocument;
     isCreditNote?: boolean;
+    sourceStockMovementId?:
+      | StockMovementDocument["_id"]
+      | StockMovementDocument
+      | null;
     contactId?: ContactDocument;
     paymentTermId?: PaymentTermDocument;
     dueDate?: Date;
@@ -1288,6 +1332,7 @@ export type Payment = {
   partnerId?: Contact;
   journalId: Journal;
   amount: number;
+  discountAmount?: number;
   currencyId: Currency;
   paymentDate: Date;
   reference?: string;
@@ -1295,6 +1340,8 @@ export type Payment = {
   exchangeRate?: number;
   status?: "draft" | "confirmed";
   invoiceId?: JournalEntry["_id"] | JournalEntry;
+  appliedInvoiceId?: JournalEntry["_id"] | JournalEntry | null;
+  appliedJournalEntryId?: JournalEntry["_id"] | JournalEntry | null;
   active?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -1385,6 +1432,7 @@ export type PaymentDocument = mongoose.Document<
     partnerId?: ContactDocument;
     journalId: JournalDocument;
     amount: number;
+    discountAmount?: number;
     currencyId: CurrencyDocument;
     paymentDate: Date;
     reference?: string;
@@ -1392,6 +1440,14 @@ export type PaymentDocument = mongoose.Document<
     exchangeRate?: number;
     status?: "draft" | "confirmed";
     invoiceId?: JournalEntryDocument["_id"] | JournalEntryDocument;
+    appliedInvoiceId?:
+      | JournalEntryDocument["_id"]
+      | JournalEntryDocument
+      | null;
+    appliedJournalEntryId?:
+      | JournalEntryDocument["_id"]
+      | JournalEntryDocument
+      | null;
     active?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
