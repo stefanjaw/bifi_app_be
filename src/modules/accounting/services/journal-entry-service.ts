@@ -57,6 +57,28 @@ export class JournalEntryService extends BaseService<JournalEntryDocument> {
     return super.create(data as any, session);
   }
 
+  /**
+   * Overrides update to protect ledger integrity (Phase L1 pre-condition):
+   * only draft journal entries can be edited — posted entries are immutable
+   * and cancelled entries stay locked.
+   */
+  override async update(
+    data: JournalEntryDTO | any,
+    session?: ClientSession,
+  ): Promise<JournalEntryDocument> {
+    const id = (data as any)?._id;
+    if (id) {
+      const existing = await this.getById(id, session);
+      const doc = existing as JournalEntryDocument | undefined;
+      if (doc && doc.status !== JournalEntryStatus.DRAFT) {
+        throw new ValidationException(
+          "Only draft journal entries can be edited. Cancel or post first.",
+        );
+      }
+    }
+    return super.update(data, session);
+  }
+
   async post(id: string): Promise<JournalEntryDocument> {
     const entry = await this.getById(id, undefined);
     if (!entry) {
@@ -65,6 +87,13 @@ export class JournalEntryService extends BaseService<JournalEntryDocument> {
     const doc = entry as JournalEntryDocument;
     if (doc.status === JournalEntryStatus.POSTED) {
       throw new ValidationException("Journal entry is already posted.");
+    }
+    // Phase L1 pre-condition: cancelled entries can never be posted —
+    // the ledger aggregates trust posted documents only.
+    if (doc.status === JournalEntryStatus.CANCEL) {
+      throw new ValidationException(
+        "Journal entry is cancelled and cannot be posted. Restore it by removing the cancellation source first.",
+      );
     }
     const model = this.connectionManager.bindModelToDb(this.model);
     const updated = await model.findByIdAndUpdate(
