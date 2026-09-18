@@ -85,6 +85,7 @@ export interface TaxBalanceRow {
 export interface CustomerSalesRow {
   contactId: string;
   currencyId: string;
+  currencyCode?: string;
   sales: number;
 }
 
@@ -160,12 +161,18 @@ export class GlReportService {
     hideEmpty?: boolean;
   }): Promise<TrialBalanceReport> {
     // ---- [1] Build the $match from posted entries + period + currency ----
+    // BUG-H fix: reversal JEs (`reversalOf` set) are excluded. Their
+    // cancelled originals are already excluded by the status filter —
+    // including the reversal alone would flip the cancelled invoice's
+    // impact instead of netting it to zero (cancel + reversal = no GL
+    // effect by design).
     const from = GlReportService.parseDate(params.from, "from");
     const to = GlReportService.parseDate(params.to, "to");
     const dateMatch = GlReportService.buildDateMatch(from, to);
     const match: any = {
       status: JournalEntryStatus.POSTED,
       active: true,
+      reversalOf: { $exists: false },
     };
     if (dateMatch) match.date = dateMatch;
     if (params.currencyId)
@@ -290,9 +297,12 @@ export class GlReportService {
     const accountIdObject = new mongoose.Types.ObjectId(accountId);
 
     // ---- [1] Fetch all posted entries touching the account, up to `to` ----
+    // BUG-H fix: exclude reversal JEs (see getTrialBalance) so a cancelled
+    // invoice + its reversal net to zero in the ledger too.
     const match: any = {
       status: JournalEntryStatus.POSTED,
       active: true,
+      reversalOf: { $exists: false },
       "lines.accountId": accountIdObject,
     };
     const toMatch = GlReportService.buildDateMatch(undefined, to);
@@ -478,6 +488,9 @@ export class GlReportService {
       status: JournalEntryStatus.POSTED,
       active: true,
       isInvoice: true,
+      // BUG-H fix: exclude credit notes/reversals from sales activity —
+      // they are inversions of an original invoice, not standalone sales.
+      reversalOf: { $exists: false },
       date: {
         $gte: from,
         $lte: new Date(Date.UTC(Number(period) + 1, 0, 0) - 1),
@@ -517,9 +530,25 @@ export class GlReportService {
     const contactNames = new Map(
       contacts.map((c: any) => [c._id.toString(), c]),
     );
+    // BUG-B fix: hydrate the currency codes (same bulk pattern as
+    // getTrialBalance) so the UI's Currency column resolves.
+    const currencyIds = [
+      ...new Set(rows.map((r) => r.currencyId?.toString())),
+    ].filter(Boolean);
+    const currencyModel =
+      this.connectionManager.getModel<CurrencyDocument>("Currency");
+    const boundCurrencyModel =
+      this.connectionManager.bindModelToDb(currencyModel);
+    const currencies = (await boundCurrencyModel
+      .find({ _id: { $in: currencyIds } })
+      .lean()) as any[];
+    const currencyCodes = new Map(
+      currencies.map((c: any) => [c._id.toString(), c.code]),
+    );
     const namedRows = rows.map((row) => ({
       ...row,
       contactName: contactNames.get(row.contactId)?.name ?? "",
+      currencyCode: currencyCodes.get(row.currencyId?.toString() ?? "") ?? "",
       sales: Math.round(row.sales * 100) / 100,
     }));
     return { period, from, currencyId, rows: namedRows };

@@ -96,50 +96,59 @@ export class ClosingEntriesService {
       );
 
     // ---- [3] Close lines (asientos 6 & 7 combined) in ONE posted JE ----
+    // BUG-C fix: `saldo` = debit − credit per account. An account with a
+    // DEBIT balance closes via a CREDIT of |saldo|; an account with a
+    // CREDIT balance closes via a DEBIT of |saldo|. Flipping the side by
+    // sign (instead of dropping "negative" lines) keeps abnormal balances
+    // (e.g. a loss caused by a legacy unbalanced JE) balanced — partida
+    // doble is never violated.
     const closingLines: {
       accountId: any;
       description: string;
       debit: number;
       credit: number;
     }[] = [];
-    for (const row of expenseRows) {
-      if (row.saldo <= 0) continue;
-      // Expense has a debit balance (Debe) -> it closes via the credit
+    for (const row of [...expenseRows, ...incomeRows]) {
+      const saldo = Math.round(row.saldo * 100) / 100;
+      if (saldo === 0) continue;
       closingLines.push({
         accountId: new mongoose.Types.ObjectId(row.accountId),
-        description: `Close expense of ${period}`,
-        debit: 0,
-        credit: row.saldo,
+        description: `Close ${row.nature} of ${period}`,
+        debit: saldo < 0 ? Math.abs(saldo) : 0,
+        credit: saldo > 0 ? saldo : 0,
       });
     }
-    for (const row of incomeRows) {
-      // Income has a credit balance: raw saldo is negative; its closing
-      // amount is the credit magnitude posted on the debit side.
-      const creditMagnitude = Math.abs(Math.min(0, row.saldo) * -1);
-      if (creditMagnitude <= 0) continue;
-      closingLines.push({
-        accountId: new mongoose.Types.ObjectId(row.accountId),
-        description: `Close income of ${period}`,
-        debit: Math.round(creditMagnitude * 100) / 100,
-        credit: 0,
-      });
-    }
-    // ---- [4] Result entry: total = amount of both sides ----
-    const totalIncome = report.incomeTotal;
-    const totalExpense = report.expenseTotal;
+    if (closingLines.length === 0)
+      throw new ValidationException(
+        `No posted income/expense balances to close for period ${period}.`,
+      );
+
+    // ---- [4] Result entry: the equity account takes the difference ----
+    // Σ Debit − Σ Credit of the close lines is the period result:
+    // - credits > debits (profit): equity shows a credit balance → equity CREDIT.
+    // - debits > credits (loss): equity DEBIT — never drop the counterpart.
+    const totalDebits = closingLines.reduce((sum, l) => sum + l.debit, 0);
+    const totalCredits = closingLines.reduce((sum, l) => sum + l.credit, 0);
     const resultAmount =
-      Math.round(Math.abs(totalIncome - totalExpense) * 100) / 100;
-    const isProfit = totalIncome > totalExpense;
-    // The result is the net effect of asiento 6 & 7 on the equity account:
-    // - profit: equity account shows a credit balance of the result amount.
-    // Balance: ΣDebe = ΣHaber via a single balancing entry with the equity
-    // account itself as the counterpart (Debe/Haber by difference).
-    closingLines.push({
-      accountId: equityAccount._id,
-      description: `P&L result of ${period}`,
-      debit: isProfit ? 0 : resultAmount,
-      credit: isProfit ? resultAmount : 0,
-    });
+      Math.round(Math.abs(totalDebits - totalCredits) * 100) / 100;
+    const isLoss = totalDebits < totalCredits;
+    if (resultAmount > 0) {
+      closingLines.push({
+        accountId: equityAccount._id,
+        description: `P&L result of ${period}`,
+        debit: isLoss ? resultAmount : 0,
+        credit: isLoss ? 0 : resultAmount,
+      });
+    }
+
+    // ---- [4b] Defensive partida-doble check (BUG-C fix): auto-derived JEs
+    // must satisfy the same Σ Debit = Σ Credit invariant as manual ones ----
+    const sumDebit = closingLines.reduce((sum, l) => sum + l.debit, 0);
+    const sumCredit = closingLines.reduce((sum, l) => sum + l.credit, 0);
+    if (Math.abs(sumDebit - sumCredit) > 0.0001)
+      throw new ValidationException(
+        `Closing entry unbalanced (Σ debits ${sumDebit} ≠ Σ credits ${sumCredit}).`,
+      );
 
     // ---- [5] Opening entry: full inversion for the next period ----
     const nextPeriod = String(Number(period) + 1);

@@ -10,6 +10,16 @@ export class PaymentController extends BaseController<PaymentDocument> {
     super({ service: paymentService });
   }
 
+  /** Confirms a draft payment (flips payment + settlement JE to CONFIRMED/POSTED) */
+  confirmPayment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await paymentService.confirm(req.params.id);
+      this.sendData(res, result);
+    } catch (error: any) {
+      next(error);
+    }
+  };
+
   /** Applies a customer advance payment to a posted invoice */
   applyPayment = async (req: Request, res: Response, next: NextFunction) => {
     try {

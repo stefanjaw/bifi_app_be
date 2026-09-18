@@ -1,5 +1,9 @@
 import mongoose, { ClientSession } from "mongoose";
-import { ConnectionManager, runTransaction } from "../../../system";
+import {
+  ConnectionManager,
+  runTransaction,
+  userStorage,
+} from "../../../system";
 import { fireNotification } from "../../notifications/services/notification-service";
 import { AccountingSettingsService } from "./accounting-settings-service";
 import {
@@ -33,8 +37,9 @@ interface InventoryAccounts {
  * - IN  + "sales-order"     -> COGS flip:     Debe 300 / Haber 693
  * - IN  + "purchase-order"  -> receipt:       Debe 300 / Haber 400* (requires apPendingAccountId)
  * - OUT + "purchase-order"  -> receipt flip:  Debe 400 / Haber 300
- * - ADJUSTMENT ±            -> inventory vs adjustmentLossAccountId
- * - transfer-in/-out and manual movements (referenceType "") -> skipped.
+ * - ADJUSTMENT ± (any referenceType, incl. manual "") and their reversals
+ *   (IN/OUT carrying `adjustmentDirection`) -> inventory vs adjustmentLossAccountId
+ * - transfer-in/-out and manual IN/OUT movements (referenceType "") -> skipped.
  * Soft-fail: missing mapping, journal or currency posts nothing and fires a
  * notification; the sweep never throws and never blocks the stock module.
  */
@@ -77,13 +82,20 @@ export class GlIntegrationService {
       .find({
         _id: { $nin: postedIds },
         // Only postable shapes (see the class rule table): shipments/receipts
-        // with a trackable origin, plus adjustments regardless of their
-        // referenceType (manual adjustments carry ""/postage-free refTypes).
+        // with a trackable origin, adjustments regardless of their
+        // referenceType (manual adjustments carry ""/postage-free refTypes),
+        // and — BUG-M fix — the reversals of adjustments, which are IN/OUT
+        // movements carrying the ORIGINAL's non-order referenceType and are
+        // identified by `adjustmentDirection`.
         $or: [
           { type: { $in: ["ADJUSTMENT"] } },
           {
             type: { $in: ["IN", "OUT"] },
             referenceType: { $in: ["sales-order", "purchase-order"] },
+          },
+          {
+            type: { $in: ["IN", "OUT"] },
+            adjustmentDirection: { $exists: true, $ne: null },
           },
         ],
       })
@@ -116,8 +128,21 @@ export class GlIntegrationService {
     movementDoc: any,
   ): Promise<JournalEntryDocument | undefined> {
     // ---- [1] Skip non-postable reference types ----
+    // BUG-M fix: the ADJUSTMENT branch (and the reversals of adjustments,
+    // IN/OUT movements that carry the original's referenceType — often "")
+    // must be evaluated BEFORE the skip-set, otherwise manual adjustments
+    // (referenceType "" — the natural case) are silently dropped.
+    const type = String(movementDoc?.type ?? "");
     const referenceType = String(movementDoc?.referenceType ?? "");
-    if (GlIntegrationService.SKIPPED_REFERENCE_TYPES.has(referenceType)) {
+    const isAdjustment = type === "ADJUSTMENT";
+    const isAdjustmentReversal = !!(
+      movementDoc?.reversalOf && movementDoc?.adjustmentDirection
+    );
+    if (
+      !isAdjustment &&
+      !isAdjustmentReversal &&
+      GlIntegrationService.SKIPPED_REFERENCE_TYPES.has(referenceType)
+    ) {
       return undefined;
     }
 
@@ -127,7 +152,6 @@ export class GlIntegrationService {
       (settings as any)?.inventoryAccounts ?? {};
     const inventoryAccount = accounts?.inventoryAccountId?._id ?? null;
     const amount = Number(movementDoc?.totalCost ?? 0);
-    const type = String(movementDoc?.type ?? "");
     const adjustmentDirection = String(movementDoc?.adjustmentDirection ?? "");
     const addsStock =
       type === "IN" ||
@@ -136,7 +160,7 @@ export class GlIntegrationService {
 
     // ---- [3] Pair counterpart per (type + referenceType) ----
     let counterpartAccount: any;
-    if (type === "ADJUSTMENT") {
+    if (isAdjustment || isAdjustmentReversal) {
       counterpartAccount =
         accounts?.adjustmentLossAccountId?._id ??
         accounts?.adjustmentLossAccountId ??
@@ -241,7 +265,11 @@ export class GlIntegrationService {
   ): Promise<void> {
     await fireNotification({
       type: "inventory.gl.mapping-missing",
-      context: {},
+      // BUG-N fix: pass the current user as the `creator` recipient — the
+      // fireNotification resolver builds `userIds` from the context values
+      // (or from the event-config roles, e.g. `creator`), so an empty
+      // context meant nobody ever received the alert.
+      context: { creator: userStorage.getStore()?.user?._id },
       title: "GL posting skipped for stock movement",
       body: message?.slice(0, 240) ?? message,
       link: "/inventory/movements",

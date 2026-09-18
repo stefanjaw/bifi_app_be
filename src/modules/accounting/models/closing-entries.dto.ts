@@ -1,4 +1,10 @@
-import { IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from "class-validator";
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Matches,
+} from "class-validator";
 
 /** Payload for `POST /accounting/gl/closing-entries` (Phase L2b) */
 export class ClosingEntriesDTO {

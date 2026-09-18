@@ -391,20 +391,26 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       ? (journal?.defaultCreditAccountId ?? payableFallbackAccountId ?? null)
       : (journal?.defaultDebitAccountId ?? null);
 
-    const counterpartLine = counterpartAccountId
-      ? [
-          {
-            lineType: "counterpart",
-            accountId: counterpartAccountId,
-            description: isPurchase
-              ? "Accounts Payable"
-              : "Accounts Receivable",
-            ...(isPurchase
-              ? { debit: 0, credit: totalAmount }
-              : { debit: totalAmount, credit: 0 }),
-          },
-        ]
-      : [];
+    // BUG-C fix: never post an unbalanced invoice — without the counterpart
+    // the JE would only hold the one-sided product/tax lines. Fail loudly
+    // with an actionable message instead of silently dropping the line.
+    if (!counterpartAccountId)
+      throw new ValidationException(
+        isPurchase
+          ? "No accounts-payable counterpart account: configure the journal's default credit account or the 'purchasePayableAccountId' setting before saving this invoice."
+          : "No accounts-receivable counterpart account: configure the journal's default debit account before saving this invoice.",
+      );
+
+    const counterpartLine = [
+      {
+        lineType: "counterpart",
+        accountId: counterpartAccountId,
+        description: isPurchase ? "Accounts Payable" : "Accounts Receivable",
+        ...(isPurchase
+          ? { debit: 0, credit: totalAmount }
+          : { debit: totalAmount, credit: 0 }),
+      },
+    ];
 
     return [...counterpartLine, ...productLines, ...taxJELines];
   }
@@ -544,13 +550,6 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       const invoiceDate = fields.invoiceDate
         ? new Date(fields.invoiceDate)
         : existing.date;
-      // Recalculate the due date whenever the invoice date, the payment term
-      // or the explicit due date meaning change (fixes B5-adjacent staleness).
-      const dueDate = fields.dueDate
-        ? new Date(fields.dueDate)
-        : fields.invoiceDate || fields.paymentTermId
-          ? this.calculateDueDate(new Date(invoiceDate), paymentTerm)
-          : existing.dueDate;
 
       // ---- [2] Due single date + recompute totals from incoming lines ----
       const rawLines = fields.lines ?? [];
@@ -575,6 +574,18 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
               paymentTerm,
             )
           : existing.dueDates;
+
+      // BUG-I fix: the singular `dueDate` is re-derived from the LAST
+      // installment of the schedule instead of trusting the client-echoed
+      // value — it previously stayed stale whenever only the invoice date
+      // changed (the chips recomputed but the field did not).
+      const dueDate = dueDates?.length
+        ? dueDates[dueDates.length - 1].date
+        : fields.dueDate
+          ? new Date(fields.dueDate)
+          : fields.invoiceDate || fields.paymentTermId
+            ? this.calculateDueDate(new Date(invoiceDate), paymentTerm)
+            : existing.dueDate;
 
       // ---- [5] Rebuild the computed journal lines (B1 fix) ----
       // Always rebuild the computed journal lines (counterpart + product +
@@ -642,6 +653,10 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           untaxedAmount,
           taxAmount,
           totalAmount,
+          // BUG-E fix: drafts have no confirmed payments, so the outstanding
+          // must track the recomputed total (it previously kept the value
+          // seeded at create and went stale after any line edit).
+          amountDue: totalAmount,
           lines: jeLines,
           ...crUpdate,
         },
@@ -663,10 +678,10 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
    * - Runs inside a transaction.
    * - Rejects payments on drafts/cancelled invoices, zero/negative amounts and
    *   overpayments (cash + discount would exceed the invoice total).
-   * - Creates the settlement journal entry: bank debited (from the payment
-   *   journal), early-payment discount (Debe `discountGrantedAccountId`,
-   *   when `discountAmount` > 0) and the invoice's receivable account
-   *   credited by the gross amount — the 572/765/430 three-line pattern.
+   * - Creates the settlement journal entry, orientation-aware (BUG-K fix):
+   *   sales invoices post `D bank / [D discount] / C receivable` (inbound);
+   *   purchase invoices post `D payable / [C discount] / C bank` (outbound) —
+   *   the settlement discharges the liability instead of increasing it.
    * @param invoiceId - The invoice ID
    * @param data - Register payment payload
    * @param session - Optional MongoDB session
@@ -743,10 +758,13 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
           `Payment exceeds the outstanding amount (pending ${pendingDue}).`,
         );
 
-      // ---- [3] Create the settlement JE: debit bank, credit AR (430) ----
-      // Debit the bank account (payment journal default debit or the
-      // receiving journal default) and credit the invoice's receivable
-      // account so the ledger reflects the partial collection.
+      // ---- [3] Create the settlement JE (BUG-K fix: orientation-aware) ----
+      // The settlement orientation follows the invoice's journal type — the
+      // same rule `buildJELines` uses for the invoice itself:
+      // - Sales invoice (collection, inbound):  D bank / [D discount] / C AR.
+      // - Purchase invoice (payment, outbound): D AP / [C discount] / C bank.
+      // Posting `D bank / C AP` on a purchase invoice would INCREASE the
+      // ledger payable instead of discharging it.
       const boundJournalModel =
         this.connectionManager.bindModelToDb(journalModel);
       const paymentJournal = await boundJournalModel
@@ -754,6 +772,10 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         .session(s);
       if (!paymentJournal)
         throw new ValidationException("Payment journal not found.");
+      const invoiceJournal = await boundJournalModel
+        .findById(invoice.journalId)
+        .session(s);
+      const isPurchase = invoiceJournal?.journalType === "purchase";
       const bankAccountId =
         paymentJournal.defaultDebitAccountId ??
         paymentJournal.defaultCreditAccountId;
@@ -761,6 +783,18 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
         (l: any) => l.lineType === "counterpart",
       );
       const counterpartAccountId = counterpartLine?.accountId;
+      const bankLineDescription = `Payment of invoice ${
+        (invoice as any).number ?? invoiceId
+      }`;
+      const bankSide = isPurchase
+        ? { debit: 0, credit: paymentAmount }
+        : { debit: paymentAmount, credit: 0 };
+      const counterpartSide = isPurchase
+        ? { debit: settlingAmount, credit: 0 }
+        : { debit: 0, credit: settlingAmount };
+      const discountSide = isPurchase
+        ? { debit: 0, credit: discountAmount }
+        : { debit: discountAmount, credit: 0 };
       let settlementEntryId: mongoose.Types.ObjectId | undefined;
       if (bankAccountId && counterpartAccountId) {
         const boundJournalEntryModel =
@@ -772,34 +806,33 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
               date: new Date(data.paymentDate),
               currencyId: (invoice as any).currencyId,
               status: JournalEntryStatus.POSTED,
-              reference:
-                data.reference ??
-                `Payment of invoice ${(invoice as any).number ?? invoiceId}`,
+              reference: data.reference ?? bankLineDescription,
               lines: [
-                // Bank in: cash actually received
+                // Bank: cash in (sales collection) or out (purchase payment)
                 {
                   accountId: bankAccountId,
-                  debit: paymentAmount,
-                  credit: 0,
-                  description: `Payment of invoice ${(invoice as any).number ?? invoiceId}`,
+                  ...bankSide,
+                  description: bankLineDescription,
                 },
-                // Early-payment discount granted (Phase A2): Debe 765/665-like
+                // Early-payment discount (Phase A2): Debe 765/665-like on
+                // sales (less cash for the same relief); Haber side on
+                // purchases (pay less than the gross payable).
                 ...(discountAmount > 0
                   ? [
                       {
                         accountId: discountAccountId,
-                        debit: discountAmount,
-                        credit: 0,
+                        ...discountSide,
                         description: "Early-payment discount",
                       },
                     ]
                   : []),
-                // Receivable relieved by the full gross amount
+                // Counterpart relieved/settled by the full gross amount
                 {
                   accountId: counterpartAccountId,
-                  debit: 0,
-                  credit: settlingAmount,
-                  description: "Accounts Receivable settlement",
+                  ...counterpartSide,
+                  description: isPurchase
+                    ? "Accounts Payable settlement"
+                    : "Accounts Receivable settlement",
                 },
               ],
             },
@@ -813,7 +846,11 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       const creationResult = await boundPaymentModel.create(
         [
           {
-            paymentType: PaymentType.INBOUND,
+            // BUG-K fix: outbound for purchase invoices (money leaves the
+            // bank to pay the supplier), inbound for sales collections.
+            paymentType: isPurchase
+              ? PaymentType.OUTBOUND
+              : PaymentType.INBOUND,
             journalId: data.journalId,
             amount: paymentAmount,
             discountAmount: discountAmount > 0 ? discountAmount : undefined,
@@ -888,7 +925,15 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
 
       const result = await model.findByIdAndUpdate(
         id,
-        { status: JournalEntryStatus.POSTED, number: invoice.number },
+        {
+          status: JournalEntryStatus.POSTED,
+          number: invoice.number,
+          // BUG-I fix: keep the singular dueDate consistent with the saved
+          // schedule at posting time (guards against stale client echoes).
+          dueDate: invoice.dueDates?.length
+            ? invoice.dueDates[invoice.dueDates.length - 1].date
+            : invoice.dueDate,
+        },
         { new: true, session: s },
       );
 
@@ -1021,6 +1066,14 @@ export class InvoiceService extends BaseService<JournalEntryDocument> {
       if (unsettledAmount <= 0)
         throw new ValidationException(
           "Invoice pending amount is zero; a credit note cannot exceed the pending amount.",
+        );
+      // 15.3 edge (BUG-K family): the NC always credits the FULL invoice
+      // total, so when payments reduced the pending it would over-credit
+      // (e.g. total 2,100 credited while pending 1,100 → phantom AP credit
+      // balance). Refuse until the payments are reversed, like cancel().
+      if (unsettledAmount < Number(invoice.totalAmount ?? 0))
+        throw new ValidationException(
+          "This invoice has confirmed payments and a credit note reverses its full amount. Reverse the payments first so the pending equals the total, then create the credit note.",
         );
 
       // ---- [2] Build inverted source lines (B7 fix: Debit<->Credit) ----

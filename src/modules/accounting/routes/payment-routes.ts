@@ -40,5 +40,13 @@ export class PaymentRouter extends BaseRoutes<PaymentDocument> {
       validateBodyMiddleware(ApplyPaymentDTO),
       paymentController.applyPayment,
     );
+
+    // BUG-L fix: the only path from DRAFT to CONFIRMED (status is not
+    // editable via PUT), making standalone advances reachable for A2b.
+    this.router.put(
+      "/accounting/payments/:id/confirm",
+      authorizeMiddleware("accounting/payments", "update"),
+      paymentController.confirmPayment,
+    );
   }
 }
