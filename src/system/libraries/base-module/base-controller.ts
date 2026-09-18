@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import { ValidationException } from "../exceptions/service-exception";
 import { BaseService } from "./base-service";
 import { paginationOptions } from "./query-options.type";
@@ -56,7 +56,7 @@ function capPaginationLimit(
   return opts as paginationOptions & { paginate: true };
 }
 
-export class BaseController<T> {
+export class BaseController<T extends Document> {
   service!: BaseService<T>;
 
   /**

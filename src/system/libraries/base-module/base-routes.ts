@@ -2,6 +2,7 @@ import { BaseController } from "./base-controller";
 import { Router } from "express";
 import multer from "multer";
 import rateLimit from "express-rate-limit";
+import { Document } from "mongoose";
 import {
   authorizeMiddleware,
   validateBodyMiddleware,
@@ -37,7 +38,7 @@ export function createUploadMiddleware() {
   });
 }
 
-export class BaseRoutes<T> {
+export class BaseRoutes<T extends Document> {
   controller!: BaseController<T>;
   endpoint!: string;
   dtoCreateClass!: new () => any;

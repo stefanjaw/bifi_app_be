@@ -1,8 +1,9 @@
 import { ClientSession } from "mongoose";
 import { BaseService, runTransaction } from "../../../system";
 import { assetConditionModel } from "../models/asset-condition.model";
+import { AssetConditionDocument } from "@mongodb-types";
 
-export class AssetConditionService extends BaseService<any> {
+export class AssetConditionService extends BaseService<AssetConditionDocument> {
   constructor() {
     super({ model: assetConditionModel });
   }

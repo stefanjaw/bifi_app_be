@@ -3,7 +3,12 @@ import { runTransaction } from "./transaction-utils";
 import { json2csv } from "json-2-csv";
 import { refModelMap } from "./ref-model-map";
 import { ConnectionManager } from "./connection-manager";
-import { ClientSession, FilterQuery, PaginateModel } from "mongoose";
+import mongoose, {
+  ClientSession,
+  Document,
+  FilterQuery,
+  PaginateModel,
+} from "mongoose";
 import { PaginateResult } from "mongoose";
 
 /**
@@ -14,7 +19,14 @@ import { PaginateResult } from "mongoose";
  */
 const STRIP_FIELDS = ["__v", "createdAt", "updatedAt", "createdBy"] as const;
 
-export class BaseService<T> {
+/**
+ * Maximum number of filter clauses per $or query when checking for existing
+ * documents during the CSV import upsert — keeps queries within Mongo limits
+ * for very large files.
+ */
+const MAX_IMPORT_FILTER_CHUNK = 500;
+
+export class BaseService<T extends Document> {
   protected connectionManager = new ConnectionManager();
 
   // Mongoose model
@@ -356,9 +368,42 @@ export class BaseService<T> {
   }
 
   /**
+   * Extracts the field paths of the model's first unique index (excluding
+   * _id-only ones) from the schema definition.
+   * Used by importCSV to upsert instead of blind-insert so uploads never
+   * crash on duplicate-key errors.
+   * @returns The unique index field paths, or undefined when the schema has
+   * no unique index (beyond _id).
+   */
+  protected getUniqueIndexFields(): string[] | undefined {
+    for (const [index, options] of this.model.schema.indexes()) {
+      if (!(options as { unique?: boolean }).unique) continue;
+
+      const fields = Object.keys(index).filter((key) => key !== "_id");
+      if (fields.length > 0) return fields;
+    }
+
+    return undefined;
+  }
+
+  /**
    * Imports a CSV file into the database.
    * The function expects a plain array of objects to be passed as the first argument.
    * The objects should have the same structure as the records in the database.
+   *
+   * Row identity is resolved by the model's unique index:
+   * - Models WITH a unique index (beyond _id) upsert by that key combination:
+   *   existing rows update, missing rows are created (schema defaults apply),
+   *   and duplicated rows within the file collapse with the last one winning.
+   *   Any `id`/`_id` column in the CSV is ignored — the unique key identifies
+   *   the row, so re-imports never crash on duplicate-key errors.
+   * - Models WITHOUT a unique index fall back to the `id`/`_id` column written
+   *   by exportCSV: rows with a valid ObjectId update the record with that
+   *   _id, or create it with the same _id when it does not exist; rows without
+   *   an id are inserted as-is.
+   * System-managed fields (_id in $set, __v, timestamps, createdBy) are
+   * stripped from every update.
+   *
    * The function runs within a transaction and returns the imported records as an array of documents.
    *
    * @param data - The data to import as a CSV file.
@@ -371,14 +416,176 @@ export class BaseService<T> {
   ): Promise<T[]> {
     return await runTransaction<T[]>(session, async (newSession) => {
       const model = this.connectionManager.bindModelToDb(this.model);
+      const uniqueFields = this.getUniqueIndexFields();
 
-      // create record
-      const records = await model.create([...data], {
-        session: newSession,
-        ordered: true,
+      // Clean every row: drop identity + system-managed fields. The CSV
+      // middleware has already whitelisted fields against the module's DTO.
+      const cleanRows = data.map((row) => {
+        const cleanRow: Record<string, any> = { ...row };
+        const identity = cleanRow._id;
+        delete cleanRow._id;
+        for (const field of STRIP_FIELDS) delete cleanRow[field];
+        return { identity, row: cleanRow };
       });
 
-      return records as T[];
+      // Tracks which rows were imported, for the final re-query.
+      const imported: T[] = [];
+
+      if (uniqueFields) {
+        // UPSERT BY UNIQUE KEY — the unique index identifies the row, so any
+        // `id` column is ignored. Collapse duplicated unique-key combinations
+        // within the file first: the index would otherwise reject them (last
+        // row wins).
+        const keyOf = (row: Record<string, any>) =>
+          uniqueFields.map((field) => String(row[field])).join("|");
+
+        const unique = new Map<string, Record<string, any>>();
+        for (const { row } of cleanRows) {
+          unique.set(keyOf(row), row);
+        }
+        const rows = [...unique.values()];
+
+        // Find which unique-key combinations already exist so rows can be
+        // split into creates (schema defaults apply naturally) and updates
+        // (by _id, immune to unique-index races).
+        const existingIds = new Map<string, string>();
+        const rowFilters = rows.map((row) =>
+          Object.fromEntries(uniqueFields.map((field) => [field, row[field]])),
+        );
+        for (let i = 0; i < rowFilters.length; i += MAX_IMPORT_FILTER_CHUNK) {
+          const chunk = rowFilters.slice(i, i + MAX_IMPORT_FILTER_CHUNK);
+          const docs = await model
+            .find({ $or: chunk })
+            .select([...uniqueFields, "_id"].join(" "))
+            .session(newSession);
+          for (const doc of docs) {
+            existingIds.set(
+              uniqueFields.map((field) => String((doc as any)[field])).join("|"),
+              String(doc._id),
+            );
+          }
+        }
+
+        const newRows = rows.filter((row) => !existingIds.has(keyOf(row)));
+        if (newRows.length > 0) {
+          await model.create(newRows, {
+            session: newSession,
+            ordered: true,
+          });
+        }
+
+        const updateRows = rows.filter((row) => existingIds.has(keyOf(row)));
+        if (updateRows.length > 0) {
+          const updateOps = updateRows.map((row) => ({
+            updateOne: {
+              // Guaranteed present: updateRows only contains rows whose key
+              // was found in the existence check above.
+              filter: { _id: existingIds.get(keyOf(row))! },
+              update: { $set: row },
+            },
+          })) as Parameters<typeof model.bulkWrite>[0];
+
+          for (let i = 0; i < updateOps.length; i += MAX_IMPORT_FILTER_CHUNK) {
+            await model.bulkWrite(updateOps.slice(i, i + MAX_IMPORT_FILTER_CHUNK), {
+              session: newSession,
+            });
+          }
+        }
+
+        // Re-query the affected rows so the response carries the stored
+        // documents (with their _id), matching the import contract.
+        for (let i = 0; i < rowFilters.length; i += MAX_IMPORT_FILTER_CHUNK) {
+          const chunk = rowFilters.slice(i, i + MAX_IMPORT_FILTER_CHUNK);
+          const docs = await model.find({ $or: chunk }).session(newSession);
+          imported.push(...(docs as T[]));
+        }
+
+        return imported;
+      }
+
+      // NO unique index — fall back to the `id`/`_id` column written by
+      // exportCSV: update records whose _id exists, create the ones that
+      // don't (keeping the imported _id), and plain-insert rows without one.
+      const idRows = cleanRows.filter(
+        ({ identity }) =>
+          identity !== undefined &&
+          identity !== null &&
+          mongoose.isValidObjectId(identity),
+      );
+      const plainRows = cleanRows.filter(
+        ({ identity }) =>
+          !(
+            identity !== undefined &&
+            identity !== null &&
+            mongoose.isValidObjectId(identity)
+          ),
+      );
+
+      const existingIdEntities = new Set<string>();
+      for (let i = 0; i < idRows.length; i += MAX_IMPORT_FILTER_CHUNK) {
+        const chunk = idRows
+          .slice(i, i + MAX_IMPORT_FILTER_CHUNK)
+          .map(({ identity }) => new mongoose.Types.ObjectId(identity));
+        const docs = await model
+          .find({ _id: { $in: chunk } })
+          .select("_id")
+          .session(newSession);
+        for (const doc of docs) {
+          existingIdEntities.add(String(doc._id));
+        }
+      }
+
+      const idUpdateRows = idRows.filter(({ identity }) =>
+        existingIdEntities.has(identity),
+      );
+      if (idUpdateRows.length > 0) {
+        // The ops type is derived from the model's own bulkWrite signature:
+        // mongoose's deferred conditional generic (T extends Document ? T : any)
+        // cannot be matched by AnyBulkWriteOperation<T> directly.
+        const updateOps = idUpdateRows.map(({ identity, row }) => ({
+          updateOne: {
+            filter: { _id: identity },
+            update: { $set: row },
+          },
+        })) as Parameters<typeof model.bulkWrite>[0];
+
+        for (let i = 0; i < updateOps.length; i += MAX_IMPORT_FILTER_CHUNK) {
+          await model.bulkWrite(updateOps.slice(i, i + MAX_IMPORT_FILTER_CHUNK), {
+            session: newSession,
+          });
+        }
+      }
+
+      const idNewRows = idRows.filter(
+        ({ identity }) => !existingIdEntities.has(identity),
+      );
+      if (idNewRows.length > 0) {
+        // Created with the imported _id so the row identity is preserved.
+        await model.create(
+          idNewRows.map(({ identity, row }) => ({ ...row, _id: identity })),
+          { session: newSession, ordered: true },
+        );
+      }
+
+      if (plainRows.length > 0) {
+        await model.create(plainRows.map(({ row }) => row), {
+          session: newSession,
+          ordered: true,
+        });
+      }
+
+      // Re-query the affected rows so the response carries the stored
+      // documents (with their _id), matching the import contract.
+      const idFilters = idRows.map(({ identity }) => ({
+        _id: new mongoose.Types.ObjectId(identity),
+      }));
+      for (let i = 0; i < idFilters.length; i += MAX_IMPORT_FILTER_CHUNK) {
+        const chunk = idFilters.slice(i, i + MAX_IMPORT_FILTER_CHUNK);
+        const docs = await model.find({ $or: chunk }).session(newSession);
+        imported.push(...(docs as T[]));
+      }
+
+      return imported;
     });
   }
 

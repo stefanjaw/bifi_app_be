@@ -1,6 +1,7 @@
 import mongoose, { PaginateModel } from "mongoose";
 import { Schema } from "mongoose";
 import paginate from "mongoose-paginate-v2";
+import { AssetConditionDocument } from "@mongodb-types";
 
 const assetConditionSchema = new Schema(
   {
@@ -31,9 +32,9 @@ assetConditionSchema.index(
   { unique: true, partialFilterExpression: { active: true } },
 );
 
-const assetConditionModel = mongoose.model<any, PaginateModel<any>>(
-  "AssetCondition",
-  assetConditionSchema,
-);
+const assetConditionModel = mongoose.model<
+  AssetConditionDocument,
+  PaginateModel<AssetConditionDocument>
+>("AssetCondition", assetConditionSchema);
 
 export { assetConditionModel };

@@ -63,7 +63,17 @@ export function validateAndTransformCSVMiddleware<T extends object>(
                 if (result[key] === "") result[key] = undefined;
               });
 
-              return await performValidation(dtoClass, result, false);
+              const validated = await performValidation(dtoClass, result, false);
+
+              // Preserve the row identity (the `id` column written by the CSV
+              // export) — DTO whitelisting strips it, but BaseService.importCSV
+              // uses it to update existing records instead of inserting.
+              const identity = result._id ?? result.id;
+              if (identity !== undefined && identity !== null) {
+                (validated as { _id?: string })._id = String(identity);
+              }
+
+              return validated;
             }),
           );
 
