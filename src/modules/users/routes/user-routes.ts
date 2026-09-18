@@ -1,5 +1,5 @@
 import { UserDocument } from "@mongodb-types";
-import { BaseRoutes, validateBodyMiddleware } from "../../../system";
+import { BaseRoutes, validateBodyMiddleware, withAlsContext } from "../../../system";
 import { UserController } from "../controllers/user-controller";
 import {
   UpdateUserLanguageDTO,
@@ -52,7 +52,7 @@ export class UserRouter extends BaseRoutes<UserDocument> {
   initPutProfileRoute(): void {
     this.router.put(
       this.endpoint + "/profile",
-      this.upload.any(),
+      withAlsContext(this.upload.any()),
       validateBodyMiddleware(UpdateProfileDTO),
       userController.updateProfile,
     );

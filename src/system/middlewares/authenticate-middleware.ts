@@ -47,6 +47,9 @@ function getAllowedDbNames(): Set<string> | null {
  * Middleware to authenticate requests using a Firebase Authentication token.
  * If the token is invalid, expired, or revoked, it will throw an UnauthorizedException.
  * If the user associated with the token is not found, it will create a new user with the provided information.
+ * Provisioning rules: the first signup on an empty tenant DB is always provisioned
+ * (bootstrap); afterwards only emails whose domain is listed in
+ * AUTO_PROVISION_EMAIL_DOMAINS may self-provision.
  * If the user is found but not active, it will throw an UnauthorizedException.
  * @param userService - The UserService instance to use for Firebase-token authentication.
  * @param apiKeyService - The ApiKeyService instance to use for `X-Api-Key` authentication.
@@ -186,10 +189,13 @@ export function authenticateMiddleware(
       }
 
       if (!user) {
-        // Auto-provisioning gate: by default, refuse unknown uids so an open
-        // Firebase signup cannot silently mint an application account. Set
-        // AUTO_PROVISION_EMAIL_DOMAINS (comma-separated) to allow self-provision
-        // for specific email domains (e.g. "yourcompany.com").
+        // Auto-provisioning gate. Bootstrap rule: when the tenant DB has no
+        // users at all, the first signup is always provisioned regardless of
+        // domain — otherwise an empty database could never be entered, since
+        // there would be no administrator to provision anyone. Afterwards the
+        // domain allowlist governs: set AUTO_PROVISION_EMAIL_DOMAINS
+        // (comma-separated) to allow self-provision for specific email domains
+        // (e.g. "yourcompany.com").
         const allowedDomainsRaw =
           process.env.AUTO_PROVISION_EMAIL_DOMAINS || "";
         const allowedDomains = new Set(
@@ -201,10 +207,17 @@ export function authenticateMiddleware(
         const emailDomain = (firebaseUser.email || "")
           .split("@")[1]
           ?.toLowerCase();
+
+        const firstExistingUser = await boundUserModel
+          .findOne({}, { _id: 1 })
+          .lean();
+        const isFirstUser = !firstExistingUser;
+
         const mayAutoProvision =
-          allowedDomains.size > 0 &&
-          emailDomain !== undefined &&
-          allowedDomains.has(emailDomain);
+          isFirstUser ||
+          (allowedDomains.size > 0 &&
+            emailDomain !== undefined &&
+            allowedDomains.has(emailDomain));
 
         if (!mayAutoProvision) {
           next(

@@ -198,13 +198,6 @@ export class UserService extends BaseService<UserDocument> {
   }
 
   /**
-   * Updates the profile of the logged user.
-   * @param data The user data to update.
-   * @param session The optional client session to use for the transaction.
-   * @returns A promise resolving to the updated user document.
-   * @throws ValidationException If the logged user tries to update a different user's profile.
-   */
-  /**
    * Updates the language preference of a user by ID.
    * @param userId - The user ID.
    * @param language - The new language/locale string.
@@ -228,6 +221,17 @@ export class UserService extends BaseService<UserDocument> {
     });
   }
 
+  /**
+   * Updates the profile of the logged user.
+   * The profile endpoint is strictly self-scoped: the logged user can only
+   * update their own record. Completing the profile also confirms the user
+   * (first-login "finish registration" flow) — `confirmed` is set here by the
+   * backend and is never accepted from the client payload.
+   * @param data The user data to update.
+   * @param session The optional client session to use for the transaction.
+   * @returns A promise resolving to the updated user document.
+   * @throws ValidationException If the logged user tries to update a different user's profile.
+   */
   async updateProfile(
     data: UpdateProfileDTO,
     session?: mongoose.ClientSession | undefined,
@@ -241,7 +245,26 @@ export class UserService extends BaseService<UserDocument> {
       // UpdateProfileDTO only exposes picture/language/contactInformation,
       // and UserService.update strips privilege-bearing fields as a second
       // line of defense. Cast to UpdateUserDTO for the call.
-      return this.update(data as unknown as UpdateUserDTO, newSession);
+      const updated = await this.update(
+        data as unknown as UpdateUserDTO,
+        newSession,
+      );
+
+      // Completing the profile confirms the user. Set it explicitly here
+      // instead of trusting the client payload (UpdateProfileDTO does not
+      // expose `confirmed`).
+      if (!updated.confirmed) {
+        const model = this.connectionManager.bindModelToDb(this.model);
+        const confirmedUser = await model.findByIdAndUpdate(
+          data._id,
+          { $set: { confirmed: true } },
+          { new: true, session: newSession },
+        );
+
+        return confirmedUser ?? updated;
+      }
+
+      return updated;
     });
   }
 }
